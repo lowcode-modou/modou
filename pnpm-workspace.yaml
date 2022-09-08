@@ -1,0 +1,6 @@
+packages:
+  - 'packages/**'
+  - 'websites/**'
+  - 'editors/**'
+  # exclude packages that are inside test directories
+  - '!**/test/**'
