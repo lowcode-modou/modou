@@ -17,9 +17,7 @@ module.exports = {
     'react'
   ],
   rules: {
-    semi: [
-      'error',
-      'never'
-    ]
+    semi: ['error', 'never'],
+    'react/react-in-jsx-scope': [0]
   }
 }
