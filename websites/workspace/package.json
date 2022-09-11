@@ -1,5 +1,5 @@
 {
-  "name": "workspace",
+  "name": "modou-workspace",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,9 +7,5 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
-  },
-  "dependencies": {
-  },
-  "devDependencies": {
   }
 }
