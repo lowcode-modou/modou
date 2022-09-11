@@ -66,3 +66,4 @@ jobs:
           external_repository: lowcode-modou/workspace-site
           publish_branch: gh-pages  # default: gh-pages
           publish_dir: ./websites/workspace/dist
+          cname: workspace.modou.ink
