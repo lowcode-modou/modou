@@ -27,8 +27,33 @@ jobs:
         with:
           node-version: 16
 
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v2.0.1
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
       # Runs a single command using the runners shell
-      - name: pnpm install
+      - name: Install dependencies
         run: pnpm install
 
   build-workspace:
@@ -40,10 +65,10 @@ jobs:
         with:
           node-version: 16
 
-      - name: build-workspace
+      - name: Build workspace
         run: cd ./websites/workspace && pnpm build
 
-      - name: deploy-workspace
+      - name: Deploy workspace
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
