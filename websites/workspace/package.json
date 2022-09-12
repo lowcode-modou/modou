@@ -7,5 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
+  },
+  "dependencies": {
+    "@modou/widgets": "workspace:^1.0.0"
   }
 }

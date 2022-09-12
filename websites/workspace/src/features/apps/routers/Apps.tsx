@@ -1,8 +1,10 @@
 import { FC } from 'react'
 import { Col, Layout, Row, Card, Avatar } from 'antd'
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 
 export const Apps: FC = () => {
+  const navigator = useNavigate()
   return <Layout className="h-full">
     <Layout.Header className="bg-white border-gray-50 border-b-4">
       <Row align="middle" className="h-full">
@@ -24,6 +26,7 @@ export const Apps: FC = () => {
           xxl={{ span: 4 }}
           span={4}>
           <Card
+            onClick={() => navigator('/page')}
             className="shadow-2xl"
             // cover={
             //   <img src="./modou.svg" alt="" />
