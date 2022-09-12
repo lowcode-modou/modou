@@ -25,10 +25,10 @@ export const Apps: FC = () => {
           span={4}>
           <Card
             className="shadow-2xl"
-            cover={
-              <img src="./modou.svg" alt="" />
-
-            }
+            // cover={
+            //   <img src="./modou.svg" alt="" />
+            //
+            // }
             actions={[
               <SettingOutlined key="setting" />,
               <EditOutlined key="edit" />,
@@ -36,9 +36,9 @@ export const Apps: FC = () => {
             ]}
           >
             <Card.Meta
-              avatar={<Avatar src={`https://joeschmoe.io/api/v1/random?${index}`} />}
+              avatar={<Avatar shape="square" src={`https://joeschmoe.io/api/v1/random?${index}`} />}
               title="MoDou"
-              description="This is the mo dou description"
+              description="This is MoDou app description"
             />
           </Card>
         </Col>)}
