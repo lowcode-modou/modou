@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@lowcode-modou/json-schema-to-zod": "^0.0.7",
-    "@lowcode-modou/zod": "^0.0.13",
-    "@lowcode-modou/zod-to-json-schema": "^0.0.11"
+    "@lowcode-modou/json-schema-to-zod": "^0.0.10",
+    "@lowcode-modou/zod": "^0.0.14",
+    "@lowcode-modou/zod-to-json-schema": "^0.0.19"
   }
 }

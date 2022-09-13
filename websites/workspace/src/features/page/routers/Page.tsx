@@ -1,17 +1,17 @@
 import { FC } from 'react'
 // import { useNavigate } from 'react-router-dom'
 import { Button, Col, Row, Typography } from 'antd'
-import { mr } from '@modou/refine'
+import { mr, mrToJsonScheme } from '@modou/refine'
 
 const testRefine = (): void => {
   const r = mr.object({
     name: mr.string()
-    //  @ts-expect-error
-  }).describe('12')._modou({
-    test: '123'
-  })._modou({
-    test: '12344'
-  })
+  }).describe('12')
+    ._extra({
+      'x-name': '大声道'
+    })
+
+  console.log(mrToJsonScheme(r))
 }
 
 export const Page: FC = () => {
