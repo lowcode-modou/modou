@@ -3,9 +3,8 @@ import './App.css'
 
 const App: FC = () => {
   return (
-    <div className="App">
-      <button onClick={() => {}}>测试 RUNTIME
-      </button>
+    <div className="modou">
+      <img src="./modou.svg" alt="" />
     </div>
   )
 }
