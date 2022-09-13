@@ -4,7 +4,7 @@ import './App.css'
 const App: FC = () => {
   return (
     <div className="App">
-      <button onClick={() => {}}>测试
+      <button onClick={() => {}}>测试 RUNTIME
       </button>
     </div>
   )
