@@ -1,6 +1,6 @@
 import { FC, useState } from 'react'
 // import { useNavigate } from 'react-router-dom'
-import { Button, Col, Divider, Image, Row, Typography } from 'antd'
+import { Button, Col, Divider, Image, Row, Space, Typography } from 'antd'
 import { mr, mrToJsonScheme } from '@modou/refine'
 import { SelectSetter } from '@modou/setters'
 import { ButtonWidget } from '@modou/widgets'
@@ -44,13 +44,13 @@ export const Page: FC = () => {
       <Divider />
       <Typography.Title>PAGE 页面</Typography.Title>
       <Divider />
-      <Button.Group>
-        <Button type="primary" onClick={testMR}>Test MR</Button>
-        <Button type="primary" onClick={testMRToScheme}>Test MR to Scheme</Button>
-        <Button type="primary" onClick={() => {
-          window.open('https://runtime.modou.ink', '_blank')
-        }}>NAVIGATE TO WORKSPACE</Button>
-      </Button.Group>
+        <Space direction={'vertical'}>
+          <Button block type="primary" onClick={testMR}>Test MR</Button>
+          <Button block type="primary" onClick={testMRToScheme}>Test MR to Scheme</Button>
+          <Button block type="primary" onClick={() => {
+            window.open('https://runtime.modou.ink', '_blank')
+          }}>NAVIGATE TO WORKSPACE</Button>
+        </Space>
       {/* <Button type={'primary'} onClick={() => navigator('/apps')}>跳转到 APPS 页面</Button> */}
       <Divider />
       <ButtonWidget type={buttonType} />
