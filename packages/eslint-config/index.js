@@ -19,6 +19,7 @@ module.exports = {
   rules: {
     semi: ['error', 'never'],
     'react/jsx-uses-react': 'off',
-    'react/react-in-jsx-scope': 'off'
+    'react/react-in-jsx-scope': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
   }
 }

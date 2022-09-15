@@ -16,9 +16,9 @@ const AppsHeader: FC = () => {
 const AppsContent: FC = () => {
   const navigator = useNavigate()
   return <Layout.Content className="bg-white w-full">
-    <Row gutter={[0, 16]} className="p-6">
-      {Array(12).fill(1).map((v, index) => <Col
-        className="flex justify-center"
+    <Row gutter={[0, 0]}>
+      {Array(13).fill(1).map((v, index) => <Col
+        className="flex justify-center p-2"
         key={index}
         xs={{ span: 24 }}
         sm={{ span: 12 }}
@@ -29,7 +29,7 @@ const AppsContent: FC = () => {
         span={4}>
         <Card
           onClick={() => navigator('/page')}
-          className="shadow-2xl"
+          className="shadow-2xl m-1 w-full"
           // cover={
           //   <img src="./modou.svg" alt="" />
           //
@@ -43,7 +43,7 @@ const AppsContent: FC = () => {
           <Card.Meta
             avatar={<Avatar shape="square" src={`https://joeschmoe.io/api/v1/random?${index}`} />}
             title="APP NAME"
-            description="This is MO DOU app description"
+            description="我是 APP 描述"
           />
         </Card>
       </Col>)}
