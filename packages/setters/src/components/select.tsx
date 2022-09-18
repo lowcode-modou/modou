@@ -1,5 +1,5 @@
-import { SETTER_KEY } from '../constants'
-import { MRInstanceSetterType, SetterTypeEnum } from '../types'
+import { SETTER_KEY, SetterTypeEnum } from '../constants'
+import { BaseSetterProps, MRInstanceSetterType } from '../types'
 import { FC } from 'react'
 import { Select } from 'antd'
 
@@ -18,8 +18,8 @@ interface SelectSetterOptions {
   options: SelectSetterOption[]
 }
 
-export const mrSelectSetter = (mrInstance: MRInstanceSetterType<SelectSetterOptions>, options: SelectSetterOptions): void => {
-  mrInstance._extra({
+export const mrSelectSetter = (mrInstance: MRInstanceSetterType<SelectSetterOptions>, options: SelectSetterOptions) => {
+  return mrInstance._extra({
     [SETTER_KEY]: {
       type: SetterTypeEnum.Select,
       ...options
@@ -27,15 +27,15 @@ export const mrSelectSetter = (mrInstance: MRInstanceSetterType<SelectSetterOpti
   })
 }
 
-type Props<T extends string = string> = {
-  value: T[]
-  onChange: (value: T[]) => void
+interface PropsM<T extends string = string> extends BaseSetterProps<T[]> {
   options: SelectSetterOptions
-} | {
-  value: T
-  onChange: (value: T) => void
+}
+
+interface PropsS<T extends string = string> extends BaseSetterProps<T> {
   options: Omit<SelectSetterOptions, 'mode'> & { mode?: undefined }
 }
+
+type Props<T extends string = string> = PropsM<T> | PropsS<T>
 
 export const SelectSetter = <T extends string = string, > (props: Props<T>): ReturnType<FC> => {
   const { value, onChange, options: { options, mode } } = props

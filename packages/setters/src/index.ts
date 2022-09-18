@@ -1,1 +1,3 @@
-export * from './components/select'
+export * from './components'
+
+export { SETTER_KEY } from './constants'
