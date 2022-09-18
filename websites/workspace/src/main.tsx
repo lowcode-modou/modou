@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import 'antd/dist/antd.less'
+import 'antd/dist/antd.css'
 import '@/tailwindcss.scss'
 import { App } from '@/App'
 
