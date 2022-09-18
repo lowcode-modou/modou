@@ -1,7 +1,7 @@
-import { createMRSchemeWidgetProps, MRSelectOptions } from '../_'
+import { MRSelectOptions } from '../_'
 import { mr } from '@modou/refine'
 import { mrBooleanSetter, mrSelectSetter } from '@modou/setters'
-import { WidgetMetadata } from '@modou/core'
+import { Widget } from '@modou/core'
 import { FC, ReactNode } from 'react'
 import { Row } from 'antd'
 
@@ -62,8 +62,10 @@ const JustifyOptions: MRSelectOptions = [
   }
 ]
 
-const MRSchemeRowWidgetProps = createMRSchemeWidgetProps('RowWidget').extend({
-  props: mr.object({
+const MRSchemeRowWidgetProps = Widget.createMRSchemeWidgetProps<'children'>({
+  widgetType: 'RowWidget',
+  widgetName: '栅格行',
+  props: {
     align: mrSelectSetter(
       mr.nativeEnum(RowWidgetAlignEnum).describe('垂直对齐方式').default(RowWidgetAlignEnum.Top),
       {
@@ -78,24 +80,25 @@ const MRSchemeRowWidgetProps = createMRSchemeWidgetProps('RowWidget').extend({
       }
     ),
     wrap: mrBooleanSetter(mr.boolean().describe('是否自动换行').default(true))
-  }),
-  slots: mr.object({
+  },
+  slots: {
     children: mr.array(mr.string()).default([])
-  })
+  }
 })
 
 const MRSchemeRowWidgetState = MRSchemeRowWidgetProps.shape.props.extend({
   instance: mr.object({
     id: mr.string(),
     widgetId: MRSchemeRowWidgetProps.shape.widgetId
-  })
+  }),
+  widgetName: MRSchemeRowWidgetProps.shape.widgetName
 })
 
 type RowWidgetState = mr.infer<typeof MRSchemeRowWidgetState> & {
   renderSlots: Record<keyof mr.infer<typeof MRSchemeRowWidgetProps.shape.slots>, ReactNode>
 }
 
-export const rowWidgetMetadata = WidgetMetadata.create({
+export const rowWidgetMetadata = Widget.createMetadata({
   version: '0.0.1',
   widgetType: 'RowWidget',
   widgetName: '栅格行',
@@ -106,9 +109,11 @@ export const RowWidget: FC<RowWidgetState> = ({
   align,
   justify,
   wrap,
+  instance,
   renderSlots
 }) => {
   return <Row
+    data-widget-id={instance.widgetId}
     align={align}
     justify={justify}
     wrap={wrap}

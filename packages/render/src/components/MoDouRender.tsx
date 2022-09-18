@@ -7,9 +7,10 @@ import {
   ColWidget,
   ButtonWidget
 } from '@modou/widgets'
-import { atom, useRecoilValue } from 'recoil'
-import { FC } from 'react'
+import { FC, FunctionComponent, ReactComponentElement, ReactElement } from 'react'
 import { match } from 'ts-pattern'
+import { WidgetBaseProps } from '@modou/core'
+import { keyBy } from 'lodash'
 
 const rowDSL = {
   ...schemeToJsonDefault(rowWidgetMetadata.jsonPropsSchema),
@@ -39,41 +40,49 @@ export const testRender = () => {
   )
 }
 
-export const widgetByIdAtom = atom({
-  key: 'widgetByIdAtom',
-  default: {
-    rowDSL,
-    colDSL,
-    buttonDSL
-  }
-})
-
-const ROOT_WIDGET_ID = 'rowDSL'
+const ErrorWidget: FC = () => {
+  return <div>Error</div>
+}
 
 const WidgetWrapper: FC<{
   widgetId: string
-}> = ({ widgetId }) => {
-  const widgetDSLById: any = useRecoilValue(widgetByIdAtom)
-  const widgetDSL = widgetDSLById[widgetId]
-  const Widget: any = match(widgetDSL.widgetType)
+  widgetById: Record<string, WidgetBaseProps>
+}> = ({ widgetId, widgetById }) => {
+  const widget = widgetById[widgetId]
+  // TODO any 替换 state 定义
+  const Widget = match<string, FunctionComponent<any>>(widget.widgetType)
     .with('RowWidget', () => RowWidget)
     .with('ColWidget', () => ColWidget)
     .with('ButtonWidget', () => ButtonWidget)
-    .exhaustive()
+    .otherwise(() => ErrorWidget)
 
-  const renderSlots = Object.entries((widgetDSL.slots || {})).map(([key, value]) => {
-    return [key, <WidgetWrapper key={key} widgetId={value as string} />]
-  }).reduce((pre, cur) => {
+  const renderSlots = Object.entries((widget.slots || {})).map(([key, widgetIds]) => {
+    return [key, widgetIds.map(widgetId => <WidgetWrapper key={key} widgetId={widgetId} widgetById={widgetById} />)]
+  }).reduce<Record<string, Element[]>>((pre, [slotName, widgetElements]) => {
+    // FIXME 不知道为什么类型不对😂
     // @ts-expect-error
-    pre[cur[0]] = cur[1]
+    pre[slotName] = widgetElements
     return pre
   }, {})
 
-  return <Widget {...widgetDSL.props} renderSlots={renderSlots}/>
+  return <Widget {...widget.props} renderSlots={renderSlots}
+                 instance={{
+                   id: widgetId,
+                   widgetId
+                 }} />
 }
 
-export const MoDouRender: FC = () => {
+interface MoDouRenderProps {
+  rootWidgetId: string
+  widgets: WidgetBaseProps[]
+}
+
+export const MoDouRender: FC<MoDouRenderProps> = ({
+  widgets,
+  rootWidgetId
+}) => {
+  const widgetById = keyBy(widgets, 'widgetId')
   return <div>
-    <WidgetWrapper widgetId={ROOT_WIDGET_ID} />
+    <WidgetWrapper widgetById={widgetById} widgetId={rootWidgetId} />
   </div>
 }

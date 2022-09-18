@@ -2,8 +2,8 @@ import { FC } from 'react'
 import { Button } from 'antd'
 import { mr } from '@modou/refine'
 import { mrBooleanSetter, mrSelectSetter, mrStringSetter } from '@modou/setters'
-import { WidgetMetadata } from '@modou/core'
-import { createMRSchemeWidgetProps, MRSelectOptions } from '../_'
+import { Widget } from '@modou/core'
+import { MRSelectOptions } from '../_'
 
 // props
 // state
@@ -83,8 +83,10 @@ const typeOptions: MRSelectOptions = [
   }
 ]
 
-const MRSchemeButtonWidgetProps = createMRSchemeWidgetProps('ButtonWidget').extend({
-  props: mr.object({
+const MRSchemeButtonWidgetProps = Widget.createMRSchemeWidgetProps({
+  widgetType: 'ButtonWidget',
+  widgetName: '按钮',
+  props: {
     block: mrBooleanSetter(mr.boolean().describe('将按钮宽度调整为其父宽度的选项').default(false)),
     danger: mrBooleanSetter(mr.boolean().describe('设置危险按钮').default(false)),
     disabled: mrBooleanSetter(mr.boolean().describe('按钮失效状态').default(false)),
@@ -121,19 +123,21 @@ const MRSchemeButtonWidgetProps = createMRSchemeWidgetProps('ButtonWidget').exte
       }
     ),
     title: mrStringSetter(mr.string().describe('按钮内容').default('按钮'))
-  })
+  },
+  slots: {}
 })
 
 const MRSchemeButtonWidgetState = MRSchemeButtonWidgetProps.shape.props.extend({
   instance: mr.object({
     id: mr.string(),
     widgetId: MRSchemeButtonWidgetProps.shape.widgetId
-  })
+  }),
+  widgetName: MRSchemeButtonWidgetProps.shape.widgetName
 })
 
 type ButtonWidgetState = mr.infer<typeof MRSchemeButtonWidgetState>
 
-export const buttonWidgetMetadata = WidgetMetadata.create({
+export const buttonWidgetMetadata = Widget.createMetadata({
   version: '0.0.1',
   widgetType: 'ButtonWidget',
   widgetName: '按钮',
@@ -150,10 +154,12 @@ export const ButtonWidget: FC<ButtonWidgetState> = ({
   shape,
   size,
   type,
-  title
+  title,
+  instance
 }) => {
   return (
     <Button
+      data-widget-id={instance.widgetId}
       block={block}
       danger={danger}
       disabled={disabled}

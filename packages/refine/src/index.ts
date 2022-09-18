@@ -1,10 +1,15 @@
 import { name, version } from '../package.json'
-import type { ZodType, ZodSchema } from '@lowcode-modou/zod'
+import type { ZodType, ZodSchema, ZodTypeAny, ZodRawShape, ZodArray, ZodString, ZodDefault } from '@lowcode-modou/zod'
 
 export { z as mr } from '@lowcode-modou/zod'
 
 export type MRType = ZodType
 export type MRScheme = ZodSchema
+export type MRTypeAny = ZodTypeAny
+export type MRRawShape = ZodRawShape
+export type MRString = ZodString
+export type MRArray<T extends MRTypeAny> = ZodArray<T>
+export type MRDefault<T extends MRTypeAny> = ZodDefault<T>
 
 export { default as mrToJsonSchema } from '@lowcode-modou/zod-to-json-schema'
 

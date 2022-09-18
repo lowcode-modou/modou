@@ -11,6 +11,11 @@ export default defineConfig({
     }
   },
   css: {
-    devSourcemap: true
+    devSourcemap: true,
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true
+      }
+    }
   }
 })

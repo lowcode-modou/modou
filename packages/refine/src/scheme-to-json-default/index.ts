@@ -5,6 +5,5 @@ import { DEFAULT_TO_EMPTY } from '../constants'
 
 export const schemeToJsonDefault = (scheme: JsonSchema7Type) => {
   const defaultJson = parseScheme(scheme) || {}
-  console.log('defaultJson', defaultJson)
   return omitBy(defaultJson, val => val === DEFAULT_TO_EMPTY)
 }

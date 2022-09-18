@@ -1,19 +1,14 @@
 import { FC, useState } from 'react'
 import { Button, Col, Divider, Image, Row, Space, Typography } from 'antd'
 import { SelectSetter } from '@modou/setters'
-import { ButtonWidget } from '@modou/widgets'
-import { MoDouRender, testRender, widgetByIdAtom } from '@modou/render'
 import { ButtonType } from 'antd/es/button'
 import { useNavigate } from 'react-router-dom'
-import { useRecoilState } from 'recoil'
+import { CanvasDesigner } from '@modou/canvas-designer'
+import { useRecoilValue } from 'recoil'
+import { widgetsAtom } from '../mock'
 
 const testMR = (): void => {
   console.log('永远相信美好的事情即将发生')
-}
-
-// TODO 测试
-const schemaToDefaultJSON = (dsl: any) => {
-  console.log(dsl)
 }
 
 const options: Parameters<typeof SelectSetter>[0]['options']['options'] = [
@@ -33,9 +28,13 @@ export const Page: FC = () => {
 
   const [buttonState, setButtonState] = useState<any>({ type: 'primary' })
 
+  const widgets = useRecoilValue(widgetsAtom)
+
   return <Row justify='center' align='middle' className='h-full'>
-    <Col span={12}>
-      <MoDouRender />
+    <Col span={12} className='border-2 border-solid border-red-500 h-full'>
+      <CanvasDesigner rootWidgetId={widgets[0].widgetId} widgets={widgets} onWidgetsChange={(val: any) => {
+        console.log(val)
+      }} />
     </Col>
     <Col span={12} className='text-center'>
       <Image src='./modou.svg' className='w-36' />
@@ -56,7 +55,7 @@ export const Page: FC = () => {
         <Button block type={'primary'} onClick={() => navigator('/apps')}>跳转到 APPS 页面</Button>
       </Space>
       <Divider />
-      <ButtonWidget title={'按钮 - ButtonWidget'} {...buttonState} />
+      {/* <ButtonWidget title={'按钮 - ButtonWidget'} {...buttonState} /> */}
       <Divider />
       <SelectSetter<ButtonType>
         value={buttonState.type}
