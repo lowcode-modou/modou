@@ -13,6 +13,6 @@ export const mrNumberSetter = (mrInstance: MRInstanceSetterType<{}>) => {
 
 type Props = BaseSetterProps<number>
 
-export const StringSetter: FC<Props> = ({ value, onChange }) => {
+export const NumberSetter: FC<Props> = ({ value, onChange }) => {
   return <InputNumber value={value} onChange={val => onChange(val)} />
 }
