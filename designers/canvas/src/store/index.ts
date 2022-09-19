@@ -6,16 +6,20 @@ import { generateRecoilKey } from '../utils'
 import { keyBy } from 'lodash'
 
 export const widgetsAtom = atom<WidgetBaseProps[]>({
-  key: generateRecoilKey('widgets'),
+  key: generateRecoilKey('widgetsAtom'),
   default: []
 })
 
 export const widgetByIdSelector = selector<Record<string, WidgetBaseProps>>({
-  key: generateRecoilKey('widgetById'),
+  key: generateRecoilKey('widgetByIdSelector'),
   get: ({ get }) => {
-    console.log('get(widgetsAtom)', get(widgetsAtom))
     return keyBy(get(widgetsAtom), 'widgetId')
   }
+})
+
+export const selectedWidgetIdAtom = atom<string>({
+  key: generateRecoilKey('selectedWidgetIdAtom'),
+  default: ''
 })
 
 // TODO END

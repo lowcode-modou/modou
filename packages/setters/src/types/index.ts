@@ -5,7 +5,8 @@ type MRExtraType<T extends Object> = (extra: Parameters<MRType['_extra']>[0] & {
 
 export type MRInstanceSetterType<T extends Object> = Omit<MRType, '_extra'> & { _extra: MRExtraType<T> }
 
-export interface BaseSetterProps<T> {
+export interface BaseSetterProps<T, O = any> {
   value: T
   onChange: (value: T) => void
+  options?: O
 }

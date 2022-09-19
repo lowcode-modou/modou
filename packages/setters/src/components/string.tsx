@@ -14,5 +14,5 @@ export const mrStringSetter = (mrInstance: MRInstanceSetterType<{}>) => {
 type Props = BaseSetterProps<string>
 
 export const StringSetter: FC<Props> = ({ value, onChange }) => {
-  return <Input value={value} onChange={val => onChange(val as unknown as string)} />
+  return <Input value={value} onChange={val => onChange(val.target.value)} />
 }

@@ -4,7 +4,7 @@ import { SelectSetter } from '@modou/setters'
 import { ButtonType } from 'antd/es/button'
 import { useNavigate } from 'react-router-dom'
 import { CanvasDesigner } from '@modou/canvas-designer'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { widgetsAtom } from '../mock'
 
 const testMR = (): void => {
@@ -28,15 +28,16 @@ export const Page: FC = () => {
 
   const [buttonState, setButtonState] = useState<any>({ type: 'primary' })
 
-  const widgets = useRecoilValue(widgetsAtom)
+  const [widgets, setWidgets] = useRecoilState(widgetsAtom)
 
   return <Row justify='center' align='middle' className='h-full'>
-    <Col span={12} className='border-2 border-solid border-red-500 h-full'>
-      <CanvasDesigner rootWidgetId={widgets[0].widgetId} widgets={widgets} onWidgetsChange={(val: any) => {
+    <Col span={18} className='border-2 border-solid border-red-500 h-full'>
+      <CanvasDesigner rootWidgetId={widgets[0].widgetId} widgets={widgets} onWidgetsChange={(val) => {
         console.log(val)
+        setWidgets(val)
       }} />
     </Col>
-    <Col span={12} className='text-center'>
+    <Col span={6} className='text-center'>
       <Image src='./modou.svg' className='w-36' />
       <Divider />
       <Typography.Title>PAGE 页面</Typography.Title>
@@ -51,7 +52,7 @@ export const Page: FC = () => {
         {/* }}>Test Scheme to Default Json</Button> */}
         <Button block type='primary' onClick={() => {
           window.open('https://runtime.modou.ink', '_blank')
-        }}>NAVIGATE TO WORKSPACE</Button>
+        }}>NAVIGATE TO RUNTIME</Button>
         <Button block type={'primary'} onClick={() => navigator('/apps')}>跳转到 APPS 页面</Button>
       </Space>
       <Divider />

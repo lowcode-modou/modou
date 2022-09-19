@@ -82,7 +82,5 @@ export const MoDouRender: FC<MoDouRenderProps> = ({
   rootWidgetId
 }) => {
   const widgetById = keyBy(widgets, 'widgetId')
-  return <div>
-    <WidgetWrapper widgetById={widgetById} widgetId={rootWidgetId} />
-  </div>
+  return <WidgetWrapper widgetById={widgetById} widgetId={rootWidgetId} />
 }
