@@ -1,11 +1,17 @@
-import './App.css'
+import { FC, Suspense } from 'react'
+import { BrowserRouter as Router } from 'react-router-dom'
+import { AppRouters } from '@/routers'
+import { AppSpin } from '@/components'
+import { RecoilRoot } from 'recoil'
 
-function App () {
+export const App: FC = () => {
   return (
-    <div className="App">
-      <img src="/modou.svg" className="logo" alt="Vite logo" />
-    </div>
+    <Suspense fallback={<AppSpin />}>
+      <RecoilRoot>
+        <Router>
+          <AppRouters />
+        </Router>
+      </RecoilRoot>
+    </Suspense>
   )
 }
-
-export default App

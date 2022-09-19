@@ -6,9 +6,9 @@ name: 部署 workspace 和 runtime
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" , "dev" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main" , "dev" ]
+    branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -59,10 +59,14 @@ jobs:
       - name: Build workspace
         run: cd ./websites/workspace && pnpm build
 
+      - name: Hack spa 404
+        run: cd ./websites/workspace/dist && echo "<\!DOCTYPE html><html lang=en><head><meta charset=UTF-8><title>404</title></head><body><script>const path=window.location.pathname.slice(1);localStorage.setItem('path',path);window.location.href='../'</script></body></html>" >> 404.html
+
       - name: Deploy workspace
         uses: peaceiris/actions-gh-pages@v3
         with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          external_repository: ll929/workspace-site
+          personal_token: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: lowcode-modou/workspace-site
           publish_branch: gh-pages  # default: gh-pages
           publish_dir: ./websites/workspace/dist
+          cname: workspace.modou.ink
