@@ -2,7 +2,7 @@ import { MRSelectOptions } from '../_'
 import { mr } from '@modou/refine'
 import { mrBooleanSetter, mrSelectSetter } from '@modou/setters'
 import { Widget } from '@modou/core'
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, useEffect } from 'react'
 import { Row } from 'antd'
 
 enum RowWidgetAlignEnum {
@@ -112,6 +112,9 @@ export const RowWidget: FC<RowWidgetState> = ({
   instance,
   renderSlots
 }) => {
+  useEffect(() => {
+    console.log('我是Row 我重新渲染了', instance.widgetId)
+  })
   return <Row
     data-widget-id={instance.widgetId}
     align={align}

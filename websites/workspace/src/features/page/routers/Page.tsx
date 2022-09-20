@@ -32,10 +32,13 @@ export const Page: FC = () => {
 
   return <Row justify='center' align='middle' className='h-full'>
     <Col span={18} className='border-2 border-solid border-red-500 h-full'>
-      <CanvasDesigner rootWidgetId={widgets[0].widgetId} widgets={widgets} onWidgetsChange={(val) => {
-        console.log(val)
-        setWidgets(val)
-      }} />
+      <CanvasDesigner
+        rootWidgetId={widgets[0].widgetId}
+        widgets={widgets}
+        onWidgetsChange={(val) => {
+          // console.log(val)
+          setWidgets(val)
+        }} />
     </Col>
     <Col span={6} className='text-center'>
       <Image src='./modou.svg' className='w-36' />

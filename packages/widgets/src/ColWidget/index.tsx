@@ -1,7 +1,7 @@
 import { mr } from '@modou/refine'
 import { mrNumberSetter } from '@modou/setters'
 import { Widget } from '@modou/core'
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, useEffect } from 'react'
 import { Col } from 'antd'
 
 const MRSchemeColWidgetProps = Widget.createMRSchemeWidgetProps<'children'>({
@@ -39,6 +39,9 @@ export const ColWidget: FC<ColWidgetState> = ({
   instance,
   renderSlots
 }) => {
+  useEffect(() => {
+    console.log('我是Col 我重新渲染了')
+  })
   return <Col
     data-widget-id={instance.widgetId}
     span={span}

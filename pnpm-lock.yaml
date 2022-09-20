@@ -22,6 +22,7 @@ importers:
       commitizen: 4.2.5
       cz-conventional-changelog: 3.3.0
       esbuild: 0.14.49
+      eslint-plugin-react-hooks: ^4.6.0
       lodash: ^4.17.21
       postcss: ^8.4.16
       react: ^18.2.0
@@ -61,6 +62,7 @@ importers:
       commitizen: 4.2.5
       cz-conventional-changelog: 3.3.0
       esbuild: 0.14.49
+      eslint-plugin-react-hooks: 4.6.0
       postcss: 8.4.16
       sass: 1.54.9
       tailwindcss: 3.1.8_postcss@8.4.16
@@ -85,6 +87,7 @@ importers:
       eslint-plugin-n: ^15.0.0
       eslint-plugin-promise: ^6.0.0
       eslint-plugin-react: ^7.31.8
+      eslint-plugin-react-hooks: ^4.6.0
     devDependencies:
       '@typescript-eslint/eslint-plugin': 5.33.0_eslint@8.23.1
       eslint: 8.23.1
@@ -93,6 +96,7 @@ importers:
       eslint-plugin-n: 15.2.5_eslint@8.23.1
       eslint-plugin-promise: 6.0.1_eslint@8.23.1
       eslint-plugin-react: 7.31.8_eslint@8.23.1
+      eslint-plugin-react-hooks: 4.6.0_eslint@8.23.1
 
   packages/refine:
     specifiers:
@@ -7027,6 +7031,13 @@ packages:
       eslint: 8.23.1
     dev: true
 
+  /eslint-plugin-react-hooks/4.6.0:
+    resolution: {integrity: sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
+    dev: true
+
   /eslint-plugin-react-hooks/4.6.0_eslint@7.32.0:
     resolution: {integrity: sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.6.0.tgz}
     engines: {node: '>=10'}
@@ -7034,6 +7045,15 @@ packages:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
     dependencies:
       eslint: 7.32.0
+    dev: true
+
+  /eslint-plugin-react-hooks/4.6.0_eslint@8.23.1:
+    resolution: {integrity: sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
+    dependencies:
+      eslint: 8.23.1
     dev: true
 
   /eslint-plugin-react/7.31.7_eslint@7.32.0:

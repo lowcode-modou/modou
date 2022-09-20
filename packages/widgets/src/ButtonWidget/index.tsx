@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { Button } from 'antd'
 import { mr } from '@modou/refine'
 import { mrBooleanSetter, mrSelectSetter, mrStringSetter } from '@modou/setters'
@@ -157,6 +157,9 @@ export const ButtonWidget: FC<ButtonWidgetState> = ({
   title,
   instance
 }) => {
+  useEffect(() => {
+    console.log('我是按钮 我重新渲染了', block)
+  })
   return (
     <Button
       data-widget-id={instance.widgetId}

@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef } from 'react'
 import { WidgetBaseProps } from '@modou/core'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { MoDouRender } from '@modou/render'
+import { ReactRender } from '@modou/render'
 import { useEventListener } from 'ahooks'
 import ReactJson from 'react-json-view'
 import { DesignerContext } from '../contexts'
@@ -34,10 +34,10 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
   onWidgetsChange,
   rootWidgetId
 }) => {
-  const useSetWidgets = useSetRecoilState(widgetsAtom)
+  const setWidgets = useSetRecoilState(widgetsAtom)
   useEffect(() => {
-    useSetWidgets(widgets)
-  }, [widgets])
+    setWidgets(widgets)
+  }, [setWidgets, widgets])
 
   const widgetById = useRecoilValue(widgetByIdSelector)
 
@@ -56,7 +56,7 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
     <Col span={16} style={{ border: '1px solid green' }}>
       <Row>
         <Col ref={canvasRef} span={16} style={{ border: '1px solid green' }}>
-          <MoDouRender rootWidgetId={rootWidgetId} widgets={widgets} />
+          <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
         </Col>
         <Col span={8} style={{ border: '1px solid green' }}>
           <DesignerContext.Provider value={{
