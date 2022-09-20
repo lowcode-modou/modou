@@ -1,5 +1,4 @@
 import { buttonWidgetMetadata, colWidgetMetadata, rowWidgetMetadata } from '@modou/widgets'
-import { atom } from 'recoil'
 import { WidgetBaseProps, Widget } from '@modou/core'
 import { generateId } from '@modou/core/src/utils'
 
@@ -24,11 +23,11 @@ const rowDSL: WidgetBaseProps = {
   }
 }
 
-export const widgetsAtom = atom<WidgetBaseProps[]>({
-  key: 'widgetsAtom',
-  default: [
-    rowDSL,
-    colDSL,
-    buttonDSL
-  ]
-})
+export const MOCK_WIDGETS = [
+  rowDSL,
+  colDSL,
+  buttonDSL
+]
+
+export const MOCK_ROOT_WIDGET_ID = MOCK_WIDGETS[0].widgetId
+export const MOCK_PAGE_ID = 'MOCK_PAGE_ID'

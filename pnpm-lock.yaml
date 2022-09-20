@@ -24,6 +24,7 @@ importers:
       cz-conventional-changelog: 3.3.0
       esbuild: 0.14.49
       eslint-plugin-react-hooks: ^4.6.0
+      immer: ^9.0.15
       lodash: ^4.17.21
       postcss: ^8.4.16
       react: ^18.2.0
@@ -47,6 +48,7 @@ importers:
       '@recoiljs/refine': 0.1.1
       ahooks: 3.7.0_react@18.2.0
       antd: 4.22.5_biqbaboplfbrettd7655fr4n2y
+      immer: 9.0.15
       lodash: 4.17.21
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -8761,6 +8763,10 @@ packages:
     dependencies:
       queue: 6.0.1
     dev: true
+
+  /immer/9.0.15:
+    resolution: {integrity: sha512-2eB/sswms9AEUSkOm4SbV5Y7Vmt/bKRwByd52jfLkW4OLYeaTP3EEiJ9agqU0O/tq6Dk62Zfj+TJSqfm1rLVGQ==}
+    dev: false
 
   /immutable/4.1.0:
     resolution: {integrity: sha512-oNkuqVTA8jqG1Q6c+UglTOD1xhC1BtjKI7XkCXRkZHrN5m18/XsnUp8Q89GkQO/z+0WjonSvl0FLhDYftp46nQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/immutable/-/immutable-4.1.0.tgz}

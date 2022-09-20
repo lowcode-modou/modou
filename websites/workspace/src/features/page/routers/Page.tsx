@@ -1,11 +1,13 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Button, Col, Divider, Image, Row, Space, Typography } from 'antd'
 import { SelectSetter } from '@modou/setters'
 import { ButtonType } from 'antd/es/button'
 import { useNavigate } from 'react-router-dom'
 import { CanvasDesigner } from '@modou/canvas-designer'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { widgetsAtom } from '../mock'
+import { useRecoilState } from 'recoil'
+import { Metadata } from '@modou/core'
+import produce from 'immer'
+import { MOCK_PAGE_ID, MOCK_ROOT_WIDGET_ID, MOCK_WIDGETS } from '@/features/page/mock'
 
 const testMR = (): void => {
   console.log('永远相信美好的事情即将发生')
@@ -25,20 +27,35 @@ const options: Parameters<typeof SelectSetter>[0]['options']['options'] = [
 
 export const Page: FC = () => {
   const navigator = useNavigate()
-
   const [buttonState, setButtonState] = useState<any>({ type: 'primary' })
+  const [pageById, setPageById] = useRecoilState(Metadata.pageByIdSelector)
 
-  const [widgets, setWidgets] = useRecoilState(widgetsAtom)
+  useEffect(() => {
+    setPageById(produce(draft => {
+      draft[MOCK_PAGE_ID] = {
+        name: 'demo page',
+        id: MOCK_PAGE_ID,
+        widgets: MOCK_WIDGETS,
+        rootWidgetId: MOCK_ROOT_WIDGET_ID
+      }
+    }))
+  }, [setPageById])
+
+  const page = pageById[MOCK_PAGE_ID]
 
   return <Row justify='center' align='middle' className='h-full'>
     <Col span={18} className='border-2 border-solid border-red-500 h-full'>
-      <CanvasDesigner
-        rootWidgetId={widgets[0].widgetId}
-        widgets={widgets}
-        onWidgetsChange={(val) => {
-          // console.log(val)
-          setWidgets(val)
-        }} />
+      {
+        page && <CanvasDesigner
+              rootWidgetId={page.rootWidgetId}
+              widgets={page?.widgets || []}
+              onWidgetsChange={(val) => {
+                // console.log(val)
+                setPageById(produce(draft => {
+                  draft[MOCK_PAGE_ID].widgets = val
+                }))
+              }} />
+      }
     </Col>
     <Col span={6} className='text-center'>
       <Image src='./modou.svg' className='w-36' />
