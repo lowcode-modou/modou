@@ -1,19 +1,20 @@
 import { FC, useContext } from 'react'
-import { useRecoilValue } from 'recoil'
-import { selectedWidgetIdAtom, widgetByIdSelector } from '../store'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { selectedWidgetIdAtom, widgetByIdSelector, widgetsAtom } from '../store'
 import { match } from 'ts-pattern'
 import { buttonWidgetMetadata, colWidgetMetadata, rowWidgetMetadata } from '@modou/widgets'
 import { BooleanSetter, NumberSetter, SelectSetter, SETTER_KEY, StringSetter } from '@modou/setters'
 import { SetterTypeEnum } from '@modou/setters/src/constants'
 import { BaseSetterProps } from '@modou/setters/src/types'
 import { Form } from 'antd'
-import { DesignerContext } from '../contexts'
+// import { DesignerContext } from '../contexts'
 
 const WithSelectedWidgetId: FC = () => {
   const widgetById = useRecoilValue(widgetByIdSelector)
   const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
   const selectWidget = widgetById[selectedWidgetId]
-  const designerContext = useContext(DesignerContext)
+  // const designerContext = useContext(DesignerContext)
+  const setWidgets = useSetRecoilState(widgetsAtom)
 
   const metadata = match<string>(selectWidget.widgetType)
     .with('RowWidget', () => rowWidgetMetadata)
@@ -38,7 +39,7 @@ const WithSelectedWidgetId: FC = () => {
           options={setterOptions}
           value={selectWidget.props[key]}
           onChange={(value: any) => {
-            designerContext.onWidgetsChange.current(Object.values({
+            setWidgets(Object.values({
               ...widgetById,
               [selectedWidgetId]: {
                 ...selectWidget,

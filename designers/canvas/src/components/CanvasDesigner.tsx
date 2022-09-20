@@ -1,13 +1,13 @@
-import { CSSProperties, FC, RefObject, useEffect, useRef, useState } from 'react'
+import { CSSProperties, FC, ReactElement, RefObject, useRef, useState } from 'react'
 import { WidgetBaseProps } from '@modou/core'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
 import { ReactRender } from '@modou/render'
 import { useEventListener } from 'ahooks'
-import { DesignerContext } from '../contexts'
 
-import { selectedWidgetIdAtom, widgetsAtom } from '../store'
+import { selectedWidgetIdAtom, WIDGETS_ATOM_KEY, WIDGETS_ATOM_STORE_KEY } from '../store'
 import { Col, Row } from 'antd'
 import { CanvasDesignerPropsPanel } from './CanvasDesignerPropsPanel'
+import { RecoilSync } from 'recoil-sync'
 
 interface CanvasDesignerProps {
   widgets: WidgetBaseProps[]
@@ -85,16 +85,34 @@ const useHovering = (canvasRef: RefObject<HTMLElement>) => {
   }
 }
 
+const RecoilWidgetsSync: FC<{
+  children: ReactElement
+} & Pick<CanvasDesignerProps, 'widgets' | 'onWidgetsChange'>> = ({
+  children,
+  widgets,
+  onWidgetsChange
+}) => {
+  return <RecoilSync
+    storeKey={WIDGETS_ATOM_STORE_KEY}
+    read={(itemKey) => {
+      if (itemKey === WIDGETS_ATOM_KEY) {
+        return widgets
+      }
+    }}
+    write={({ diff }) => {
+      for (const [key, value] of diff) {
+        if (key === WIDGETS_ATOM_KEY) {
+          onWidgetsChange(value as WidgetBaseProps[])
+        }
+      }
+    }}>{children}</RecoilSync>
+}
+
 export const CanvasDesigner: FC<CanvasDesignerProps> = ({
   widgets,
   onWidgetsChange,
   rootWidgetId
 }) => {
-  const setWidgets = useSetRecoilState(widgetsAtom)
-  useEffect(() => {
-    setWidgets(widgets)
-  }, [setWidgets, widgets])
-
   const [selectedWidgetId, setSelectedWidgetId] = useRecoilState(selectedWidgetIdAtom)
   const canvasRef = useRef<HTMLDivElement>(null)
   useEventListener('click', (event) => {
@@ -104,36 +122,36 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
     target: canvasRef
   })
 
-  const onWidgetsChangeRef = useRef(onWidgetsChange)
-
   const { style: hoveringStyle } = useHovering(canvasRef)
 
-  return <Row className='h-full'>
-    <Col span={16} className='border-green-500 border-solid h-full'>
-      <Row className='h-full'>
-        <Col ref={canvasRef} span={16} className='border-green-500 border-solid h-full relative p-6'>
-          <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
-          <div className='fixed inset-0 pointer-events-none'>
-            <div
-              className='text-yellow-500 border-sky-400 border-dashed absolute'
-              style={hoveringStyle}
-            />
-          </div>
-        </Col>
-        <Col span={8} className='border-green-500 border-solid h-full'>
-          <DesignerContext.Provider value={{
-            onWidgetsChange: onWidgetsChangeRef
-          }}>
+  return <RecoilWidgetsSync widgets={widgets} onWidgetsChange={onWidgetsChange}>
+    <Row className='h-full'>
+      <Col span={16} className='border-green-500 border-solid h-full'>
+        <Row className='h-full'>
+          <Col ref={canvasRef} span={16} className='border-green-500 border-solid h-full relative p-6'>
+            <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
+            <div className='fixed inset-0 pointer-events-none'>
+              <div
+                className='text-yellow-500 border-sky-400 border-dashed absolute'
+                style={hoveringStyle}
+              />
+            </div>
+          </Col>
+          <Col span={8} className='border-green-500 border-solid h-full'>
+            {/* <DesignerContext.Provider value={{ */}
+            {/*  onWidgetsChange: onWidgetsChangeRef */}
+            {/* }}> */}
             <CanvasDesignerPropsPanel />
-          </DesignerContext.Provider>
-        </Col>
-      </Row>
-    </Col>
-    <Col span={8} className='h-full overflow-scroll'>
-      <div className='border-green-500 border-solid'>
-        selectedWidgetId: 【{selectedWidgetId}】
-      </div>
-      {/* <ReactJson src={widgetById} /> */}
-    </Col>
-  </Row>
+            {/* </DesignerContext.Provider> */}
+          </Col>
+        </Row>
+      </Col>
+      <Col span={8} className='h-full overflow-scroll'>
+        <div className='border-green-500 border-solid'>
+          selectedWidgetId: 【{selectedWidgetId}】
+        </div>
+        {/* <ReactJson src={widgetById} /> */}
+      </Col>
+    </Row>
+  </RecoilWidgetsSync>
 }

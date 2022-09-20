@@ -34,6 +34,7 @@
     "@modou/render": "workspace:^1.0.0",
     "@modou/setters": "workspace:^1.0.0",
     "@modou/widgets": "workspace:^1.0.0",
+    "@recoiljs/refine": "^0.1.1",
     "ahooks": "^3.7.0",
     "antd": "^4.22.5",
     "lodash": "^4.17.21",
@@ -42,6 +43,7 @@
     "react-json-view": "^1.21.3",
     "react-router-dom": "^6.3.0",
     "recoil": "^0.7.5",
+    "recoil-sync": "^0.1.1",
     "ts-pattern": "^4.0.5"
   },
   "config": {

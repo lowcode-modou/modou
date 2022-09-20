@@ -11,6 +11,7 @@ importers:
       '@modou/render': workspace:^1.0.0
       '@modou/setters': workspace:^1.0.0
       '@modou/widgets': workspace:^1.0.0
+      '@recoiljs/refine': ^0.1.1
       '@types/lodash': ^4.14.185
       '@types/react': ^18.0.17
       '@types/react-dom': ^18.0.6
@@ -30,6 +31,7 @@ importers:
       react-json-view: ^1.21.3
       react-router-dom: ^6.3.0
       recoil: ^0.7.5
+      recoil-sync: ^0.1.1
       sass: ^1.54.9
       tailwindcss: ^3.1.8
       ts-pattern: ^4.0.5
@@ -42,6 +44,7 @@ importers:
       '@modou/render': link:packages/render
       '@modou/setters': link:packages/setters
       '@modou/widgets': link:packages/widgets
+      '@recoiljs/refine': 0.1.1
       ahooks: 3.7.0_react@18.2.0
       antd: 4.22.5_biqbaboplfbrettd7655fr4n2y
       lodash: 4.17.21
@@ -50,6 +53,7 @@ importers:
       react-json-view: 1.21.3_zxljzmqdrxwnuenbkrz77w74uy
       react-router-dom: 6.3.0_biqbaboplfbrettd7655fr4n2y
       recoil: 0.7.5_biqbaboplfbrettd7655fr4n2y
+      recoil-sync: 0.1.1_recoil@0.7.5
       ts-pattern: 4.0.5
     devDependencies:
       '@modou/eslint-config': link:packages/eslint-config
@@ -2470,6 +2474,10 @@ packages:
       schema-utils: 3.1.1
       source-map: 0.7.4
     dev: true
+
+  /@recoiljs/refine/0.1.1:
+    resolution: {integrity: sha512-ry02rHswJePYkH1o8K99qL4O6TBntF9/g7W5wXVwaOUrIJEZUGfl/I3+btPXbUgyyEZvNs5xcwvOw13AufmFQw==}
+    dev: false
 
   /@rushstack/node-core-library/3.51.1:
     resolution: {integrity: sha512-xLoUztvGpaT5CphDexDPt2WbBx8D68VS5tYOkwfr98p90y0f/wepgXlTA/q5MUeZGGucASiXKp5ysdD+GPYf9A==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/@rushstack/node-core-library/-/node-core-library-3.51.1.tgz}
@@ -13862,6 +13870,16 @@ packages:
     engines: {node: '>= 12.13.0'}
     dev: true
 
+  /recoil-sync/0.1.1_recoil@0.7.5:
+    resolution: {integrity: sha512-+ZVMT4sLIyUFif7EeIlJjOLdiMarF3M0E9uJWQG9vK5yoFLrXzY8qR0fzIH36ofOwpPUmX4fw90YkV29X3Ts+w==}
+    peerDependencies:
+      recoil: '>=0.7.3'
+    dependencies:
+      '@recoiljs/refine': 0.1.1
+      recoil: 0.7.5_biqbaboplfbrettd7655fr4n2y
+      transit-js: 0.8.874
+    dev: false
+
   /recoil/0.7.5_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-GVShsj5+M/2GULWBs5WBJGcsNis/d3YvDiaKjYh3mLKXftjtmk9kfaQ8jwjoIXySCwn8/RhgJ4Sshwgzj2UpFA==}
     peerDependencies:
@@ -15466,6 +15484,11 @@ packages:
     dependencies:
       punycode: 2.1.1
     dev: true
+
+  /transit-js/0.8.874:
+    resolution: {integrity: sha512-IDJJGKRzUbJHmN0P15HBBa05nbKor3r2MmG6aSt0UxXIlJZZKcddTk67/U7WyAeW9Hv/VYI02IqLzolsC4sbPA==}
+    engines: {node: '>= 0.10.0'}
+    dev: false
 
   /traverse/0.6.6:
     resolution: {integrity: sha512-kdf4JKs8lbARxWdp7RKdNzoJBhGUcIalSYibuGyHJbmk40pOysQ0+QPvlkCOICOivDWU2IJo2rkrxyTK2AH4fw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/traverse/-/traverse-0.6.6.tgz}
