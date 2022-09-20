@@ -29,8 +29,12 @@ export const Page: FC = () => {
   const navigator = useNavigate()
   const [buttonState, setButtonState] = useState<any>({ type: 'primary' })
   const [pageById, setPageById] = useRecoilState(Metadata.pageByIdSelector)
+  const page = pageById[MOCK_PAGE_ID]
 
   useEffect(() => {
+    if (page) {
+      return
+    }
     setPageById(produce(draft => {
       draft[MOCK_PAGE_ID] = {
         name: 'demo page',
@@ -39,9 +43,7 @@ export const Page: FC = () => {
         rootWidgetId: MOCK_ROOT_WIDGET_ID
       }
     }))
-  }, [setPageById])
-
-  const page = pageById[MOCK_PAGE_ID]
+  }, [page, setPageById])
 
   return <Row justify='center' align='middle' className='h-full'>
     <Col span={18} className='border-2 border-solid border-red-500 h-full'>

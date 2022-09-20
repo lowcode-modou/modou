@@ -1,4 +1,4 @@
-import { atom, RecoilState, selector } from 'recoil'
+import { atom, DefaultValue, RecoilState, selector } from 'recoil'
 import { generateRecoilKey } from '../utils'
 import { App, Page } from '../types'
 import { keyBy } from 'lodash'
@@ -14,7 +14,24 @@ export const Metadata: {
       id: '',
       name: '',
       pages: []
-    }
+    },
+    effects: [
+      ({ setSelf, onSet }) => {
+        const key = 'metadata'
+        const savedValue = localStorage.getItem(key)
+        if (savedValue != null) {
+          setSelf(JSON.parse(savedValue))
+        }
+
+        onSet(newValue => {
+          if (newValue instanceof DefaultValue) {
+            localStorage.removeItem(key)
+          } else {
+            localStorage.setItem(key, JSON.stringify(newValue))
+          }
+        })
+      }
+    ]
   }),
   pageByIdSelector: selector<Record<string, Page>>({
     key: generateRecoilKey('pagesSelector'),
