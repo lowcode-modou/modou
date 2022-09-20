@@ -167,7 +167,7 @@ export const ButtonWidget: FC<ButtonWidgetState> = ({
       danger={danger}
       disabled={disabled}
       ghost={ghost}
-      href={href}
+      href={href === '' ? undefined : href}
       loading={loading}
       shape={shape}
       size={size}

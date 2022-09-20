@@ -54,9 +54,9 @@ const WithSelectedWidgetId: FC = () => {
     })
 
   return selectedWidgetId
-    ? <div>
+    ? <Form size={'small'}>
       {render}
-    </div>
+    </Form>
     : <div>Empty</div>
 }
 const WithoutSelectedWidgetId: FC = () => {
