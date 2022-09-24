@@ -27,7 +27,7 @@ const options: Parameters<typeof SelectSetter>[0]['options']['options'] = [
 
 export const Page: FC = () => {
   const navigator = useNavigate()
-  const [buttonState, setButtonState] = useState<any>({ type: 'primary' })
+  // const [buttonState, setButtonState] = useState<any>({ type: 'primary' })
   const [pageById, setPageById] = useRecoilState(Metadata.pageByIdSelector)
   const page = pageById[MOCK_PAGE_ID]
 
@@ -77,13 +77,13 @@ export const Page: FC = () => {
         }}>NAVIGATE TO RUNTIME</Button>
         <Button block type={'primary'} onClick={() => navigator('/apps')}>跳转到 APPS 页面</Button>
       </Space>
-      <Divider />
+      {/* <Divider /> */}
       {/* <ButtonWidget title={'按钮 - ButtonWidget'} {...buttonState} /> */}
-      <Divider />
-      <SelectSetter<ButtonType>
-        value={buttonState.type}
-        onChange={(type: any) => setButtonState({ type })}
-        options={{ options }} />
+      {/* <Divider /> */}
+      {/* <SelectSetter<ButtonType> */}
+      {/*  value={buttonState.type} */}
+      {/*  onChange={(type: any) => setButtonState({ type })} */}
+      {/*  options={{ options }} /> */}
     </Col>
   </Row>
 }

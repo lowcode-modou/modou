@@ -1,2 +1,2 @@
-export * from './components'
+export { CanvasDesigner } from './components'
 export * from './utils'
