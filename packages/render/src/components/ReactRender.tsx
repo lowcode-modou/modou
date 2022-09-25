@@ -1,31 +1,22 @@
-import {
-  RowWidget,
-  ColWidget,
-  ButtonWidget
-} from '@modou/widgets'
-import { FC, FunctionComponent, memo, useEffect, useMemo, useState } from 'react'
-import { match } from 'ts-pattern'
-import { WidgetBaseProps } from '@modou/core'
+import { FC, memo, useContext, useEffect, useMemo } from 'react'
+import { WidgetBaseProps, WidgetFactoryContext } from '@modou/core'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { widgetsAtom, widgetSelector } from '../store'
 import { Spin } from 'antd'
 
-const ErrorWidget: FC = () => {
-  return <div>Error</div>
-}
+// const ErrorWidget: FC = () => {
+//   return <div>Error</div>
+// }
 
 const WidgetWrapper: FC<{
   widgetId: string
 }> = ({ widgetId }) => {
   const widget = useRecoilValue(widgetSelector(widgetId))
+  const widgetFactory = useContext(WidgetFactoryContext)
   // TODO any 替换 state 定义
   const Widget = useMemo(() => {
-    return match<string, FunctionComponent<any>>(widget.widgetType)
-      .with('RowWidget', () => RowWidget)
-      .with('ColWidget', () => ColWidget)
-      .with('ButtonWidget', () => ButtonWidget)
-      .otherwise(() => ErrorWidget)
-  }, [widget.widgetType])
+    return widgetFactory.widgetByType[widget.widgetType].element
+  }, [widget.widgetType, widgetFactory.widgetByType])
 
   const renderSlots = useMemo(() => {
     return Object.entries((widget.slots || {})).map(([key, widgetIds]) => {
@@ -71,5 +62,7 @@ export const ReactRender: FC<MoDouRenderProps> = ({
     setWidgets(widgets)
   }, [setWidgets, widgets])
   const rootWidget = useRecoilValue(widgetSelector(rootWidgetId))
-  return rootWidget ? <MemoWidgetWrapper widgetId={rootWidgetId} /> : <Spin size={'large'} />
+  return rootWidget
+    ? <MemoWidgetWrapper widgetId={rootWidgetId} />
+    : <Spin size={'large'} />
 }

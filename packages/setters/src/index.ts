@@ -1,3 +1,3 @@
 export * from './components'
 
-export { SETTER_KEY } from './constants'
+export { SETTER_KEY, SetterTypeEnum } from './constants'

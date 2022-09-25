@@ -1,13 +1,11 @@
-import { FC, useContext } from 'react'
+import { FC, useContext, useMemo } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { selectedWidgetIdAtom, widgetByIdSelector, widgetsAtom } from '../store'
-import { match } from 'ts-pattern'
-import { buttonWidgetMetadata, colWidgetMetadata, rowWidgetMetadata } from '@modou/widgets'
-import { BooleanSetter, NumberSetter, SelectSetter, SETTER_KEY, StringSetter } from '@modou/setters'
+import { SETTER_KEY } from '@modou/setters'
 import { SetterTypeEnum } from '@modou/setters/src/constants'
-import { BaseSetterProps } from '@modou/setters/src/types'
-import { Form } from 'antd'
-// import { DesignerContext } from '../contexts'
+import { BaseMRSetterOptions } from '@modou/setters/src/types'
+import { Form, Typography } from 'antd'
+import { WidgetFactoryContext } from '@modou/core'
 
 const WithSelectedWidgetId: FC = () => {
   const widgetById = useRecoilValue(widgetByIdSelector)
@@ -16,46 +14,48 @@ const WithSelectedWidgetId: FC = () => {
   // const designerContext = useContext(DesignerContext)
   const setWidgets = useSetRecoilState(widgetsAtom)
 
-  const metadata = match<string>(selectWidget.widgetType)
-    .with('RowWidget', () => rowWidgetMetadata)
-    .with('ColWidget', () => colWidgetMetadata)
-    .with('ButtonWidget', () => buttonWidgetMetadata)
-    .run()
+  const widgetFactory = useContext(WidgetFactoryContext)
+
+  const widgetMetadata = useMemo(() => {
+    return widgetFactory.widgetByType[selectWidget.widgetType].metadata
+  }, [widgetFactory.widgetByType, selectWidget.widgetType])
 
   const render = Object.entries(
-    (metadata.jsonPropsSchema.properties.props as typeof metadata.jsonPropsSchema).properties
+    (widgetMetadata.jsonPropsSchema.properties.props as unknown as typeof widgetMetadata.jsonPropsSchema).properties
   )
     .filter(([, value]) => Reflect.has(value, SETTER_KEY))
     .map(([key, value]) => {
-      const setterOptions = Reflect.get(value, SETTER_KEY)
-      const Setter: FC<BaseSetterProps<any>> = match(setterOptions.type)
-        .with(SetterTypeEnum.Number, () => NumberSetter)
-        .with(SetterTypeEnum.Boolean, () => BooleanSetter)
-        .with(SetterTypeEnum.Select, () => SelectSetter)
-        .with(SetterTypeEnum.String, () => StringSetter)
-        .exhaustive()
-      return <Form.Item key={key} label={key}>
-        <Setter
-          options={setterOptions}
-          value={selectWidget.props[key]}
-          onChange={(value: any) => {
-            setWidgets(Object.values({
-              ...widgetById,
-              [selectedWidgetId]: {
-                ...selectWidget,
-                props: {
-                  ...selectWidget.props,
-                  [key]: value
-                }
+      const setterOptions: BaseMRSetterOptions & { type: SetterTypeEnum } = Reflect.get(value, SETTER_KEY)
+      const Setter = widgetFactory.setterByType[setterOptions.type]
+      return <Form.Item
+      tooltip={setterOptions.description}
+      key={key}
+      label={setterOptions.label}>
+      <Setter
+        options={setterOptions}
+        value={selectWidget.props[key]}
+        onChange={(value: any) => {
+          setWidgets(Object.values({
+            ...widgetById,
+            [selectedWidgetId]: {
+              ...selectWidget,
+              props: {
+                ...selectWidget.props,
+                [key]: value
               }
-            }))
-          }}
-        />
-      </Form.Item>
+            }
+          }))
+        }}
+      />
+    </Form.Item>
     })
 
   return selectedWidgetId
     ? <Form size={'small'}>
+      <div className='text-center'>
+        <Typography.Text
+          type={'success'}>{selectedWidgetId}</Typography.Text>
+      </div>
       {render}
     </Form>
     : <div>Empty</div>

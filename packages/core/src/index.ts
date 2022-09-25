@@ -1,2 +1,5 @@
 export * from './widget'
 export * from './store'
+export * from './widget-factory'
+export * from './types'
+export * from './contexts'

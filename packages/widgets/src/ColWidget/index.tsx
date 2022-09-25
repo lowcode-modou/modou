@@ -4,15 +4,19 @@ import { Widget } from '@modou/core'
 import { FC, ReactNode, useEffect } from 'react'
 import { Col } from 'antd'
 
-const MRSchemeColWidgetProps = Widget.createMRSchemeWidgetProps<'children'>({
+const MRSchemeColWidgetProps = Widget.createMRSchemeWidgetProps({
   widgetType: 'ColWidget',
-  widgetName: '栅格列',
-  props: {
-    span: mrNumberSetter(mr.number().describe('栅格占位格数，为 0 时相当于 display: none').default(12))
-  },
-  slots: {
+  widgetName: '栅格列'
+}).extend({
+  props: mr.object({
+    span: mr.number().default(12)._extra(mrNumberSetter({
+      label: '占位数',
+      description: '栅格占位格数，为 0 时相当于 display: none'
+    }))
+  }),
+  slots: mr.object({
     children: mr.array(mr.string()).default([])
-  }
+  })
 })
 
 const MRSchemeColWidgetState = MRSchemeColWidgetProps.shape.props.extend({
@@ -23,6 +27,7 @@ const MRSchemeColWidgetState = MRSchemeColWidgetProps.shape.props.extend({
   widgetName: MRSchemeColWidgetProps.shape.widgetName
 })
 
+// TODO 自动提取 renderSlots
 type ColWidgetState = mr.infer<typeof MRSchemeColWidgetState> & {
   renderSlots: Record<keyof mr.infer<typeof MRSchemeColWidgetProps.shape.slots>, ReactNode>
 }

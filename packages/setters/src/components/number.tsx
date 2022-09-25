@@ -1,14 +1,15 @@
-import { BaseSetterProps, MRInstanceSetterType } from '../types'
+import { BaseMRSetterOptions, BaseSetterProps, MRSetter } from '../types'
 import { SETTER_KEY, SetterTypeEnum } from '../constants'
 import { FC } from 'react'
 import { InputNumber } from 'antd'
 
-export const mrNumberSetter = (mrInstance: MRInstanceSetterType<{}>) => {
-  return mrInstance._extra({
+export const mrNumberSetter: MRSetter<BaseMRSetterOptions> = (options) => {
+  return {
     [SETTER_KEY]: {
-      type: SetterTypeEnum.Number
+      type: SetterTypeEnum.Number,
+      ...options
     }
-  })
+  }
 }
 
 type Props = BaseSetterProps<number>

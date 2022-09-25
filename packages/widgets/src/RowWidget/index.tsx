@@ -62,28 +62,34 @@ const JustifyOptions: MRSelectOptions = [
   }
 ]
 
-const MRSchemeRowWidgetProps = Widget.createMRSchemeWidgetProps<'children'>({
+const MRSchemeRowWidgetProps = Widget.createMRSchemeWidgetProps({
   widgetType: 'RowWidget',
-  widgetName: '栅格行',
-  props: {
-    align: mrSelectSetter(
-      mr.nativeEnum(RowWidgetAlignEnum).describe('垂直对齐方式').default(RowWidgetAlignEnum.Top),
+  widgetName: '栅格行'
+}).extend({
+  props: mr.object({
+    align: mr.nativeEnum(RowWidgetAlignEnum).default(RowWidgetAlignEnum.Top)._extra(mrSelectSetter(
       {
+        label: '垂直对齐',
+        description: '垂直对齐方式',
         options: AlignOptions
       }
-    ),
+    )),
     // gutter: mr.tuple([mr.number(), mr.number()]).or(mr.number()),
-    justify: mrSelectSetter(
-      mr.nativeEnum(RowWidgetJustifyEnum).describe('水平排列方式').default(RowWidgetJustifyEnum.Start),
+    justify: mr.nativeEnum(RowWidgetJustifyEnum).default(RowWidgetJustifyEnum.Start)._extra(mrSelectSetter(
       {
+        label: '水平排列',
+        description: '水平排列方式',
         options: JustifyOptions
       }
-    ),
-    wrap: mrBooleanSetter(mr.boolean().describe('是否自动换行').default(true))
-  },
-  slots: {
+    )),
+    wrap: mr.boolean().default(true)._extra(mrBooleanSetter({
+      label: '自动换行',
+      description: '是否自动换行'
+    }))
+  }),
+  slots: mr.object({
     children: mr.array(mr.string()).default([])
-  }
+  })
 })
 
 const MRSchemeRowWidgetState = MRSchemeRowWidgetProps.shape.props.extend({

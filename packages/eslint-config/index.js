@@ -30,6 +30,7 @@ module.exports = {
       "warn", {
         "additionalHooks": "useRecoilCallback"
       }
-    ] // 检查 effect 的依赖
+    ], // 检查 effect 的依赖
+    // 'indent': ['error', 2, { 'MemberExpression': 0 }],
   }
 }
