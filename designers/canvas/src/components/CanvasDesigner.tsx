@@ -1,13 +1,14 @@
 import { FC, useRef } from 'react'
-import { WidgetBaseProps, WidgetFactory } from '@modou/core'
-import { RecoilRoot, useRecoilState } from 'recoil'
+import { WidgetBaseProps } from '@modou/core'
+import { RecoilRoot } from 'recoil'
 import { Col, Row } from 'antd'
 import { CanvasDesignerPropsPanel } from './CanvasDesignerPropsPanel'
 import { RecoilWidgetsSync } from './RecoilWidgetsSync'
 import { CanvasDesignerWidgets } from './CanvasDesignerWidgets'
-import { DndContext } from '@dnd-kit/core'
 import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
 import { DesignerIndicator } from './DesignerIndicator'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 interface CanvasDesignerProps {
   widgets: WidgetBaseProps[]
@@ -26,7 +27,7 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
 
   return <RecoilRoot>
     <RecoilWidgetsSync widgets={widgets} onWidgetsChange={onWidgetsChange}>
-      <DndContext>
+      <DndProvider backend={HTML5Backend}>
         <Row className='h-full'>
           <Col span={24} className='border-green-500 border-solid h-full'>
             <Row className='h-full'>
@@ -48,7 +49,7 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
             </Row>
           </Col>
         </Row>
-      </DndContext>
+      </DndProvider>
     </RecoilWidgetsSync>
   </RecoilRoot>
 }

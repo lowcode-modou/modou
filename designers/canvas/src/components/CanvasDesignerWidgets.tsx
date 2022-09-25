@@ -1,32 +1,37 @@
-import { CSSProperties, FC, useContext, useMemo } from 'react'
-import { Widget, WidgetFactoryContext } from '@modou/core'
+import { FC, useContext, useMemo } from 'react'
+import { Widget, WidgetBaseProps, WidgetFactoryContext } from '@modou/core'
 import { Col, Row } from 'antd'
-import { useDraggable } from '@dnd-kit/core'
+import { useDrag } from 'react-dnd'
 import { generateId } from '@modou/core/src/utils'
 
 const WidgetBlock: FC<{
   metadata: Widget
 }> = ({ metadata }) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: metadata.widgetType,
-    data: {
+  const widgetFactory = useContext(WidgetFactoryContext)
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: metadata.widgetType,
+    item: () => ({
       widget: {
-        ...Widget.mrSchemeToDefaultJson(metadata.jsonPropsSchema),
+        ...Widget.mrSchemeToDefaultJson(widgetFactory.widgetByType[metadata.widgetType].metadata.jsonPropsSchema),
         widgetId: generateId()
       }
-    }
-  })
-  const style: CSSProperties | undefined = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        zIndex: '999'
+    }),
+    end: (item, monitor) => {
+      const dropResult = monitor.getDropResult<WidgetBaseProps>()
+      if (item && dropResult) {
+        // console.log(item, dropResult)
       }
-    : undefined
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+      handlerId: monitor.getHandlerId()
+    })
+  }))
+
+  const opacity = isDragging ? 0.4 : 1
   return <Col
-    ref={setNodeRef}
-    style={style}
-    {...listeners}
-    {...attributes}
+    ref={drag}
+    style={{ opacity }}
     span={12}>
     <div
       className='border-1 border-solid text-center cursor-move select-none'
@@ -39,9 +44,6 @@ export const CanvasDesignerWidgets: FC = () => {
   const widgets = useMemo(() => {
     return Object.values(widgetFactory.widgetByType)
   }, [widgetFactory.widgetByType])
-  // TODO 拖动后保留位置
-  // https://master--5fc05e08a4a65d0021ae0bf2.chromatic.com/
-  // ?path=/docs/core-draggable-components-dragoverlay--basic-setup
   return <>
     <Row
       gutter={[16, 16]}>
@@ -51,8 +53,5 @@ export const CanvasDesignerWidgets: FC = () => {
         })
       }
     </Row>
-    {/* <DragOverlay > */}
-    {/*  Demo */}
-    {/* </DragOverlay> */}
   </>
 }
