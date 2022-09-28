@@ -104,11 +104,18 @@ type RowWidgetState = mr.infer<typeof MRSchemeRowWidgetState> & {
   renderSlots: Record<keyof mr.infer<typeof MRSchemeRowWidgetProps.shape.slots>, ReactNode>
 }
 
-export const rowWidgetMetadata = Widget.createMetadata({
+enum SlotEnum {
+  Children = 'children'
+}
+
+export const rowWidgetMetadata = Widget.createMetadata<SlotEnum>({
   version: '0.0.1',
   widgetType: 'RowWidget',
   widgetName: '栅格行',
-  mrPropsScheme: MRSchemeRowWidgetProps
+  mrPropsScheme: MRSchemeRowWidgetProps,
+  slots: {
+    children: {}
+  }
 })
 
 export const RowWidget: FC<RowWidgetState> = ({
@@ -126,5 +133,5 @@ export const RowWidget: FC<RowWidgetState> = ({
     align={align}
     justify={justify}
     wrap={wrap}
-  >{renderSlots.children}</Row>
+  >RowWidget{renderSlots.children}</Row>
 }

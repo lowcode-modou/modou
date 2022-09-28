@@ -1,0 +1,11 @@
+.ant-form {
+	$a: &;
+
+	&-small {
+		#{$a}-item-control {
+			&-input-content{
+				display: flex;
+			}
+		}
+	}
+}

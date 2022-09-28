@@ -161,7 +161,8 @@ export const buttonWidgetMetadata = Widget.createMetadata({
   version: '0.0.1',
   widgetType: 'ButtonWidget',
   widgetName: '按钮',
-  mrPropsScheme: MRSchemeButtonWidgetProps
+  mrPropsScheme: MRSchemeButtonWidgetProps,
+  slots: {}
 })
 
 console.log('buttonWidgetMetadata', buttonWidgetMetadata)

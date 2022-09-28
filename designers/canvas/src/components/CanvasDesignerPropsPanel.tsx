@@ -1,15 +1,16 @@
 import { FC, useContext, useMemo } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { selectedWidgetIdAtom, widgetByIdSelector, widgetsAtom } from '../store'
 import { SETTER_KEY } from '@modou/setters'
 import { SetterTypeEnum } from '@modou/setters/src/constants'
 import { BaseMRSetterOptions } from '@modou/setters/src/types'
-import { Form, Typography } from 'antd'
+import { Button, Form, Typography } from 'antd'
 import { WidgetFactoryContext } from '@modou/core'
+import { useRemoveWidget } from '../hooks'
 
 const WithSelectedWidgetId: FC = () => {
   const widgetById = useRecoilValue(widgetByIdSelector)
-  const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
+  const [selectedWidgetId, setSelectedWidgetId] = useRecoilState(selectedWidgetIdAtom)
   const selectWidget = widgetById[selectedWidgetId]
   // const designerContext = useContext(DesignerContext)
   const setWidgets = useSetRecoilState(widgetsAtom)
@@ -19,6 +20,8 @@ const WithSelectedWidgetId: FC = () => {
   const widgetMetadata = useMemo(() => {
     return widgetFactory.widgetByType[selectWidget.widgetType].metadata
   }, [widgetFactory.widgetByType, selectWidget.widgetType])
+
+  const { removeWidget } = useRemoveWidget()
 
   const render = Object.entries(
     (widgetMetadata.jsonPropsSchema.properties.props as unknown as typeof widgetMetadata.jsonPropsSchema).properties
@@ -57,6 +60,16 @@ const WithSelectedWidgetId: FC = () => {
           type={'success'}>{selectedWidgetId}</Typography.Text>
       </div>
       {render}
+      <Form.Item>
+        <Button
+          block
+          danger
+          onClick={() => {
+            removeWidget(selectedWidgetId)
+            setSelectedWidgetId('')
+          }}
+        >删除</Button>
+      </Form.Item>
     </Form>
     : <div>Empty</div>
 }

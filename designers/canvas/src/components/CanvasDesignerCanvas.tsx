@@ -13,29 +13,22 @@ interface CanvasDesignerCanvasProps {
 
 export const CanvasDesignerCanvas: FC<CanvasDesignerCanvasProps> = ({ rootWidgetId }) => {
   const widgets = useRecoilValue(widgetsAtom)
-  const widgetById = useRecoilValue(widgetByIdSelector)
 
-  const [drops, setDrops] = useState<Array<{
-    widget: WidgetBaseProps
-    element: HTMLElement
-  }>>([])
+  const [dropWidgetIds, setDropWidgetIds] = useState<string[]>([])
 
   // TODO target 切换为 canvas root element
   useMutationObserver(() => {
     const elements = [...document.querySelectorAll('[data-widget-id]')] as HTMLElement[]
-    setDrops(elements.map(element => ({
-      element,
-      widget: widgetById[getWidgetIdFromElement(element)]
-    })))
+    setDropWidgetIds(elements.map(element => getWidgetIdFromElement(element)).filter((widget) => !!widget))
   }, document.body, {
     childList: true,
     subtree: true
   })
 
   return <div
-    id="asdasdasdasd"
+    id='asdasdasdasd'
     className='border-1 border-red-500 border-solid h-full'>
     <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
-    <WidgetDropHack drops={drops} />
+    <WidgetDropHack dropWidgetIds={dropWidgetIds} />
   </div>
 }

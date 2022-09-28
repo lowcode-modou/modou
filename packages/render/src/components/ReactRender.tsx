@@ -22,7 +22,7 @@ const WidgetWrapper: FC<{
     return Object.entries((widget.slots || {})).map(([key, widgetIds]) => {
       return {
         key,
-        elements: widgetIds.map(widgetId => <WidgetWrapper key={key} widgetId={widgetId} />)
+        elements: widgetIds.map(widgetId => <WidgetWrapper key={widgetId} widgetId={widgetId} />)
       }
     }).reduce<Record<string, Element[]>>((pre, { key, elements }) => {
       // FIXME 不知道为什么类型不对😂

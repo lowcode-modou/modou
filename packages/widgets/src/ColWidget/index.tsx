@@ -32,10 +32,17 @@ type ColWidgetState = mr.infer<typeof MRSchemeColWidgetState> & {
   renderSlots: Record<keyof mr.infer<typeof MRSchemeColWidgetProps.shape.slots>, ReactNode>
 }
 
-export const colWidgetMetadata = Widget.createMetadata({
+enum SlotEnum {
+  Children = 'children'
+}
+
+export const colWidgetMetadata = Widget.createMetadata<SlotEnum>({
   version: '0.0.1',
   widgetType: 'ColWidget',
-  widgetName: '栅格行',
+  widgetName: '栅格列',
+  slots: {
+    children: {}
+  },
   mrPropsScheme: MRSchemeColWidgetProps
 })
 
@@ -50,5 +57,5 @@ export const ColWidget: FC<ColWidgetState> = ({
   return <Col
     data-widget-id={instance.widgetId}
     span={span}
-  >{renderSlots.children}</Col>
+  >ColWidget{renderSlots.children}</Col>
 }

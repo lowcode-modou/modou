@@ -1,33 +1,39 @@
 import {
   JsonSchema7ObjectType,
   mr,
-  MRArray, MRDefault, MRObject,
-  MRRawShape,
-  MRScheme, MRString,
-  mrToJsonSchema, MRTypeAny,
+  MRScheme,
+  mrToJsonSchema,
   schemeToJsonDefault
 } from '@modou/refine'
 import { WidgetBaseProps } from './types'
 
-interface BaseWidgetMetadata {
+type WidgetType = `${string}Widget`
+type Slots<S extends string> = Record<S, {
+  accept?: WidgetType[]
+}>
+
+interface BaseWidgetMetadata<S extends string> {
   version: `${number}.${number}.${number}`
-  widgetType: `${string}Widget`
+  widgetType: WidgetType
   widgetName: string
+  slots: Slots<S>
   mrPropsScheme: MRScheme
 }
 
-export class Widget implements BaseWidgetMetadata {
+export class Widget<S extends string = ''> implements BaseWidgetMetadata<S> {
   constructor ({
     version,
     widgetType,
     widgetName,
-    mrPropsScheme
-  }: BaseWidgetMetadata) {
+    mrPropsScheme,
+    slots
+  }: BaseWidgetMetadata<S>) {
     this.version = version
     this.widgetType = widgetType
     this.widgetName = widgetName
     this.mrPropsScheme = mrPropsScheme
     this.jsonPropsSchema = mrToJsonSchema(mrPropsScheme) as unknown as JsonSchema7ObjectType
+    this.slots = slots
   }
 
   version
@@ -35,8 +41,9 @@ export class Widget implements BaseWidgetMetadata {
   widgetName
   mrPropsScheme
   jsonPropsSchema: JsonSchema7ObjectType
+  slots: Slots<S>
 
-  static createMetadata (metadata: BaseWidgetMetadata) {
+  static createMetadata<S extends string = ''> (metadata: BaseWidgetMetadata<S>) {
     return new Widget(metadata)
   }
 
