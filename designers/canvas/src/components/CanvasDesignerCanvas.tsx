@@ -1,10 +1,9 @@
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { ReactRender } from '@modou/render'
 import { useRecoilValue } from 'recoil'
 import { widgetByIdSelector, widgetsAtom } from '../store'
 import { useMutationObserver } from 'ahooks'
 import { WidgetDropHack } from './WidgetDropHack'
-import { WidgetBaseProps } from '@modou/core'
 import { getWidgetIdFromElement } from '../utils'
 
 interface CanvasDesignerCanvasProps {
@@ -13,6 +12,7 @@ interface CanvasDesignerCanvasProps {
 
 export const CanvasDesignerCanvas: FC<CanvasDesignerCanvasProps> = ({ rootWidgetId }) => {
   const widgets = useRecoilValue(widgetsAtom)
+  const widgetById = useRecoilValue(widgetByIdSelector)
 
   const [dropWidgetIds, setDropWidgetIds] = useState<string[]>([])
 
@@ -25,10 +25,14 @@ export const CanvasDesignerCanvas: FC<CanvasDesignerCanvasProps> = ({ rootWidget
     subtree: true
   })
 
+  const dropWidgetIdsRendered = useMemo(() => {
+    return dropWidgetIds.filter(widgetId => Reflect.has(widgetById, widgetId))
+  }, [dropWidgetIds, widgetById])
+
   return <div
     id='asdasdasdasd'
     className='border-1 border-red-500 border-solid h-full'>
     <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
-    <WidgetDropHack dropWidgetIds={dropWidgetIds} />
+    <WidgetDropHack dropWidgetIds={dropWidgetIdsRendered} />
   </div>
 }

@@ -57,5 +57,5 @@ export const ColWidget: FC<ColWidgetState> = ({
   return <Col
     data-widget-id={instance.widgetId}
     span={span}
-  >ColWidget{renderSlots.children}</Col>
+  >{renderSlots.children}</Col>
 }

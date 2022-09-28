@@ -133,5 +133,5 @@ export const RowWidget: FC<RowWidgetState> = ({
     align={align}
     justify={justify}
     wrap={wrap}
-  >RowWidget{renderSlots.children}</Row>
+  >{renderSlots.children}</Row>
 }
