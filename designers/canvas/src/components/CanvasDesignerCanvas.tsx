@@ -30,8 +30,7 @@ export const CanvasDesignerCanvas: FC<CanvasDesignerCanvasProps> = ({ rootWidget
   }, [dropWidgetIds, widgetById])
 
   return <div
-    id='asdasdasdasd'
-    className='border-1 border-red-500 border-solid h-full'>
+    className='border-1 border-red-500 border-solid h-full relative'>
     <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
     <WidgetDropHack dropWidgetIds={dropWidgetIdsRendered} />
   </div>

@@ -56,7 +56,7 @@ export class WidgetFactory {
   static create (
     params: {
       // TODO 增加 package 信息  增加umd引入
-      widgets: Array<[FC<any>, Widget]>
+      widgets: Array<[FC<any>, Widget<string>]>
       setters: Record<string, SetterElement>
     }
   ) {

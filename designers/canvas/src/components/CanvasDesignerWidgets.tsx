@@ -28,12 +28,13 @@ const WidgetBlock: FC<{
     })
   }))
 
-  const opacity = isDragging ? 0.4 : 1
+  const opacity = isDragging ? 0.3 : 1
   return <Col
-    ref={drag}
+    className="bg-white"
     style={{ opacity }}
     span={12}>
     <div
+      ref={drag}
       className='border-1 border-solid text-center cursor-move select-none'
     >{metadata.widgetName}</div>
   </Col>
@@ -44,7 +45,7 @@ export const CanvasDesignerWidgets: FC = () => {
   const widgets = useMemo(() => {
     return Object.values(widgetFactory.widgetByType)
   }, [widgetFactory.widgetByType])
-  return <>
+  return <div className="p-3">
     <Row
       gutter={[16, 16]}>
       {
@@ -53,5 +54,5 @@ export const CanvasDesignerWidgets: FC = () => {
         })
       }
     </Row>
-  </>
+  </div>
 }

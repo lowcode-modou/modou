@@ -138,6 +138,8 @@ export const useWidgetDrop = (widgetId: string) => {
   return {
     style,
     showIndicator: isEmptyChildren,
-    widget
+    widget,
+    element,
+    isActive
   }
 }
