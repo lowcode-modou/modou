@@ -3,6 +3,7 @@ import { mrNumberSetter } from '@modou/setters'
 import { Widget } from '@modou/core'
 import { FC, ReactNode, useEffect } from 'react'
 import { Col } from 'antd'
+import { DEFAULT_WIDGET_SLOT_NAME } from '@modou/core/src/constants'
 
 const MRSchemeColWidgetProps = Widget.createMRSchemeWidgetProps({
   widgetType: 'ColWidget',
@@ -56,6 +57,7 @@ export const ColWidget: FC<ColWidgetState> = ({
   })
   return <Col
     data-widget-id={instance.widgetId}
+    data-widget-slot-name={DEFAULT_WIDGET_SLOT_NAME}
     span={span}
   >{renderSlots.children}</Col>
 }

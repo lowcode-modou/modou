@@ -1,11 +1,13 @@
 import { useDrop } from 'react-dnd'
 import { WidgetBaseProps, WidgetFactoryContext } from '@modou/core'
-import { head, isEmpty, isObject } from 'lodash'
-import { CSSProperties, useContext, useEffect, useRef, useState } from 'react'
+import { isArray, isEmpty } from 'lodash'
+import { useContext, useEffect, useRef } from 'react'
 import { useRecoilValue } from 'recoil'
 import { widgetSelector } from '@modou/render/src/store'
 import { useAddWidget } from './useAddWidget'
 import { useElementRect } from './useElementRect'
+
+const EMPTY_WIDGET_MIN_HEIGHT = '36px'
 
 const useWidgetBgColor = ({
   isActive,
@@ -59,12 +61,13 @@ const useWidgetMinHeight = ({
     }
     // TODO add slot name
     if (canSetMinHeight) {
-      element.style.minHeight = '36px'
+      element.style.minHeight = EMPTY_WIDGET_MIN_HEIGHT
     } else {
       element.style.minHeight = elementMinHeight.current.value ?? 'auto'
     }
   }, [element, element.innerHTML, canSetMinHeight])
 }
+
 const DEFAULT_DEPS: any[] = []
 const useWidgetPosition = (
   element: HTMLElement,
@@ -76,7 +79,7 @@ const useWidgetPosition = (
   return { style }
 }
 
-export const useWidgetDrop = (widgetId: string) => {
+export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotName: string }) => {
   const widgetFactory = useContext(WidgetFactoryContext)
   const widget = useRecoilValue(widgetSelector(widgetId))
   const { addWidget } = useAddWidget()
@@ -98,12 +101,12 @@ export const useWidgetDrop = (widgetId: string) => {
       }
       const widgetMetadata = widgetFactory.widgetByType[widget.widgetType]
 
-      if (!isEmpty(widgetMetadata.metadata.slots)) {
+      if (Reflect.has(widgetMetadata.metadata.slots, slotName) && isArray(widget.slots?.[slotName])) {
         addWidget({
           sourceWidget: item.widget,
           targetWidgetId: widget.widgetId,
-          targetSlotName: head(Object.keys(widget.slots)),
-          targetPosition: widget.slots.children.length
+          targetSlotName: slotName,
+          targetPosition: widget.slots[slotName].length
         })
       }
       return { widget }
@@ -114,14 +117,13 @@ export const useWidgetDrop = (widgetId: string) => {
       isOverCurrent: monitor.isOver({ shallow: true })
     })
   }))
-  const element = document.querySelector(`[data-widget-id=${widgetId}]`) as HTMLElement
+  // FIXME element 有可能会重复
+  const elementSelector = `[data-widget-id=${widgetId}]${slotName ? `[data-widget-slot-name=${slotName}]` : ''}`
+  const element = document.querySelector(elementSelector) as HTMLElement
   drop(element)
   const isActive = canDrop && isOverCurrent
 
-  // TODO 替换动态的 slot name
-  const isEmptyChildren = isObject(widget.slots) &&
-    !isEmpty(Object.keys(widget.slots)) &&
-    isEmpty(widget.slots.children)
+  const isEmptyChildren = !!slotName && isEmpty(widget.slots[slotName])
 
   useWidgetBgColor({
     isActive,

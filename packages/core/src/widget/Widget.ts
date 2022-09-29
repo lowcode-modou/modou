@@ -20,7 +20,7 @@ interface BaseWidgetMetadata<S extends string> {
   mrPropsScheme: MRScheme
 }
 
-export class Widget<S extends string = ''> implements BaseWidgetMetadata<S> {
+export class Widget<S extends string = string> implements BaseWidgetMetadata<S> {
   constructor ({
     version,
     widgetType,

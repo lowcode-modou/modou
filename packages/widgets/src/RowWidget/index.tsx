@@ -4,6 +4,7 @@ import { mrBooleanSetter, mrSelectSetter } from '@modou/setters'
 import { Widget } from '@modou/core'
 import { FC, ReactNode, useEffect } from 'react'
 import { Row } from 'antd'
+import { DEFAULT_WIDGET_SLOT_NAME } from '@modou/core/src/constants'
 
 enum RowWidgetAlignEnum {
   Top = 'top',
@@ -130,6 +131,7 @@ export const RowWidget: FC<RowWidgetState> = ({
   })
   return <Row
     data-widget-id={instance.widgetId}
+    data-widget-slot-name={DEFAULT_WIDGET_SLOT_NAME}
     align={align}
     justify={justify}
     wrap={wrap}

@@ -57,6 +57,7 @@ export const ReactRender: FC<MoDouRenderProps> = ({
   widgets,
   rootWidgetId
 }) => {
+  // TODO 使用 recoil-async
   const setWidgets = useSetRecoilState(widgetsAtom)
   useEffect(() => {
     setWidgets(widgets)

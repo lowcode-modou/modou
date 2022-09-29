@@ -1,17 +1,21 @@
 import { CSSProperties, FC, memo } from 'react'
 import { Col, Row, Typography } from 'antd'
 import { useWidgetDrop } from '../hooks'
+import { isEqual } from 'lodash'
 
-const WidgetDrop: FC<{
+interface DropElement {
   widgetId: string
-}> = ({ widgetId }) => {
+  slotName: string
+}
+
+const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
   const {
     style,
     showIndicator,
     widget,
     element,
     isActive
-  } = useWidgetDrop(widgetId)
+  } = useWidgetDrop({ widgetId, slotName })
 
   const isBlockWidget = element.offsetWidth === element.parentElement?.clientWidth
 
@@ -54,11 +58,16 @@ const WidgetDrop: FC<{
 
 const MemoWidgetDrop = memo(WidgetDrop)
 
-export const WidgetDropHack: FC<{
-  dropWidgetIds: string[]
-}> = ({ dropWidgetIds }) => {
+interface WidgetDropHackProps {
+  dropElements: DropElement[]
+}
+
+const _WidgetDropHack: FC<WidgetDropHackProps> = ({ dropElements }) => {
   // TODO use Memo 优化性能
   return <>{
-    dropWidgetIds.map((widgetId) => <MemoWidgetDrop key={widgetId} widgetId={widgetId} />)
+    dropElements.map(({ widgetId, slotName }) =>
+      <MemoWidgetDrop key={widgetId} widgetId={widgetId} slotName={slotName} />)
   }</>
 }
+
+export const WidgetDropHack = memo(_WidgetDropHack, isEqual)

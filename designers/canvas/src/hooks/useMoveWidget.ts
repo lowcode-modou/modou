@@ -9,12 +9,12 @@ export const useMoveWidget = () => {
   const moveWidget = useCallback(({
     sourceWidgetId,
     targetPosition,
-    targetSlotName = 'children',
+    targetSlotName,
     targetWidgetId
   }: {
     sourceWidgetId: string
     targetWidgetId: string
-    targetSlotName?: string
+    targetSlotName: string
     targetPosition: number
   }) => {
     setWidgets(produce(draft => {

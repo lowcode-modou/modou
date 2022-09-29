@@ -7,6 +7,9 @@ export const generateRecoilKey = (key: string): string => {
 export const getWidgetIdFromElement = (element: HTMLElement): string => {
   return element?.dataset?.widgetId ?? ''
 }
+export const getWidgetSlotNameFromElement = (element: HTMLElement): string => {
+  return element?.dataset?.widgetSlotName ?? ''
+}
 
 export const getRawElement = (target: HTMLElement | null, root: HTMLElement | null): HTMLElement | null => {
   if (!target || target === root) {

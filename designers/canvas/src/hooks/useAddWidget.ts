@@ -10,12 +10,12 @@ export const useAddWidget = () => {
     sourceWidget,
     targetWidgetId,
     targetPosition,
-    targetSlotName = 'children'
+    targetSlotName
   }: {
     sourceWidget: WidgetBaseProps
     targetWidgetId: string
     targetPosition: number
-    targetSlotName?: string
+    targetSlotName: string
   }) => {
     setWidgets(produce(draft => {
       const targetWidget = draft.find(widget => widget.widgetId === targetWidgetId)
