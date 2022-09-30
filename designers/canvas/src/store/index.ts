@@ -6,6 +6,7 @@ import { generateRecoilKey } from '../utils'
 import { keyBy } from 'lodash'
 import { syncEffect } from 'recoil-sync'
 import { custom } from '@recoiljs/refine'
+export * from './dnd'
 
 export const WIDGETS_ATOM_KEY = generateRecoilKey('widgetsAtom')
 export const WIDGETS_ATOM_STORE_KEY = `${WIDGETS_ATOM_KEY}_STORE_KEY`

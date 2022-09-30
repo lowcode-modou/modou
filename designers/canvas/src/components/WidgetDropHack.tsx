@@ -1,7 +1,9 @@
-import { CSSProperties, FC, memo } from 'react'
+import { CSSProperties, FC, memo, useMemo } from 'react'
 import { Col, Row, Typography } from 'antd'
 import { useWidgetDrop } from '../hooks'
 import { isEqual } from 'lodash'
+import { useRecoilValue } from 'recoil'
+import { dropIndicatorAtom, DropIndicatorPositionEnum } from '../store'
 
 interface DropElement {
   widgetId: string
@@ -11,26 +13,42 @@ interface DropElement {
 const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
   const {
     style,
-    showIndicator,
+    isEmptySlot,
     widget,
     element,
     isActive
   } = useWidgetDrop({ widgetId, slotName })
+  const dropIndicator = useRecoilValue(dropIndicatorAtom)
 
   const isBlockWidget = element.offsetWidth === element.parentElement?.clientWidth
 
   // const dropIndicatorPosition = isBlockWidget ? 'left' : 'bottom'
 
-  const dropIndicatorStyle: CSSProperties = isBlockWidget
-    ? {
-        borderBottom: 'solid'
-      }
-    : {
-        borderRightStyle: 'solid'
-      }
+  const dropIndicatorStyle: CSSProperties = useMemo(() => {
+    if (!dropIndicator.show) {
+      return {}
+    }
+    // TODO use dropIndicatorAtom 获取
+    if (isBlockWidget) {
+      return dropIndicator.position === DropIndicatorPositionEnum.Before
+        ? {
+            borderTopStyle: 'solid'
+          }
+        : {
+            borderBottomStyle: 'solid'
+          }
+    }
+    return dropIndicator.position === DropIndicatorPositionEnum.Before
+      ? {
+          borderLeftStyle: 'solid'
+        }
+      : {
+          borderRightStyle: 'solid'
+        }
+  }, [dropIndicator.position, dropIndicator.show, isBlockWidget])
 
   return <>{
-    showIndicator
+    isEmptySlot
       ? <Row
         justify='center'
         align='middle'

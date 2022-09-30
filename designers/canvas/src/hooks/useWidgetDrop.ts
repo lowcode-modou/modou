@@ -2,18 +2,23 @@ import { useDrop } from 'react-dnd'
 import { WidgetBaseProps, WidgetFactoryContext } from '@modou/core'
 import { isArray, isEmpty } from 'lodash'
 import { useContext, useEffect, useRef } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { widgetSelector } from '@modou/render/src/store'
 import { useAddWidget } from './useAddWidget'
 import { useElementRect } from './useElementRect'
+import { dropIndicatorAtom, DropIndicatorPositionEnum } from '../store'
+import { match } from 'ts-pattern'
 
 const EMPTY_WIDGET_MIN_HEIGHT = '36px'
+const DROP_CONTAINER_LIMIT = 6
 
 const useWidgetBgColor = ({
   isActive,
-  element
+  element,
+  isContainer
 }: {
   isActive: boolean
+  isContainer: boolean
   element: HTMLElement
 }) => {
   const elementBgColor = useRef<{
@@ -24,6 +29,9 @@ const useWidgetBgColor = ({
     value: ''
   })
   useEffect(() => {
+    if (!isContainer) {
+      return
+    }
     if (!elementBgColor.current.initialized) {
       elementBgColor.current = {
         value: getComputedStyle(element).backgroundColor,
@@ -35,7 +43,7 @@ const useWidgetBgColor = ({
     } else {
       element.style.backgroundColor = elementBgColor.current.value
     }
-  }, [element, element.style, isActive])
+  }, [element, element.style, isActive, isContainer])
 }
 
 const useWidgetMinHeight = ({
@@ -83,6 +91,12 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
   const widgetFactory = useContext(WidgetFactoryContext)
   const widget = useRecoilValue(widgetSelector(widgetId))
   const { addWidget } = useAddWidget()
+  // FIXME element 有可能会重复
+  const elementSelector = `[data-widget-id=${widgetId}]${slotName ? `[data-widget-slot-name=${slotName}]` : ''}`
+  const element = document.querySelector(elementSelector) as HTMLElement
+  const isEmptySlot = !!slotName && isEmpty(widget.slots[slotName])
+  const setDropIndicator = useSetRecoilState(dropIndicatorAtom)
+
   // // // TODO 查看 react-dnd 为什么能自动推断参数类型
   const [{ canDrop, isOverCurrent }, drop] = useDrop<{
     widget: WidgetBaseProps
@@ -111,26 +125,69 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
       }
       return { widget }
     },
+    hover: (item, monitor) => {
+      const didHover = monitor.isOver({ shallow: true })
+      if (!didHover) {
+        return
+      }
+      const dropElementRect = element.getClientRects()[0]
+      const clientOffset = monitor.getClientOffset() ?? { x: 0, y: 0 }
+      const relativeOffset = {
+        x: clientOffset.x - dropElementRect.x,
+        y: clientOffset.y - dropElementRect.y
+      }
+      const isBlockWidget = element.offsetWidth === element.parentElement?.clientWidth
+
+      const dropIndicator = match<boolean, {
+        position: DropIndicatorPositionEnum
+        show: boolean
+      }>(isBlockWidget)
+        .with(true, () => {
+          // TODO 根据左右上下边界分别结算 show
+          const show = slotName ? relativeOffset.y <= DROP_CONTAINER_LIMIT : true
+          if (relativeOffset.y * 2 > dropElementRect.height) {
+            return {
+              position: DropIndicatorPositionEnum.After,
+              show
+            }
+          }
+          return {
+            position: DropIndicatorPositionEnum.Before,
+            show
+          }
+        })
+        .with(false, () => {
+          const show = slotName ? relativeOffset.x - dropElementRect.x <= DROP_CONTAINER_LIMIT : true
+          if (relativeOffset.x * 2 > dropElementRect.width) {
+            return {
+              position: DropIndicatorPositionEnum.After,
+              show
+            }
+          }
+          return {
+            position: DropIndicatorPositionEnum.Before,
+            show
+          }
+        }).exhaustive()
+      setDropIndicator(dropIndicator)
+    },
     collect: (monitor) => ({
       canDrop: monitor.canDrop(),
       isOver: monitor.isOver(),
       isOverCurrent: monitor.isOver({ shallow: true })
     })
   }))
-  // FIXME element 有可能会重复
-  const elementSelector = `[data-widget-id=${widgetId}]${slotName ? `[data-widget-slot-name=${slotName}]` : ''}`
-  const element = document.querySelector(elementSelector) as HTMLElement
   drop(element)
-  const isActive = canDrop && isOverCurrent
 
-  const isEmptyChildren = !!slotName && isEmpty(widget.slots[slotName])
+  const isActive = canDrop && isOverCurrent
 
   useWidgetBgColor({
     isActive,
-    element
+    element,
+    isContainer: !!slotName
   })
   useWidgetMinHeight({
-    canSetMinHeight: isEmptyChildren,
+    canSetMinHeight: isEmptySlot,
     element
   })
 
@@ -139,7 +196,7 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
   })
   return {
     style,
-    showIndicator: isEmptyChildren,
+    isEmptySlot,
     widget,
     element,
     isActive
