@@ -22,7 +22,7 @@ export const useMoveWidget = () => {
         if (isObject(widget.slots)) {
           Object.keys(widget.slots).forEach(slotName => {
             const index = widget.slots[slotName]
-              .findIndex(slotWidgetId => slotWidgetId !== sourceWidgetId)
+              .findIndex(slotWidgetId => slotWidgetId === sourceWidgetId)
             if (index !== -1) {
               widget.slots[slotName].splice(index, 1)
             }

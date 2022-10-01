@@ -32,9 +32,11 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
               <Col span={4} className='border-green-500 border-solid h-full'>
                 <CanvasDesignerWidgets />
               </Col>
-              <Col ref={canvasRef} span={16}
+              <Col span={16}
                    className='border-green-500 border-solid h-full relative p-6'>
-                <CanvasDesignerCanvas rootWidgetId={rootWidgetId}/>
+                <div ref={canvasRef}>
+                  <CanvasDesignerCanvas rootWidgetId={rootWidgetId}/>
+                </div>
                 <DesignerIndicator canvasRef={canvasRef} />
               </Col>
               <Col span={4} className='border-green-500 border-solid h-full'>

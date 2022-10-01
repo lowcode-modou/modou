@@ -3,6 +3,7 @@ import { Widget, WidgetBaseProps, WidgetFactoryContext } from '@modou/core'
 import { Col, Row } from 'antd'
 import { useDrag } from 'react-dnd'
 import { generateId } from '@modou/core/src/utils'
+import { WidgetDragType } from '../types'
 
 const WidgetBlock: FC<{
   metadata: Widget
@@ -11,6 +12,7 @@ const WidgetBlock: FC<{
   const [{ isDragging }, drag] = useDrag(() => ({
     type: metadata.widgetType,
     item: () => ({
+      type: WidgetDragType.Add,
       widget: {
         ...Widget.mrSchemeToDefaultJson(widgetFactory.widgetByType[metadata.widgetType].metadata.jsonPropsSchema),
         widgetId: generateId()
@@ -25,7 +27,10 @@ const WidgetBlock: FC<{
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
       handlerId: monitor.getHandlerId()
-    })
+    }),
+    options: {
+      dropEffect: 'copy'
+    }
   }))
 
   const opacity = isDragging ? 0.3 : 1

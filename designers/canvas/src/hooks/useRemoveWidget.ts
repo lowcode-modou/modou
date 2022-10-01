@@ -7,7 +7,7 @@ import { WidgetBaseProps } from '@modou/core'
 
 export const useRemoveWidget = () => {
   const setWidgets = useSetRecoilState(widgetsAtom)
-  const removeWidget = useCallback((widgetId: string) => {
+  const removeWidget = useCallback((widgetId: string, deleteRaw: boolean = true) => {
     setWidgets(produce(draft => {
       draft
         .forEach(widget => {

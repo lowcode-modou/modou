@@ -3,13 +3,12 @@ import { useWidgetSelected } from '../../../hooks/useWidgetSelected'
 import { useRecoilValue } from 'recoil'
 import { selectedWidgetIdAtom, widgetsAtom } from '../../../store'
 import { getElementFromWidgetId } from '../../../utils'
+import { SelectedToolBox } from './SelectedToolBox'
+import { useDrag } from 'react-dnd'
+import { WidgetDragType } from '../../../types'
+import { widgetSelector } from '@modou/render/src/store'
 
-interface SelectedIndicatorProps {
-  canvasRef: RefObject<HTMLElement>
-}
-
-export const SelectedIndicator: FC<SelectedIndicatorProps> = ({ canvasRef }) => {
-  useWidgetSelected(canvasRef)
+const SelectIndicatorContent: FC = () => {
   const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
   const [selectedElementRect, setSelectedElementRect] = useState<{
     x: number
@@ -62,10 +61,51 @@ export const SelectedIndicator: FC<SelectedIndicatorProps> = ({ canvasRef }) => 
     top: `${selectedElementRect.y ?? 0}px`,
     display: display ? 'block' : 'none'
   }
-  return selectedWidgetId
-    ? <div
+
+  const widget = useRecoilValue(widgetSelector(selectedWidgetId))
+  // TODO 使用element
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
+    type: widget.widgetType,
+    item: () => {
+      return {
+        type: WidgetDragType.Move,
+        widget
+      }
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging()
+    }),
+    options: {
+      dropEffect: 'copy'
+    }
+  }), [widget])
+  const opacity = isDragging ? '0.4' : '1'
+
+  useEffect(() => {
+    const element = getElementFromWidgetId(selectedWidgetId)
+    if (element) {
+      element.style.opacity = opacity
+      preview(element)
+    }
+  }, [opacity, preview, selectedWidgetId])
+
+  return <div
+    ref={drag}
     className='border-sky-400 border-dashed absolute'
     style={style}
-  />
+  >
+    <SelectedToolBox/>
+  </div>
+}
+
+interface SelectedIndicatorProps {
+  canvasRef: RefObject<HTMLElement>
+}
+
+export const SelectedIndicator: FC<SelectedIndicatorProps> = ({ canvasRef }) => {
+  useWidgetSelected(canvasRef)
+  const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
+  return selectedWidgetId
+    ? <SelectIndicatorContent/>
     : null
 }
