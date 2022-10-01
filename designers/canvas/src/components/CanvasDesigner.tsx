@@ -16,8 +16,6 @@ interface CanvasDesignerProps {
   rootWidgetId: string
 }
 
-// TODO 增加指示器 hover select drop drag
-
 export const CanvasDesigner: FC<CanvasDesignerProps> = ({
   widgets,
   onWidgetsChange,

@@ -7,13 +7,23 @@ export enum DropIndicatorPositionEnum {
   Bottom,
   Left
 }
-export const dropIndicatorAtom = atom<{
+export enum DropIndicatorInsertPositionEnum {
+  Before,
+  After,
+  Inner
+}
+
+export interface DropIndicator {
   position: DropIndicatorPositionEnum
+  insertPosition: DropIndicatorInsertPositionEnum
   show: boolean
-}>({
+}
+
+export const dropIndicatorAtom = atom<DropIndicator>({
   key: generateRecoilKey('dropIndicatorAtom'),
   default: {
     position: DropIndicatorPositionEnum.Left,
+    insertPosition: DropIndicatorInsertPositionEnum.Inner,
     show: false
   }
 })

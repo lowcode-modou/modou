@@ -3,7 +3,7 @@ import { ReactRender } from '@modou/render'
 import { useRecoilValue } from 'recoil'
 import { widgetByIdSelector, widgetsAtom } from '../store'
 import { useMutationObserver } from 'ahooks'
-import { WidgetDropHack } from './WidgetDropHack'
+import { WidgetDropWrapper } from './WidgetDropWrapper'
 import { getWidgetIdFromElement, getWidgetSlotNameFromElement } from '../utils'
 
 interface CanvasDesignerCanvasProps {
@@ -38,6 +38,6 @@ export const CanvasDesignerCanvas: FC<CanvasDesignerCanvasProps> = ({ rootWidget
   return <div
     className='border-1 border-red-500 border-solid h-full relative'>
     <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
-    <WidgetDropHack dropElements={dropElementsRendered} />
+    <WidgetDropWrapper dropElements={dropElementsRendered} />
   </div>
 }

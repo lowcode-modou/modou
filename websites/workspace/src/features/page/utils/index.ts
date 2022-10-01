@@ -5,7 +5,9 @@ import {
   ColWidget,
   colWidgetMetadata,
   RowWidget,
-  rowWidgetMetadata
+  rowWidgetMetadata,
+  InputWidget,
+  inputWidgetMetadata
 } from '@modou/widgets'
 
 import {
@@ -20,7 +22,8 @@ export const widgetFactory = WidgetFactory.create({
   widgets: [
     [ButtonWidget, buttonWidgetMetadata],
     [ColWidget, colWidgetMetadata],
-    [RowWidget, rowWidgetMetadata]
+    [RowWidget, rowWidgetMetadata],
+    [InputWidget, inputWidgetMetadata]
   ],
   setters: {
     [SetterTypeEnum.Select]: SelectSetter,

@@ -68,7 +68,7 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
       ? <Row
         justify='center'
         align='middle'
-        className='border-dashed border-1 border-gray-300 fixed pointer-events-none'
+        className={'border-dashed border-1 fixed pointer-events-none'}
         style={style}>
         <Col>
           <Typography.Text type={'secondary'} strong>{widget.widgetType}</Typography.Text>
@@ -102,4 +102,4 @@ const _WidgetDropHack: FC<WidgetDropHackProps> = ({ dropElements }) => {
   }</>
 }
 
-export const WidgetDropHack = memo(_WidgetDropHack, isEqual)
+export const WidgetDropWrapper = memo(_WidgetDropHack, isEqual)

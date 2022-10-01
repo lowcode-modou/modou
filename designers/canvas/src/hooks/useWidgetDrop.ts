@@ -2,15 +2,16 @@ import { useDrop } from 'react-dnd'
 import { WidgetBaseProps, WidgetFactoryContext } from '@modou/core'
 import { isArray, isEmpty } from 'lodash'
 import { useContext, useEffect, useRef } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
 import { widgetSelector } from '@modou/render/src/store'
 import { useAddWidget } from './useAddWidget'
 import { useElementRect } from './useElementRect'
-import { dropIndicatorAtom, DropIndicatorPositionEnum } from '../store'
+import { DropIndicator, dropIndicatorAtom, DropIndicatorInsertPositionEnum, DropIndicatorPositionEnum } from '../store'
 import { match } from 'ts-pattern'
 
 const EMPTY_WIDGET_MIN_HEIGHT = '36px'
 const DROP_CONTAINER_LIMIT = 6
+const DROP_ELEMENT_ACTIVE_BG_COLOR = 'rgba(0,0,0,.3)'
 
 const useWidgetBgColor = ({
   isActive,
@@ -21,6 +22,8 @@ const useWidgetBgColor = ({
   isContainer: boolean
   element: HTMLElement
 }) => {
+  const dropIndicator = useRecoilValue(dropIndicatorAtom)
+
   const elementBgColor = useRef<{
     initialized: boolean
     value: string
@@ -38,12 +41,12 @@ const useWidgetBgColor = ({
         initialized: true
       }
     }
-    if (isActive) {
-      element.style.backgroundColor = 'rgba(0,0,0,.3)'
+    if (isActive && !dropIndicator.show) {
+      element.style.backgroundColor = DROP_ELEMENT_ACTIVE_BG_COLOR
     } else {
       element.style.backgroundColor = elementBgColor.current.value
     }
-  }, [element, element.style, isActive, isContainer])
+  }, [dropIndicator.show, element, element.style, isActive, isContainer])
 }
 
 const useWidgetMinHeight = ({
@@ -97,6 +100,10 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
   const isEmptySlot = !!slotName && isEmpty(widget.slots[slotName])
   const setDropIndicator = useSetRecoilState(dropIndicatorAtom)
 
+  const getDropIndicator = useRecoilCallback<readonly unknown[], DropIndicator>(({ snapshot }) => () => {
+    return snapshot.getLoadable(dropIndicatorAtom).contents
+  }, [])
+
   // // // TODO 查看 react-dnd 为什么能自动推断参数类型
   const [{ canDrop, isOverCurrent }, drop] = useDrop<{
     widget: WidgetBaseProps
@@ -113,15 +120,24 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
       if (didDrop) {
         return
       }
-      const widgetMetadata = widgetFactory.widgetByType[widget.widgetType]
+      // const widgetMetadata = widgetFactory.widgetByType[widget.widgetType]
 
-      if (Reflect.has(widgetMetadata.metadata.slots, slotName) && isArray(widget.slots?.[slotName])) {
-        addWidget({
-          sourceWidget: item.widget,
-          targetWidgetId: widget.widgetId,
-          targetSlotName: slotName,
-          targetPosition: widget.slots[slotName].length
-        })
+      const dropIndicator = getDropIndicator()
+
+      switch (dropIndicator.insertPosition) {
+        case DropIndicatorInsertPositionEnum.Before:
+          break
+        case DropIndicatorInsertPositionEnum.After:
+          break
+        case DropIndicatorInsertPositionEnum.Inner:
+          addWidget({
+            sourceWidget: item.widget,
+            targetWidgetId: widget.widgetId,
+            targetSlotName: slotName,
+            targetPosition: widget.slots[slotName].length
+          })
+          break
+        default:
       }
       return { widget }
     },
@@ -138,40 +154,49 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
       }
       const isBlockWidget = element.offsetWidth === element.parentElement?.clientWidth
 
-      const dropIndicator = match<boolean, {
-        position: DropIndicatorPositionEnum
-        show: boolean
-      }>(isBlockWidget)
-        .with(true, () => {
-          const show = slotName
-            ? (relativeOffset.y <= DROP_CONTAINER_LIMIT) ||
-            ((dropElementRect.height - relativeOffset.y) < DROP_CONTAINER_LIMIT)
-            : true
-          if (relativeOffset.y * 2 > dropElementRect.height) {
-            return {
-              position: DropIndicatorPositionEnum.Bottom,
-              show
+      const inVerticalLimit = (relativeOffset.y <= DROP_CONTAINER_LIMIT) ||
+        ((dropElementRect.height - relativeOffset.y) < DROP_CONTAINER_LIMIT)
+
+      const inHorizontalLimit = (relativeOffset.x <= DROP_CONTAINER_LIMIT) ||
+        ((dropElementRect.width - relativeOffset.x) < DROP_CONTAINER_LIMIT)
+
+      const show = slotName
+        ? inVerticalLimit || inHorizontalLimit
+        : true
+
+      const dropPosition: DropIndicatorInsertPositionEnum =
+        (relativeOffset.y * 2 > dropElementRect.height) || (relativeOffset.x * 2 > dropElementRect.width)
+          ? DropIndicatorInsertPositionEnum.After
+          : DropIndicatorInsertPositionEnum.Before
+
+      const insertPosition: DropIndicatorInsertPositionEnum =
+        match<boolean, DropIndicatorInsertPositionEnum>(!!slotName)
+          .with(true, () => {
+            if (inHorizontalLimit || inVerticalLimit) {
+              return dropPosition
             }
-          }
+            return DropIndicatorInsertPositionEnum.Inner
+          })
+          .with(false, () => dropPosition)
+          .exhaustive()
+
+      const dropIndicator = match<boolean, DropIndicator>(isBlockWidget)
+        .with(true, () => {
           return {
-            position: DropIndicatorPositionEnum.Top,
-            show
+            position: insertPosition === DropIndicatorInsertPositionEnum.Before
+              ? DropIndicatorPositionEnum.Top
+              : DropIndicatorPositionEnum.Bottom,
+            show,
+            insertPosition
           }
         })
         .with(false, () => {
-          const show = slotName
-            ? (relativeOffset.x <= DROP_CONTAINER_LIMIT) ||
-            ((dropElementRect.width - relativeOffset.x) < DROP_CONTAINER_LIMIT)
-            : true
-          if (relativeOffset.x * 2 > dropElementRect.width) {
-            return {
-              position: DropIndicatorPositionEnum.Right,
-              show
-            }
-          }
           return {
-            position: DropIndicatorPositionEnum.Left,
-            show
+            position: insertPosition === DropIndicatorInsertPositionEnum.Before
+              ? DropIndicatorPositionEnum.Left
+              : DropIndicatorPositionEnum.Right,
+            show,
+            insertPosition
           }
         }).exhaustive()
       setDropIndicator(dropIndicator)
