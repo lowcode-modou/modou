@@ -143,29 +143,34 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
         show: boolean
       }>(isBlockWidget)
         .with(true, () => {
-          // TODO 根据左右上下边界分别结算 show
-          const show = slotName ? relativeOffset.y <= DROP_CONTAINER_LIMIT : true
+          const show = slotName
+            ? (relativeOffset.y <= DROP_CONTAINER_LIMIT) ||
+            ((dropElementRect.height - relativeOffset.y) < DROP_CONTAINER_LIMIT)
+            : true
           if (relativeOffset.y * 2 > dropElementRect.height) {
             return {
-              position: DropIndicatorPositionEnum.After,
+              position: DropIndicatorPositionEnum.Bottom,
               show
             }
           }
           return {
-            position: DropIndicatorPositionEnum.Before,
+            position: DropIndicatorPositionEnum.Top,
             show
           }
         })
         .with(false, () => {
-          const show = slotName ? relativeOffset.x - dropElementRect.x <= DROP_CONTAINER_LIMIT : true
+          const show = slotName
+            ? (relativeOffset.x <= DROP_CONTAINER_LIMIT) ||
+            ((dropElementRect.width - relativeOffset.x) < DROP_CONTAINER_LIMIT)
+            : true
           if (relativeOffset.x * 2 > dropElementRect.width) {
             return {
-              position: DropIndicatorPositionEnum.After,
+              position: DropIndicatorPositionEnum.Right,
               show
             }
           }
           return {
-            position: DropIndicatorPositionEnum.Before,
+            position: DropIndicatorPositionEnum.Left,
             show
           }
         }).exhaustive()

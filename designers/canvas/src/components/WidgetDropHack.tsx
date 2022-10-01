@@ -5,6 +5,9 @@ import { isEqual } from 'lodash'
 import { useRecoilValue } from 'recoil'
 import { dropIndicatorAtom, DropIndicatorPositionEnum } from '../store'
 
+const DROP_INDICATOR_PX = '3px'
+const DROP_INDICATOR_OFFSET_PX = '-2px'
+
 interface DropElement {
   widgetId: string
   slotName: string
@@ -15,12 +18,9 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
     style,
     isEmptySlot,
     widget,
-    element,
     isActive
   } = useWidgetDrop({ widgetId, slotName })
   const dropIndicator = useRecoilValue(dropIndicatorAtom)
-
-  const isBlockWidget = element.offsetWidth === element.parentElement?.clientWidth
 
   // const dropIndicatorPosition = isBlockWidget ? 'left' : 'bottom'
 
@@ -28,24 +28,40 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
     if (!dropIndicator.show) {
       return {}
     }
-    // TODO use dropIndicatorAtom 获取
-    if (isBlockWidget) {
-      return dropIndicator.position === DropIndicatorPositionEnum.Before
-        ? {
-            borderTopStyle: 'solid'
-          }
-        : {
-            borderBottomStyle: 'solid'
-          }
+
+    switch (dropIndicator.position) {
+      case DropIndicatorPositionEnum.Top:
+        return {
+          width: '100%',
+          height: DROP_INDICATOR_PX,
+          top: DROP_INDICATOR_OFFSET_PX,
+          left: 0
+        }
+      case DropIndicatorPositionEnum.Right:
+        return {
+          width: DROP_INDICATOR_PX,
+          height: '100%',
+          top: 0,
+          right: DROP_INDICATOR_OFFSET_PX
+        }
+      case DropIndicatorPositionEnum.Bottom:
+        return {
+          width: '100%',
+          height: DROP_INDICATOR_PX,
+          bottom: DROP_INDICATOR_OFFSET_PX,
+          left: 0
+        }
+      case DropIndicatorPositionEnum.Left:
+        return {
+          width: DROP_INDICATOR_PX,
+          height: '100%',
+          top: 0,
+          left: DROP_INDICATOR_OFFSET_PX
+        }
+      default:
+        return {}
     }
-    return dropIndicator.position === DropIndicatorPositionEnum.Before
-      ? {
-          borderLeftStyle: 'solid'
-        }
-      : {
-          borderRightStyle: 'solid'
-        }
-  }, [dropIndicator.position, dropIndicator.show, isBlockWidget])
+  }, [dropIndicator.position, dropIndicator.show])
 
   return <>{
     isEmptySlot
@@ -65,9 +81,7 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
         ? <Row
           className='pointer-events-none fixed'
           style={{ ...style, zIndex: 999 }}>
-          <div className='absolute !border-red-500 inset-0'
-               style={{ ...dropIndicatorStyle, borderWidth: '3px' }}
-          />
+          <div className={'absolute bg-red-500'} style={dropIndicatorStyle} />
         </Row>
         : null
     }
