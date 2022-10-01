@@ -46,9 +46,14 @@ export const InputWidget: FC<InputWidgetState> = ({
   useEffect(() => {
     console.log('我是Input 我重新渲染了')
   })
-  return <Form.Item label={label}>
+  useEffect(() => {
+    const hackElement = document.querySelector(`[data-hack-widget-id=${instance.widgetId}]`)
+    hackElement?.parentElement?.setAttribute('data-widget-id', instance.widgetId)
+  }, [instance.widgetId])
+  return <Form.Item
+    data-hack-widget-id={instance.widgetId}
+    label={label}>
     <Input
-      data-widget-id={instance.widgetId}
       defaultValue={defaultValue}
     />
   </Form.Item>

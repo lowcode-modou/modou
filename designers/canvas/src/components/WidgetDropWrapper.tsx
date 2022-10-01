@@ -1,9 +1,8 @@
-import { CSSProperties, FC, memo, useMemo } from 'react'
+import { CSSProperties, FC, memo, useEffect, useMemo, useState } from 'react'
 import { Col, Row, Typography } from 'antd'
-import { useWidgetDrop } from '../hooks'
-import { isEqual } from 'lodash'
+import { useElementRect, useWidgetDrop } from '../hooks'
 import { useRecoilValue } from 'recoil'
-import { dropIndicatorAtom, DropIndicatorPositionEnum } from '../store'
+import { dropIndicatorAtom, DropIndicatorPositionEnum, widgetsAtom } from '../store'
 
 const DROP_INDICATOR_PX = '3px'
 const DROP_INDICATOR_OFFSET_PX = '-2px'
@@ -14,15 +13,25 @@ interface DropElement {
 }
 
 const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
+  const widgets = useRecoilValue(widgetsAtom)
   const {
-    style,
     isEmptySlot,
     widget,
-    isActive
+    isActive,
+    element
   } = useWidgetDrop({ widgetId, slotName })
   const dropIndicator = useRecoilValue(dropIndicatorAtom)
 
-  // const dropIndicatorPosition = isBlockWidget ? 'left' : 'bottom'
+  const [styleUpdater, setStyleUpdater] = useState(0)
+  const { style } = useElementRect(element, {
+    deps: [styleUpdater]
+  })
+
+  useEffect(() => {
+    void Promise.resolve().then(() => {
+      setStyleUpdater(prevState => prevState + 1)
+    })
+  }, [widgets])
 
   const dropIndicatorStyle: CSSProperties = useMemo(() => {
     if (!dropIndicator.show) {
@@ -90,11 +99,11 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
 
 const MemoWidgetDrop = memo(WidgetDrop)
 
-interface WidgetDropHackProps {
+interface WidgetDropWrapperProps {
   dropElements: DropElement[]
 }
 
-const _WidgetDropHack: FC<WidgetDropHackProps> = ({ dropElements }) => {
+const _WidgetDropWrapper: FC<WidgetDropWrapperProps> = ({ dropElements }) => {
   // TODO use Memo 优化性能
   return <>{
     dropElements.map(({ widgetId, slotName }) =>
@@ -102,4 +111,5 @@ const _WidgetDropHack: FC<WidgetDropHackProps> = ({ dropElements }) => {
   }</>
 }
 
-export const WidgetDropWrapper = memo(_WidgetDropHack, isEqual)
+// export const WidgetDropWrapper = memo(_WidgetDropWrapper, isEqual)
+export const WidgetDropWrapper = _WidgetDropWrapper

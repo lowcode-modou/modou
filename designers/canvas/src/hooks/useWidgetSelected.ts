@@ -1,5 +1,5 @@
 import { CSSProperties, RefObject, useState } from 'react'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 import { selectedWidgetIdAtom } from '../store'
 import { useEventListener } from 'ahooks'
 import { getRawElement, getWidgetIdFromElement } from '../utils'
@@ -20,6 +20,7 @@ export const useWidgetSelected = (canvasRef: RefObject<HTMLElement>) => {
   })
   const [display, setDisplay] = useState(false)
 
+  // TODO 由 select id 驱动 style
   useEventListener('click', (event) => {
     const rawElement = getRawElement(event.target as unknown as HTMLElement, canvasRef.current)
     if (rawElement) {

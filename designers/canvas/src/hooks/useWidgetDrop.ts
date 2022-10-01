@@ -1,12 +1,18 @@
 import { useDrop } from 'react-dnd'
 import { WidgetBaseProps, WidgetFactoryContext } from '@modou/core'
-import { isArray, isEmpty } from 'lodash'
+import { isEmpty } from 'lodash'
 import { useContext, useEffect, useRef } from 'react'
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
 import { widgetSelector } from '@modou/render/src/store'
 import { useAddWidget } from './useAddWidget'
 import { useElementRect } from './useElementRect'
-import { DropIndicator, dropIndicatorAtom, DropIndicatorInsertPositionEnum, DropIndicatorPositionEnum } from '../store'
+import {
+  DropIndicator,
+  dropIndicatorAtom,
+  DropIndicatorInsertPositionEnum,
+  DropIndicatorPositionEnum,
+  WidgetRelationByWidgetId, widgetRelationByWidgetIdSelector
+} from '../store'
 import { match } from 'ts-pattern'
 
 const EMPTY_WIDGET_MIN_HEIGHT = '36px'
@@ -79,16 +85,16 @@ const useWidgetMinHeight = ({
   }, [element, element.innerHTML, canSetMinHeight])
 }
 
-const DEFAULT_DEPS: any[] = []
-const useWidgetPosition = (
-  element: HTMLElement,
-  options: {
-    deps?: any[]
-  } = { deps: DEFAULT_DEPS }
-) => {
-  const { style } = useElementRect(element, options)
-  return { style }
-}
+// const DEFAULT_DEPS: any[] = []
+// const useWidgetPosition = (
+//   element: HTMLElement,
+//   options: {
+//     deps?: any[]
+//   } = { deps: DEFAULT_DEPS }
+// ) => {
+//   const { style } = useElementRect(element, options)
+//   return { style }
+// }
 
 export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotName: string }) => {
   const widgetFactory = useContext(WidgetFactoryContext)
@@ -103,6 +109,10 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
   const getDropIndicator = useRecoilCallback<readonly unknown[], DropIndicator>(({ snapshot }) => () => {
     return snapshot.getLoadable(dropIndicatorAtom).contents
   }, [])
+  const getWidgetRelationByWidgetId = useRecoilCallback<readonly unknown[], WidgetRelationByWidgetId>(({ snapshot }) =>
+    () => {
+      return snapshot.getLoadable(widgetRelationByWidgetIdSelector).contents
+    }, [])
 
   // // // TODO 查看 react-dnd 为什么能自动推断参数类型
   const [{ canDrop, isOverCurrent }, drop] = useDrop<{
@@ -123,11 +133,30 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
       // const widgetMetadata = widgetFactory.widgetByType[widget.widgetType]
 
       const dropIndicator = getDropIndicator()
+      const widgetRelationByWidgetId = getWidgetRelationByWidgetId()
+
+      const { parent, slotName: parentSlotName } = widgetRelationByWidgetId[widget.widgetId]
 
       switch (dropIndicator.insertPosition) {
         case DropIndicatorInsertPositionEnum.Before:
+          if (parent && parentSlotName) {
+            addWidget({
+              sourceWidget: item.widget,
+              targetWidgetId: parent.props.widgetId,
+              targetSlotName: parentSlotName,
+              targetPosition: parent.props.slots[parentSlotName].findIndex(widgetId => widget.widgetId === widgetId)
+            })
+          }
           break
         case DropIndicatorInsertPositionEnum.After:
+          if (parent && parentSlotName) {
+            addWidget({
+              sourceWidget: item.widget,
+              targetWidgetId: parent.props.widgetId,
+              targetSlotName: parentSlotName,
+              targetPosition: parent.props.slots[parentSlotName].findIndex(widgetId => widget.widgetId === widgetId) + 1
+            })
+          }
           break
         case DropIndicatorInsertPositionEnum.Inner:
           addWidget({
@@ -139,6 +168,7 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
           break
         default:
       }
+      // setDropStyleUpdate(prevState => prevState + 1)
       return { widget }
     },
     hover: (item, monitor) => {
@@ -160,12 +190,10 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
       const inHorizontalLimit = (relativeOffset.x <= DROP_CONTAINER_LIMIT) ||
         ((dropElementRect.width - relativeOffset.x) < DROP_CONTAINER_LIMIT)
 
-      const show = slotName
-        ? inVerticalLimit || inHorizontalLimit
-        : true
-
+      const afterVertical = relativeOffset.y * 2 > dropElementRect.height
+      const afterHorizontal = relativeOffset.x * 2 > dropElementRect.width
       const dropPosition: DropIndicatorInsertPositionEnum =
-        (relativeOffset.y * 2 > dropElementRect.height) || (relativeOffset.x * 2 > dropElementRect.width)
+        (afterVertical || afterHorizontal)
           ? DropIndicatorInsertPositionEnum.After
           : DropIndicatorInsertPositionEnum.Before
 
@@ -183,19 +211,23 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
       const dropIndicator = match<boolean, DropIndicator>(isBlockWidget)
         .with(true, () => {
           return {
-            position: insertPosition === DropIndicatorInsertPositionEnum.Before
-              ? DropIndicatorPositionEnum.Top
-              : DropIndicatorPositionEnum.Bottom,
-            show,
+            position: afterVertical
+              ? DropIndicatorPositionEnum.Bottom
+              : DropIndicatorPositionEnum.Top,
+            show: slotName
+              ? inVerticalLimit
+              : true,
             insertPosition
           }
         })
         .with(false, () => {
           return {
-            position: insertPosition === DropIndicatorInsertPositionEnum.Before
-              ? DropIndicatorPositionEnum.Left
-              : DropIndicatorPositionEnum.Right,
-            show,
+            position: afterHorizontal
+              ? DropIndicatorPositionEnum.Right
+              : DropIndicatorPositionEnum.Left,
+            show: slotName
+              ? inHorizontalLimit
+              : true,
             insertPosition
           }
         }).exhaustive()
@@ -221,11 +253,11 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
     element
   })
 
-  const { style } = useWidgetPosition(element, {
-    deps: [widget]
-  })
+  // const { style } = useWidgetPosition(element, {
+  //   deps: [widget]
+  // })
   return {
-    style,
+    // style,
     isEmptySlot,
     widget,
     element,
