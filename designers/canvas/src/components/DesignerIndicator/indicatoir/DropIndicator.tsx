@@ -1,8 +1,10 @@
 import { CSSProperties, FC, memo, useEffect, useMemo, useState } from 'react'
 import { Col, Row, Typography } from 'antd'
-import { useElementRect, useWidgetDrop } from '../hooks'
+import { useElementRect, useWidgetDrop } from '../../../hooks'
 import { useRecoilValue } from 'recoil'
-import { dropIndicatorAtom, DropIndicatorPositionEnum, widgetsAtom } from '../store'
+import { dropIndicatorAtom, DropIndicatorPositionEnum, widgetByIdSelector, widgetsAtom } from '../../../store'
+import { useMutationObserver } from 'ahooks'
+import { getWidgetIdFromElement, getWidgetSlotNameFromElement } from '../../../utils'
 
 const DROP_INDICATOR_PX = '3px'
 const DROP_INDICATOR_OFFSET_PX = '-2px'
@@ -99,17 +101,32 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
 
 const MemoWidgetDrop = memo(WidgetDrop)
 
-interface WidgetDropWrapperProps {
-  dropElements: DropElement[]
-}
-
-const _WidgetDropWrapper: FC<WidgetDropWrapperProps> = ({ dropElements }) => {
+export const DropIndicator: FC = () => {
   // TODO use Memo 优化性能
+  const widgetById = useRecoilValue(widgetByIdSelector)
+
+  const [dropElements, setDropElements] = useState<Array<{
+    widgetId: string
+    slotName: string
+  }>>([])
+
+  // TODO target 切换为 canvas root element
+  useMutationObserver(() => {
+    const elements = [...document.querySelectorAll('[data-widget-id]')] as HTMLElement[]
+    setDropElements(elements.map(element => ({
+      widgetId: getWidgetIdFromElement(element),
+      slotName: getWidgetSlotNameFromElement(element)
+    })).filter((widget) => !!widget))
+  }, document.body, {
+    childList: true,
+    subtree: true
+  })
+
+  const dropElementsRendered = useMemo(() => {
+    return dropElements.filter(({ widgetId }) => Reflect.has(widgetById, widgetId))
+  }, [dropElements, widgetById])
   return <>{
-    dropElements.map(({ widgetId, slotName }) =>
+    dropElementsRendered.map(({ widgetId, slotName }) =>
       <MemoWidgetDrop key={widgetId} widgetId={widgetId} slotName={slotName} />)
   }</>
 }
-
-// export const WidgetDropWrapper = memo(_WidgetDropWrapper, isEqual)
-export const WidgetDropWrapper = _WidgetDropWrapper

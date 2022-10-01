@@ -5,7 +5,6 @@ import { useContext, useEffect, useRef } from 'react'
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
 import { widgetSelector } from '@modou/render/src/store'
 import { useAddWidget } from './useAddWidget'
-import { useElementRect } from './useElementRect'
 import {
   DropIndicator,
   dropIndicatorAtom,
@@ -17,7 +16,7 @@ import { match } from 'ts-pattern'
 
 const EMPTY_WIDGET_MIN_HEIGHT = '36px'
 const DROP_CONTAINER_LIMIT = 6
-const DROP_ELEMENT_ACTIVE_BG_COLOR = 'rgba(0,0,0,.3)'
+const DROP_ELEMENT_ACTIVE_BG_COLOR = 'rgba(0,0,0,.1)'
 
 const useWidgetBgColor = ({
   isActive,
