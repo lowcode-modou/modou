@@ -7,7 +7,7 @@ const AppsHeader: FC = () => {
   return <Layout.Header className="bg-white border-gray-100 border-solid border-0 border-b-2">
     <Row align="middle" className="h-full">
       <Col>
-        <img src="./modou.svg" className="h-10" alt="" />
+        <img src="/modou.svg" className="h-10" alt="" />
       </Col>
     </Row>
   </Layout.Header>

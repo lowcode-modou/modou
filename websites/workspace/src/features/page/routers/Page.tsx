@@ -33,7 +33,7 @@ export const Page: FC = () => {
   }, [page, setPageById])
 
   return <Row justify='center' align='middle' className='h-full'>
-    <Col span={18} className='border-2 border-solid border-red-500 h-full'>
+    <Col span={24} className='border-2 border-solid border-red-500 h-full'>
       {
         page && <WidgetFactoryContext.Provider value={widgetFactory}>
               <CanvasDesigner
@@ -47,32 +47,6 @@ export const Page: FC = () => {
                   }} />
           </WidgetFactoryContext.Provider>
       }
-    </Col>
-    <Col span={6} className='text-center'>
-      <Image src='./modou.svg' className='w-36' />
-      <Divider />
-      <Typography.Title>PAGE 页面</Typography.Title>
-      <Divider />
-      <Space direction={'vertical'}>
-        <Button block type='primary' onClick={testMR}>Test MR</Button>
-        {/* <Button block type="primary" onClick={testMRToScheme}>Test MR to Scheme</Button> */}
-        {/* <Button block type='primary' onClick={() => { */}
-        {/*  // const defaultJson = */}
-        {/*  schemaToDefaultJSON(widgetById) */}
-        {/*  // setButtonState(defaultJson) */}
-        {/* }}>Test Scheme to Default Json</Button> */}
-        <Button block type='primary' onClick={() => {
-          window.open('https://runtime.modou.ink', '_blank')
-        }}>NAVIGATE TO RUNTIME</Button>
-        <Button block type={'primary'} onClick={() => navigator('/apps')}>跳转到 APPS 页面</Button>
-      </Space>
-      {/* <Divider /> */}
-      {/* <ButtonWidget title={'按钮 - ButtonWidget'} {...buttonState} /> */}
-      {/* <Divider /> */}
-      {/* <SelectSetter<ButtonType> */}
-      {/*  value={buttonState.type} */}
-      {/*  onChange={(type: any) => setButtonState({ type })} */}
-      {/*  options={{ options }} /> */}
     </Col>
   </Row>
 }
