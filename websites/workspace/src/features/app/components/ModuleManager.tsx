@@ -6,7 +6,7 @@ import { ModuleEnum } from '../types'
 
 export const ModuleManager: FC<{
   visible: boolean
-  module: ModuleEnum
+  module: ModuleEnum | ''
   onClose?: (ComponentProps<typeof Drawer>)['onClose']
 }> = ({ visible, module, onClose }) => {
   const params = useParams<PageRouterParamsKey | EntityRouterParamsKey>()
