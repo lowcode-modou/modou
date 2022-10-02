@@ -1,4 +1,4 @@
-import { CSSProperties, FC, memo, useEffect, useMemo, useState } from 'react'
+import { CSSProperties, FC, memo, RefObject, useEffect, useMemo, useState } from 'react'
 import { Col, Row, Typography } from 'antd'
 import { useElementRect, useWidgetDrop } from '../../../hooks'
 import { useRecoilValue } from 'recoil'
@@ -101,7 +101,9 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
 
 const MemoWidgetDrop = memo(WidgetDrop)
 
-export const DropIndicator: FC = () => {
+export const DropIndicator: FC<{
+  canvasRef: RefObject<HTMLElement>
+}> = ({ canvasRef }) => {
   // TODO use Memo 优化性能
   const widgetById = useRecoilValue(widgetByIdSelector)
 
@@ -117,11 +119,10 @@ export const DropIndicator: FC = () => {
       widgetId: getWidgetIdFromElement(element),
       slotName: getWidgetSlotNameFromElement(element)
     })).filter((widget) => !!widget))
-  }, document.body, {
+  }, canvasRef, {
     childList: true,
     subtree: true
   })
-
   const dropElementsRendered = useMemo(() => {
     return dropElements.filter(({ widgetId }) => Reflect.has(widgetById, widgetId))
   }, [dropElements, widgetById])

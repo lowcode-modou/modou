@@ -91,7 +91,7 @@ const SelectIndicatorContent: FC = () => {
 
   return <div
     ref={drag}
-    className='border-sky-400 border-dashed absolute'
+    className='border-sky-400 border-dashed absolute z-50'
     style={style}
   >
     <SelectedToolBox/>

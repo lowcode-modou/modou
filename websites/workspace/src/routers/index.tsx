@@ -4,8 +4,9 @@ import { lazyImport } from '@/utils/lazyImport'
 import { ROUTER_PATH } from '@/constants'
 
 const { Apps } = lazyImport(async () => await import('@/features/apps'), 'Apps')
-const { Page } = lazyImport(async () => await import('@/features/page'), 'Page')
 const { App } = lazyImport(async () => await import('@/features/app'), 'App')
+const { Page } = lazyImport(async () => await import('@/features/page'), 'Page')
+const { Entity } = lazyImport(async () => await import('@/features/entity'), 'Entity')
 
 export const AppRouters: FC = () => {
   const elements = useRoutes([
@@ -20,6 +21,10 @@ export const AppRouters: FC = () => {
         {
           path: ROUTER_PATH.PAGE,
           element: <Page />
+        },
+        {
+          path: ROUTER_PATH.Entity,
+          element: <Entity />
         }
       ]
     },

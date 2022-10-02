@@ -1,40 +1,105 @@
-import { FC } from 'react'
-import { Col, Layout, Row, Avatar, Button } from 'antd'
-import { Outlet } from 'react-router-dom'
+import { ComponentProps, FC, useCallback, useEffect, useState } from 'react'
+import { Layout, Avatar, Button, Menu } from 'antd'
+import { Outlet, useParams } from 'react-router-dom'
+import classes from './app.module.scss'
+import { ModuleManager } from '../components'
+import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
+import { EntityRouterParamsKey, PageRouterParamsKey } from '@/types'
+import { ModuleEnum } from '../types'
 
 export const App: FC = () => {
-  return <Layout className="h-full">
+  const params = useParams<PageRouterParamsKey | EntityRouterParamsKey>()
+  // const navigate = useNavigate()
+
+  const [module, setModule] = useState<ModuleEnum | ''>('')
+
+  const updateModule = useCallback(() => {
+    if (params.pageId) {
+      setModule(ModuleEnum.Page)
+    } else if (params.entityId) {
+      setModule(ModuleEnum.Entity)
+    } else {
+      setModule('')
+    }
+  }, [params])
+
+  useEffect(() => {
+    updateModule()
+  }, [updateModule])
+
+  const menuItems: ComponentProps<typeof Menu>['items'] = [
+    {
+      label: '页面',
+      icon: <CopyOutlined />,
+      key: ModuleEnum.Page
+    },
+    {
+      label: '数据模型',
+      icon: <DatabaseOutlined />,
+      key: ModuleEnum.Entity
+    }
+  ]
+
+  const [visibleModuleManger, setVisibleModuleManger] = useState(false)
+
+  const handleClickMenuItem: ComponentProps<typeof Menu>['onClick'] = ({ key, keyPath }) => {
+    if (key === module) {
+      setVisibleModuleManger(prevState => !prevState)
+    } else {
+      setModule(key as ModuleEnum)
+      setVisibleModuleManger(true)
+    }
+    // switch (key) {
+    //   case ModuleEnum.Page:
+    //     navigate(generateRouterPath(ROUTER_PATH.PAGE, {
+    //       appId: 'appId',
+    //       pageId: 'pageId'
+    //     }))
+    //     break
+    //   case ModuleEnum.Entity:
+    //     navigate(generateRouterPath(ROUTER_PATH.Entity, {
+    //       appId: 'appId',
+    //       entityId: 'entityId'
+    //     }))
+    //     break
+    //   default:
+    // }
+  }
+
+  return <Layout className='h-full'>
     <Layout.Header
-      style={{
-        height: '48px',
-        lineHeight: '48px',
-        paddingLeft: '16px',
-        paddingRight: '16px'
-      }}
-      className="bg-white border-gray-100 border-solid border-0 border-b-2">
-      <Row className="h-full">
-        <Col span={12} className="flex items-center">
-          <img
-            style={{
-              height: '32px'
-            }}
-            src="/modou.svg" alt="" />
-          <Row className='pl-4 pr-4'>
-            <Button.Group size='small'>
-              <Button type="link" ghost>数据模型</Button>
-              <Button type="link" ghost>页面</Button>
-            </Button.Group>
-          </Row>
-        </Col>
-        <Col span={12} className="flex justify-end items-center">
-          <Button type='link' href="https://runtime.modou.ink" target='_blank'>预览</Button>
-          <Avatar src="https://joeschmoe.io/api/v1/random" />
-        </Col>
-      </Row>
+      className={`${classes.header} bg-white shadow-md flex justify-between items-center h-full`}>
+      <div className={classes.headerLogoWrapper}>
+        <img
+          src='/modou.svg' alt='' />
+      </div>
+      <div className={`flex justify-end items-center ${classes.headerRight}`}>
+        <Button type='link' href='https://runtime.modou.ink' target='_blank'>预览</Button>
+        <Avatar src='https://joeschmoe.io/api/v1/random' />
+      </div>
     </Layout.Header>
     <Layout>
-      <Layout.Content>
-        <Outlet/>
+      <Layout.Sider
+        className={classes.sider}
+        theme='light'
+        collapsedWidth={60}
+        collapsible
+        collapsed={true}>
+        <Menu
+          mode='inline'
+          selectedKeys={[module]}
+          onClick={handleClickMenuItem}
+          items={menuItems} />
+      </Layout.Sider>
+      <Layout.Content className='relative'>
+        <ModuleManager
+          onClose={() => {
+            setVisibleModuleManger(false)
+            updateModule()
+          }}
+          module={module}
+          visible={visibleModuleManger}/>
+        <Outlet />
       </Layout.Content>
     </Layout>
   </Layout>

@@ -27,19 +27,19 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
     <RecoilWidgetsSync widgets={widgets} onWidgetsChange={onWidgetsChange}>
       <DndProvider backend={HTML5Backend}>
         <Row className='h-full'>
-          <Col span={24} className='border-green-500 border-solid h-full'>
+          <Col span={24} className='h-full'>
             <Row className='h-full'>
-              <Col span={4} className='border-green-500 border-solid h-full'>
+              <Col span={4} className='h-full'>
                 <CanvasDesignerWidgets />
               </Col>
               <Col span={16}
-                   className='border-green-500 border-solid h-full relative p-6'>
+                   className='h-full relative p-6'>
                 <div ref={canvasRef}>
                   <CanvasDesignerCanvas rootWidgetId={rootWidgetId}/>
                 </div>
                 <DesignerIndicator canvasRef={canvasRef} />
               </Col>
-              <Col span={4} className='border-green-500 border-solid h-full'>
+              <Col span={4} className='h-full'>
                 {/* <DesignerContext.Provider value={{ */}
                 {/*  onWidgetsChange: onWidgetsChangeRef */}
                 {/* }}> */}

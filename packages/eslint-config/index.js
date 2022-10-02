@@ -21,6 +21,7 @@ module.exports = {
     semi: ['error', 'never'],
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
+    'no-tabs': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/strict-boolean-expressions': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',

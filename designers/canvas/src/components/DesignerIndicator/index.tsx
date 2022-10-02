@@ -13,6 +13,6 @@ export const DesignerIndicator: FC<DesignerIndicatorProps> = ({
   return <div className='fixed inset-0 pointer-events-none'>
     <HoveringIndicator canvasRef={canvasRef} />
     <SelectedIndicator canvasRef={canvasRef} />
-    <DropIndicator/>
+    <DropIndicator canvasRef={canvasRef} />
   </div>
 }
