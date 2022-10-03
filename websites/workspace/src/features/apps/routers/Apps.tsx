@@ -4,7 +4,7 @@ import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/ico
 import { useNavigate } from 'react-router-dom'
 
 const AppsHeader: FC = () => {
-  return <Layout.Header className="bg-white shadow-md z-50">
+  return <Layout.Header className="!bg-white shadow-md z-50">
     <Row align="middle" className="h-full">
       <Col>
         <img src="/modou.svg" className="h-10" alt="" />

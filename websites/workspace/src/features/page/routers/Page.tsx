@@ -6,24 +6,37 @@ import { Metadata, WidgetFactoryContext } from '@modou/core'
 import produce from 'immer'
 import { MOCK_PAGE_ID, MOCK_ROOT_WIDGET_ID, MOCK_WIDGETS } from '../mock'
 import { widgetFactory } from '../utils'
+import { isEmpty } from 'lodash'
 
 export const Page: FC = () => {
-  const [pageById, setPageById] = useRecoilState(Metadata.pageByIdSelector)
-  const page = pageById[MOCK_PAGE_ID]
+  const [pages, setPages] = useRecoilState(Metadata.pagesSelector)
+  const [page, setPage] = useRecoilState(Metadata.pageSelector(MOCK_PAGE_ID))
 
   useEffect(() => {
-    if (page) {
+    if (!isEmpty(pages)) {
       return
     }
-    setPageById(produce(draft => {
-      draft[MOCK_PAGE_ID] = {
-        name: 'demo page',
+    setPages([
+      {
+        name: '大漠孤烟直',
         id: MOCK_PAGE_ID,
         widgets: MOCK_WIDGETS,
         rootWidgetId: MOCK_ROOT_WIDGET_ID
+      },
+      {
+        name: '测试',
+        id: MOCK_PAGE_ID + '___',
+        widgets: MOCK_WIDGETS,
+        rootWidgetId: MOCK_ROOT_WIDGET_ID
+      },
+      {
+        name: '长河落日圆',
+        id: MOCK_PAGE_ID + '________',
+        widgets: MOCK_WIDGETS,
+        rootWidgetId: MOCK_ROOT_WIDGET_ID
       }
-    }))
-  }, [page, setPageById])
+    ])
+  }, [pages, setPages])
 
   return <Row justify='center' align='middle' className='h-full'>
     <Col span={24} className='h-full'>
@@ -34,8 +47,8 @@ export const Page: FC = () => {
                   widgets={page?.widgets || []}
                   onWidgetsChange={(val) => {
                     // console.log(val)
-                    setPageById(produce(draft => {
-                      draft[MOCK_PAGE_ID].widgets = val
+                    setPage(produce(draft => {
+                      draft.widgets = val
                     }))
                   }} />
           </WidgetFactoryContext.Provider>

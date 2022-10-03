@@ -69,7 +69,7 @@ export const App: FC = () => {
 
   return <Layout className='h-full'>
     <Layout.Header
-      className={`${classes.header} bg-white shadow-md flex justify-between items-center h-full`}>
+      className={`${classes.header} !bg-white shadow-md flex justify-between items-center`}>
       <div className={classes.headerLogoWrapper}>
         <img
           src='/modou.svg' alt='' />
@@ -89,6 +89,7 @@ export const App: FC = () => {
         collapsed={!visibleModuleManger}>
         <Menu
           className="h-full"
+          style={{ width: '60px' }}
           mode='inline'
           selectedKeys={[module]}
           onClick={handleClickMenuItem}

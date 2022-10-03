@@ -1,8 +1,8 @@
 .header{
-	height: 48px;
-	line-height: 48px;
-	padding: 0;
-	z-index: 999999;
+	height: 48px!important;
+	line-height: 48px!important;
+	padding: 0!important;
+	z-index: 999999!important;
 }
 .headerLogoWrapper{
 	width: 60px;
@@ -17,18 +17,18 @@
 	padding-right: 16px;
 }
 .sider{
-	z-index: 2000;
-	position: relative;
-	padding:0;
-	font-size:16px;
+	z-index: 2000!important;
+	position: relative!important;
+	padding:0!important;
+	font-size:16px!important;
 	:global(.ant-layout-sider-trigger){
 		display: none;
 	}
 	:global(.ant-menu-item){
 		padding: 0 calc(50% - 16px / 2) !important;
-		border: 1px solid transparent;
+		border: 1px solid transparent !important;
 		&::after{
-			display: none;
+			display: none !important;
 		}
 	}
 	:global(.ant-menu-item-icon){
