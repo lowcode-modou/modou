@@ -29,18 +29,18 @@ export const App: FC = () => {
 
   const menuItems: ComponentProps<typeof Menu>['items'] = [
     {
-      label: '页面',
+      title: '页面',
       icon: <CopyOutlined />,
       key: ModuleEnum.Page
     },
     {
-      label: '数据模型',
+      title: '数据模型',
       icon: <DatabaseOutlined />,
       key: ModuleEnum.Entity
     }
   ]
 
-  const [visibleModuleManger, setVisibleModuleManger] = useState(false)
+  const [visibleModuleManger, setVisibleModuleManger] = useState(true)
 
   const handleClickMenuItem: ComponentProps<typeof Menu>['onClick'] = ({ key, keyPath }) => {
     if (key === module) {
@@ -83,9 +83,11 @@ export const App: FC = () => {
         className={classes.sider}
         theme='light'
         collapsedWidth={60}
+        width={60}
         collapsible
-        collapsed={true}>
+        collapsed={!visibleModuleManger}>
         <Menu
+          className="h-full"
           mode='inline'
           selectedKeys={[module]}
           onClick={handleClickMenuItem}
