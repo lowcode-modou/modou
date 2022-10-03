@@ -43,6 +43,7 @@ export const App: FC = () => {
   const [visibleModuleManger, setVisibleModuleManger] = useState(true)
 
   const handleClickMenuItem: ComponentProps<typeof Menu>['onClick'] = ({ key, keyPath }) => {
+    console.log(key, module)
     if (key === module) {
       setVisibleModuleManger(prevState => !prevState)
     } else {
