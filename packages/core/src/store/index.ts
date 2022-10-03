@@ -47,9 +47,7 @@ const pageByIdSelector = selector<Record<string, Page>>({
   key: generateRecoilKey('pageByIdSelector'),
   get: ({ get }) => keyBy(get(pagesSelector), 'id'),
   set: ({ set }, newValue) => {
-    set(Metadata.pagesSelector, newValue => {
-      return Object.values(newValue)
-    })
+    set(Metadata.pagesSelector, Object.values(newValue))
   }
 })
 
