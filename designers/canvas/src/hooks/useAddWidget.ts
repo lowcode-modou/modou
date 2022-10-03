@@ -1,11 +1,11 @@
 import { useSetRecoilState } from 'recoil'
-import { widgetsAtom } from '../store'
+import { widgetsSelector } from '../store'
 import { WidgetBaseProps } from '@modou/core'
 import produce from 'immer'
 import { useCallback } from 'react'
 
 export const useAddWidget = () => {
-  const setWidgets = useSetRecoilState(widgetsAtom)
+  const setWidgets = useSetRecoilState(widgetsSelector)
   const addWidget = useCallback(({
     sourceWidget,
     targetWidgetId,

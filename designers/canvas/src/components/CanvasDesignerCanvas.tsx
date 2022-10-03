@@ -1,14 +1,14 @@
 import { FC } from 'react'
 import { ReactRender } from '@modou/render'
 import { useRecoilValue } from 'recoil'
-import { widgetsAtom } from '../store'
+import { pageAtom } from '../store'
 
-interface CanvasDesignerCanvasProps {
-  rootWidgetId: string
-}
+// interface CanvasDesignerCanvasProps {
+//   // rootWidgetId: string
+// }
 
-export const CanvasDesignerCanvas: FC<CanvasDesignerCanvasProps> = ({ rootWidgetId }) => {
-  const widgets = useRecoilValue(widgetsAtom)
+export const CanvasDesignerCanvas: FC = () => {
+  const { widgets, rootWidgetId } = useRecoilValue(pageAtom)
   return <div
     className='h-full relative'>
     <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />

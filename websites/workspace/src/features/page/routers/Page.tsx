@@ -7,10 +7,23 @@ import produce from 'immer'
 import { MOCK_PAGE_ID, MOCK_ROOT_WIDGET_ID, MOCK_WIDGETS } from '../mock'
 import { widgetFactory } from '../utils'
 import { isEmpty } from 'lodash'
+import { useNavigate, useParams } from 'react-router-dom'
+import { PageRouterParamsKey } from '@/types'
+import { generateRouterPath } from '@/utils/router'
+import { ROUTER_PATH } from '@/constants'
 
 export const Page: FC = () => {
   const [pages, setPages] = useRecoilState(Metadata.pagesSelector)
-  const [page, setPage] = useRecoilState(Metadata.pageSelector(MOCK_PAGE_ID))
+  const { pageId, appId } = useParams<PageRouterParamsKey>()
+  const [page, setPage] = useRecoilState(Metadata.pageSelector(pageId!))
+  const navigate = useNavigate()
+  if (!page) {
+    navigate(generateRouterPath(ROUTER_PATH.APP, {
+      appId
+    }), {
+      replace: true
+    })
+  }
 
   useEffect(() => {
     if (!isEmpty(pages)) {
@@ -43,14 +56,8 @@ export const Page: FC = () => {
       {
         page && <WidgetFactoryContext.Provider value={widgetFactory}>
               <CanvasDesigner
-                  rootWidgetId={page.rootWidgetId}
-                  widgets={page?.widgets || []}
-                  onWidgetsChange={(val) => {
-                    // console.log(val)
-                    setPage(produce(draft => {
-                      draft.widgets = val
-                    }))
-                  }} />
+                  page={page}
+                  onPageChange={setPage} />
           </WidgetFactoryContext.Provider>
       }
     </Col>

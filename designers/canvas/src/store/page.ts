@@ -1,37 +1,54 @@
 // TODO START 完善后移动到 core
 
-import { atom, selector } from 'recoil'
-import { WidgetBaseProps } from '@modou/core'
+import { atom, DefaultValue, selector } from 'recoil'
+import { Page, WidgetBaseProps } from '@modou/core'
 import { generateRecoilKey } from '../utils'
 import { isEmpty, keyBy } from 'lodash'
 import { syncEffect } from 'recoil-sync'
 import { custom } from '@recoiljs/refine'
+import produce from 'immer'
 
 export * from './dnd'
 
-export const WIDGETS_ATOM_KEY = generateRecoilKey('widgetsAtom')
-export const WIDGETS_ATOM_STORE_KEY = `${WIDGETS_ATOM_KEY}_STORE_KEY`
-export const widgetsAtom = atom<WidgetBaseProps[]>({
-  key: WIDGETS_ATOM_KEY,
-  default: [],
+export const PAGE_ATOM_KEY = generateRecoilKey('pageAtom')
+export const PAGE_ATOM_KEY_STORE_KEY = `${PAGE_ATOM_KEY}_STORE_KEY`
+
+export const selectedWidgetIdAtom = atom<string>({
+  key: generateRecoilKey('selectedWidgetIdAtom'),
+  default: ''
+})
+export const pageAtom = atom<Page>({
+  key: PAGE_ATOM_KEY,
+  default: {
+    id: '',
+    name: '',
+    rootWidgetId: '',
+    widgets: []
+  },
   effects: [
     syncEffect({
-      storeKey: WIDGETS_ATOM_STORE_KEY,
-      refine: custom<WidgetBaseProps[]>(x => x as WidgetBaseProps[])
+      storeKey: PAGE_ATOM_KEY_STORE_KEY,
+      refine: custom<Page>(x => x as Page)
     })
   ]
+})
+
+export const widgetsSelector = selector<WidgetBaseProps[]>({
+  key: generateRecoilKey('widgetsSelector'),
+  get: ({ get }) => get(pageAtom).widgets,
+  set: ({ set }, newValue) => set(pageAtom, produce<Page>(draft => {
+    if (newValue instanceof DefaultValue) {
+      return draft
+    }
+    draft.widgets = newValue
+  }))
 })
 
 export const widgetByIdSelector = selector<Record<string, WidgetBaseProps>>({
   key: generateRecoilKey('widgetByIdSelector'),
   get: ({ get }) => {
-    return keyBy(get(widgetsAtom), 'widgetId')
+    return keyBy(get(widgetsSelector), 'widgetId')
   }
-})
-
-export const selectedWidgetIdAtom = atom<string>({
-  key: generateRecoilKey('selectedWidgetIdAtom'),
-  default: ''
 })
 
 interface RelationWidget {
@@ -39,12 +56,13 @@ interface RelationWidget {
   slotName?: string
   parent?: RelationWidget
 }
+
 export type WidgetRelationByWidgetId = Record<string, RelationWidget>
 export const widgetRelationByWidgetIdSelector = selector<WidgetRelationByWidgetId>({
   key: generateRecoilKey('widgetRelationByWidgetIdSelectorSelector'),
   get: ({ get }) => {
     const widgetById = get(widgetByIdSelector)
-    return get(widgetsAtom).reduce<WidgetRelationByWidgetId>((pre, cur) => {
+    return get(widgetsSelector).reduce<WidgetRelationByWidgetId>((pre, cur) => {
       const widgetId = cur.widgetId
       if (!Reflect.has(pre, widgetId)) {
         pre[widgetId] = {

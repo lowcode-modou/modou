@@ -2,7 +2,7 @@ import { CSSProperties, FC, memo, RefObject, useEffect, useMemo, useState } from
 import { Col, Row, Typography } from 'antd'
 import { useElementRect, useWidgetDrop } from '../../../hooks'
 import { useRecoilValue } from 'recoil'
-import { dropIndicatorAtom, DropIndicatorPositionEnum, widgetByIdSelector, widgetsAtom } from '../../../store'
+import { dropIndicatorAtom, DropIndicatorPositionEnum, widgetByIdSelector, widgetsSelector } from '../../../store'
 import { useMutationObserver } from 'ahooks'
 import { getWidgetIdFromElement, getWidgetSlotNameFromElement } from '../../../utils'
 
@@ -15,7 +15,7 @@ interface DropElement {
 }
 
 const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
-  const widgets = useRecoilValue(widgetsAtom)
+  const widgets = useRecoilValue(widgetsSelector)
   const {
     isEmptySlot,
     widget,

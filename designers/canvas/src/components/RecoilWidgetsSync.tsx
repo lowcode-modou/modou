@@ -1,32 +1,42 @@
-import { FC, ReactElement } from 'react'
+import { FC, ReactElement, useState } from 'react'
 import { RecoilSync } from 'recoil-sync'
-import { WIDGETS_ATOM_KEY, WIDGETS_ATOM_STORE_KEY } from '../store'
-import { WidgetBaseProps } from '@modou/core'
+import { PAGE_ATOM_KEY, PAGE_ATOM_KEY_STORE_KEY, pageAtom, selectedWidgetIdAtom } from '../store'
+import { Page } from '@modou/core'
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
 
 interface RecoilWidgetsSyncProps {
-  widgets: WidgetBaseProps[]
-  onWidgetsChange: (value: WidgetBaseProps[]) => void
-
+  page: Page
+  onPageChange: (page: Page) => void
 }
 
 export const RecoilWidgetsSync: FC<{
   children: ReactElement
 } & RecoilWidgetsSyncProps> = ({
   children,
-  widgets,
-  onWidgetsChange
+  page,
+  onPageChange
 }) => {
+  const setSelectWidgetId = useSetRecoilState(selectedWidgetIdAtom)
+  const [tempPageId, setTempPageId] = useState('')
   return <RecoilSync
-    storeKey={WIDGETS_ATOM_STORE_KEY}
+    storeKey={PAGE_ATOM_KEY_STORE_KEY}
+    listen={({ updateItem }) => {
+      console.log(page.id, tempPageId)
+      if (page.id !== tempPageId) {
+        setSelectWidgetId('')
+        setTempPageId(page.id)
+      }
+      updateItem(PAGE_ATOM_KEY, page)
+    }}
     read={(itemKey) => {
-      if (itemKey === WIDGETS_ATOM_KEY) {
-        return widgets
+      if (itemKey === PAGE_ATOM_KEY) {
+        return page
       }
     }}
     write={({ diff }) => {
       for (const [key, value] of diff) {
-        if (key === WIDGETS_ATOM_KEY) {
-          onWidgetsChange(value as WidgetBaseProps[])
+        if (key === PAGE_ATOM_KEY) {
+          onPageChange(value as Page)
         }
       }
     }}>{children}</RecoilSync>

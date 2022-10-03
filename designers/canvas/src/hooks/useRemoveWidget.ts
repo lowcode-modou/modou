@@ -1,12 +1,12 @@
 import { useSetRecoilState } from 'recoil'
-import { widgetsAtom } from '../store'
+import { widgetsSelector } from '../store'
 import { useCallback } from 'react'
 import { isEmpty, isObject } from 'lodash'
 import produce from 'immer'
 import { WidgetBaseProps } from '@modou/core'
 
 export const useRemoveWidget = () => {
-  const setWidgets = useSetRecoilState(widgetsAtom)
+  const setWidgets = useSetRecoilState(widgetsSelector)
   const removeWidget = useCallback((widgetId: string, deleteRaw: boolean = true) => {
     setWidgets(produce(draft => {
       draft

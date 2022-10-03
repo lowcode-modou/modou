@@ -17,6 +17,13 @@ export const useWidgetHovering = (canvasRef: RefObject<HTMLElement>) => {
 
   const [display, setDisplay] = useState(false)
 
+  useEventListener('mousemove', () => {
+    setDisplay(false)
+  }, {
+    target: document.body,
+    capture: true,
+    passive: true
+  })
   useEventListener('mousemove', (event) => {
     // TODO 看是否需要防抖
     const rawElement = getRawElement(event.target as unknown as HTMLElement, canvasRef.current)
@@ -40,7 +47,8 @@ export const useWidgetHovering = (canvasRef: RefObject<HTMLElement>) => {
       setDisplay(false)
     }
   }, {
-    target: canvasRef
+    target: canvasRef,
+    passive: true
   })
 
   const style: CSSProperties = {

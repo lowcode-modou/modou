@@ -2,12 +2,15 @@ import { FC } from 'react'
 import { Widget } from '../widget'
 import { isEqual, unionWith } from 'lodash'
 import { BaseSetterProps } from '@modou/setters/src/types'
+import { Page } from '../types'
+import { generateId } from '../utils'
+import { rowWidgetMetadata } from '@modou/widgets'
 
 type WidgetRegistry = Record<string, { element: FC<any>, metadata: Widget }>
 
 type SetterElement = FC<BaseSetterProps<any>>
 
-export class WidgetFactory {
+export class AppFactory {
   constructor ({
     widgets,
     setters
@@ -60,6 +63,22 @@ export class WidgetFactory {
       setters: Record<string, SetterElement>
     }
   ) {
-    return new WidgetFactory(params)
+    return new AppFactory(params)
+  }
+
+  static generateDefaultPage = (name?: string): Page => {
+    const rootWidget = {
+      ...Widget.mrSchemeToDefaultJson(rowWidgetMetadata.jsonPropsSchema),
+      widgetId: generateId(),
+      slots: {
+        children: []
+      }
+    }
+    return {
+      id: generateId(),
+      name: name ?? `页面-${generateId(4)}`,
+      widgets: [rootWidget],
+      rootWidgetId: rootWidget.widgetId
+    }
   }
 }

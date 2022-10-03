@@ -6,11 +6,23 @@ import { ModuleManager } from '../components'
 import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
 import { EntityRouterParamsKey, PageRouterParamsKey } from '@/types'
 import { ModuleEnum } from '../types'
+import { AppHome } from '@/features/app/components/AppHome'
+
+const menuItems: ComponentProps<typeof Menu>['items'] = [
+  {
+    title: '页面',
+    icon: <CopyOutlined />,
+    key: ModuleEnum.Page
+  },
+  {
+    title: '数据模型',
+    icon: <DatabaseOutlined />,
+    key: ModuleEnum.Entity
+  }
+]
 
 export const App: FC = () => {
   const params = useParams<PageRouterParamsKey | EntityRouterParamsKey>()
-  // const navigate = useNavigate()
-
   const [module, setModule] = useState<ModuleEnum | ''>('')
 
   const updateModule = useCallback(() => {
@@ -22,49 +34,19 @@ export const App: FC = () => {
       setModule('')
     }
   }, [params])
-
   useEffect(() => {
     updateModule()
   }, [updateModule])
 
-  const menuItems: ComponentProps<typeof Menu>['items'] = [
-    {
-      title: '页面',
-      icon: <CopyOutlined />,
-      key: ModuleEnum.Page
-    },
-    {
-      title: '数据模型',
-      icon: <DatabaseOutlined />,
-      key: ModuleEnum.Entity
-    }
-  ]
-
-  const [visibleModuleManger, setVisibleModuleManger] = useState(true)
+  const [visibleModuleManger, setVisibleModuleManger] = useState(false)
 
   const handleClickMenuItem: ComponentProps<typeof Menu>['onClick'] = ({ key, keyPath }) => {
-    console.log(key, module)
     if (key === module) {
       setVisibleModuleManger(prevState => !prevState)
     } else {
       setModule(key as ModuleEnum)
       setVisibleModuleManger(true)
     }
-    // switch (key) {
-    //   case ModuleEnum.Page:
-    //     navigate(generateRouterPath(ROUTER_PATH.PAGE, {
-    //       appId: 'appId',
-    //       pageId: 'pageId'
-    //     }))
-    //     break
-    //   case ModuleEnum.Entity:
-    //     navigate(generateRouterPath(ROUTER_PATH.Entity, {
-    //       appId: 'appId',
-    //       entityId: 'entityId'
-    //     }))
-    //     break
-    //   default:
-    // }
   }
 
   return <Layout className='h-full'>
@@ -103,6 +85,7 @@ export const App: FC = () => {
           }}
           module={module}
           visible={visibleModuleManger}/>
+        {Object.keys(params).length === 1 && <AppHome/>}
         <Outlet />
       </Layout.Content>
     </Layout>

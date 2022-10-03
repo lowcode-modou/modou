@@ -1,6 +1,6 @@
 import { FC, useContext, useMemo } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { selectedWidgetIdAtom, widgetByIdSelector, widgetsAtom } from '../store'
+import { selectedWidgetIdAtom, widgetByIdSelector, widgetsSelector } from '../store'
 import { SETTER_KEY } from '@modou/setters'
 import { SetterTypeEnum } from '@modou/setters/src/constants'
 import { BaseMRSetterOptions } from '@modou/setters/src/types'
@@ -13,7 +13,7 @@ const WithSelectedWidgetId: FC = () => {
   const [selectedWidgetId, setSelectedWidgetId] = useRecoilState(selectedWidgetIdAtom)
   const selectWidget = widgetById[selectedWidgetId]
   // const designerContext = useContext(DesignerContext)
-  const setWidgets = useSetRecoilState(widgetsAtom)
+  const setWidgets = useSetRecoilState(widgetsSelector)
 
   const widgetFactory = useContext(WidgetFactoryContext)
 

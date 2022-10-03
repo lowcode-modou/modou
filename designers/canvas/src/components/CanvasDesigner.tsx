@@ -1,6 +1,6 @@
 import { FC, useRef } from 'react'
-import { WidgetBaseProps } from '@modou/core'
-import { RecoilRoot } from 'recoil'
+import { Page, WidgetBaseProps } from '@modou/core'
+import { RecoilRoot, useSetRecoilState } from 'recoil'
 import { Col, Row } from 'antd'
 import { CanvasDesignerPropsPanel } from './CanvasDesignerPropsPanel'
 import { RecoilWidgetsSync } from './RecoilWidgetsSync'
@@ -9,22 +9,23 @@ import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
 import { DesignerIndicator } from './DesignerIndicator'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import produce from 'immer'
+import { selectedWidgetIdAtom } from '../store'
 
 interface CanvasDesignerProps {
-  widgets: WidgetBaseProps[]
-  onWidgetsChange: (value: WidgetBaseProps[]) => void
-  rootWidgetId: string
+  page: Page
+  onPageChange: (page: Page) => void
 }
 
 export const CanvasDesigner: FC<CanvasDesignerProps> = ({
-  widgets,
-  onWidgetsChange,
-  rootWidgetId
+  page,
+  onPageChange
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null)
+  const setSelectedWidgetId = useSetRecoilState(selectedWidgetIdAtom)
 
   return <RecoilRoot>
-    <RecoilWidgetsSync widgets={widgets} onWidgetsChange={onWidgetsChange}>
+    <RecoilWidgetsSync page={page} onPageChange={onPageChange}>
       <DndProvider backend={HTML5Backend}>
         <Row className='h-full'>
           <Col span={24} className='h-full'>
@@ -34,8 +35,10 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
               </Col>
               <Col span={16}
                    className='h-full relative p-6'>
-                <div ref={canvasRef}>
-                  <CanvasDesignerCanvas rootWidgetId={rootWidgetId}/>
+                <div className='h-full'
+                     ref={canvasRef}
+                     onClick={() => setSelectedWidgetId('')}>
+                  <CanvasDesignerCanvas/>
                 </div>
                 <DesignerIndicator canvasRef={canvasRef} />
               </Col>

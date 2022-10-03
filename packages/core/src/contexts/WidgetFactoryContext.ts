@@ -1,7 +1,7 @@
 import { createContext } from 'react'
-import { WidgetFactory } from '../widget-factory'
+import { AppFactory } from '../app-factory'
 
-export const WidgetFactoryContext = createContext<WidgetFactory>(WidgetFactory.create({
+export const WidgetFactoryContext = createContext<AppFactory>(AppFactory.create({
   widgets: [],
   setters: {}
 }))

@@ -1,4 +1,4 @@
-import { WidgetFactory } from '@modou/core'
+import { AppFactory } from '@modou/core'
 import {
   ButtonWidget,
   buttonWidgetMetadata,
@@ -18,7 +18,7 @@ import {
   SetterTypeEnum
 } from '@modou/setters'
 
-export const widgetFactory = WidgetFactory.create({
+export const widgetFactory = AppFactory.create({
   widgets: [
     [ButtonWidget, buttonWidgetMetadata],
     [ColWidget, colWidgetMetadata],

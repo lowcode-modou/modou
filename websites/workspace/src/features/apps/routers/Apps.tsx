@@ -28,7 +28,7 @@ const AppsContent: FC = () => {
         xxl={{ span: 4 }}
         span={4}>
         <Card
-          onClick={() => navigator('/app/appId/page/pageId')}
+          onClick={() => navigator('/app/appId')}
           className="shadow-2xl m-1 w-full"
           // cover={
           //   <img src="./modou.svg" alt="" />

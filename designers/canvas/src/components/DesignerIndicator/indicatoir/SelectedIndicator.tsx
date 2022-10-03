@@ -1,7 +1,7 @@
 import { CSSProperties, FC, RefObject, useEffect, useState } from 'react'
 import { useWidgetSelected } from '../../../hooks/useWidgetSelected'
 import { useRecoilValue } from 'recoil'
-import { selectedWidgetIdAtom, widgetsAtom } from '../../../store'
+import { selectedWidgetIdAtom, widgetsSelector } from '../../../store'
 import { getElementFromWidgetId } from '../../../utils'
 import { SelectedToolBox } from './SelectedToolBox'
 import { useDrag } from 'react-dnd'
@@ -21,7 +21,7 @@ const SelectIndicatorContent: FC = () => {
     width: 0,
     height: 0
   })
-  const widgets = useRecoilValue(widgetsAtom)
+  const widgets = useRecoilValue(widgetsSelector)
   const [display, setDisplay] = useState(false)
   const [styleUpdater, setStyleUpdater] = useState(0)
   useEffect(() => {
@@ -31,6 +31,7 @@ const SelectIndicatorContent: FC = () => {
   }, [widgets])
   useEffect(() => {
     if (!selectedWidgetId) {
+      setDisplay(false)
       return
     }
     const rawElement = getElementFromWidgetId(selectedWidgetId)
