@@ -24,3 +24,9 @@ export interface Entity {
   name: string
   fields: EntityField[]
 }
+
+export enum WidgetGroupEnum {
+  Button,
+  Input,
+  Container
+}

@@ -1,14 +1,14 @@
 import { buttonWidgetMetadata, colWidgetMetadata, rowWidgetMetadata } from '@modou/widgets'
-import { WidgetBaseProps, Widget } from '@modou/core'
+import { WidgetBaseProps, WidgetMetadata } from '@modou/core'
 import { generateId } from '@modou/core/src/utils'
 
 const buttonDSL = {
-  ...Widget.mrSchemeToDefaultJson(buttonWidgetMetadata.jsonPropsSchema),
+  ...WidgetMetadata.mrSchemeToDefaultJson(buttonWidgetMetadata.jsonPropsSchema),
   widgetId: generateId()
 }
 
 const colDSL = {
-  ...Widget.mrSchemeToDefaultJson(colWidgetMetadata.jsonPropsSchema),
+  ...WidgetMetadata.mrSchemeToDefaultJson(colWidgetMetadata.jsonPropsSchema),
   widgetId: generateId(),
   slots: {
     children: [buttonDSL.widgetId]
@@ -16,7 +16,7 @@ const colDSL = {
 }
 
 const rowDSL: WidgetBaseProps = {
-  ...Widget.mrSchemeToDefaultJson(rowWidgetMetadata.jsonPropsSchema),
+  ...WidgetMetadata.mrSchemeToDefaultJson(rowWidgetMetadata.jsonPropsSchema),
   widgetId: generateId(),
   slots: {
     children: [colDSL.widgetId]

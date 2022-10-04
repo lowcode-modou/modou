@@ -1,29 +1,37 @@
-import { AppFactory } from '@modou/core'
+import { AppFactory, WidgetGroupEnum } from '@modou/core'
 import {
   ButtonWidget,
-  buttonWidgetMetadata,
-  ColWidget,
-  colWidgetMetadata,
-  RowWidget,
-  rowWidgetMetadata,
+  buttonWidgetMetadata, ColWidget, colWidgetMetadata,
   InputWidget,
-  inputWidgetMetadata
+  inputWidgetMetadata,
+  RowWidget,
+  rowWidgetMetadata
 } from '@modou/widgets'
 
-import {
-  StringSetter,
-  NumberSetter,
-  BooleanSetter,
-  SelectSetter,
-  SetterTypeEnum
-} from '@modou/setters'
+import { BooleanSetter, NumberSetter, SelectSetter, SetterTypeEnum, StringSetter } from '@modou/setters'
 
 export const widgetFactory = AppFactory.create({
   widgets: [
-    [ButtonWidget, buttonWidgetMetadata],
-    [ColWidget, colWidgetMetadata],
-    [RowWidget, rowWidgetMetadata],
-    [InputWidget, inputWidgetMetadata]
+    {
+      component: ButtonWidget,
+      metadata: buttonWidgetMetadata,
+      group: WidgetGroupEnum.Button
+    },
+    {
+      component: ColWidget,
+      metadata: colWidgetMetadata,
+      group: WidgetGroupEnum.Container
+    },
+    {
+      component: RowWidget,
+      metadata: rowWidgetMetadata,
+      group: WidgetGroupEnum.Container
+    },
+    {
+      component: InputWidget,
+      metadata: inputWidgetMetadata,
+      group: WidgetGroupEnum.Input
+    }
   ],
   setters: {
     [SetterTypeEnum.Select]: SelectSetter,

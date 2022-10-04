@@ -1,10 +1,11 @@
-import { Widget } from '@modou/core'
+import { WidgetMetadata } from '@modou/core'
 import { mr } from '@modou/refine'
 import { mrStringSetter } from '@modou/setters'
 import { FC, useEffect } from 'react'
 import { Form, Input } from 'antd'
+import { WidgetIcon } from '../_'
 
-const MRSchemeInputWidgetProps = Widget.createMRSchemeWidgetProps({
+const MRSchemeInputWidgetProps = WidgetMetadata.createMRSchemeWidgetProps({
   widgetType: 'InputWidget',
   widgetName: '输入框'
 }).extend({
@@ -28,10 +29,11 @@ const MRSchemeInputWidgetState = MRSchemeInputWidgetProps.shape.props.extend({
   widgetName: MRSchemeInputWidgetProps.shape.widgetName
 })
 
-export const inputWidgetMetadata = Widget.createMetadata({
+export const inputWidgetMetadata = WidgetMetadata.createMetadata({
   version: '0.0.1',
   widgetType: 'InputWidget',
   widgetName: '输入框',
+  icon: <WidgetIcon type='input'/>,
   mrPropsScheme: MRSchemeInputWidgetProps,
   slots: {}
 })

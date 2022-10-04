@@ -1,12 +1,18 @@
 import { FC } from 'react'
-import { Widget } from '../widget'
+import { WidgetMetadata, WidgetBaseProps } from '../widget'
 import { isEqual, unionWith } from 'lodash'
 import { BaseSetterProps } from '@modou/setters/src/types'
-import { Page } from '../types'
+import { Page, WidgetGroupEnum } from '../types'
 import { generateId } from '../utils'
 import { rowWidgetMetadata } from '@modou/widgets'
 
-type WidgetRegistry = Record<string, { element: FC<any>, metadata: Widget }>
+interface Widget {
+  component: FC<any>
+  metadata: WidgetMetadata
+  group: WidgetGroupEnum
+}
+
+type WidgetRegistry = Record<string, Widget>
 
 type SetterElement = FC<BaseSetterProps<any>>
 
@@ -16,15 +22,15 @@ export class AppFactory {
     setters
   }: {
     // TODO 增加 package 信息  增加umd引入
-    widgets: Array<[FC<any>, Widget]>
+    widgets: Widget[]
     setters: Record<string, SetterElement>
   }) {
     this._widgetRegistry =
-      unionWith(widgets, ([, preMetadata], [, curMetadata]) => isEqual(preMetadata.widgetType, curMetadata.widgetType))
+      unionWith(widgets, ({ metadata: preMetadata }, { metadata: curMetadata }) =>
+        isEqual(preMetadata.widgetType, curMetadata.widgetType))
         .reduce<WidgetRegistry>((pre, cur) => {
-        pre[cur[1].widgetType] = {
-          element: cur[0],
-          metadata: cur[1]
+        pre[cur.metadata.widgetType] = {
+          ...cur
         }
         return pre
       }, {})
@@ -59,7 +65,7 @@ export class AppFactory {
   static create (
     params: {
       // TODO 增加 package 信息  增加umd引入
-      widgets: Array<[FC<any>, Widget<string>]>
+      widgets: Widget[]
       setters: Record<string, SetterElement>
     }
   ) {
@@ -68,7 +74,7 @@ export class AppFactory {
 
   static generateDefaultPage = (name?: string): Page => {
     const rootWidget = {
-      ...Widget.mrSchemeToDefaultJson(rowWidgetMetadata.jsonPropsSchema),
+      ...WidgetMetadata.mrSchemeToDefaultJson(rowWidgetMetadata.jsonPropsSchema),
       widgetId: generateId(),
       slots: {
         children: []

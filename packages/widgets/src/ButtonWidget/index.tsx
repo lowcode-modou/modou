@@ -2,8 +2,8 @@ import { FC, useEffect } from 'react'
 import { Button } from 'antd'
 import { mr } from '@modou/refine'
 import { mrBooleanSetter, mrSelectSetter, mrStringSetter } from '@modou/setters'
-import { Widget } from '@modou/core'
-import { MRSelectOptions } from '../_'
+import { WidgetMetadata } from '@modou/core'
+import { MRSelectOptions, WidgetIcon } from '../_'
 
 // props
 // state
@@ -83,7 +83,7 @@ const typeOptions: MRSelectOptions = [
   }
 ]
 
-const MRSchemeButtonWidgetProps = Widget.createMRSchemeWidgetProps({
+const MRSchemeButtonWidgetProps = WidgetMetadata.createMRSchemeWidgetProps({
   widgetType: 'ButtonWidget',
   widgetName: '按钮'
 }).extend({
@@ -157,10 +157,11 @@ const MRSchemeButtonWidgetState = MRSchemeButtonWidgetProps.shape.props.extend({
 
 type ButtonWidgetState = mr.infer<typeof MRSchemeButtonWidgetState>
 
-export const buttonWidgetMetadata = Widget.createMetadata({
+export const buttonWidgetMetadata = WidgetMetadata.createMetadata({
   version: '0.0.1',
   widgetType: 'ButtonWidget',
   widgetName: '按钮',
+  icon: <WidgetIcon type='button'/>,
   mrPropsScheme: MRSchemeButtonWidgetProps,
   slots: {}
 })

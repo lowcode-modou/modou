@@ -6,6 +6,7 @@ import {
   schemeToJsonDefault
 } from '@modou/refine'
 import { WidgetBaseProps } from './types'
+import { ReactNode } from 'react'
 
 type WidgetType = `${string}Widget`
 type Slots<S extends string> = Record<S, {
@@ -14,19 +15,21 @@ type Slots<S extends string> = Record<S, {
 
 interface BaseWidgetMetadata<S extends string> {
   version: `${number}.${number}.${number}`
+  icon: ReactNode
   widgetType: WidgetType
   widgetName: string
   slots: Slots<S>
   mrPropsScheme: MRScheme
 }
 
-export class Widget<S extends string = string> implements BaseWidgetMetadata<S> {
+export class WidgetMetadata<S extends string = string> implements BaseWidgetMetadata<S> {
   constructor ({
     version,
     widgetType,
     widgetName,
     mrPropsScheme,
-    slots
+    slots,
+    icon
   }: BaseWidgetMetadata<S>) {
     this.version = version
     this.widgetType = widgetType
@@ -34,17 +37,19 @@ export class Widget<S extends string = string> implements BaseWidgetMetadata<S> 
     this.mrPropsScheme = mrPropsScheme
     this.jsonPropsSchema = mrToJsonSchema(mrPropsScheme) as unknown as JsonSchema7ObjectType
     this.slots = slots
+    this.icon = icon
   }
 
   version
   widgetType
   widgetName
+  icon
   mrPropsScheme
   jsonPropsSchema: JsonSchema7ObjectType
   slots: Slots<S>
 
   static createMetadata<S extends string = ''> (metadata: BaseWidgetMetadata<S>) {
-    return new Widget(metadata)
+    return new WidgetMetadata(metadata)
   }
 
   static createMRSchemeWidgetProps
@@ -70,7 +75,7 @@ export class Widget<S extends string = string> implements BaseWidgetMetadata<S> 
   }
 
   // static createMRSchemeWidgetState<T extends MRObject<{ props: MRObject<any> }>
-  // & (ReturnType<typeof Widget.createMRSchemeWidgetProps>)>
+  // & (ReturnType<typeof WidgetMetadata.createMRSchemeWidgetProps>)>
   // (mrSchemeProps: T) {
   //   return mrSchemeProps.shape.props.extend({
   //     instance: mr.object({

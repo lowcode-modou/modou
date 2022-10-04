@@ -79,7 +79,7 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
       ? <Row
         justify='center'
         align='middle'
-        className={'border-dashed border-1 fixed pointer-events-none'}
+        className='border-dashed border-gray-400 fixed pointer-events-none'
         style={style}>
         <Col>
           <Typography.Text type={'secondary'} strong>{widget.widgetType}</Typography.Text>

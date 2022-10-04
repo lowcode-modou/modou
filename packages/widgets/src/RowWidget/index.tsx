@@ -1,7 +1,7 @@
-import { MRSelectOptions } from '../_'
+import { MRSelectOptions, WidgetIcon } from '../_'
 import { mr } from '@modou/refine'
 import { mrBooleanSetter, mrSelectSetter } from '@modou/setters'
-import { Widget } from '@modou/core'
+import { WidgetMetadata } from '@modou/core'
 import { FC, ReactNode, useEffect } from 'react'
 import { Row } from 'antd'
 import { DEFAULT_WIDGET_SLOT_NAME } from '@modou/core/src/constants'
@@ -63,7 +63,7 @@ const JustifyOptions: MRSelectOptions = [
   }
 ]
 
-const MRSchemeRowWidgetProps = Widget.createMRSchemeWidgetProps({
+const MRSchemeRowWidgetProps = WidgetMetadata.createMRSchemeWidgetProps({
   widgetType: 'RowWidget',
   widgetName: '栅格行'
 }).extend({
@@ -109,10 +109,11 @@ enum SlotEnum {
   Children = 'children'
 }
 
-export const rowWidgetMetadata = Widget.createMetadata<SlotEnum>({
+export const rowWidgetMetadata = WidgetMetadata.createMetadata<SlotEnum>({
   version: '0.0.1',
   widgetType: 'RowWidget',
   widgetName: '栅格行',
+  icon: <WidgetIcon type='row'/>,
   mrPropsScheme: MRSchemeRowWidgetProps,
   slots: {
     children: {}

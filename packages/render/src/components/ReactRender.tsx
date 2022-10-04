@@ -15,7 +15,7 @@ const WidgetWrapper: FC<{
   const widgetFactory = useContext(WidgetFactoryContext)
   // TODO any 替换 state 定义
   const Widget = useMemo(() => {
-    return widgetFactory.widgetByType[widget.widgetType].element
+    return widgetFactory.widgetByType[widget.widgetType].component
   }, [widget.widgetType, widgetFactory.widgetByType])
 
   const renderSlots = useMemo(() => {

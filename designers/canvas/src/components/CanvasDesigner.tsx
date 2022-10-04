@@ -1,16 +1,16 @@
 import { FC, useRef } from 'react'
-import { Page, WidgetBaseProps } from '@modou/core'
+import { Page } from '@modou/core'
 import { RecoilRoot, useSetRecoilState } from 'recoil'
-import { Col, Row } from 'antd'
 import { CanvasDesignerPropsPanel } from './CanvasDesignerPropsPanel'
 import { RecoilWidgetsSync } from './RecoilWidgetsSync'
-import { CanvasDesignerWidgets } from './CanvasDesignerWidgets'
+import { CanvasDesignerWidgetStencil } from './CanvasDesignerWidgetStencil'
 import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
 import { DesignerIndicator } from './DesignerIndicator'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import produce from 'immer'
 import { selectedWidgetIdAtom } from '../store'
+import { Tabs } from 'antd'
+import './CanvasDesigner.scss'
 
 interface CanvasDesignerProps {
   page: Page
@@ -27,31 +27,53 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
   return <RecoilRoot>
     <RecoilWidgetsSync page={page} onPageChange={onPageChange}>
       <DndProvider backend={HTML5Backend}>
-        <Row className='h-full'>
-          <Col span={24} className='h-full'>
-            <Row className='h-full'>
-              <Col span={4} className='h-full'>
-                <CanvasDesignerWidgets />
-              </Col>
-              <Col span={16}
-                   className='h-full relative p-6'>
-                <div className='h-full'
-                     ref={canvasRef}
-                     onClick={() => setSelectedWidgetId('')}>
-                  <CanvasDesignerCanvas/>
-                </div>
-                <DesignerIndicator canvasRef={canvasRef} />
-              </Col>
-              <Col span={4} className='h-full'>
-                {/* <DesignerContext.Provider value={{ */}
-                {/*  onWidgetsChange: onWidgetsChangeRef */}
-                {/* }}> */}
-                <CanvasDesignerPropsPanel />
-                {/* </DesignerContext.Provider> */}
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+        <div className='h-full flex justify-between'>
+          <div
+            className='h-full bg-white'
+            style={{
+              width: '220px'
+            }}>
+            <Tabs
+              className='designer-panel-tabs'
+              type="card"
+              tabBarGutter={0}
+              items={[
+                {
+                  key: 'CanvasDesignerOutlineTree',
+                  label: '大纲树',
+                  children: <div>我是一棵树</div>
+                }
+              ]}/>
+          </div>
+          <div className='h-full relative flex-1 bg-white border-solid border-gray-100 border-t-0 border-b-0'
+               ref={canvasRef}
+               onClick={() => setSelectedWidgetId('')}>
+            <CanvasDesignerCanvas/>
+            <DesignerIndicator canvasRef={canvasRef} />
+          </div>
+          <div
+            className='h-full bg-white'
+            style={{
+              width: '280px'
+            }}>
+            <Tabs
+              className='designer-panel-tabs'
+              type="card"
+              tabBarGutter={0}
+              items={[
+                {
+                  key: 'CanvasDesignerWidgetStencil',
+                  label: '组件列表',
+                  children: <CanvasDesignerWidgetStencil />
+                },
+                {
+                  key: 'CanvasDesignerPropsPanel',
+                  label: '属性',
+                  children: <CanvasDesignerPropsPanel />
+                }
+              ]}/>
+          </div>
+        </div>
       </DndProvider>
     </RecoilWidgetsSync>
   </RecoilRoot>

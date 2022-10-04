@@ -1,11 +1,12 @@
 import { mr } from '@modou/refine'
 import { mrNumberSetter } from '@modou/setters'
-import { Widget } from '@modou/core'
+import { WidgetMetadata } from '@modou/core'
 import { FC, ReactNode, useEffect } from 'react'
 import { Col } from 'antd'
 import { DEFAULT_WIDGET_SLOT_NAME } from '@modou/core/src/constants'
+import { WidgetIcon } from '../_'
 
-const MRSchemeColWidgetProps = Widget.createMRSchemeWidgetProps({
+const MRSchemeColWidgetProps = WidgetMetadata.createMRSchemeWidgetProps({
   widgetType: 'ColWidget',
   widgetName: '栅格列'
 }).extend({
@@ -37,10 +38,11 @@ enum SlotEnum {
   Children = 'children'
 }
 
-export const colWidgetMetadata = Widget.createMetadata<SlotEnum>({
+export const colWidgetMetadata = WidgetMetadata.createMetadata<SlotEnum>({
   version: '0.0.1',
   widgetType: 'ColWidget',
   widgetName: '栅格列',
+  icon: <WidgetIcon type='col'/>,
   slots: {
     children: {}
   },
