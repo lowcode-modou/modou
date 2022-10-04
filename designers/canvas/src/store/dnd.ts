@@ -7,6 +7,7 @@ export enum DropIndicatorPositionEnum {
   Bottom,
   Left
 }
+
 export enum DropIndicatorInsertPositionEnum {
   Before,
   After,

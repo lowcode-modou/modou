@@ -1,8 +1,8 @@
 import { FC, ReactElement, useState } from 'react'
 import { RecoilSync } from 'recoil-sync'
-import { PAGE_ATOM_KEY, PAGE_ATOM_KEY_STORE_KEY, pageAtom, selectedWidgetIdAtom } from '../store'
+import { PAGE_ATOM_KEY, PAGE_ATOM_KEY_STORE_KEY, PAGE_ATOM_STATUS, selectedWidgetIdAtom } from '../store'
 import { Page } from '@modou/core'
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 interface RecoilWidgetsSyncProps {
   page: Page
@@ -21,12 +21,14 @@ export const RecoilWidgetsSync: FC<{
   return <RecoilSync
     storeKey={PAGE_ATOM_KEY_STORE_KEY}
     listen={({ updateItem }) => {
-      console.log(page.id, tempPageId)
       if (page.id !== tempPageId) {
         setSelectWidgetId('')
         setTempPageId(page.id)
       }
-      updateItem(PAGE_ATOM_KEY, page)
+      if (PAGE_ATOM_STATUS.canUpdate) {
+        updateItem(PAGE_ATOM_KEY, page)
+      }
+      PAGE_ATOM_STATUS.canUpdate = true
     }}
     read={(itemKey) => {
       if (itemKey === PAGE_ATOM_KEY) {

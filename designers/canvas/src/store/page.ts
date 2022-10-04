@@ -8,18 +8,20 @@ import { syncEffect } from 'recoil-sync'
 import { custom } from '@recoiljs/refine'
 import produce from 'immer'
 import { DataNode } from 'antd/es/tree'
-import { widgetsAtom } from '@modou/render/src/store'
 
 export * from './dnd'
 
-export const PAGE_ATOM_KEY = generateRecoilKey('pageAtom')
+export const PAGE_ATOM_KEY = generateRecoilKey('_pageAtom')
 export const PAGE_ATOM_KEY_STORE_KEY = `${PAGE_ATOM_KEY}_STORE_KEY`
 
 export const selectedWidgetIdAtom = atom<string>({
   key: generateRecoilKey('selectedWidgetIdAtom'),
   default: ''
 })
-export const pageAtom = atom<Page>({
+export const PAGE_ATOM_STATUS = {
+  canUpdate: true
+}
+const _pageAtom = atom<Page>({
   key: PAGE_ATOM_KEY,
   default: {
     id: '',
@@ -30,27 +32,38 @@ export const pageAtom = atom<Page>({
   effects: [
     syncEffect({
       storeKey: PAGE_ATOM_KEY_STORE_KEY,
-      refine: custom<Page>(x => x as Page)
+      refine: custom<Page>(x => x as Page),
+      syncDefault: true
     })
   ]
+})
+export const pageSelector = selector<Page>({
+  key: generateRecoilKey('pageSelector'),
+  get: ({ get }) => get(_pageAtom),
+  set: ({ set }, newValue) => {
+    PAGE_ATOM_STATUS.canUpdate = false
+    set(_pageAtom, newValue)
+  }
 })
 
 export const widgetsSelector = selector<WidgetBaseProps[]>({
   key: generateRecoilKey('widgetsSelector'),
-  get: ({ get }) => get(pageAtom).widgets,
-  set: ({ set }, newValue) => set(pageAtom, produce<Page>(draft => {
+  get: ({ get }) => get(pageSelector).widgets,
+  set: ({ set }, newValue) => set(pageSelector, produce<Page>(draft => {
     if (newValue instanceof DefaultValue) {
       return draft
     }
     draft.widgets = newValue
-  }))
+  })),
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
 })
 
 export const widgetByIdSelector = selector<Record<string, WidgetBaseProps>>({
   key: generateRecoilKey('widgetByIdSelector'),
   get: ({ get }) => {
     return keyBy(get(widgetsSelector), 'widgetId')
-  }
+  },
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
 })
 
 interface RelationWidget {
@@ -90,7 +103,8 @@ export const widgetRelationByWidgetIdSelector = selector<WidgetRelationByWidgetI
       }
       return pre
     }, {})
-  }
+  },
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
 })
 
 export type WidgetTreeNode = DataNode & {
@@ -103,7 +117,7 @@ export type WidgetTreeNode = DataNode & {
 export const pageOutlineTreeSelector = selector<WidgetTreeNode>({
   key: generateRecoilKey('pageOutlineTreeSelector'),
   get: ({ get }) => {
-    const page = get(pageAtom)
+    const page = get(pageSelector)
     const widgetById = get(widgetByIdSelector)
     const rootWidget = widgetById[page.rootWidgetId]
 
@@ -180,5 +194,6 @@ export const pageOutlineTreeSelector = selector<WidgetTreeNode>({
     // }
 
     return rootTreeNode as WidgetTreeNode
-  }
+  },
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
 })

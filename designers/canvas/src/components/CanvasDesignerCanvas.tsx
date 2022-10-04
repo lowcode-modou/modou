@@ -1,14 +1,14 @@
 import { FC } from 'react'
 import { ReactRender } from '@modou/render'
 import { useRecoilValue } from 'recoil'
-import { pageAtom } from '../store'
+import { pageSelector } from '../store'
 
 // interface CanvasDesignerCanvasProps {
 //   // rootWidgetId: string
 // }
 
 export const CanvasDesignerCanvas: FC = () => {
-  const { widgets, rootWidgetId } = useRecoilValue(pageAtom)
+  const { widgets, rootWidgetId } = useRecoilValue(pageSelector)
   return <div
     style={{
       padding: '16px'

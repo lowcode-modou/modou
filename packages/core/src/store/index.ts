@@ -40,7 +40,8 @@ const pagesSelector = selector<Page[]>({
     } else {
       draft.pages = newValue
     }
-  }))
+  })),
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
 })
 
 const pageByIdSelector = selector<Record<string, Page>>({
@@ -48,7 +49,8 @@ const pageByIdSelector = selector<Record<string, Page>>({
   get: ({ get }) => keyBy(get(pagesSelector), 'id'),
   set: ({ set }, newValue) => {
     set(Metadata.pagesSelector, Object.values(newValue))
-  }
+  },
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
 })
 
 const pageSelector = selectorFamily<Page, string>({
@@ -56,7 +58,8 @@ const pageSelector = selectorFamily<Page, string>({
   get: (widgetId) => ({ get }) => get(pageByIdSelector)[widgetId],
   set: (widgetId) => ({ set }, newValue) => set(pageByIdSelector, produce(draft => {
     draft[widgetId] = newValue
-  }))
+  })),
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
 })
 
 export const Metadata = {
