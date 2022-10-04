@@ -1,4 +1,4 @@
-import React, { ComponentProps, FC, useContext, useState } from 'react'
+import React, { ComponentProps, FC, useContext } from 'react'
 import { DownOutlined } from '@ant-design/icons'
 import { Tree } from 'antd'
 import type { DataNode } from 'antd/es/tree'
@@ -11,7 +11,6 @@ import {
 } from '../store'
 import { AppFactoryContext } from '@modou/core'
 import { useMoveWidget } from '../hooks'
-import { match } from 'ts-pattern'
 
 enum DropPositionEnum {
   Before = -1,
@@ -48,7 +47,6 @@ const generateData = (_level: number, _preKey?: React.Key, _tns?: DataNode[]) =>
 generateData(z)
 
 export const CanvasDesignerOutlineTree: FC = () => {
-  const [gData, setGData] = useState(defaultData)
   // const [expandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0'])
   // const onDragEnter: TreeProps['onDragEnter'] = info => {
   //   console.log(info)
@@ -89,8 +87,6 @@ export const CanvasDesignerOutlineTree: FC = () => {
   }
 
   const onDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['onDrop'] = info => {
-    const dropKey = info.node.key
-    const dragKey = info.dragNode.key
     const dropPos = info.node.pos.split('-')
     const dropPosition: DropPositionEnum = info.dropPosition - Number(dropPos[dropPos.length - 1])
 
@@ -100,7 +96,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
       return
     }
 
-    const parent = widgetRelationByWidgetId[dragWidget.widgetId].parent
+    const parent = widgetRelationByWidgetId[dropWidget.widgetId].parent
 
     const parentSlotName = 'children'
     switch (dropPosition) {
@@ -130,13 +126,12 @@ export const CanvasDesignerOutlineTree: FC = () => {
           sourceWidgetId: dragWidget.widgetId,
           targetWidgetId: dropWidget.widgetId,
           targetSlotName: parentSlotName,
-          targetPosition: dropWidget.slots[parentSlotName].length
+          targetPosition: 0
         })
         break
       default:
     }
-
-    console.log(dropPosition, info)
+    console.log('dropPosition', dropPosition, info)
   }
 
   return <div style={{ padding: '16px 8px' }}>

@@ -19,21 +19,27 @@ export const useMoveWidget = () => {
     targetPosition: number
   }) => {
     setWidgets(produce(draft => {
+      let sourceIndex = -1
       draft.forEach(widget => {
+        // 删除
         if (isObject(widget.slots)) {
           Object.keys(widget.slots).forEach(slotName => {
-            const index = widget.slots[slotName]
+            if (sourceIndex !== -1) {
+              return
+            }
+            sourceIndex = widget.slots[slotName]
               .findIndex(slotWidgetId => slotWidgetId === sourceWidgetId)
-            if (index !== -1) {
-              widget.slots[slotName].splice(index, 1)
+            if (sourceIndex !== -1) {
+              widget.slots[slotName].splice(sourceIndex, 1)
             }
           })
         }
+        // 添加
         if (widget.widgetId === targetWidgetId) {
-          if (widgetRelationByWidgetId[sourceWidgetId]?.parent?.props.widgetId === targetWidgetId &&
-            widgetRelationByWidgetId[sourceWidgetId].slotName === targetSlotName) {
-            const sourceIndex = widget.slots[targetSlotName]
-              .findIndex(slotWidgetId => slotWidgetId === sourceWidgetId)
+          // 如果是同一个parent的同一个slot内移动
+          const isSameParentSlot = widgetRelationByWidgetId[sourceWidgetId]?.parent?.props.widgetId ===
+            targetWidgetId && widgetRelationByWidgetId[sourceWidgetId].slotName === targetSlotName
+          if (isSameParentSlot) {
             widget.slots[targetSlotName]
               .splice(sourceIndex < targetPosition ? targetPosition - 1 : targetPosition, 0, sourceWidgetId)
           } else {
@@ -42,7 +48,7 @@ export const useMoveWidget = () => {
         }
       })
     }))
-  }, [setWidgets])
+  }, [setWidgets, widgetRelationByWidgetId])
   return {
     moveWidget
   }
