@@ -1,5 +1,5 @@
 import { FC, useContext, useMemo } from 'react'
-import { WidgetMetadata, WidgetBaseProps, WidgetFactoryContext, WidgetGroupEnum, AppFactory } from '@modou/core'
+import { WidgetMetadata, WidgetBaseProps, AppFactoryContext, WidgetGroupEnum, AppFactory } from '@modou/core'
 import { Card, Col, Row, Typography } from 'antd'
 import { useDrag } from 'react-dnd'
 import { generateId, getWidgetGroupLabel } from '@modou/core/src/utils'
@@ -10,7 +10,7 @@ import { object } from '@recoiljs/refine'
 const WidgetBlock: FC<{
   metadata: WidgetMetadata
 }> = ({ metadata }) => {
-  const widgetFactory = useContext(WidgetFactoryContext)
+  const widgetFactory = useContext(AppFactoryContext)
   const [{ isDragging }, drag] = useDrag(() => ({
     type: metadata.widgetType,
     item: () => ({
@@ -56,7 +56,7 @@ const WidgetBlock: FC<{
 }
 
 export const CanvasDesignerWidgetStencil: FC = () => {
-  const widgetFactory = useContext(WidgetFactoryContext)
+  const widgetFactory = useContext(AppFactoryContext)
   const widgetsByGroup = useMemo(() => {
     return Object.values(widgetFactory.widgetByType).reduce<Record<WidgetGroupEnum, {
       name: string

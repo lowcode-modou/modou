@@ -2,7 +2,7 @@ import { FC, useEffect } from 'react'
 import { Col, Row } from 'antd'
 import { CanvasDesigner } from '@modou/canvas-designer'
 import { useRecoilState } from 'recoil'
-import { Metadata, WidgetFactoryContext } from '@modou/core'
+import { Metadata, AppFactoryContext } from '@modou/core'
 import produce from 'immer'
 import { MOCK_PAGE_ID, MOCK_ROOT_WIDGET_ID, MOCK_WIDGETS } from '../mock'
 import { widgetFactory } from '../utils'
@@ -54,11 +54,11 @@ export const Page: FC = () => {
   return <Row justify='center' align='middle' className='h-full'>
     <Col span={24} className='h-full'>
       {
-        page && <WidgetFactoryContext.Provider value={widgetFactory}>
+        page && <AppFactoryContext.Provider value={widgetFactory}>
               <CanvasDesigner
                   page={page}
                   onPageChange={setPage} />
-          </WidgetFactoryContext.Provider>
+          </AppFactoryContext.Provider>
       }
     </Col>
   </Row>

@@ -1,5 +1,5 @@
 import { useDrop } from 'react-dnd'
-import { WidgetBaseProps, WidgetFactoryContext } from '@modou/core'
+import { WidgetBaseProps, AppFactoryContext } from '@modou/core'
 import { isEmpty } from 'lodash'
 import { useContext, useEffect, useRef } from 'react'
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -99,7 +99,7 @@ const useWidgetMinHeight = ({
 // }
 
 export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotName: string }) => {
-  const widgetFactory = useContext(WidgetFactoryContext)
+  const widgetFactory = useContext(AppFactoryContext)
   const widget = useRecoilValue(widgetSelector(widgetId))
   const { addWidget } = useAddWidget()
   const { moveWidget } = useMoveWidget()

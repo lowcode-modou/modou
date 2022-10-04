@@ -5,7 +5,7 @@ import { SETTER_KEY } from '@modou/setters'
 import { SetterTypeEnum } from '@modou/setters/src/constants'
 import { BaseMRSetterOptions } from '@modou/setters/src/types'
 import { Button, Form, Typography } from 'antd'
-import { WidgetFactoryContext } from '@modou/core'
+import { AppFactoryContext } from '@modou/core'
 import { useRemoveWidget } from '../hooks'
 
 const WithSelectedWidgetId: FC = () => {
@@ -15,7 +15,7 @@ const WithSelectedWidgetId: FC = () => {
   // const designerContext = useContext(DesignerContext)
   const setWidgets = useSetRecoilState(widgetsSelector)
 
-  const widgetFactory = useContext(WidgetFactoryContext)
+  const widgetFactory = useContext(AppFactoryContext)
 
   const widgetMetadata = useMemo(() => {
     return widgetFactory.widgetByType[selectWidget.widgetType].metadata

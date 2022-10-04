@@ -1,5 +1,5 @@
 import { FC, memo, useContext, useEffect, useMemo } from 'react'
-import { WidgetBaseProps, WidgetFactoryContext } from '@modou/core'
+import { WidgetBaseProps, AppFactoryContext } from '@modou/core'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { widgetsAtom, widgetSelector } from '../store'
 import { Spin } from 'antd'
@@ -12,7 +12,7 @@ const WidgetWrapper: FC<{
   widgetId: string
 }> = ({ widgetId }) => {
   const widget = useRecoilValue(widgetSelector(widgetId))
-  const widgetFactory = useContext(WidgetFactoryContext)
+  const widgetFactory = useContext(AppFactoryContext)
   // TODO any 替换 state 定义
   const Widget = useMemo(() => {
     return widgetFactory.widgetByType[widget.widgetType].component

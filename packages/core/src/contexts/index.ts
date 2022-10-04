@@ -1,1 +1,1 @@
-export * from './WidgetFactoryContext'
+export * from './AppFactoryContext'

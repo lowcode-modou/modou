@@ -1,7 +1,23 @@
-import React, { FC, useState } from 'react'
+import React, { ComponentProps, FC, useContext, useState } from 'react'
 import { DownOutlined } from '@ant-design/icons'
 import { Tree } from 'antd'
-import type { DataNode, TreeProps } from 'antd/es/tree'
+import type { DataNode } from 'antd/es/tree'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import {
+  pageOutlineTreeSelector,
+  selectedWidgetIdAtom,
+  widgetRelationByWidgetIdSelector,
+  WidgetTreeNode
+} from '../store'
+import { AppFactoryContext } from '@modou/core'
+import { useMoveWidget } from '../hooks'
+import { match } from 'ts-pattern'
+
+enum DropPositionEnum {
+  Before = -1,
+  Inner = 0,
+  After = 1
+}
 
 const x = 3
 const y = 2
@@ -31,94 +47,114 @@ const generateData = (_level: number, _preKey?: React.Key, _tns?: DataNode[]) =>
 }
 generateData(z)
 
-// console.log(defaultData)
-
 export const CanvasDesignerOutlineTree: FC = () => {
   const [gData, setGData] = useState(defaultData)
-  const [expandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0'])
-  const onDragEnter: TreeProps['onDragEnter'] = info => {
-    console.log(info)
-    // expandedKeys 需要受控时设置
-    // setExpandedKeys(info.expandedKeys)
+  // const [expandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0'])
+  // const onDragEnter: TreeProps['onDragEnter'] = info => {
+  //   console.log(info)
+  //   // expandedKeys 需要受控时设置
+  //   // setExpandedKeys(info.expandedKeys)
+  // }
+
+  // start
+  const pageOutlineTree = useRecoilValue(pageOutlineTreeSelector)
+  const [selectedWidgetId, setSelectedWidgetId] = useRecoilState(selectedWidgetIdAtom)
+  const selectedKeys = [selectedWidgetId || pageOutlineTree.key]
+  const widgetRelationByWidgetId = useRecoilValue(widgetRelationByWidgetIdSelector)
+  const { moveWidget } = useMoveWidget()
+
+  const appFactory = useContext(AppFactoryContext)
+
+  const onSelect: ComponentProps<typeof Tree>['onSelect'] = ([key]) => {
+    const widgetId = key === pageOutlineTree.key ? '' : key
+    setSelectedWidgetId(widgetId as string)
   }
 
-  const onDrop: TreeProps['onDrop'] = info => {
-    console.log(info)
+  const allowDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['allowDrop'] = ({ dropNode, dropPosition }) => {
+    // console.log('dropNode', dropNode, dropPosition)
+    const { widget } = dropNode
+    if (!widget) {
+      return false
+    }
+    const widgetMetadata = appFactory.widgetByType[widget.widgetType].metadata
+
+    if (dropPosition === DropPositionEnum.Before) {
+      return !!widgetRelationByWidgetId[widget.widgetId].parent
+    } else if (dropPosition === DropPositionEnum.Inner) {
+      return !!widgetMetadata.slots?.children
+    } else if (dropPosition === DropPositionEnum.After) {
+      return !!widgetRelationByWidgetId[widget.widgetId].parent
+    }
+    return false
+  }
+
+  const onDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['onDrop'] = info => {
     const dropKey = info.node.key
     const dragKey = info.dragNode.key
     const dropPos = info.node.pos.split('-')
-    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1])
+    const dropPosition: DropPositionEnum = info.dropPosition - Number(dropPos[dropPos.length - 1])
 
-    const loop = (
-      data: DataNode[],
-      key: React.Key,
-      callback: (node: DataNode, i: number, data: DataNode[]) => void
-    ) => {
-      for (let i = 0; i < data.length; i++) {
-        if (data[i].key === key) {
-          return callback(data[i], i, data)
-        }
-        if (data[i].children) {
-          loop(data[i].children!, key, callback)
-        }
-      }
+    const dragWidget = info.dragNode.widget
+    const dropWidget = info.node.widget
+    if (!dragWidget || !dropWidget) {
+      return
     }
-    const data = [...gData]
 
-    // Find dragObject
-    let dragObj: DataNode
-    loop(data, dragKey, (item, index, arr) => {
-      arr.splice(index, 1)
-      dragObj = item
-    })
+    const parent = widgetRelationByWidgetId[dragWidget.widgetId].parent
 
-    if (!info.dropToGap) {
-      // Drop on the content
-      loop(data, dropKey, item => {
-        item.children = item.children ?? []
-        // where to insert 示例添加到头部，可以是随意位置
-        item.children.unshift(dragObj)
-      })
-    } else if (
-      ((info.node as any).props.children || []).length > 0 && // Has children
-      (info.node as any).props.expanded && // Is expanded
-      dropPosition === 1 // On the bottom gap
-    ) {
-      loop(data, dropKey, item => {
-        item.children = item.children ?? []
-        // where to insert 示例添加到头部，可以是随意位置
-        item.children.unshift(dragObj)
-        // in previous version, we use item.children.push(dragObj) to insert the
-        // item to the tail of the children
-      })
-    } else {
-      let ar: DataNode[] = []
-      let i: number
-      loop(data, dropKey, (_item, index, arr) => {
-        ar = arr
-        i = index
-      })
-      if (dropPosition === -1) {
-        ar.splice(i!, 0, dragObj!)
-      } else {
-        ar.splice(i! + 1, 0, dragObj!)
-      }
+    const parentSlotName = 'children'
+    switch (dropPosition) {
+      case DropPositionEnum.Before:
+        if (parent && parentSlotName) {
+          moveWidget({
+            sourceWidgetId: dragWidget.widgetId,
+            targetWidgetId: parent.props.widgetId,
+            targetSlotName: parentSlotName,
+            targetPosition: parent.props.slots[parentSlotName].findIndex(widgetId => dropWidget.widgetId === widgetId)
+          })
+        }
+        break
+      case DropPositionEnum.After:
+        if (parent && parentSlotName) {
+          moveWidget({
+            sourceWidgetId: dragWidget.widgetId,
+            targetWidgetId: parent.props.widgetId,
+            targetSlotName: parentSlotName,
+            targetPosition: parent.props.slots[parentSlotName]
+              .findIndex(widgetId => dropWidget.widgetId === widgetId) + 1
+          })
+        }
+        break
+      case DropPositionEnum.Inner:
+        moveWidget({
+          sourceWidgetId: dragWidget.widgetId,
+          targetWidgetId: dropWidget.widgetId,
+          targetSlotName: parentSlotName,
+          targetPosition: dropWidget.slots[parentSlotName].length
+        })
+        break
+      default:
     }
-    setGData(data)
+
+    console.log(dropPosition, info)
   }
-  return (
-    <Tree
+
+  return <div style={{ padding: '16px 8px' }}>
+    <Tree<WidgetTreeNode>
       showLine
+      allowDrop={allowDrop}
       switcherIcon={<DownOutlined />}
-      // onSelect={onSelect}
-      defaultExpandedKeys={expandedKeys}
+      selectedKeys={selectedKeys}
+      onSelect={onSelect}
+      // defaultExpandedKeys={expandedKeys}
+      defaultExpandAll
       draggable={{
         icon: false
       }}
       blockNode
-      onDragEnter={onDragEnter}
+      // onDragEnter={onDragEnter}
       onDrop={onDrop}
-      treeData={gData}
+      treeData={[pageOutlineTree]}
     />
-  )
+  </div>
 }
