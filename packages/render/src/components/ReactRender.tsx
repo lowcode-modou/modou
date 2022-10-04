@@ -31,7 +31,6 @@ const WidgetWrapper: FC<{
       return pre
     }, {})
   }, [widget.slots])
-
   const instance = useMemo(() => {
     return {
       id: widgetId,
@@ -39,10 +38,18 @@ const WidgetWrapper: FC<{
     }
   }, [widgetId])
 
+  const renderSlotNames = useMemo(() => {
+    return Object.keys(renderSlots).reduce<Record<string, string>>((pre, cur) => {
+      pre[cur] = cur
+      return pre
+    }, {})
+  }, [renderSlots])
+
   // FIXME 会导致重新渲染
   return <Widget
     {...widget.props}
     renderSlots={renderSlots}
+    renderSlotNames={renderSlotNames}
     instance={instance} />
 }
 

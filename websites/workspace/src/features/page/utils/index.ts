@@ -18,13 +18,13 @@ export const widgetFactory = AppFactory.create({
       group: WidgetGroupEnum.Button
     },
     {
-      component: ColWidget,
-      metadata: colWidgetMetadata,
+      component: RowWidget,
+      metadata: rowWidgetMetadata,
       group: WidgetGroupEnum.Container
     },
     {
-      component: RowWidget,
-      metadata: rowWidgetMetadata,
+      component: ColWidget,
+      metadata: colWidgetMetadata,
       group: WidgetGroupEnum.Container
     },
     {

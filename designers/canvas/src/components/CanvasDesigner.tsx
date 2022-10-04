@@ -11,6 +11,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { selectedWidgetIdAtom } from '../store'
 import { Tabs } from 'antd'
 import './CanvasDesigner.scss'
+import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
 
 interface CanvasDesignerProps {
   page: Page
@@ -41,7 +42,7 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
                 {
                   key: 'CanvasDesignerOutlineTree',
                   label: '大纲树',
-                  children: <div>我是一棵树</div>
+                  children: <CanvasDesignerOutlineTree/>
                 }
               ]}/>
           </div>

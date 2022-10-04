@@ -9,6 +9,9 @@ export const HoveringIndicator: FC<HoveringIndicatorProps> = ({ canvasRef }) => 
   const { style: hoveringStyle } = useWidgetHovering(canvasRef)
   return <div
     className='border-sky-400 border-dashed absolute'
-    style={hoveringStyle}
+    style={{
+      ...hoveringStyle,
+      zIndex: 999999
+    }}
   />
 }
