@@ -1,5 +1,5 @@
 import { FC, useLayoutEffect } from 'react'
-import { Typography } from 'antd'
+import { Spin } from 'antd'
 import { useRecoilValue } from 'recoil'
 import { Metadata } from '@modou/core'
 import { head, isEmpty } from 'lodash'
@@ -36,8 +36,9 @@ export const AppHome: FC = () => {
   }, [app.entities, app.pages, isEmptyApp, isEmptyPage, navigate, params])
 
   return <div className='h-full flex justify-center items-center'>
-    <div>
-      <Typography.Title>应用首页</Typography.Title>
-    </div>
+    <Spin size='large' />
+    {/* <div> */}
+    {/*   <Typography.Title>应用首页</Typography.Title> */}
+    {/* </div> */}
   </div>
 }
