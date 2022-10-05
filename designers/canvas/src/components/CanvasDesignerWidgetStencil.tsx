@@ -18,7 +18,7 @@ const WidgetBlock: FC<{
       const newWidget: WidgetBaseProps = {
         ...widget,
         widgetId: generateId(),
-        widgetName: `${widget.widgetName as string}-${generateId(4)}`
+        widgetName: `${widget.widgetName}-${generateId(4)}`
       }
       return {
         type: WidgetDragType.Add,
@@ -91,6 +91,7 @@ export const CanvasDesignerWidgetStencil: FC = () => {
       }
     })
   }, [widgetFactory.widgetByType])
+  // console.log('widgetsByGroup', widgetsByGroup)
   return <div style={{ padding: '16px' }}>
     {
       Object.entries(widgetsByGroup).map(([group, { name, widgets }]) =>
