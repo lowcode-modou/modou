@@ -1,4 +1,4 @@
-import React, { ComponentProps, FC, useContext } from 'react'
+import React, { ComponentProps, FC, useContext, useRef } from 'react'
 import { DownOutlined } from '@ant-design/icons'
 import { Tree } from 'antd'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -32,7 +32,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
   }
 
   const allowDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['allowDrop'] = ({ dropNode, dropPosition }) => {
-    // console.log('dropNode', dropNode, dropPosition)
+    console.log('dropNode', dropNode, dropPosition)
     const { widget } = dropNode
     if (!widget) {
       return false
@@ -97,8 +97,13 @@ export const CanvasDesignerOutlineTree: FC = () => {
     console.log('dropPosition', dropPosition, info)
   }
 
+  // TODO 支持大纲树和其画布及面板组件互相拖拽 IMPORTANT
+  const ref: ComponentProps<typeof Tree<WidgetTreeNode>>['ref'] = useRef() as any
+  console.log(ref)
+
   return <div style={{ padding: '16px 8px' }}>
     <Tree<WidgetTreeNode>
+      ref={ref}
       showLine
       allowDrop={allowDrop}
       switcherIcon={<DownOutlined />}
