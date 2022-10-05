@@ -1,7 +1,6 @@
 import React, { ComponentProps, FC, useContext } from 'react'
 import { DownOutlined } from '@ant-design/icons'
 import { Tree } from 'antd'
-import type { DataNode } from 'antd/es/tree'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   pageOutlineTreeSelector,
@@ -18,43 +17,7 @@ enum DropPositionEnum {
   After = 1
 }
 
-const x = 3
-const y = 2
-const z = 1
-const defaultData: DataNode[] = []
-
-const generateData = (_level: number, _preKey?: React.Key, _tns?: DataNode[]) => {
-  const preKey = _preKey ?? '0'
-  const tns = _tns ?? defaultData
-
-  const children = []
-  for (let i = 0; i < x; i++) {
-    const key = `${preKey}-${i}`
-    tns.push({ title: key, key })
-    if (i < y) {
-      children.push(key)
-    }
-  }
-  if (_level < 0) {
-    return tns
-  }
-  const level = _level - 1
-  children.forEach((key, index) => {
-    tns[index].children = []
-    return generateData(level, key, tns[index].children)
-  })
-}
-generateData(z)
-
 export const CanvasDesignerOutlineTree: FC = () => {
-  // const [expandedKeys] = useState(['0-0', '0-0-0', '0-0-0-0'])
-  // const onDragEnter: TreeProps['onDragEnter'] = info => {
-  //   console.log(info)
-  //   // expandedKeys 需要受控时设置
-  //   // setExpandedKeys(info.expandedKeys)
-  // }
-
-  // start
   const pageOutlineTree = useRecoilValue(pageOutlineTreeSelector)
   const [selectedWidgetId, setSelectedWidgetId] = useRecoilState(selectedWidgetIdAtom)
   const selectedKeys = [selectedWidgetId || pageOutlineTree.key]

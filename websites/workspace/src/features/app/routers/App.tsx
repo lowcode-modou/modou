@@ -6,7 +6,12 @@ import { ModuleManager } from '../components'
 import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
 import { EntityRouterParamsKey, PageRouterParamsKey } from '@/types'
 import { ModuleEnum } from '../types'
-import { AppHome } from '@/features/app/components/AppHome'
+import { AppHome } from '../components/AppHome'
+import { isEmpty } from 'lodash'
+import { MOCK_PAGE_ID, MOCK_ROOT_WIDGET_ID, MOCK_WIDGETS } from '../mock'
+import { useSetRecoilState } from 'recoil'
+import { Metadata } from '@modou/core'
+import produce from 'immer'
 
 const menuItems: ComponentProps<typeof Menu>['items'] = [
   {
@@ -48,6 +53,38 @@ export const App: FC = () => {
       setVisibleModuleManger(true)
     }
   }
+
+  // MOCK
+  const setApp = useSetRecoilState(Metadata.appAtom)
+  useEffect(() => {
+    const MOCK_PAGES = [
+      {
+        name: '大漠孤烟直',
+        id: MOCK_PAGE_ID,
+        widgets: MOCK_WIDGETS,
+        rootWidgetId: MOCK_ROOT_WIDGET_ID
+      },
+      {
+        name: '测试',
+        id: MOCK_PAGE_ID + '___',
+        widgets: MOCK_WIDGETS,
+        rootWidgetId: MOCK_ROOT_WIDGET_ID
+      },
+      {
+        name: '长河落日圆',
+        id: MOCK_PAGE_ID + '________',
+        widgets: MOCK_WIDGETS,
+        rootWidgetId: MOCK_ROOT_WIDGET_ID
+      }
+    ]
+    setApp(produce(draft => {
+      if (isEmpty(draft.pages)) {
+        draft.pages = MOCK_PAGES
+      } else {
+        return draft
+      }
+    }))
+  }, [setApp])
 
   return <Layout className='h-full'>
     <Layout.Header

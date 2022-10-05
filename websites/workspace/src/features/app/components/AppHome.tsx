@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useLayoutEffect } from 'react'
 import { Typography } from 'antd'
 import { useRecoilValue } from 'recoil'
 import { Metadata } from '@modou/core'
@@ -12,25 +12,28 @@ export const AppHome: FC = () => {
   const params = useParams<BaseRouterParamsKey>()
   const navigate = useNavigate()
   const app = useRecoilValue(Metadata.appAtom)
-  const isEmptyApp = isEmpty(app.pages) &&
-    isEmpty(app.pages)
-  if (!isEmptyApp) {
-    if (!isEmpty(app.pages)) {
-      navigate(generateRouterPath(ROUTER_PATH.PAGE, {
-        ...params,
-        pageId: head(app.pages)?.id
-      }), {
-        replace: true
-      })
-    } else if (!isEmpty(app.entities)) {
-      navigate(generateRouterPath(ROUTER_PATH.Entity, {
-        ...params,
-        entityId: head(app.entities)?.id
-      }), {
-        replace: true
-      })
+  const isEmptyApp = isEmpty(app)
+  const isEmptyPage = isEmpty(app.pages)
+
+  useLayoutEffect(() => {
+    if (!isEmptyApp) {
+      if (!isEmptyPage) {
+        navigate(generateRouterPath(ROUTER_PATH.PAGE, {
+          ...params,
+          pageId: head(app.pages)?.id
+        }), {
+          replace: true
+        })
+      } else if (!isEmpty(app.entities)) {
+        navigate(generateRouterPath(ROUTER_PATH.Entity, {
+          ...params,
+          entityId: head(app.entities)?.id
+        }), {
+          replace: true
+        })
+      }
     }
-  }
+  }, [app.entities, app.pages, isEmptyApp, isEmptyPage, navigate, params])
 
   return <div className='h-full flex justify-center items-center'>
     <div>

@@ -32,8 +32,9 @@ const _pageAtom = atom<Page>({
   effects: [
     syncEffect({
       storeKey: PAGE_ATOM_KEY_STORE_KEY,
-      refine: custom<Page>(x => x as Page),
-      syncDefault: true
+      refine: custom<Page>(x => x as Page)
+      // syncDefault 什么作用
+      // syncDefault: true
     })
   ]
 })
