@@ -4,8 +4,7 @@ import { Card, Col, Row, Typography } from 'antd'
 import { useDrag } from 'react-dnd'
 import { generateId, getWidgetGroupLabel } from '@modou/core/src/utils'
 import { WidgetDragType } from '../types'
-import { isArray, isEmpty } from 'lodash'
-import { object } from '@recoiljs/refine'
+import { isEmpty } from 'lodash'
 
 const WidgetBlock: FC<{
   metadata: WidgetMetadata
@@ -13,13 +12,19 @@ const WidgetBlock: FC<{
   const widgetFactory = useContext(AppFactoryContext)
   const [{ isDragging }, drag] = useDrag(() => ({
     type: metadata.widgetType,
-    item: () => ({
-      type: WidgetDragType.Add,
-      widget: {
-        ...WidgetMetadata.mrSchemeToDefaultJson(widgetFactory.widgetByType[metadata.widgetType].metadata.jsonPropsSchema),
-        widgetId: generateId()
+    item: () => {
+      const widget = WidgetMetadata.mrSchemeToDefaultJson(widgetFactory
+        .widgetByType[metadata.widgetType].metadata.jsonPropsSchema)
+      const newWidget: WidgetBaseProps = {
+        ...widget,
+        widgetId: generateId(),
+        widgetName: `${widget.widgetName as string}-${generateId(4)}`
       }
-    }),
+      return {
+        type: WidgetDragType.Add,
+        widget: newWidget
+      }
+    },
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult<WidgetBaseProps>()
       if (item && dropResult) {

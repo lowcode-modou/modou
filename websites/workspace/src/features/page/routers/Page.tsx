@@ -1,4 +1,4 @@
-import { FC, useEffect, useLayoutEffect } from 'react'
+import { FC, useLayoutEffect } from 'react'
 import { Col, Row } from 'antd'
 import { CanvasDesigner } from '@modou/canvas-designer'
 import { useRecoilState } from 'recoil'

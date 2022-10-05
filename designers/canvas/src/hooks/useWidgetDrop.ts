@@ -218,6 +218,9 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
       }
       const dropElementRect = element.getClientRects()[0]
       const clientOffset = monitor.getClientOffset() ?? { x: 0, y: 0 }
+      if (!clientOffset) {
+        return
+      }
       const relativeOffset = {
         x: clientOffset.x - dropElementRect.x,
         y: clientOffset.y - dropElementRect.y
@@ -278,7 +281,7 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
       isOver: monitor.isOver(),
       isOverCurrent: monitor.isOver({ shallow: true })
     })
-  }))
+  }), [element, widget])
   drop(element)
 
   const isActive = canDrop && isOverCurrent

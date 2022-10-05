@@ -1,6 +1,6 @@
 // TODO START 完善后移动到 core
 
-import { atom, DefaultValue, selector } from 'recoil'
+import { atom, DefaultValue, selector, selectorFamily } from 'recoil'
 import { Page, WidgetBaseProps } from '@modou/core'
 import { generateRecoilKey } from '../utils'
 import { head, isEmpty, keyBy } from 'lodash'
@@ -63,6 +63,21 @@ export const widgetByIdSelector = selector<Record<string, WidgetBaseProps>>({
   key: generateRecoilKey('widgetByIdSelector'),
   get: ({ get }) => {
     return keyBy(get(widgetsSelector), 'widgetId')
+  },
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
+})
+
+export const widgetSelector = selectorFamily<WidgetBaseProps, string>({
+  key: generateRecoilKey('widgetSelector'),
+  get: (widgetId) => ({ get }) => get(widgetByIdSelector)[widgetId],
+  set: (widgetId) => ({ set, get }, newValue) => {
+    set(widgetsSelector, Object.values(produce(get(widgetByIdSelector), draft => {
+      if (newValue instanceof DefaultValue) {
+        return draft
+      } else {
+        draft[widgetId] = newValue
+      }
+    })))
   },
   cachePolicy_UNSTABLE: { eviction: 'most-recent' }
 })
@@ -130,9 +145,6 @@ export const pageOutlineTreeSelector = selector<WidgetTreeNode>({
       children: []
     }]
     const rootTreeNode = head(parentTreeNodes)
-
-    // const treeNodeMap = new Map<string, WidgetTreeNode>()
-
     const widgetStack: WidgetBaseProps[] = [rootWidget]
     while (widgetStack.length !== 0) {
       const curWidget = widgetStack.pop()
@@ -153,48 +165,14 @@ export const pageOutlineTreeSelector = selector<WidgetTreeNode>({
         })
       }
     }
-
-    // let currentWidgets: WidgetBaseProps[] = [rootWidget]
-    // let nextLevelWidgets: WidgetBaseProps[] = []
-    // let parentTreeNode: WidgetTreeNode = {
-    //   key: page.id,
-    //   title: page.name,
-    //   page,
-    //   nodeType: 'page',
-    //   children: []
-    // }
-    // const rootTreeNode = parentTreeNode
-    //
-    // while (!isEmpty(currentWidgets) || !isEmpty(nextLevelWidgets)) {
-    //   if (isEmpty(currentWidgets)) {
-    //     currentWidgets = [...nextLevelWidgets]
-    //     nextLevelWidgets = []
-    //   }
-    //
-    //   const currentWidget = currentWidgets.shift()
-    //   if (currentWidget) {
-    //     // widgetTreeNodeMap[currentWidget.widgetId] = {
-    //     //   key: currentWidget.widgetId,
-    //     //   nodeType: 'widget',
-    //     //   widget: currentWidget,
-    //     //   children: []
-    //     // }
-    //     const treeNode: WidgetTreeNode = {
-    //       key: currentWidget.widgetId,
-    //       title: currentWidget.widgetName,
-    //       nodeType: 'widget',
-    //       widget: currentWidget,
-    //       children: []
-    //     }
-    //     parentTreeNode.children.push(treeNode)
-    //     parentTreeNode = treeNode
-    //     if (!isEmpty(currentWidget.slots?.children)) {
-    //       nextLevelWidgets.push(...currentWidget.slots.children.map(widgetId => widgetById[widgetId]))
-    //     }
-    //   }
-    // }
-
     return rootTreeNode as WidgetTreeNode
   },
   cachePolicy_UNSTABLE: { eviction: 'most-recent' }
+})
+
+export const isRootWidgetSelector = selectorFamily<boolean, string>({
+  key: generateRecoilKey('isRootWidgetSelector'),
+  get: (widgetId) => ({ get }) => !get(widgetRelationByWidgetIdSelector)[widgetId].parent,
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
+
 })
