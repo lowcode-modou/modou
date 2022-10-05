@@ -1,2 +1,2 @@
-export * from './Widget'
+export * from './WidgetMetadata'
 export * from './types'

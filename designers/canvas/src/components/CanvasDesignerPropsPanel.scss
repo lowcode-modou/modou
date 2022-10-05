@@ -1,0 +1,11 @@
+.CanvasDesignerPropsPanel{
+	& .ant-form-item{
+		margin-bottom: 12px!important;
+		&-control-input-content{
+			justify-content: flex-end!important;
+			.ant-input-number{
+				flex: 1!important;
+			}
+		}
+	}
+}

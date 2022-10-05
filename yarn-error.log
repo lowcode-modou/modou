@@ -1,0 +1,91 @@
+Arguments: 
+  /Users/liulei/.nvm/versions/node/v16.14.2/bin/node /Users/liulei/.nvm/versions/node/v16.14.2/bin/yarn add @vanilla-extract/css -w -D
+
+PATH: 
+  /Users/liulei/Library/pnpm:/Users/liulei/.yarn/bin:/Users/liulei/.config/yarn/global/node_modules/.bin:/Users/liulei/Library/Python/3.8/bin:/Users/liulei/development/flutter/bin:/usr/local/bin/git/bin:/Users/liulei/.nvm/versions/node/v16.14.2/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Little Snitch.app/Contents/Components:/Library/Apple/usr/bin:/Users/liulei/Documents/workspace/lowcode/modou/node_modules/.bin:/Users/liulei/Library/Android/sdk/tools:/Users/liulei/Library/Android/sdk/platform-tools
+
+Yarn version: 
+  1.22.18
+
+Node version: 
+  16.14.2
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.npmmirror.com/@modou%2fcore: [NOT_FOUND] @modou/core not found
+      at Request.params.callback [as _callback] (/Users/liulei/.nvm/versions/node/v16.14.2/lib/node_modules/yarn/lib/cli.js:66138:18)
+      at Request.self.callback (/Users/liulei/.nvm/versions/node/v16.14.2/lib/node_modules/yarn/lib/cli.js:140883:22)
+      at Request.emit (node:events:526:28)
+      at Request.<anonymous> (/Users/liulei/.nvm/versions/node/v16.14.2/lib/node_modules/yarn/lib/cli.js:141855:10)
+      at Request.emit (node:events:526:28)
+      at Gunzip.<anonymous> (/Users/liulei/.nvm/versions/node/v16.14.2/lib/node_modules/yarn/lib/cli.js:141777:12)
+      at Object.onceWrapper (node:events:645:28)
+      at Gunzip.emit (node:events:526:28)
+      at endReadableNT (node:internal/streams/readable:1345:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "modou",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+      "@modou/eslint-config": "workspace:^1.0.0",
+      "@types/lodash": "^4.14.185",
+      "@types/react": "^18.0.17",
+      "@types/react-dom": "^18.0.6",
+      "@vitejs/plugin-basic-ssl": "^0.1.2",
+      "@vitejs/plugin-react": "^2.1.0",
+      "autoprefixer": "^10.4.8",
+      "commitizen": "4.2.5",
+      "cz-conventional-changelog": "3.3.0",
+      "esbuild": "0.14.49",
+      "eslint-plugin-react-hooks": "^4.6.0",
+      "postcss": "^8.4.16",
+      "sass": "^1.54.9",
+      "tailwindcss": "^3.1.8",
+      "typescript": "^4.7.4",
+      "vite": "^3.0.7"
+    },
+    "dependencies": {
+      "@ant-design/icons": "^4.7.0",
+      "@ant-design/pro-components": "^2.3.13",
+      "@modou/core": "workspace:^1.0.0",
+      "@modou/refine": "workspace:^1.0.0",
+      "@modou/render": "workspace:^1.0.0",
+      "@modou/setters": "workspace:^1.0.0",
+      "@modou/widgets": "workspace:^1.0.0",
+      "@recoiljs/refine": "^0.1.1",
+      "ahooks": "^3.7.0",
+      "antd": "^4.22.5",
+      "immer": "^9.0.15",
+      "lodash": "^4.17.21",
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0",
+      "react-json-view": "^1.21.3",
+      "react-router-dom": "^6.3.0",
+      "recoil": "^0.7.5",
+      "recoil-sync": "^0.1.1",
+      "ts-pattern": "^4.0.5"
+    },
+    "config": {
+      "commitizen": {
+        "path": "./node_modules/cz-conventional-changelog"
+      }
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

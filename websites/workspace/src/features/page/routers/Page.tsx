@@ -1,67 +1,36 @@
-import { FC, useState } from 'react'
-import { Button, Col, Divider, Image, Row, Space, Typography } from 'antd'
-import { SelectSetter } from '@modou/setters'
-import { ButtonType } from 'antd/es/button'
-import { useNavigate } from 'react-router-dom'
+import { FC, useLayoutEffect } from 'react'
+import { Col, Row } from 'antd'
 import { CanvasDesigner } from '@modou/canvas-designer'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { widgetsAtom } from '../mock'
-
-const testMR = (): void => {
-  console.log('永远相信美好的事情即将发生')
-}
-
-const options: Parameters<typeof SelectSetter>[0]['options']['options'] = [
-  {
-    value: 'primary',
-    label: '主要'
-  }, {
-    value: 'link',
-    label: '连接'
-  }, {
-    value: 'text',
-    label: '文本'
-  }]
+import { useRecoilState } from 'recoil'
+import { Metadata, AppFactoryContext } from '@modou/core'
+import { widgetFactory } from '../utils'
+import { useNavigate, useParams } from 'react-router-dom'
+import { PageRouterParamsKey } from '@/types'
+import { generateRouterPath } from '@/utils/router'
+import { ROUTER_PATH } from '@/constants'
 
 export const Page: FC = () => {
-  const navigator = useNavigate()
-
-  const [buttonState, setButtonState] = useState<any>({ type: 'primary' })
-
-  const [widgets, setWidgets] = useRecoilState(widgetsAtom)
-
+  const { pageId, appId } = useParams<PageRouterParamsKey>()
+  const [page, setPage] = useRecoilState(Metadata.pageSelector(pageId!))
+  const navigate = useNavigate()
+  useLayoutEffect(() => {
+    if (!page) {
+      navigate(generateRouterPath(ROUTER_PATH.APP, {
+        appId
+      }), {
+        replace: true
+      })
+    }
+  }, [appId, navigate, page])
   return <Row justify='center' align='middle' className='h-full'>
-    <Col span={18} className='border-2 border-solid border-red-500 h-full'>
-      <CanvasDesigner rootWidgetId={widgets[0].widgetId} widgets={widgets} onWidgetsChange={(val) => {
-        console.log(val)
-        setWidgets(val)
-      }} />
-    </Col>
-    <Col span={6} className='text-center'>
-      <Image src='./modou.svg' className='w-36' />
-      <Divider />
-      <Typography.Title>PAGE 页面</Typography.Title>
-      <Divider />
-      <Space direction={'vertical'}>
-        <Button block type='primary' onClick={testMR}>Test MR</Button>
-        {/* <Button block type="primary" onClick={testMRToScheme}>Test MR to Scheme</Button> */}
-        {/* <Button block type='primary' onClick={() => { */}
-        {/*  // const defaultJson = */}
-        {/*  schemaToDefaultJSON(widgetById) */}
-        {/*  // setButtonState(defaultJson) */}
-        {/* }}>Test Scheme to Default Json</Button> */}
-        <Button block type='primary' onClick={() => {
-          window.open('https://runtime.modou.ink', '_blank')
-        }}>NAVIGATE TO RUNTIME</Button>
-        <Button block type={'primary'} onClick={() => navigator('/apps')}>跳转到 APPS 页面</Button>
-      </Space>
-      <Divider />
-      {/* <ButtonWidget title={'按钮 - ButtonWidget'} {...buttonState} /> */}
-      <Divider />
-      <SelectSetter<ButtonType>
-        value={buttonState.type}
-        onChange={(type: any) => setButtonState({ type })}
-        options={{ options }} />
-    </Col>
+     <Col span={24} className='h-full'>
+      {
+        page && <AppFactoryContext.Provider value={widgetFactory}>
+              <CanvasDesigner
+                  page={page}
+                  onPageChange={setPage} />
+          </AppFactoryContext.Provider>
+      }
+     </Col>
   </Row>
 }

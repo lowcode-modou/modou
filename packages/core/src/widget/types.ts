@@ -1,4 +1,6 @@
 import { mr } from '@modou/refine'
-import { Widget } from './Widget'
+import { WidgetMetadata } from './WidgetMetadata'
 
-export type WidgetBaseProps = mr.infer<ReturnType<typeof Widget.createMRSchemeWidgetProps<any>>>
+export type WidgetBaseProps = mr.infer<ReturnType<typeof WidgetMetadata.createMRSchemeWidgetProps>>
+& { props: Record<string, any> }
+& { slots: Record<string, string[]> }

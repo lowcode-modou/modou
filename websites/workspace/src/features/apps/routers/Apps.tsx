@@ -4,10 +4,10 @@ import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/ico
 import { useNavigate } from 'react-router-dom'
 
 const AppsHeader: FC = () => {
-  return <Layout.Header className="bg-white border-gray-100 border-solid border-0 border-b-2">
+  return <Layout.Header className="!bg-white shadow-md z-50">
     <Row align="middle" className="h-full">
       <Col>
-        <img src="./modou.svg" className="h-10" alt="" />
+        <img src="/modou.svg" className="h-10" alt="" />
       </Col>
     </Row>
   </Layout.Header>
@@ -28,7 +28,7 @@ const AppsContent: FC = () => {
         xxl={{ span: 4 }}
         span={4}>
         <Card
-          onClick={() => navigator('/page')}
+          onClick={() => navigator('/app/appId')}
           className="shadow-2xl m-1 w-full"
           // cover={
           //   <img src="./modou.svg" alt="" />

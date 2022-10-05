@@ -1,1 +1,1 @@
-export * from './MoDouRender'
+export * from './ReactRender'
