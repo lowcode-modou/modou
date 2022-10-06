@@ -99,7 +99,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
 
   // TODO 支持大纲树和其画布及面板组件互相拖拽 IMPORTANT
   const ref: ComponentProps<typeof Tree<WidgetTreeNode>>['ref'] = useRef() as any
-  console.log(ref)
+  // console.log(ref)
 
   return <div style={{ padding: '16px 8px' }}>
     <Tree<WidgetTreeNode>

@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+// import { visualizer } from "rollup-plugin-visualizer";
 // import basicSsl from '@vitejs/plugin-basic-ssl'
 import * as path from 'path'
 import * as fs from 'fs'
@@ -9,6 +10,7 @@ export default defineConfig({
   plugins: [
     react(),
     // basicSsl()
+    // visualizer()
   ],
   resolve: {
     alias: {

@@ -1,4 +1,4 @@
-import { FC, useContext, useMemo } from 'react'
+import { FC, useContext, useEffect, useMemo, useRef } from 'react'
 import { WidgetMetadata, WidgetBaseProps, AppFactoryContext, WidgetGroupEnum, AppFactory } from '@modou/core'
 import { Card, Col, Row, Typography } from 'antd'
 import { useDrag } from 'react-dnd'
@@ -10,7 +10,7 @@ const WidgetBlock: FC<{
   metadata: WidgetMetadata
 }> = ({ metadata }) => {
   const widgetFactory = useContext(AppFactoryContext)
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: metadata.widgetType,
     item: () => {
       const widget = WidgetMetadata.mrSchemeToDefaultJson(widgetFactory
@@ -40,11 +40,35 @@ const WidgetBlock: FC<{
     }
   }))
 
+  const previewRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    preview(previewRef, {
+      offsetX: 0,
+      offsetY: 0
+    })
+  }, [preview])
+
   const opacity = isDragging ? 0.3 : 1
   return <Col
     className='bg-white'
     style={{ opacity }}
     span={12}>
+    <Card
+      ref={previewRef}
+      size='small'
+      className='text-center cursor-move select-none overflow-hidden absolute z-0'
+      style={{
+        fontSize: '12px'
+      }}
+      bodyStyle={{
+        padding: '4px',
+        width: '80px',
+        backgroundColor: 'rgba(0,0,0,.04)'
+      }}
+    >
+       <div style={{ fontSize: '14px', lineHeight: '14px' }}>{metadata.icon}</div>
+       <div>{metadata.widgetName}</div>
+    </Card>
     <Card
       ref={drag}
       size='small'
@@ -92,7 +116,7 @@ export const CanvasDesignerWidgetStencil: FC = () => {
     })
   }, [widgetFactory.widgetByType])
   // console.log('widgetsByGroup', widgetsByGroup)
-  return <div style={{ padding: '16px' }}>
+  return <div style={{ padding: '16px' }} >
     {
       Object.entries(widgetsByGroup).map(([group, { name, widgets }]) =>
         <div style={{ marginBottom: '16px' }} key={group}>
