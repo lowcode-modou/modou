@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@modou/canvas-designer": "workspace:^1.0.0"
+    "@modou/canvas-designer": "workspace:^1.0.0",
+    "reactflow": "^11.1.0"
   }
 }

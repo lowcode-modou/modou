@@ -3,6 +3,7 @@ import { Drawer, Input } from 'antd'
 import { ModuleEnum } from '../types'
 import { match } from 'ts-pattern'
 import { ModuleManagerPage } from './ModuleManagerPage'
+import { ModuleManagerEntity } from './ModuleManagerEntity'
 
 export const ModuleManager: FC<{
   visible: boolean
@@ -27,10 +28,10 @@ export const ModuleManager: FC<{
     <Drawer
       title={<div>
         <div
-          className="flex justify-between items-center"
+          className='flex justify-between items-center'
           style={{ paddingBottom: '16px' }}>
           <span>{moduleTitle}</span>
-          <span ref={moduleItemAddElementRef}/>
+          <span ref={moduleItemAddElementRef} />
         </div>
         <Input
           onChange={(e) => setSearchVal(e.target.value)}
@@ -52,7 +53,14 @@ export const ModuleManager: FC<{
       getContainer={false}
       onClose={onClose}
       open={visible}>
-      <ModuleManagerPage itemAddRef={moduleItemAddElementRef.current} searchVal={searchVal}/>
+      {
+        module === ModuleEnum.Page &&
+          <ModuleManagerPage itemAddRef={moduleItemAddElementRef.current} searchVal={searchVal} />
+      }
+      {
+        module === ModuleEnum.Entity &&
+          <ModuleManagerEntity itemAddRef={moduleItemAddElementRef.current} searchVal={searchVal} />
+      }
     </Drawer>
   </div>
 }

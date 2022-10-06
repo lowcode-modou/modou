@@ -12,6 +12,7 @@ import { selectedWidgetIdAtom } from '../store'
 import { Tabs } from 'antd'
 import './CanvasDesigner.scss'
 import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
+import { CanvasDesignerKeyPress } from './CanvasDesignerKeyPress'
 
 interface CanvasDesignerProps {
   page: Page
@@ -51,6 +52,7 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
                onClick={() => setSelectedWidgetId('')}>
             <CanvasDesignerCanvas/>
             <DesignerIndicator canvasRef={canvasRef} />
+            <CanvasDesignerKeyPress/>
           </div>
           <div
             className='h-full bg-white'
