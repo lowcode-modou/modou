@@ -9,11 +9,14 @@ import { pageSelector } from '../store'
 
 export const CanvasDesignerCanvas: FC = () => {
   const { widgets, rootWidgetId } = useRecoilValue(pageSelector)
-  return <div
-    style={{
-      padding: '16px'
-    }}
-    className='h-full relative'>
-    <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
-  </div>
+  return (
+    <div
+      style={{
+        padding: '16px',
+      }}
+      className="h-full relative"
+    >
+      <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
+    </div>
+  )
 }

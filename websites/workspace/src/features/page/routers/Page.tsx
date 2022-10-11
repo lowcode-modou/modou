@@ -15,22 +15,25 @@ export const Page: FC = () => {
   const navigate = useNavigate()
   useLayoutEffect(() => {
     if (!page) {
-      navigate(generateRouterPath(ROUTER_PATH.APP, {
-        appId
-      }), {
-        replace: true
-      })
+      navigate(
+        generateRouterPath(ROUTER_PATH.APP, {
+          appId,
+        }),
+        {
+          replace: true,
+        },
+      )
     }
   }, [appId, navigate, page])
-  return <Row justify='center' align='middle' className='h-full'>
-     <Col span={24} className='h-full'>
-      {
-        page && <AppFactoryContext.Provider value={widgetFactory}>
-              <CanvasDesigner
-                  page={page}
-                  onPageChange={setPage} />
+  return (
+    <Row justify="center" align="middle" className="h-full">
+      <Col span={24} className="h-full">
+        {page && (
+          <AppFactoryContext.Provider value={widgetFactory}>
+            <CanvasDesigner page={page} onPageChange={setPage} />
           </AppFactoryContext.Provider>
-      }
-     </Col>
-  </Row>
+        )}
+      </Col>
+    </Row>
+  )
 }

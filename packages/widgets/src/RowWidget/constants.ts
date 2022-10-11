@@ -12,47 +12,47 @@ export enum RowWidgetJustifyEnum {
   Center = 'center',
   SpaceAround = 'space-around',
   SpaceBetween = 'space-between',
-  SpaceEvenly = 'space-evenly'
+  SpaceEvenly = 'space-evenly',
 }
 
 export const RowWidgetAlignOptions: MRSelectOptions = [
   {
     label: '居上',
-    value: RowWidgetAlignEnum.Top
+    value: RowWidgetAlignEnum.Top,
   },
   {
     label: '居中',
-    value: RowWidgetAlignEnum.Middle
+    value: RowWidgetAlignEnum.Middle,
   },
   {
     label: '居下',
-    value: RowWidgetAlignEnum.Bottom
-  }
+    value: RowWidgetAlignEnum.Bottom,
+  },
 ]
 
 export const RowWidgetJustifyOptions: MRSelectOptions = [
   {
     label: RowWidgetJustifyEnum.Start,
-    value: RowWidgetJustifyEnum.Start
+    value: RowWidgetJustifyEnum.Start,
   },
   {
     label: RowWidgetJustifyEnum.End,
-    value: RowWidgetJustifyEnum.End
+    value: RowWidgetJustifyEnum.End,
   },
   {
     label: RowWidgetJustifyEnum.Center,
-    value: RowWidgetJustifyEnum.Center
+    value: RowWidgetJustifyEnum.Center,
   },
   {
     label: RowWidgetJustifyEnum.SpaceAround,
-    value: RowWidgetJustifyEnum.SpaceAround
+    value: RowWidgetJustifyEnum.SpaceAround,
   },
   {
     label: RowWidgetJustifyEnum.SpaceBetween,
-    value: RowWidgetJustifyEnum.SpaceBetween
+    value: RowWidgetJustifyEnum.SpaceBetween,
   },
   {
     label: RowWidgetJustifyEnum.SpaceEvenly,
-    value: RowWidgetJustifyEnum.SpaceEvenly
-  }
+    value: RowWidgetJustifyEnum.SpaceEvenly,
+  },
 ]

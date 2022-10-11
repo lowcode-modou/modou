@@ -18,27 +18,35 @@ export const AppHome: FC = () => {
   useLayoutEffect(() => {
     if (!isEmptyApp) {
       if (!isEmptyPage) {
-        navigate(generateRouterPath(ROUTER_PATH.PAGE, {
-          ...params,
-          pageId: head(app.pages)?.id
-        }), {
-          replace: true
-        })
+        navigate(
+          generateRouterPath(ROUTER_PATH.PAGE, {
+            ...params,
+            pageId: head(app.pages)?.id,
+          }),
+          {
+            replace: true,
+          },
+        )
       } else if (!isEmpty(app.entities)) {
-        navigate(generateRouterPath(ROUTER_PATH.Entity, {
-          ...params,
-          entityId: head(app.entities)?.id
-        }), {
-          replace: true
-        })
+        navigate(
+          generateRouterPath(ROUTER_PATH.Entity, {
+            ...params,
+            entityId: head(app.entities)?.id,
+          }),
+          {
+            replace: true,
+          },
+        )
       }
     }
   }, [app.entities, app.pages, isEmptyApp, isEmptyPage, navigate, params])
 
-  return <div className='h-full flex justify-center items-center'>
-    <Spin size='large' />
-    {/* <div> */}
-    {/*   <Typography.Title>应用首页</Typography.Title> */}
-    {/* </div> */}
-  </div>
+  return (
+    <div className="h-full flex justify-center items-center">
+      <Spin size="large" />
+      {/* <div> */}
+      {/*   <Typography.Title>应用首页</Typography.Title> */}
+      {/* </div> */}
+    </div>
+  )
 }

@@ -6,7 +6,7 @@ export const buttonWidgetMetadata = WidgetMetadata.createMetadata({
   version: '0.0.1',
   widgetType: 'ButtonWidget',
   widgetName: '按钮',
-  icon: <WidgetIcon type='button' />,
+  icon: <WidgetIcon type="button" />,
   mrPropsScheme: MRSchemeButtonWidgetProps,
-  slots: {}
+  slots: {},
 })

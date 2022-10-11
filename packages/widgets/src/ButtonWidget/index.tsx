@@ -14,7 +14,7 @@ export const ButtonWidget: FC<ButtonWidgetState> = ({
   size,
   type,
   title,
-  instance
+  instance,
 }) => {
   useEffect(() => {
     console.log('我是按钮 我重新渲染了', block)

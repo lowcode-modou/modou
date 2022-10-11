@@ -19,14 +19,14 @@ const SelectIndicatorContent: FC = () => {
     x: 0,
     y: 0,
     width: 0,
-    height: 0
+    height: 0,
   })
   const widgets = useRecoilValue(widgetsSelector)
   const [display, setDisplay] = useState(false)
   const [styleUpdater, setStyleUpdater] = useState(0)
   useEffect(() => {
     void Promise.resolve().then(() => {
-      setStyleUpdater(prevState => prevState + 1)
+      setStyleUpdater((prevState) => prevState + 1)
     })
   }, [widgets])
   useEffect(() => {
@@ -42,7 +42,7 @@ const SelectIndicatorContent: FC = () => {
         x: rect.x,
         y: rect.y,
         width: rect.width,
-        height: rect.height
+        height: rect.height,
       })
       setDisplay(true)
     } else {
@@ -50,7 +50,7 @@ const SelectIndicatorContent: FC = () => {
         x: 0,
         y: 0,
         width: 0,
-        height: 0
+        height: 0,
       })
       setDisplay(false)
     }
@@ -60,26 +60,29 @@ const SelectIndicatorContent: FC = () => {
     height: `${selectedElementRect.height ?? 0}px`,
     left: `${selectedElementRect.x ?? 0}px`,
     top: `${selectedElementRect.y ?? 0}px`,
-    display: display ? 'block' : 'none'
+    display: display ? 'block' : 'none',
   }
 
   const widget = useRecoilValue(widgetSelector(selectedWidgetId))
   // TODO 使用element
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
-    type: widget.widgetType,
-    item: () => {
-      return {
-        type: WidgetDragType.Move,
-        widget
-      }
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging()
+  const [{ isDragging }, drag, preview] = useDrag(
+    () => ({
+      type: widget.widgetType,
+      item: () => {
+        return {
+          type: WidgetDragType.Move,
+          widget,
+        }
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+      options: {
+        dropEffect: 'copy',
+      },
     }),
-    options: {
-      dropEffect: 'copy'
-    }
-  }), [widget])
+    [widget],
+  )
   const opacity = isDragging ? '0.4' : '1'
 
   useEffect(() => {
@@ -90,23 +93,25 @@ const SelectIndicatorContent: FC = () => {
     }
   }, [opacity, preview, selectedWidgetId])
 
-  return <div
-    ref={drag}
-    className='border-sky-400 border-dashed absolute z-50'
-    style={style}
-  >
-    <SelectedToolBox/>
-  </div>
+  return (
+    <div
+      ref={drag}
+      className="border-sky-400 border-dashed absolute z-50"
+      style={style}
+    >
+      <SelectedToolBox />
+    </div>
+  )
 }
 
 interface SelectedIndicatorProps {
   canvasRef: RefObject<HTMLElement>
 }
 
-export const SelectedIndicator: FC<SelectedIndicatorProps> = ({ canvasRef }) => {
+export const SelectedIndicator: FC<SelectedIndicatorProps> = ({
+  canvasRef,
+}) => {
   useWidgetSelected(canvasRef)
   const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
-  return selectedWidgetId
-    ? <SelectIndicatorContent/>
-    : null
+  return selectedWidgetId ? <SelectIndicatorContent /> : null
 }

@@ -10,9 +10,17 @@ import { parseString } from './parseString'
 import { parseNumber } from './parseNumber'
 import { parseBoolean } from './parseBoolean'
 
-type JsonSchema7TypeType = 'object' | 'array' | 'string' | 'number' | 'boolean' | unknown
+type JsonSchema7TypeType =
+  | 'object'
+  | 'array'
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | unknown
 
-const selectParser = (scheme: JsonSchema7Type & { type: JsonSchema7TypeType }) => {
+const selectParser = (
+  scheme: JsonSchema7Type & { type: JsonSchema7TypeType },
+) => {
   switch (scheme.type) {
     case 'object':
       return parseObject(scheme as JsonSchema7ObjectType)
@@ -30,5 +38,7 @@ const selectParser = (scheme: JsonSchema7Type & { type: JsonSchema7TypeType }) =
 }
 
 export const parseScheme = (scheme: JsonSchema7Type) => {
-  return selectParser(scheme as unknown as JsonSchema7Type & { type: JsonSchema7TypeType })
+  return selectParser(
+    scheme as unknown as JsonSchema7Type & { type: JsonSchema7TypeType },
+  )
 }

@@ -8,11 +8,13 @@ interface DesignerIndicatorProps {
 }
 
 export const DesignerIndicator: FC<DesignerIndicatorProps> = ({
-  canvasRef
+  canvasRef,
 }) => {
-  return <div className='fixed inset-0 pointer-events-none'>
-    <HoveringIndicator canvasRef={canvasRef} />
-    <SelectedIndicator canvasRef={canvasRef} />
-    <DropIndicator canvasRef={canvasRef} />
-  </div>
+  return (
+    <div className="fixed inset-0 pointer-events-none">
+      <HoveringIndicator canvasRef={canvasRef} />
+      <SelectedIndicator canvasRef={canvasRef} />
+      <DropIndicator canvasRef={canvasRef} />
+    </div>
+  )
 }

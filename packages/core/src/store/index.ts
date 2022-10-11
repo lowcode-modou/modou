@@ -10,7 +10,7 @@ const appAtom = atom<App>({
     id: '',
     name: '',
     pages: [],
-    entities: []
+    entities: [],
   },
   effects: [
     ({ setSelf, onSet }) => {
@@ -20,28 +20,32 @@ const appAtom = atom<App>({
         setSelf(JSON.parse(savedValue))
       }
 
-      onSet(newValue => {
+      onSet((newValue) => {
         if (newValue instanceof DefaultValue) {
           localStorage.removeItem(key)
         } else {
           localStorage.setItem(key, JSON.stringify(newValue))
         }
       })
-    }
-  ]
+    },
+  ],
 })
 
 const pagesSelector = selector<Page[]>({
   key: generateRecoilKey('pagesSelector'),
   get: ({ get }) => get(appAtom).pages,
-  set: ({ set }, newValue) => set(appAtom, produce<App>(draft => {
-    if (newValue instanceof DefaultValue) {
-      draft.pages = []
-    } else {
-      draft.pages = newValue
-    }
-  })),
-  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
+  set: ({ set }, newValue) =>
+    set(
+      appAtom,
+      produce<App>((draft) => {
+        if (newValue instanceof DefaultValue) {
+          draft.pages = []
+        } else {
+          draft.pages = newValue
+        }
+      }),
+    ),
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' },
 })
 
 const pageByIdSelector = selector<Record<string, Page>>({
@@ -50,21 +54,30 @@ const pageByIdSelector = selector<Record<string, Page>>({
   set: ({ set }, newValue) => {
     set(Metadata.pagesSelector, Object.values(newValue))
   },
-  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' },
 })
 
 const pageSelector = selectorFamily<Page, string>({
   key: generateRecoilKey('pageSelector'),
-  get: (widgetId) => ({ get }) => get(pageByIdSelector)[widgetId],
-  set: (widgetId) => ({ set }, newValue) => set(pageByIdSelector, produce(draft => {
-    draft[widgetId] = newValue
-  })),
-  cachePolicy_UNSTABLE: { eviction: 'most-recent' }
+  get:
+    (widgetId) =>
+    ({ get }) =>
+      get(pageByIdSelector)[widgetId],
+  set:
+    (widgetId) =>
+    ({ set }, newValue) =>
+      set(
+        pageByIdSelector,
+        produce((draft) => {
+          draft[widgetId] = newValue
+        }),
+      ),
+  cachePolicy_UNSTABLE: { eviction: 'most-recent' },
 })
 
 export const Metadata = {
   appAtom,
   pagesSelector,
   pageByIdSelector,
-  pageSelector
+  pageSelector,
 }

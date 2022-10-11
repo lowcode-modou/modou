@@ -7,13 +7,15 @@ export const mrNumberSetter: MRSetter<BaseMRSetterOptions> = (options) => {
   return {
     [SETTER_KEY]: {
       type: SetterTypeEnum.Number,
-      ...options
-    }
+      ...options,
+    },
   }
 }
 
 type Props = BaseSetterProps<number>
 
 export const NumberSetter: FC<Props> = ({ value, onChange }) => {
-  return <InputNumber value={value} onChange={val => onChange(val as number)} />
+  return (
+    <InputNumber value={value} onChange={(val) => onChange(val as number)} />
+  )
 }

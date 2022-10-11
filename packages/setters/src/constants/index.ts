@@ -4,5 +4,5 @@ export enum SetterTypeEnum {
   Select = 'Select',
   String = 'String',
   Number = 'Number',
-  Boolean = 'Boolean'
+  Boolean = 'Boolean',
 }

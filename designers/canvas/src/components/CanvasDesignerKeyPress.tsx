@@ -5,7 +5,8 @@ import { useRecoilState } from 'recoil'
 import { useRemoveWidget } from '../hooks'
 
 export const CanvasDesignerKeyPress: FC = () => {
-  const [selectWidgetId, setSelectedWidgetId] = useRecoilState(selectedWidgetIdAtom)
+  const [selectWidgetId, setSelectedWidgetId] =
+    useRecoilState(selectedWidgetIdAtom)
   const { removeWidget } = useRemoveWidget()
   useKeyPress('delete', () => {
     if (selectWidgetId) {

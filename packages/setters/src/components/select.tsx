@@ -10,7 +10,7 @@ interface SelectSetterOption {
 
 enum SelectSetterModeEnum {
   Multiple = 'multiple',
-  Tags = 'tags'
+  Tags = 'tags',
 }
 
 interface SelectSetterOptions extends BaseMRSetterOptions {
@@ -28,8 +28,8 @@ export const mrSelectSetter: MRSetter<SelectSetterOptions> = (options) => {
   return {
     [SETTER_KEY]: {
       type: SetterTypeEnum.Select,
-      ...options
-    }
+      ...options,
+    },
   }
 }
 
@@ -45,17 +45,25 @@ export const mrSelectSetter: MRSetter<SelectSetterOptions> = (options) => {
 
 type PropsM = BaseSetterProps<string[], SelectSetterOptions>
 
-type PropsS = BaseSetterProps<string, Omit<SelectSetterOptions, 'mode'> & { mode?: undefined }>
+type PropsS = BaseSetterProps<
+  string,
+  Omit<SelectSetterOptions, 'mode'> & { mode?: undefined }
+>
 
 type Props = PropsM | PropsS
 
-export const SelectSetter: FC<Props> = ({
-  value,
-  onChange,
-  options
-}) => {
-  return <Select mode={options?.mode} value={value} onChange={val => onChange(val as any)}>
-    {options?.options.map(option => <Select.Option key={option.value}
-                                                   value={option.value}>{option.label}</Select.Option>)}
-  </Select>
+export const SelectSetter: FC<Props> = ({ value, onChange, options }) => {
+  return (
+    <Select
+      mode={options?.mode}
+      value={value}
+      onChange={(val) => onChange(val as any)}
+    >
+      {options?.options.map((option) => (
+        <Select.Option key={option.value} value={option.value}>
+          {option.label}
+        </Select.Option>
+      ))}
+    </Select>
+  )
 }

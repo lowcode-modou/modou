@@ -1,4 +1,4 @@
 export enum ModuleEnum {
   Page = 'Page',
-  Entity = 'Entity'
+  Entity = 'Entity',
 }

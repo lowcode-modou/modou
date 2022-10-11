@@ -11,7 +11,7 @@ import {
   DropIndicatorInsertPositionEnum,
   DropIndicatorPositionEnum,
   WidgetRelationByWidgetId,
-  widgetRelationByWidgetIdSelector
+  widgetRelationByWidgetIdSelector,
 } from '../store'
 import { match } from 'ts-pattern'
 import { WidgetDragType } from '../types'
@@ -24,7 +24,7 @@ const DROP_ELEMENT_ACTIVE_BG_COLOR = 'rgba(0,0,0,.1)'
 const useWidgetBgColor = ({
   isActive,
   element,
-  isContainer
+  isContainer,
 }: {
   isActive: boolean
   isContainer: boolean
@@ -37,7 +37,7 @@ const useWidgetBgColor = ({
     value: string
   }>({
     initialized: false,
-    value: ''
+    value: '',
   })
   useEffect(() => {
     if (!isContainer) {
@@ -46,7 +46,7 @@ const useWidgetBgColor = ({
     if (!elementBgColor.current.initialized) {
       elementBgColor.current = {
         value: getComputedStyle(element).backgroundColor,
-        initialized: true
+        initialized: true,
       }
     }
     if (isActive && !dropIndicator.show) {
@@ -59,7 +59,7 @@ const useWidgetBgColor = ({
 
 const useWidgetMinHeight = ({
   canSetMinHeight,
-  element
+  element,
 }: {
   canSetMinHeight: boolean
   element: HTMLElement
@@ -68,14 +68,14 @@ const useWidgetMinHeight = ({
     initialized: boolean
     value?: string
   }>({
-    initialized: false
+    initialized: false,
   })
 
   useEffect(() => {
     if (!elementMinHeight.current.initialized) {
       elementMinHeight.current = {
         value: getComputedStyle(element).minHeight,
-        initialized: true
+        initialized: true,
       }
     }
     // TODO add slot name
@@ -98,150 +98,187 @@ const useWidgetMinHeight = ({
 //   return { style }
 // }
 
-export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotName: string }) => {
+export const useWidgetDrop = ({
+  widgetId,
+  slotName,
+}: {
+  widgetId: string
+  slotName: string
+}) => {
   const widgetFactory = useContext(AppFactoryContext)
   const widget = useRecoilValue(widgetSelector(widgetId))
   const { addWidget } = useAddWidget()
   const { moveWidget } = useMoveWidget()
   // FIXME element 有可能会重复
-  const elementSelector = `[data-widget-id=${widgetId}]${slotName ? `[data-widget-slot-name=${slotName}]` : ''}`
+  const elementSelector = `[data-widget-id=${widgetId}]${
+    slotName ? `[data-widget-slot-name=${slotName}]` : ''
+  }`
   const element = document.querySelector(elementSelector) as HTMLElement
   const isEmptySlot = !!slotName && isEmpty(widget.slots[slotName])
   const setDropIndicator = useSetRecoilState(dropIndicatorAtom)
 
-  const getDropIndicator = useRecoilCallback<readonly unknown[], DropIndicator>(({ snapshot }) => () => {
-    return snapshot.getLoadable(dropIndicatorAtom).contents
-  }, [])
-  const getWidgetRelationByWidgetId = useRecoilCallback<readonly unknown[], WidgetRelationByWidgetId>(({ snapshot }) =>
-    () => {
-      return snapshot.getLoadable(widgetRelationByWidgetIdSelector).contents
-    }, [])
+  const getDropIndicator = useRecoilCallback<readonly unknown[], DropIndicator>(
+    ({ snapshot }) =>
+      () => {
+        return snapshot.getLoadable(dropIndicatorAtom).contents
+      },
+    [],
+  )
+  const getWidgetRelationByWidgetId = useRecoilCallback<
+    readonly unknown[],
+    WidgetRelationByWidgetId
+  >(
+    ({ snapshot }) =>
+      () => {
+        return snapshot.getLoadable(widgetRelationByWidgetIdSelector).contents
+      },
+    [],
+  )
 
   // // // TODO 查看 react-dnd 为什么能自动推断参数类型
-  const [{ canDrop, isOverCurrent }, drop] = useDrop<{
-    widget: WidgetBaseProps
-    type: WidgetDragType
-  }, {
-    widget: WidgetBaseProps
-  }, {
-    isOver: boolean
-    canDrop: boolean
-    isOverCurrent: boolean
-  }>(() => ({
-    accept: Object.keys(widgetFactory.widgetByType),
-    // canDrop: (item) => {
-    //   return item.widget.widgetId !== widgetId
-    // },
-    drop: (item, monitor) => {
-      const didDrop = monitor.didDrop()
-      if (didDrop) {
-        return
-      }
-      // const widgetMetadata = widgetFactory.widgetByType[widget.widgetType]
-
-      const dropIndicator = getDropIndicator()
-      const widgetRelationByWidgetId = getWidgetRelationByWidgetId()
-      const { parent, slotName: parentSlotName } = widgetRelationByWidgetId[widget.widgetId]
-      if (item.type === WidgetDragType.Move) {
-        switch (dropIndicator.insertPosition) {
-          case DropIndicatorInsertPositionEnum.Before:
-            if (parent && parentSlotName) {
-              moveWidget({
-                sourceWidgetId: item.widget.widgetId,
-                targetWidgetId: parent.props.widgetId,
-                targetSlotName: parentSlotName,
-                targetPosition: parent.props.slots[parentSlotName].findIndex(widgetId => widget.widgetId === widgetId)
-              })
-            }
-            break
-          case DropIndicatorInsertPositionEnum.After:
-            if (parent && parentSlotName) {
-              moveWidget({
-                sourceWidgetId: item.widget.widgetId,
-                targetWidgetId: parent.props.widgetId,
-                targetSlotName: parentSlotName,
-                targetPosition: parent.props.slots[parentSlotName]
-                  .findIndex(widgetId => widget.widgetId === widgetId) + 1
-              })
-            }
-            break
-          case DropIndicatorInsertPositionEnum.Inner:
-            moveWidget({
-              sourceWidgetId: item.widget.widgetId,
-              targetWidgetId: widget.widgetId,
-              targetSlotName: slotName,
-              targetPosition: widget.slots[slotName].length
-            })
-            break
-          default:
-        }
-      } else {
-        switch (dropIndicator.insertPosition) {
-          case DropIndicatorInsertPositionEnum.Before:
-            if (parent && parentSlotName) {
-              addWidget({
-                sourceWidget: item.widget,
-                targetWidgetId: parent.props.widgetId,
-                targetSlotName: parentSlotName,
-                targetPosition: parent.props.slots[parentSlotName].findIndex(widgetId => widget.widgetId === widgetId)
-              })
-            }
-            break
-          case DropIndicatorInsertPositionEnum.After:
-            if (parent && parentSlotName) {
-              addWidget({
-                sourceWidget: item.widget,
-                targetWidgetId: parent.props.widgetId,
-                targetSlotName: parentSlotName,
-                targetPosition: parent.props.slots[parentSlotName]
-                  .findIndex(widgetId => widget.widgetId === widgetId) + 1
-              })
-            }
-            break
-          case DropIndicatorInsertPositionEnum.Inner:
-            addWidget({
-              sourceWidget: item.widget,
-              targetWidgetId: widget.widgetId,
-              targetSlotName: slotName,
-              targetPosition: widget.slots[slotName].length
-            })
-            break
-          default:
-        }
-      }
-      return { widget }
+  const [{ canDrop, isOverCurrent }, drop] = useDrop<
+    {
+      widget: WidgetBaseProps
+      type: WidgetDragType
     },
-    hover: (item, monitor) => {
-      const didHover = monitor.isOver({ shallow: true })
-      if (!didHover) {
-        return
-      }
-      const dropElementRect = element.getClientRects()[0]
-      const clientOffset = monitor.getClientOffset() ?? { x: 0, y: 0 }
-      if (!clientOffset) {
-        return
-      }
-      const relativeOffset = {
-        x: clientOffset.x - dropElementRect.x,
-        y: clientOffset.y - dropElementRect.y
-      }
-      const isBlockWidget = element.offsetWidth === element.parentElement?.clientWidth
+    {
+      widget: WidgetBaseProps
+    },
+    {
+      isOver: boolean
+      canDrop: boolean
+      isOverCurrent: boolean
+    }
+  >(
+    () => ({
+      accept: Object.keys(widgetFactory.widgetByType),
+      // canDrop: (item) => {
+      //   return item.widget.widgetId !== widgetId
+      // },
+      drop: (item, monitor) => {
+        const didDrop = monitor.didDrop()
+        if (didDrop) {
+          return
+        }
+        // const widgetMetadata = widgetFactory.widgetByType[widget.widgetType]
 
-      const inVerticalLimit = (relativeOffset.y <= DROP_CONTAINER_LIMIT) ||
-        ((dropElementRect.height - relativeOffset.y) < DROP_CONTAINER_LIMIT)
+        const dropIndicator = getDropIndicator()
+        const widgetRelationByWidgetId = getWidgetRelationByWidgetId()
+        const { parent, slotName: parentSlotName } =
+          widgetRelationByWidgetId[widget.widgetId]
+        if (item.type === WidgetDragType.Move) {
+          switch (dropIndicator.insertPosition) {
+            case DropIndicatorInsertPositionEnum.Before:
+              if (parent && parentSlotName) {
+                moveWidget({
+                  sourceWidgetId: item.widget.widgetId,
+                  targetWidgetId: parent.props.widgetId,
+                  targetSlotName: parentSlotName,
+                  targetPosition: parent.props.slots[parentSlotName].findIndex(
+                    (widgetId) => widget.widgetId === widgetId,
+                  ),
+                })
+              }
+              break
+            case DropIndicatorInsertPositionEnum.After:
+              if (parent && parentSlotName) {
+                moveWidget({
+                  sourceWidgetId: item.widget.widgetId,
+                  targetWidgetId: parent.props.widgetId,
+                  targetSlotName: parentSlotName,
+                  targetPosition:
+                    parent.props.slots[parentSlotName].findIndex(
+                      (widgetId) => widget.widgetId === widgetId,
+                    ) + 1,
+                })
+              }
+              break
+            case DropIndicatorInsertPositionEnum.Inner:
+              moveWidget({
+                sourceWidgetId: item.widget.widgetId,
+                targetWidgetId: widget.widgetId,
+                targetSlotName: slotName,
+                targetPosition: widget.slots[slotName].length,
+              })
+              break
+            default:
+          }
+        } else {
+          switch (dropIndicator.insertPosition) {
+            case DropIndicatorInsertPositionEnum.Before:
+              if (parent && parentSlotName) {
+                addWidget({
+                  sourceWidget: item.widget,
+                  targetWidgetId: parent.props.widgetId,
+                  targetSlotName: parentSlotName,
+                  targetPosition: parent.props.slots[parentSlotName].findIndex(
+                    (widgetId) => widget.widgetId === widgetId,
+                  ),
+                })
+              }
+              break
+            case DropIndicatorInsertPositionEnum.After:
+              if (parent && parentSlotName) {
+                addWidget({
+                  sourceWidget: item.widget,
+                  targetWidgetId: parent.props.widgetId,
+                  targetSlotName: parentSlotName,
+                  targetPosition:
+                    parent.props.slots[parentSlotName].findIndex(
+                      (widgetId) => widget.widgetId === widgetId,
+                    ) + 1,
+                })
+              }
+              break
+            case DropIndicatorInsertPositionEnum.Inner:
+              addWidget({
+                sourceWidget: item.widget,
+                targetWidgetId: widget.widgetId,
+                targetSlotName: slotName,
+                targetPosition: widget.slots[slotName].length,
+              })
+              break
+            default:
+          }
+        }
+        return { widget }
+      },
+      hover: (item, monitor) => {
+        const didHover = monitor.isOver({ shallow: true })
+        if (!didHover) {
+          return
+        }
+        const dropElementRect = element.getClientRects()[0]
+        const clientOffset = monitor.getClientOffset() ?? { x: 0, y: 0 }
+        if (!clientOffset) {
+          return
+        }
+        const relativeOffset = {
+          x: clientOffset.x - dropElementRect.x,
+          y: clientOffset.y - dropElementRect.y,
+        }
+        const isBlockWidget =
+          element.offsetWidth === element.parentElement?.clientWidth
 
-      const inHorizontalLimit = (relativeOffset.x <= DROP_CONTAINER_LIMIT) ||
-        ((dropElementRect.width - relativeOffset.x) < DROP_CONTAINER_LIMIT)
+        const inVerticalLimit =
+          relativeOffset.y <= DROP_CONTAINER_LIMIT ||
+          dropElementRect.height - relativeOffset.y < DROP_CONTAINER_LIMIT
 
-      const afterVertical = relativeOffset.y * 2 > dropElementRect.height
-      const afterHorizontal = relativeOffset.x * 2 > dropElementRect.width
-      const dropPosition: DropIndicatorInsertPositionEnum =
-        (afterVertical || afterHorizontal)
-          ? DropIndicatorInsertPositionEnum.After
-          : DropIndicatorInsertPositionEnum.Before
+        const inHorizontalLimit =
+          relativeOffset.x <= DROP_CONTAINER_LIMIT ||
+          dropElementRect.width - relativeOffset.x < DROP_CONTAINER_LIMIT
 
-      const insertPosition: DropIndicatorInsertPositionEnum =
-        match<boolean, DropIndicatorInsertPositionEnum>(!!slotName)
+        const afterVertical = relativeOffset.y * 2 > dropElementRect.height
+        const afterHorizontal = relativeOffset.x * 2 > dropElementRect.width
+        const dropPosition: DropIndicatorInsertPositionEnum =
+          afterVertical || afterHorizontal
+            ? DropIndicatorInsertPositionEnum.After
+            : DropIndicatorInsertPositionEnum.Before
+
+        const insertPosition: DropIndicatorInsertPositionEnum = match<
+          boolean,
+          DropIndicatorInsertPositionEnum
+        >(!!slotName)
           .with(true, () => {
             if (inHorizontalLimit || inVerticalLimit) {
               return dropPosition
@@ -251,37 +288,36 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
           .with(false, () => dropPosition)
           .exhaustive()
 
-      const dropIndicator = match<boolean, DropIndicator>(isBlockWidget)
-        .with(true, () => {
-          return {
-            position: afterVertical
-              ? DropIndicatorPositionEnum.Bottom
-              : DropIndicatorPositionEnum.Top,
-            show: slotName
-              ? inVerticalLimit
-              : true,
-            insertPosition
-          }
-        })
-        .with(false, () => {
-          return {
-            position: afterHorizontal
-              ? DropIndicatorPositionEnum.Right
-              : DropIndicatorPositionEnum.Left,
-            show: slotName
-              ? inHorizontalLimit
-              : true,
-            insertPosition
-          }
-        }).exhaustive()
-      setDropIndicator(dropIndicator)
-    },
-    collect: (monitor) => ({
-      canDrop: monitor.canDrop(),
-      isOver: monitor.isOver(),
-      isOverCurrent: monitor.isOver({ shallow: true })
-    })
-  }), [element, widget])
+        const dropIndicator = match<boolean, DropIndicator>(isBlockWidget)
+          .with(true, () => {
+            return {
+              position: afterVertical
+                ? DropIndicatorPositionEnum.Bottom
+                : DropIndicatorPositionEnum.Top,
+              show: slotName ? inVerticalLimit : true,
+              insertPosition,
+            }
+          })
+          .with(false, () => {
+            return {
+              position: afterHorizontal
+                ? DropIndicatorPositionEnum.Right
+                : DropIndicatorPositionEnum.Left,
+              show: slotName ? inHorizontalLimit : true,
+              insertPosition,
+            }
+          })
+          .exhaustive()
+        setDropIndicator(dropIndicator)
+      },
+      collect: (monitor) => ({
+        canDrop: monitor.canDrop(),
+        isOver: monitor.isOver(),
+        isOverCurrent: monitor.isOver({ shallow: true }),
+      }),
+    }),
+    [element, widget],
+  )
   drop(element)
 
   const isActive = canDrop && isOverCurrent
@@ -289,11 +325,11 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
   useWidgetBgColor({
     isActive,
     element,
-    isContainer: !!slotName
+    isContainer: !!slotName,
   })
   useWidgetMinHeight({
     canSetMinHeight: isEmptySlot,
-    element
+    element,
   })
 
   // const { style } = useWidgetPosition(element, {
@@ -304,6 +340,6 @@ export const useWidgetDrop = ({ widgetId, slotName }: { widgetId: string, slotNa
     isEmptySlot,
     widget,
     element,
-    isActive
+    isActive,
   }
 }

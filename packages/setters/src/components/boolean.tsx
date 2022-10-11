@@ -13,8 +13,8 @@ export const mrBooleanSetter: MRSetter<BaseMRSetterOptions> = (options) => {
   return {
     [SETTER_KEY]: {
       type: SetterTypeEnum.Boolean,
-      ...options
-    }
+      ...options,
+    },
   }
 }
 

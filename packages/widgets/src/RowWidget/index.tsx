@@ -8,16 +8,20 @@ export const RowWidget: FC<RowWidgetState> = ({
   wrap,
   instance,
   renderSlots,
-  renderSlotNames
+  renderSlotNames,
 }) => {
   useEffect(() => {
     console.log('我是Row 我重新渲染了', instance.widgetId)
   })
-  return <Row
-    data-widget-id={instance.widgetId}
-    data-widget-slot-name={renderSlotNames.children}
-    align={align}
-    justify={justify}
-    wrap={wrap}
-  >{renderSlots.children}</Row>
+  return (
+    <Row
+      data-widget-id={instance.widgetId}
+      data-widget-slot-name={renderSlotNames.children}
+      align={align}
+      justify={justify}
+      wrap={wrap}
+    >
+      {renderSlots.children}
+    </Row>
+  )
 }

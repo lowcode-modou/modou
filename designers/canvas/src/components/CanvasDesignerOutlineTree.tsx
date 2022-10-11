@@ -6,7 +6,7 @@ import {
   pageOutlineTreeSelector,
   selectedWidgetIdAtom,
   widgetRelationByWidgetIdSelector,
-  WidgetTreeNode
+  WidgetTreeNode,
 } from '../store'
 import { AppFactoryContext } from '@modou/core'
 import { useMoveWidget } from '../hooks'
@@ -14,14 +14,17 @@ import { useMoveWidget } from '../hooks'
 enum DropPositionEnum {
   Before = -1,
   Inner = 0,
-  After = 1
+  After = 1,
 }
 
 export const CanvasDesignerOutlineTree: FC = () => {
   const pageOutlineTree = useRecoilValue(pageOutlineTreeSelector)
-  const [selectedWidgetId, setSelectedWidgetId] = useRecoilState(selectedWidgetIdAtom)
+  const [selectedWidgetId, setSelectedWidgetId] =
+    useRecoilState(selectedWidgetIdAtom)
   const selectedKeys = [selectedWidgetId || pageOutlineTree.key]
-  const widgetRelationByWidgetId = useRecoilValue(widgetRelationByWidgetIdSelector)
+  const widgetRelationByWidgetId = useRecoilValue(
+    widgetRelationByWidgetIdSelector,
+  )
   const { moveWidget } = useMoveWidget()
 
   const appFactory = useContext(AppFactoryContext)
@@ -31,7 +34,10 @@ export const CanvasDesignerOutlineTree: FC = () => {
     setSelectedWidgetId(widgetId as string)
   }
 
-  const allowDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['allowDrop'] = ({ dropNode, dropPosition }) => {
+  const allowDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['allowDrop'] = ({
+    dropNode,
+    dropPosition,
+  }) => {
     console.log('dropNode', dropNode, dropPosition)
     const { widget } = dropNode
     if (!widget) {
@@ -49,9 +55,12 @@ export const CanvasDesignerOutlineTree: FC = () => {
     return false
   }
 
-  const onDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['onDrop'] = info => {
+  const onDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['onDrop'] = (
+    info,
+  ) => {
     const dropPos = info.node.pos.split('-')
-    const dropPosition: DropPositionEnum = info.dropPosition - Number(dropPos[dropPos.length - 1])
+    const dropPosition: DropPositionEnum =
+      info.dropPosition - Number(dropPos[dropPos.length - 1])
 
     const dragWidget = info.dragNode.widget
     const dropWidget = info.node.widget
@@ -69,7 +78,9 @@ export const CanvasDesignerOutlineTree: FC = () => {
             sourceWidgetId: dragWidget.widgetId,
             targetWidgetId: parent.props.widgetId,
             targetSlotName: parentSlotName,
-            targetPosition: parent.props.slots[parentSlotName].findIndex(widgetId => dropWidget.widgetId === widgetId)
+            targetPosition: parent.props.slots[parentSlotName].findIndex(
+              (widgetId) => dropWidget.widgetId === widgetId,
+            ),
           })
         }
         break
@@ -79,8 +90,10 @@ export const CanvasDesignerOutlineTree: FC = () => {
             sourceWidgetId: dragWidget.widgetId,
             targetWidgetId: parent.props.widgetId,
             targetSlotName: parentSlotName,
-            targetPosition: parent.props.slots[parentSlotName]
-              .findIndex(widgetId => dropWidget.widgetId === widgetId) + 1
+            targetPosition:
+              parent.props.slots[parentSlotName].findIndex(
+                (widgetId) => dropWidget.widgetId === widgetId,
+              ) + 1,
           })
         }
         break
@@ -89,7 +102,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
           sourceWidgetId: dragWidget.widgetId,
           targetWidgetId: dropWidget.widgetId,
           targetSlotName: parentSlotName,
-          targetPosition: 0
+          targetPosition: 0,
         })
         break
       default:
@@ -98,26 +111,29 @@ export const CanvasDesignerOutlineTree: FC = () => {
   }
 
   // TODO 支持大纲树和其画布及面板组件互相拖拽 IMPORTANT
-  const ref: ComponentProps<typeof Tree<WidgetTreeNode>>['ref'] = useRef() as any
+  const ref: ComponentProps<typeof Tree<WidgetTreeNode>>['ref'] =
+    useRef() as any
   // console.log(ref)
 
-  return <div style={{ padding: '16px 8px' }}>
-    <Tree<WidgetTreeNode>
-      ref={ref}
-      showLine
-      allowDrop={allowDrop}
-      switcherIcon={<DownOutlined />}
-      selectedKeys={selectedKeys}
-      onSelect={onSelect}
-      // defaultExpandedKeys={expandedKeys}
-      defaultExpandAll
-      draggable={{
-        icon: false
-      }}
-      blockNode
-      // onDragEnter={onDragEnter}
-      onDrop={onDrop}
-      treeData={[pageOutlineTree]}
-    />
-  </div>
+  return (
+    <div style={{ padding: '16px 8px' }}>
+      <Tree<WidgetTreeNode>
+        ref={ref}
+        showLine
+        allowDrop={allowDrop}
+        switcherIcon={<DownOutlined />}
+        selectedKeys={selectedKeys}
+        onSelect={onSelect}
+        // defaultExpandedKeys={expandedKeys}
+        defaultExpandAll
+        draggable={{
+          icon: false,
+        }}
+        blockNode
+        // onDragEnter={onDragEnter}
+        onDrop={onDrop}
+        treeData={[pageOutlineTree]}
+      />
+    </div>
+  )
 }

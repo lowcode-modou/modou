@@ -1,4 +1,4 @@
 export enum WidgetDragType {
   Add,
-  Move
+  Move,
 }

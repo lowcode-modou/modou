@@ -6,7 +6,10 @@ const nanoid = customAlphabet('abcdefghigklmnopqrstuvwxyz', 12)
 export const generateId = (size: number = 12): string => {
   return nanoid(size)
 }
-export const generateRecoilKey = (key: string, packageName: string = name): string => {
+export const generateRecoilKey = (
+  key: string,
+  packageName: string = name,
+): string => {
   return `@${packageName}/${key}`
 }
 

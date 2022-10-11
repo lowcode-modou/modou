@@ -7,14 +7,18 @@ export const ColWidget: FC<ColWidgetState> = ({
   span,
   instance,
   renderSlots,
-  renderSlotNames
+  renderSlotNames,
 }) => {
   useEffect(() => {
     console.log('我是Col 我重新渲染了')
   })
-  return <Col
-    data-widget-id={instance.widgetId}
-    data-widget-slot-name={renderSlotNames.children}
-    span={span}
-  >{renderSlots.children}</Col>
+  return (
+    <Col
+      data-widget-id={instance.widgetId}
+      data-widget-slot-name={renderSlotNames.children}
+      span={span}
+    >
+      {renderSlots.children}
+    </Col>
+  )
 }

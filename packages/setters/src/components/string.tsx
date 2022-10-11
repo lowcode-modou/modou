@@ -13,13 +13,13 @@ export const mrStringSetter: MRSetter<BaseMRSetterOptions> = (options) => {
   return {
     [SETTER_KEY]: {
       type: SetterTypeEnum.String,
-      ...options
-    }
+      ...options,
+    },
   }
 }
 
 type Props = BaseSetterProps<string>
 
 export const StringSetter: FC<Props> = ({ value, onChange }) => {
-  return <Input value={value} onChange={val => onChange(val.target.value)} />
+  return <Input value={value} onChange={(val) => onChange(val.target.value)} />
 }
