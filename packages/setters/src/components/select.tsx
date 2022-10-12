@@ -18,19 +18,23 @@ interface SelectSetterOptions extends BaseMRSetterOptions {
   options: SelectSetterOption[]
 }
 
-export const mrSelectSetter: MRSetter<SelectSetterOptions> = (options) => {
-  // return mrInstance._extra({
-  //   [SETTER_KEY]: {
-  //     type: SetterTypeEnum.Select,
-  //     ...options
-  //   }
-  // })
-  return {
-    [SETTER_KEY]: {
-      type: SetterTypeEnum.Select,
-      ...options,
-    },
-  }
+// export const mrSelectSetter: MRSetter<SelectSetterOptions> = (options) => {
+//   // return mrInstance._extra({
+//   //   [SETTER_KEY]: {
+//   //     type: SetterTypeEnum.Select,
+//   //     ...options
+//   //   }
+//   // })
+//   return {
+//     [SETTER_KEY]: {
+//       type: SetterTypeEnum.Select,
+//       ...options,
+//     },
+//   }
+// }
+
+export interface MRSelectSetterType extends SelectSetterOptions {
+  type: SetterTypeEnum.Select
 }
 
 // interface PropsM<T extends string = string> extends BaseSetterProps<T[]> {

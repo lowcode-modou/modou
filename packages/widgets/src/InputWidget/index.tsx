@@ -1,13 +1,11 @@
 import { FC, useEffect } from 'react'
 import { Form, Input } from 'antd'
-import { InputWidgetState } from './types'
+import { InferWidgetState } from '../_'
+import { MRSchemeInputWidgetState } from './metadata'
 
-export * from './metadata'
-export const InputWidget: FC<InputWidgetState> = ({
-  defaultValue,
-  label,
-  instance,
-}) => {
+export const InputWidget: FC<
+  InferWidgetState<typeof MRSchemeInputWidgetState>
+> = ({ defaultValue, label, instance }) => {
   useEffect(() => {
     console.log('我是Input 我重新渲染了')
   })

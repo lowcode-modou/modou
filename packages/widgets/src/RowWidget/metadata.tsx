@@ -1,10 +1,61 @@
 import { WidgetMetadata } from '@modou/core'
 import { WidgetIcon } from '../_'
-import { MRSchemeRowWidgetProps } from './types'
+import { mr } from '@modou/refine'
+import {
+  RowWidgetAlignEnum,
+  RowWidgetAlignOptions,
+  RowWidgetJustifyEnum,
+  RowWidgetJustifyOptions,
+} from './constants'
+import { SetterTypeEnum } from '@modou/setters'
 
 enum SlotEnum {
   Children = 'children',
 }
+
+export const MRSchemeRowWidgetProps = WidgetMetadata.createMRWidgetProps({
+  widgetType: 'RowWidget',
+  widgetName: '栅格行',
+  props: {
+    align: {
+      def: mr.nativeEnum(RowWidgetAlignEnum).default(RowWidgetAlignEnum.Top),
+      setter: {
+        type: SetterTypeEnum.Select,
+        label: '垂直对齐',
+        description: '垂直对齐方式',
+        options: RowWidgetAlignOptions,
+      },
+    },
+    // gutter: mr.tuple([mr.number(), mr.number()]).or(mr.number()),
+    justify: {
+      def: mr
+        .nativeEnum(RowWidgetJustifyEnum)
+        .default(RowWidgetJustifyEnum.Start),
+      setter: {
+        type: SetterTypeEnum.Select,
+        label: '水平排列',
+        description: '水平排列方式',
+        options: RowWidgetJustifyOptions,
+      },
+    },
+    wrap: {
+      def: mr.boolean().default(true),
+      setter: {
+        type: SetterTypeEnum.Boolean,
+        label: '自动换行',
+        description: '是否自动换行',
+      },
+    },
+  },
+  slots: {
+    [SlotEnum.Children]: mr.array(mr.string()).default([]),
+  },
+})
+
+export const MRSchemeRowWidgetState = WidgetMetadata.createMRWidgetState(
+  MRSchemeRowWidgetProps,
+)
+
 export const rowWidgetMetadata = WidgetMetadata.createMetadata<SlotEnum>({
   version: '0.0.1',
   widgetType: 'RowWidget',

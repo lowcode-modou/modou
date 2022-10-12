@@ -1,9 +1,11 @@
 import { FC, useEffect } from 'react'
-import { ButtonWidgetState } from './types'
 import { Button } from 'antd'
+import { InferWidgetState } from '../_'
+import { MRSchemeButtonWidgetState } from './metadata'
 
-export * from './metadata'
-export const ButtonWidget: FC<ButtonWidgetState> = ({
+export const ButtonWidget: FC<
+  InferWidgetState<typeof MRSchemeButtonWidgetState>
+> = ({
   block,
   danger,
   disabled,

@@ -1,8 +1,8 @@
 import { FC, useEffect } from 'react'
 import { Row } from 'antd'
-import { RowWidgetState } from './types'
-export * from './metadata'
-export const RowWidget: FC<RowWidgetState> = ({
+import { InferWidgetState } from '../_'
+import { MRSchemeRowWidgetState } from './metadata'
+export const RowWidget: FC<InferWidgetState<typeof MRSchemeRowWidgetState>> = ({
   align,
   justify,
   wrap,
