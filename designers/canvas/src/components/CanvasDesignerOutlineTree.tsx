@@ -1,16 +1,19 @@
-import React, { ComponentProps, FC, useContext, useRef } from 'react'
 import { DownOutlined } from '@ant-design/icons'
 import { Tree } from 'antd'
+import type RcTree from 'rc-tree'
+import React, { ComponentProps, FC, useContext, useEffect, useRef } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
+
+import { AppFactoryContext } from '@modou/core'
+import { mcss } from '@modou/css-in-js'
+
+import { useMoveWidget } from '../hooks'
 import {
+  WidgetTreeNode,
   pageOutlineTreeSelector,
   selectedWidgetIdAtom,
   widgetRelationByWidgetIdSelector,
-  WidgetTreeNode,
 } from '../store'
-import { AppFactoryContext } from '@modou/core'
-import { useMoveWidget } from '../hooks'
-import { mcss } from '@modou/css-in-js'
 
 enum DropPositionEnum {
   Before = -1,
@@ -71,6 +74,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
 
     const parent = widgetRelationByWidgetId[dropWidget.widgetId].parent
 
+    // TODO 替换真实的 SLOT NAME
     const parentSlotName = 'children'
     switch (dropPosition) {
       case DropPositionEnum.Before:
@@ -112,14 +116,15 @@ export const CanvasDesignerOutlineTree: FC = () => {
   }
 
   // TODO 支持大纲树和其画布及面板组件互相拖拽 IMPORTANT
-  const ref: ComponentProps<typeof Tree<WidgetTreeNode>>['ref'] =
-    useRef() as any
-  // console.log(ref)
+  const ref = useRef<RcTree<WidgetTreeNode>>()
+  useEffect(() => {
+    // console.log(ref.current?.onBlur)
+  })
 
   return (
     <div className={classes.treeWrapper}>
       <Tree<WidgetTreeNode>
-        ref={ref}
+        ref={ref as unknown as any}
         showLine
         allowDrop={allowDrop}
         switcherIcon={<DownOutlined />}

@@ -1,5 +1,6 @@
 import { css, injectGlobal, keyframes } from '@emotion/css'
-import { ThemeProvider, useTheme } from '@emotion/react'
+
+import { ThemeProvider, useTheme } from './theme'
 
 const mcss: typeof css = css
 

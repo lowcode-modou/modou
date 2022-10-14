@@ -1,5 +1,7 @@
 import { FC, RefObject } from 'react'
 
+import { mcss, useTheme } from '@modou/css-in-js'
+
 import { useWidgetHovering } from '../../../hooks'
 
 interface HoveringIndicatorProps {
@@ -9,14 +11,23 @@ interface HoveringIndicatorProps {
 export const HoveringIndicator: FC<HoveringIndicatorProps> = ({
   canvasRef,
 }) => {
+  const theme = useTheme()
   const { style: hoveringStyle } = useWidgetHovering(canvasRef)
   return (
     <div
-      className="border-sky-400 border-dashed absolute"
+      className={classes.wrapper}
       style={{
         ...hoveringStyle,
-        zIndex: 999999,
+        '--border-color': theme.colorPrimary,
       }}
     />
   )
+}
+
+const classes = {
+  wrapper: mcss`
+    border: 1px dashed var(--border-color);
+    position: absolute;
+    z-index: 999999;
+  `,
 }

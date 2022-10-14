@@ -1,5 +1,5 @@
 import { useMutationObserver } from 'ahooks'
-import { Col, Row, Typography } from 'antd'
+import { Col, Row, Typography, theme } from 'antd'
 import {
   CSSProperties,
   FC,
@@ -10,6 +10,8 @@ import {
   useState,
 } from 'react'
 import { useRecoilValue } from 'recoil'
+
+import { mcss, useTheme } from '@modou/css-in-js'
 
 import { useElementRect, useWidgetDrop } from '../../../hooks'
 import {
@@ -89,13 +91,15 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
     }
   }, [dropIndicator.position, dropIndicator.show])
 
+  const theme = useTheme()
+
   return (
     <>
       {isEmptySlot ? (
         <Row
           justify="center"
           align="middle"
-          className="border-dashed border-gray-400 fixed pointer-events-none"
+          className={widgetDropClasses.emptyWrapper}
           style={style}
         >
           <Col>
@@ -106,15 +110,35 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
         </Row>
       ) : null}
       {isActive ? (
-        <Row
-          className="pointer-events-none fixed"
-          style={{ ...style, zIndex: 999 }}
-        >
-          <div className={'absolute bg-red-500'} style={dropIndicatorStyle} />
+        <Row className={widgetDropClasses.activeWrapper} style={{ ...style }}>
+          <div
+            className={widgetDropClasses.active}
+            style={{
+              ...dropIndicatorStyle,
+              '--bg-color': theme.colorError,
+            }}
+          />
         </Row>
       ) : null}
     </>
   )
+}
+
+const widgetDropClasses = {
+  emptyWrapper: mcss`
+    border: 1px dashed rgba(0,0,0,.6);
+		position: fixed;
+    pointer-events: none;
+  `,
+  activeWrapper: mcss`
+    pointer-events: none;
+    position: fixed;
+    z-index: 999;
+  `,
+  active: mcss`
+    position: absolute;
+    background-color: var(--bg-color);
+  `,
 }
 
 const MemoWidgetDrop = memo(WidgetDrop)

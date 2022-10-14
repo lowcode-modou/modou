@@ -1,7 +1,9 @@
+import { theme } from 'antd'
 import { CSSProperties, FC, RefObject, useEffect, useState } from 'react'
 import { useDrag } from 'react-dnd'
 import { useRecoilValue } from 'recoil'
 
+import { mcss, useTheme } from '@modou/css-in-js'
 import { widgetSelector } from '@modou/render/src/store'
 
 import { useWidgetSelected } from '../../../hooks/useWidgetSelected'
@@ -94,12 +96,16 @@ const SelectIndicatorContent: FC = () => {
       preview(element)
     }
   }, [opacity, preview, selectedWidgetId])
+  const theme = useTheme()
 
   return (
     <div
       ref={drag}
-      className="border-sky-400 border-dashed absolute z-50"
-      style={style}
+      className={classes.wrapper}
+      style={{
+        ...style,
+        '--border-color': theme.colorPrimary,
+      }}
     >
       <SelectedToolBox />
     </div>
@@ -116,4 +122,12 @@ export const SelectedIndicator: FC<SelectedIndicatorProps> = ({
   useWidgetSelected(canvasRef)
   const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
   return selectedWidgetId ? <SelectIndicatorContent /> : null
+}
+
+const classes = {
+  wrapper: mcss`
+    border: 1px dashed var(--border-color);
+    position: absolute;
+    z-index: 50;
+  `,
 }
