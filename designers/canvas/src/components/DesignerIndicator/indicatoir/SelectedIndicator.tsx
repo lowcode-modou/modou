@@ -1,12 +1,14 @@
 import { CSSProperties, FC, RefObject, useEffect, useState } from 'react'
-import { useWidgetSelected } from '../../../hooks/useWidgetSelected'
+import { useDrag } from 'react-dnd'
 import { useRecoilValue } from 'recoil'
+
+import { widgetSelector } from '@modou/render/src/store'
+
+import { useWidgetSelected } from '../../../hooks/useWidgetSelected'
 import { selectedWidgetIdAtom, widgetsSelector } from '../../../store'
+import { WidgetDragType } from '../../../types'
 import { getElementFromWidgetId } from '../../../utils'
 import { SelectedToolBox } from './SelectedToolBox'
-import { useDrag } from 'react-dnd'
-import { WidgetDragType } from '../../../types'
-import { widgetSelector } from '@modou/render/src/store'
 
 const SelectIndicatorContent: FC = () => {
   const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)

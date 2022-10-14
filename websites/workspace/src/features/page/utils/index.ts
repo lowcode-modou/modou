@@ -1,22 +1,21 @@
 import { AppFactory, WidgetGroupEnum } from '@modou/core'
 import {
-  ButtonWidget,
-  buttonWidgetMetadata,
-  ColWidget,
-  colWidgetMetadata,
-  InputWidget,
-  inputWidgetMetadata,
-  RowWidget,
-  rowWidgetMetadata,
-} from '@modou/widgets'
-
-import {
   BooleanSetter,
   NumberSetter,
   SelectSetter,
   SetterTypeEnum,
   StringSetter,
 } from '@modou/setters'
+import {
+  ButtonWidget,
+  ColWidget,
+  InputWidget,
+  RowWidget,
+  buttonWidgetMetadata,
+  colWidgetMetadata,
+  inputWidgetMetadata,
+  rowWidgetMetadata,
+} from '@modou/widgets'
 
 export const widgetFactory = AppFactory.create({
   widgets: [

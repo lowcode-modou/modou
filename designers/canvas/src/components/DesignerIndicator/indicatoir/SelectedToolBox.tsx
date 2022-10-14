@@ -1,15 +1,17 @@
-import { CSSProperties, FC, useEffect } from 'react'
-import { Button } from 'antd'
 import { FullscreenOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
+import { CSSProperties, FC, useEffect } from 'react'
+import { useDrag } from 'react-dnd'
 import { useRecoilValue } from 'recoil'
+
+import { widgetSelector } from '@modou/render/src/store'
+
 import {
   selectedWidgetIdAtom,
   widgetRelationByWidgetIdSelector,
 } from '../../../store'
-import { widgetSelector } from '@modou/render/src/store'
-import { useDrag } from 'react-dnd'
-import { getElementFromWidgetId } from '../../../utils'
 import { WidgetDragType } from '../../../types'
+import { getElementFromWidgetId } from '../../../utils'
 
 const buttonStyle: CSSProperties = {
   height: '16px',

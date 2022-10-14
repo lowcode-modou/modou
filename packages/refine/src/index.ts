@@ -1,14 +1,15 @@
-import { name, version } from '../package.json'
 import type {
-  ZodType,
-  ZodSchema,
-  ZodTypeAny,
-  ZodRawShape,
   ZodArray,
-  ZodString,
   ZodDefault,
+  ZodRawShape,
+  ZodSchema,
+  ZodString,
+  ZodType,
+  ZodTypeAny,
 } from '@lowcode-modou/zod'
 import { ZodObject } from '@lowcode-modou/zod'
+
+import { name, version } from '../package.json'
 
 export { z as mr } from '@lowcode-modou/zod'
 

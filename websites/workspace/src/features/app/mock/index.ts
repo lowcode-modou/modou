@@ -1,10 +1,10 @@
+import { WidgetBaseProps, WidgetMetadata } from '@modou/core'
+import { generateId } from '@modou/core/src/utils'
 import {
   buttonWidgetMetadata,
   colWidgetMetadata,
   rowWidgetMetadata,
 } from '@modou/widgets'
-import { WidgetBaseProps, WidgetMetadata } from '@modou/core'
-import { generateId } from '@modou/core/src/utils'
 
 const buttonDSL = {
   ...WidgetMetadata.mrSchemeToDefaultJson(buttonWidgetMetadata.jsonPropsSchema),

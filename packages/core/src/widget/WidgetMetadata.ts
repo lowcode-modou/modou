@@ -1,15 +1,15 @@
+import { mapValues } from 'lodash'
+import { ReactNode } from 'react'
+
 import {
   JsonSchema7ObjectType,
-  mr,
-  MRScheme,
-  mrToJsonSchema,
-  MRTypeAny,
-  schemeToJsonDefault,
   MRRawShape,
+  MRScheme,
+  MRTypeAny,
+  mr,
+  mrToJsonSchema,
+  schemeToJsonDefault,
 } from '@modou/refine'
-import { WidgetBaseProps } from './types'
-import { ReactNode } from 'react'
-import { mapValues } from 'lodash'
 import {
   MRBooleanSetterType,
   MRNumberSetterType,
@@ -17,6 +17,8 @@ import {
   MRStringSetterType,
   SETTER_KEY,
 } from '@modou/setters'
+
+import { WidgetBaseProps } from './types'
 
 type WidgetType = `${string}Widget`
 type Slots<S extends string> = Record<

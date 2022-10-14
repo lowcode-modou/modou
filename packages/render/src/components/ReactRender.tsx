@@ -1,8 +1,10 @@
-import { FC, memo, useContext, useEffect, useMemo } from 'react'
-import { WidgetBaseProps, AppFactoryContext } from '@modou/core'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { widgetsAtom, widgetSelector } from '../store'
 import { Spin } from 'antd'
+import { FC, memo, useContext, useEffect, useMemo } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+
+import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
+
+import { widgetSelector, widgetsAtom } from '../store'
 
 // const ErrorWidget: FC = () => {
 //   return <div>Error</div>

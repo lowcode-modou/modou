@@ -1,14 +1,15 @@
-import { parseObject } from './parseObject'
-import { JsonSchema7ObjectType } from '@lowcode-modou/zod-to-json-schema/src/parsers/object'
-import { parseArray } from './parseArray'
+import { JsonSchema7Type } from '@lowcode-modou/zod-to-json-schema/src/parseDef'
 import { JsonSchema7ArrayType } from '@lowcode-modou/zod-to-json-schema/src/parsers/array'
-import { JsonSchema7StringType } from '@lowcode-modou/zod-to-json-schema/src/parsers/string'
 import { JsonSchema7BooleanType } from '@lowcode-modou/zod-to-json-schema/src/parsers/boolean'
 import { JsonSchema7NumberType } from '@lowcode-modou/zod-to-json-schema/src/parsers/number'
-import { JsonSchema7Type } from '@lowcode-modou/zod-to-json-schema/src/parseDef'
-import { parseString } from './parseString'
-import { parseNumber } from './parseNumber'
+import { JsonSchema7ObjectType } from '@lowcode-modou/zod-to-json-schema/src/parsers/object'
+import { JsonSchema7StringType } from '@lowcode-modou/zod-to-json-schema/src/parsers/string'
+
+import { parseArray } from './parseArray'
 import { parseBoolean } from './parseBoolean'
+import { parseNumber } from './parseNumber'
+import { parseObject } from './parseObject'
+import { parseString } from './parseString'
 
 type JsonSchema7TypeType =
   | 'object'

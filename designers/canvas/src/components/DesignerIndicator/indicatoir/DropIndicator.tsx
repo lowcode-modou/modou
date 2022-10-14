@@ -1,22 +1,23 @@
+import { useMutationObserver } from 'ahooks'
+import { Col, Row, Typography } from 'antd'
 import {
   CSSProperties,
   FC,
-  memo,
   RefObject,
+  memo,
   useEffect,
   useMemo,
   useState,
 } from 'react'
-import { Col, Row, Typography } from 'antd'
-import { useElementRect, useWidgetDrop } from '../../../hooks'
 import { useRecoilValue } from 'recoil'
+
+import { useElementRect, useWidgetDrop } from '../../../hooks'
 import {
-  dropIndicatorAtom,
   DropIndicatorPositionEnum,
+  dropIndicatorAtom,
   widgetByIdSelector,
   widgetsSelector,
 } from '../../../store'
-import { useMutationObserver } from 'ahooks'
 import {
   getWidgetIdFromElement,
   getWidgetSlotNameFromElement,

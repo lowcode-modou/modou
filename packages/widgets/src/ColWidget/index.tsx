@@ -1,5 +1,6 @@
-import { FC, useEffect } from 'react'
 import { Col } from 'antd'
+import { FC, useEffect } from 'react'
+
 import { InferWidgetState } from '../_'
 import { MRSchemeColWidgetState } from './metadata'
 

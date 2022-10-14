@@ -1,5 +1,9 @@
 {
   "singleQuote": true,
   "trailingComma": "all",
-  "semi": false
+  "semi": false,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "importOrder": ["^@modou/(.*)$", "^[./]"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
 }

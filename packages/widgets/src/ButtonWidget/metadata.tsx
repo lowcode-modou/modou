@@ -1,6 +1,8 @@
 import { WidgetMetadata } from '@modou/core'
-import { WidgetIcon } from '../_'
 import { mr } from '@modou/refine'
+import { SetterTypeEnum } from '@modou/setters'
+
+import { WidgetIcon } from '../_'
 import {
   ButtonWidgetShapeEnum,
   ButtonWidgetSizeEnum,
@@ -9,7 +11,6 @@ import {
   sizeOptions,
   typeOptions,
 } from './constants'
-import { SetterTypeEnum } from '@modou/setters'
 
 export const MRSchemeButtonWidgetProps = WidgetMetadata.createMRWidgetProps({
   widgetType: 'ButtonWidget',

@@ -1,7 +1,8 @@
 import { FC, RefObject } from 'react'
+
+import { DropIndicator } from './indicatoir/DropIndicator'
 import { HoveringIndicator } from './indicatoir/HoveringIndicator'
 import { SelectedIndicator } from './indicatoir/SelectedIndicator'
-import { DropIndicator } from './indicatoir/DropIndicator'
 
 interface DesignerIndicatorProps {
   canvasRef: RefObject<HTMLElement>

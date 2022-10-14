@@ -1,8 +1,8 @@
+import { App } from '@/App'
+import '@/styles/index.css'
+import 'antd/dist/reset.css'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import 'antd/dist/reset.css'
-import '@/styles/index.css'
-import { App } from '@/App'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

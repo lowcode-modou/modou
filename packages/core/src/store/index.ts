@@ -1,8 +1,9 @@
-import { atom, DefaultValue, selector, selectorFamily } from 'recoil'
-import { generateRecoilKey } from '../utils'
-import { App, Page } from '../types'
-import { keyBy } from 'lodash'
 import { produce } from 'immer'
+import { keyBy } from 'lodash'
+import { DefaultValue, atom, selector, selectorFamily } from 'recoil'
+
+import { App, Page } from '../types'
+import { generateRecoilKey } from '../utils'
 
 const appAtom = atom<App>({
   key: generateRecoilKey('metadataAtom'),

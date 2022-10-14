@@ -1,5 +1,6 @@
-import { FC } from 'react'
 import { Spin } from 'antd'
+import { FC } from 'react'
+
 import { mcss } from '@modou/css-in-js'
 
 export const AppSpin: FC = () => {

@@ -1,10 +1,12 @@
-import { FC } from 'react'
-import { WidgetMetadata, WidgetBaseProps } from '../widget'
 import { isEqual, unionWith } from 'lodash'
+import { FC } from 'react'
+
 import { BaseSetterProps } from '@modou/setters/src/types'
+import { rowWidgetMetadata } from '@modou/widgets'
+
 import { Page, WidgetGroupEnum } from '../types'
 import { generateId } from '../utils'
-import { rowWidgetMetadata } from '@modou/widgets'
+import { WidgetMetadata } from '../widget'
 
 interface Widget {
   component: FC<any>

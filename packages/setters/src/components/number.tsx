@@ -1,7 +1,8 @@
-import { BaseMRSetterOptions, BaseSetterProps } from '../types'
-import { SetterTypeEnum } from '../constants'
-import { FC } from 'react'
 import { InputNumber } from 'antd'
+import { FC } from 'react'
+
+import { SetterTypeEnum } from '../constants'
+import { BaseMRSetterOptions, BaseSetterProps } from '../types'
 
 // export const mrNumberSetter: MRSetter<BaseMRSetterOptions> = (options) => {
 //   return {

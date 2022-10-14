@@ -1,13 +1,14 @@
 import { WidgetMetadata } from '@modou/core'
-import { WidgetIcon } from '../_'
 import { mr } from '@modou/refine'
+import { SetterTypeEnum } from '@modou/setters'
+
+import { WidgetIcon } from '../_'
 import {
   RowWidgetAlignEnum,
   RowWidgetAlignOptions,
   RowWidgetJustifyEnum,
   RowWidgetJustifyOptions,
 } from './constants'
-import { SetterTypeEnum } from '@modou/setters'
 
 enum SlotEnum {
   Children = 'children',

@@ -1,13 +1,15 @@
 import { FC, ReactElement, useState } from 'react'
+import { useSetRecoilState } from 'recoil'
 import { RecoilSync } from 'recoil-sync'
+
+import { Page } from '@modou/core'
+
 import {
   PAGE_ATOM_KEY,
   PAGE_ATOM_KEY_STORE_KEY,
   PAGE_ATOM_STATUS,
   selectedWidgetIdAtom,
 } from '../store'
-import { Page } from '@modou/core'
-import { useSetRecoilState } from 'recoil'
 
 interface RecoilWidgetsSyncProps {
   page: Page

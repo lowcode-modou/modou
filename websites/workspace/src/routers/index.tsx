@@ -1,7 +1,7 @@
+import { ROUTER_PATH } from '@/constants'
+import { lazyImport } from '@/utils/lazyImport'
 import { FC } from 'react'
 import { useRoutes } from 'react-router-dom'
-import { lazyImport } from '@/utils/lazyImport'
-import { ROUTER_PATH } from '@/constants'
 
 const { Apps } = lazyImport(async () => await import('@/features/apps'), 'Apps')
 const { App } = lazyImport(async () => await import('@/features/app'), 'App')

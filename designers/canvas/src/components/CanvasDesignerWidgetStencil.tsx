@@ -1,17 +1,19 @@
-import { FC, useContext, useEffect, useMemo, useRef } from 'react'
-import {
-  WidgetMetadata,
-  WidgetBaseProps,
-  AppFactoryContext,
-  WidgetGroupEnum,
-  AppFactory,
-} from '@modou/core'
 import { Card, Col, Row, Typography } from 'antd'
-import { useDrag } from 'react-dnd'
-import { generateId, getWidgetGroupLabel } from '@modou/core/src/utils'
-import { WidgetDragType } from '../types'
 import { isEmpty } from 'lodash'
+import { FC, useContext, useEffect, useMemo, useRef } from 'react'
+import { useDrag } from 'react-dnd'
+
+import {
+  AppFactory,
+  AppFactoryContext,
+  WidgetBaseProps,
+  WidgetGroupEnum,
+  WidgetMetadata,
+} from '@modou/core'
+import { generateId, getWidgetGroupLabel } from '@modou/core/src/utils'
 import { mcss } from '@modou/css-in-js'
+
+import { WidgetDragType } from '../types'
 
 const WidgetBlock: FC<{
   metadata: WidgetMetadata

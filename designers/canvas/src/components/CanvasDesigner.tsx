@@ -1,18 +1,20 @@
+import { Tabs } from 'antd'
 import { FC, useRef } from 'react'
-import { Page } from '@modou/core'
-import { RecoilRoot, useSetRecoilState } from 'recoil'
-import { CanvasDesignerPropsPanel } from './CanvasDesignerPropsPanel'
-import { RecoilWidgetsSync } from './RecoilWidgetsSync'
-import { CanvasDesignerWidgetStencil } from './CanvasDesignerWidgetStencil'
-import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
-import { DesignerIndicator } from './DesignerIndicator'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { selectedWidgetIdAtom } from '../store'
-import { Tabs } from 'antd'
-import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
-import { CanvasDesignerKeyPress } from './CanvasDesignerKeyPress'
+import { RecoilRoot, useSetRecoilState } from 'recoil'
+
+import { Page } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+
+import { selectedWidgetIdAtom } from '../store'
+import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
+import { CanvasDesignerKeyPress } from './CanvasDesignerKeyPress'
+import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
+import { CanvasDesignerPropsPanel } from './CanvasDesignerPropsPanel'
+import { CanvasDesignerWidgetStencil } from './CanvasDesignerWidgetStencil'
+import { DesignerIndicator } from './DesignerIndicator'
+import { RecoilWidgetsSync } from './RecoilWidgetsSync'
 
 interface CanvasDesignerProps {
   page: Page

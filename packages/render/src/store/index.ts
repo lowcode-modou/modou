@@ -1,7 +1,9 @@
-import { atom, selector, selectorFamily } from 'recoil'
-import { WidgetBaseProps } from '@modou/core'
-import { generateRecoilKey } from '../utils'
 import { keyBy } from 'lodash'
+import { atom, selector, selectorFamily } from 'recoil'
+
+import { WidgetBaseProps } from '@modou/core'
+
+import { generateRecoilKey } from '../utils'
 
 export const widgetsAtom = atom<WidgetBaseProps[]>({
   key: generateRecoilKey('widgetsAtom'),

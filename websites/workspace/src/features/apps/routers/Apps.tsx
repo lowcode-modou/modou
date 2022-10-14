@@ -1,12 +1,13 @@
-import { FC } from 'react'
-import { Col, Layout, Row, Card, Avatar } from 'antd'
 import {
   EditOutlined,
   EllipsisOutlined,
   SettingOutlined,
 } from '@ant-design/icons'
-import { mcss } from '@modou/css-in-js'
+import { Avatar, Card, Col, Layout, Row } from 'antd'
+import { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
+
+import { mcss } from '@modou/css-in-js'
 
 const headerClasses = {
   header: mcss`

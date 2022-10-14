@@ -1,5 +1,6 @@
 import { JsonSchema7ObjectType } from '@lowcode-modou/zod-to-json-schema/src/parsers/object'
 import { cloneDeep, isObject } from 'lodash'
+
 import { DEFAULT_TO_EMPTY } from '../../constants'
 import { parseScheme } from './parseScheme'
 

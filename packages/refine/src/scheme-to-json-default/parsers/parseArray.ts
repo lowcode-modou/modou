@@ -1,5 +1,6 @@
 import { JsonSchema7ArrayType } from '@lowcode-modou/zod-to-json-schema/src/parsers/array'
 import { cloneDeep, isObject } from 'lodash'
+
 import { DEFAULT_TO_EMPTY } from '../../constants'
 
 export const parseArray = (

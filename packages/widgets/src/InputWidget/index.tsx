@@ -1,5 +1,6 @@
-import { FC, useEffect } from 'react'
 import { Form, Input } from 'antd'
+import { FC, useEffect } from 'react'
+
 import { InferWidgetState } from '../_'
 import { MRSchemeInputWidgetState } from './metadata'
 

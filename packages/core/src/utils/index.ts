@@ -1,4 +1,5 @@
 import { customAlphabet } from 'nanoid'
+
 import { name } from '../../package.json'
 import { WidgetGroupEnum } from '../types'
 

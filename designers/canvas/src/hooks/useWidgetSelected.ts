@@ -1,7 +1,8 @@
+import { useEventListener } from 'ahooks'
 import { RefObject } from 'react'
 import { useSetRecoilState } from 'recoil'
+
 import { selectedWidgetIdAtom } from '../store'
-import { useEventListener } from 'ahooks'
 import { getRawElement, getWidgetIdFromElement } from '../utils'
 
 export const useWidgetSelected = (canvasRef: RefObject<HTMLElement>) => {

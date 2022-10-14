@@ -1,20 +1,22 @@
-import { useDrop } from 'react-dnd'
-import { WidgetBaseProps, AppFactoryContext } from '@modou/core'
 import { isEmpty } from 'lodash'
 import { useContext, useEffect, useRef } from 'react'
+import { useDrop } from 'react-dnd'
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
+import { match } from 'ts-pattern'
+
+import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
 import { widgetSelector } from '@modou/render/src/store'
-import { useAddWidget } from './useAddWidget'
+
 import {
   DropIndicator,
-  dropIndicatorAtom,
   DropIndicatorInsertPositionEnum,
   DropIndicatorPositionEnum,
   WidgetRelationByWidgetId,
+  dropIndicatorAtom,
   widgetRelationByWidgetIdSelector,
 } from '../store'
-import { match } from 'ts-pattern'
 import { WidgetDragType } from '../types'
+import { useAddWidget } from './useAddWidget'
 import { useMoveWidget } from './useMoveWidget'
 
 const EMPTY_WIDGET_MIN_HEIGHT = '36px'

@@ -1,5 +1,6 @@
-import { CSSProperties, RefObject, useState } from 'react'
 import { useEventListener } from 'ahooks'
+import { CSSProperties, RefObject, useState } from 'react'
+
 import { getRawElement } from '../utils'
 
 export const useWidgetHovering = (canvasRef: RefObject<HTMLElement>) => {

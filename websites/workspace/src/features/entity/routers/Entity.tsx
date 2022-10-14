@@ -1,5 +1,5 @@
-import { FC } from 'react'
 import { Layout, Typography } from 'antd'
+import { FC } from 'react'
 
 export const Entity: FC = () => {
   return (

@@ -1,4 +1,5 @@
 import { FC, RefObject } from 'react'
+
 import { useWidgetHovering } from '../../../hooks'
 
 interface HoveringIndicatorProps {

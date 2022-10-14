@@ -1,8 +1,9 @@
-import { useCallback } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { widgetRelationByWidgetIdSelector, widgetsSelector } from '../store'
 import produce from 'immer'
 import { isObject } from 'lodash'
+import { useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+
+import { widgetRelationByWidgetIdSelector, widgetsSelector } from '../store'
 
 export const useMoveWidget = () => {
   const setWidgets = useSetRecoilState(widgetsSelector)

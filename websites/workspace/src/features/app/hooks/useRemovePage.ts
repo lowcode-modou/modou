@@ -1,7 +1,8 @@
-import { Metadata } from '@modou/core'
-import { useSetRecoilState } from 'recoil'
 import produce from 'immer'
 import { useCallback } from 'react'
+import { useSetRecoilState } from 'recoil'
+
+import { Metadata } from '@modou/core'
 
 export const useRemovePage = () => {
   const setPageById = useSetRecoilState(Metadata.pageByIdSelector)

@@ -1,7 +1,8 @@
+import { Select } from 'antd'
+import { FC } from 'react'
+
 import { SETTER_KEY, SetterTypeEnum } from '../constants'
 import { BaseMRSetterOptions, BaseSetterProps, MRSetter } from '../types'
-import { FC } from 'react'
-import { Select } from 'antd'
 
 interface SelectSetterOption {
   label: string

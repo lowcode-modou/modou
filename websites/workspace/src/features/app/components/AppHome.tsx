@@ -1,12 +1,13 @@
-import { FC, useLayoutEffect } from 'react'
-import { Spin } from 'antd'
-import { useRecoilValue } from 'recoil'
-import { Metadata } from '@modou/core'
-import { head, isEmpty } from 'lodash'
-import { useNavigate, useParams } from 'react-router-dom'
+import { ROUTER_PATH } from '@/constants'
 import { BaseRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
-import { ROUTER_PATH } from '@/constants'
+import { Spin } from 'antd'
+import { head, isEmpty } from 'lodash'
+import { FC, useLayoutEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useRecoilValue } from 'recoil'
+
+import { Metadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
 export const AppHome: FC = () => {

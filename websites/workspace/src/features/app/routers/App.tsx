@@ -1,18 +1,20 @@
+import { EntityRouterParamsKey, PageRouterParamsKey } from '@/types'
+import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
+import { Avatar, Button, Layout, Menu } from 'antd'
+import produce from 'immer'
+import { isEmpty } from 'lodash'
 import { ComponentProps, FC, useCallback, useEffect, useState } from 'react'
-import { Layout, Avatar, Button, Menu } from 'antd'
 import { Outlet, useParams } from 'react-router-dom'
+import { useSetRecoilState } from 'recoil'
+
+import { Metadata } from '@modou/core'
+import { mcss } from '@modou/css-in-js'
+
 // import classes from './app.css'
 import { ModuleManager } from '../components'
-import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
-import { EntityRouterParamsKey, PageRouterParamsKey } from '@/types'
-import { ModuleEnum } from '../types'
 import { AppHome } from '../components/AppHome'
-import { isEmpty } from 'lodash'
 import { MOCK_PAGE_ID, MOCK_ROOT_WIDGET_ID, MOCK_WIDGETS } from '../mock'
-import { useSetRecoilState } from 'recoil'
-import { Metadata } from '@modou/core'
-import produce from 'immer'
-import { mcss } from '@modou/css-in-js'
+import { ModuleEnum } from '../types'
 
 const menuItems: ComponentProps<typeof Menu>['items'] = [
   {

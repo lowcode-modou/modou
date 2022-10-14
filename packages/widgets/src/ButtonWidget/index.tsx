@@ -1,5 +1,6 @@
-import { FC, useEffect } from 'react'
 import { Button } from 'antd'
+import { FC, useEffect } from 'react'
+
 import { InferWidgetState } from '../_'
 import { MRSchemeButtonWidgetState } from './metadata'
 

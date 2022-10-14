@@ -1,14 +1,16 @@
-import { FC, useLayoutEffect } from 'react'
-import { Col, Row } from 'antd'
-import { CanvasDesigner } from '@modou/canvas-designer'
-import { useRecoilState } from 'recoil'
-import { Metadata, AppFactoryContext } from '@modou/core'
-import { widgetFactory } from '../utils'
-import { useNavigate, useParams } from 'react-router-dom'
+import { ROUTER_PATH } from '@/constants'
 import { PageRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
-import { ROUTER_PATH } from '@/constants'
+import { Col, Row } from 'antd'
+import { FC, useLayoutEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useRecoilState } from 'recoil'
+
+import { CanvasDesigner } from '@modou/canvas-designer'
+import { AppFactoryContext, Metadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+
+import { widgetFactory } from '../utils'
 
 export const Page: FC = () => {
   const { pageId, appId } = useParams<PageRouterParamsKey>()
@@ -26,6 +28,7 @@ export const Page: FC = () => {
       )
     }
   }, [appId, navigate, page])
+
   return (
     <Row justify="center" align="middle" className={classes.page}>
       <Col span={24} className={classes.container}>

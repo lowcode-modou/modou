@@ -1,10 +1,12 @@
-import { ComponentProps, FC, useEffect, useRef, useState } from 'react'
 import { Drawer, Input } from 'antd'
-import { ModuleEnum } from '../types'
+import { ComponentProps, FC, useEffect, useRef, useState } from 'react'
 import { match } from 'ts-pattern'
+
 import { mcss } from '@modou/css-in-js'
-import { ModuleManagerPage } from './ModuleManagerPage'
+
+import { ModuleEnum } from '../types'
 import { ModuleManagerEntity } from './ModuleManagerEntity'
+import { ModuleManagerPage } from './ModuleManagerPage'
 
 export const ModuleManager: FC<{
   visible: boolean

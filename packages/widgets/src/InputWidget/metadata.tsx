@@ -1,7 +1,8 @@
 import { WidgetMetadata } from '@modou/core'
-import { WidgetIcon } from '../_'
 import { mr } from '@modou/refine'
 import { SetterTypeEnum } from '@modou/setters'
+
+import { WidgetIcon } from '../_'
 
 export const MRSchemeInputWidgetProps = WidgetMetadata.createMRWidgetProps({
   widgetType: 'InputWidget',

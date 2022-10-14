@@ -1,7 +1,8 @@
-import { WidgetIcon } from '../_'
 import { WidgetMetadata } from '@modou/core'
 import { mr } from '@modou/refine'
 import { SetterTypeEnum } from '@modou/setters'
+
+import { WidgetIcon } from '../_'
 
 enum SlotEnum {
   Children = 'children',

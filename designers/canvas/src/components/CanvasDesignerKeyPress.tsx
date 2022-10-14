@@ -1,8 +1,9 @@
-import { FC } from 'react'
 import { useKeyPress } from 'ahooks'
-import { selectedWidgetIdAtom } from '../store'
+import { FC } from 'react'
 import { useRecoilState } from 'recoil'
+
 import { useRemoveWidget } from '../hooks'
+import { selectedWidgetIdAtom } from '../store'
 
 export const CanvasDesignerKeyPress: FC = () => {
   const [selectWidgetId, setSelectedWidgetId] =
