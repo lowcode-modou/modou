@@ -14,7 +14,7 @@ export default defineConfig({
           [
             '@emotion/babel-preset-css-prop',
             {
-              autoLabel: 'always',
+              autoLabel: 'dev-only',
               labelFormat: '[local]',
               importMap: {
                 '@modou/css-in-js': {

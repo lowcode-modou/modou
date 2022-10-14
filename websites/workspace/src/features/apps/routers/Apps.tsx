@@ -14,18 +14,27 @@ const headerClasses = {
     z-index: 50;
     box-shadow: rgba(0, 0, 0, 0) 0 0 0 0, rgba(0, 0, 0, 0) 0 0 0 0,
       rgba(0, 0, 0, 0.1) 0 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px;
+    padding: 0!important;
+    height: 48px!important;
   `,
-  content: mcss`height: 100%`,
+  logoWrapper: mcss`
+    height: 100%;
+    width: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  `,
+  logo: mcss`
+    height: 32px;
+  `,
 }
 
 const AppsHeader: FC = () => {
   return (
     <Layout.Header className={headerClasses.header}>
-      <Row align="middle" className={headerClasses.content}>
-        <Col>
-          <img src="/modou.svg" className="h-10" alt="" />
-        </Col>
-      </Row>
+      <div className={headerClasses.logoWrapper}>
+        <img src="/modou.svg" className={headerClasses.logo} alt="" />
+      </div>
     </Layout.Header>
   )
 }
