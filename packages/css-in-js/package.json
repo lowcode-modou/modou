@@ -1,0 +1,17 @@
+{
+  "name": "@modou/css-in-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@emotion/css": "^11.10.0",
+    "@emotion/react": "^11.10.4",
+    "w": "^1.1.0"
+  }
+}

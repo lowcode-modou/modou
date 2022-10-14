@@ -5,12 +5,23 @@ import {
   EllipsisOutlined,
   SettingOutlined,
 } from '@ant-design/icons'
+import { mcss } from '@modou/css-in-js'
 import { useNavigate } from 'react-router-dom'
+
+const headerClasses = {
+  header: mcss`
+    background-color: white !important;
+    z-index: 50;
+    box-shadow: rgba(0, 0, 0, 0) 0 0 0 0, rgba(0, 0, 0, 0) 0 0 0 0,
+      rgba(0, 0, 0, 0.1) 0 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px;
+  `,
+  content: mcss`height: 100%`,
+}
 
 const AppsHeader: FC = () => {
   return (
-    <Layout.Header className="!bg-white shadow-md z-50">
-      <Row align="middle" className="h-full">
+    <Layout.Header className={headerClasses.header}>
+      <Row align="middle" className={headerClasses.content}>
         <Col>
           <img src="/modou.svg" className="h-10" alt="" />
         </Col>
@@ -19,16 +30,34 @@ const AppsHeader: FC = () => {
   )
 }
 
+const contentClasses = {
+  content: mcss`
+    background-color: white;
+    width: 100%;
+  `,
+  cardWrapper: mcss`
+    display: flex;
+    justify-content: center;
+    padding: 8px;
+  `,
+  card: mcss`
+    width: 100%;
+    margin: 4px;
+    box-shadow: rgba(0, 0, 0, 0) 0 0 0 0, rgba(0, 0, 0, 0) 0 0 0 0,
+      rgba(0, 0, 0, 0.25) 0 25px 50px -12px;
+  `,
+}
+
 const AppsContent: FC = () => {
   const navigator = useNavigate()
   return (
-    <Layout.Content className="bg-white w-full">
+    <Layout.Content className={contentClasses.content}>
       <Row gutter={[0, 0]}>
         {Array(13)
           .fill(1)
           .map((v, index) => (
             <Col
-              className="flex justify-center p-2"
+              className={contentClasses.cardWrapper}
               key={index}
               xs={{ span: 24 }}
               sm={{ span: 12 }}
@@ -40,7 +69,7 @@ const AppsContent: FC = () => {
             >
               <Card
                 onClick={() => navigator('/app/appId')}
-                className="shadow-2xl m-1 w-full"
+                className={contentClasses.card}
                 // cover={
                 //   <img src="./modou.svg" alt="" />
                 //
@@ -71,7 +100,7 @@ const AppsContent: FC = () => {
 
 export const Apps: FC = () => {
   return (
-    <Layout className="h-full">
+    <Layout className={mcss({ width: '100%' })}>
       <AppsHeader />
       <AppsContent />
       {/* <Layout.Footer>©MoDou</Layout.Footer> */}

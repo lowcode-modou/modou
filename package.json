@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@emotion/babel-preset-css-prop": "^11.10.0",
     "@types/lodash": "^4.14.185",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
@@ -21,10 +22,8 @@
     "esbuild": "0.14.49",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "postcss": "^8.4.16",
     "rollup-plugin-visualizer": "^5.8.2",
     "sass": "^1.54.9",
-    "tailwindcss": "^3.1.8",
     "typescript": "^4.7.4",
     "vite": "^3.0.7"
   },
@@ -32,6 +31,7 @@
     "@ant-design/icons": "^4.7.0",
     "@ant-design/pro-components": "^2.3.13",
     "@modou/core": "workspace:^1.0.0",
+    "@modou/css-in-js": "workspace:^1.0.0",
     "@modou/refine": "workspace:^1.0.0",
     "@modou/render": "workspace:^1.0.0",
     "@modou/setters": "workspace:^1.0.0",

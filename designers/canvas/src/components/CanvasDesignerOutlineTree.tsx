@@ -10,6 +10,7 @@ import {
 } from '../store'
 import { AppFactoryContext } from '@modou/core'
 import { useMoveWidget } from '../hooks'
+import { mcss } from '@modou/css-in-js'
 
 enum DropPositionEnum {
   Before = -1,
@@ -116,7 +117,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
   // console.log(ref)
 
   return (
-    <div style={{ padding: '16px 8px' }}>
+    <div className={classes.treeWrapper}>
       <Tree<WidgetTreeNode>
         ref={ref}
         showLine
@@ -136,4 +137,10 @@ export const CanvasDesignerOutlineTree: FC = () => {
       />
     </div>
   )
+}
+
+const classes = {
+  treeWrapper: mcss`
+    padding: 16px 8px;
+  `,
 }

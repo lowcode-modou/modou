@@ -10,6 +10,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { PageRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { ROUTER_PATH } from '@/constants'
+import { mcss } from '@modou/css-in-js'
 
 enum PageActionEnum {
   Delete = 'Delete',
@@ -35,13 +36,7 @@ export const ModuleManagerPage: FC<{
     page,
   ) => (
     <List.Item
-      style={{
-        marginLeft: '-16px',
-        marginRight: '-16px',
-        paddingLeft: '16px',
-        paddingRight: '16px',
-      }}
-      className="!border-none cursor-default hover:bg-gray-200 group"
+      className={classes.listItem}
       onClick={() => {
         navigate(
           generateRouterPath(ROUTER_PATH.PAGE, {
@@ -51,11 +46,9 @@ export const ModuleManagerPage: FC<{
         )
       }}
     >
-      <div className="flex justify-between items-center w-full">
+      <div className={classes.listItemContent}>
         {page.id === pageId ? (
-          <Typography.Link className="!cursor-default">
-            {page.name}
-          </Typography.Link>
+          <Typography.Link>{page.name}</Typography.Link>
         ) : (
           <Typography.Text>{page.name}</Typography.Text>
         )}
@@ -85,7 +78,9 @@ export const ModuleManagerPage: FC<{
             />
           }
         >
-          <MoreOutlined className="hidden group-hover:block" />
+          <MoreOutlined
+            className={`${classes.moreAction} mm_p-list_item_more_action`}
+          />
         </Dropdown>
       </div>
     </List.Item>
@@ -132,4 +127,33 @@ export const ModuleManagerPage: FC<{
       />
     </>
   )
+}
+
+const classes = {
+  listItem: mcss`
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border: none !important;
+    cursor: default;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+      .mm_p-list_item_more_action {
+        display: block !important;
+      }
+    }
+  `,
+  listItemContent: mcss`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    a {
+      cursor: default !important;
+    }
+  `,
+  moreAction: mcss`
+    display: none;
+  `,
 }

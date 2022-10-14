@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { PageRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { ROUTER_PATH } from '@/constants'
+import { mcss } from '@modou/css-in-js'
 
 export const Page: FC = () => {
   const { pageId, appId } = useParams<PageRouterParamsKey>()
@@ -26,8 +27,8 @@ export const Page: FC = () => {
     }
   }, [appId, navigate, page])
   return (
-    <Row justify="center" align="middle" className="h-full">
-      <Col span={24} className="h-full">
+    <Row justify="center" align="middle" className={classes.page}>
+      <Col span={24} className={classes.container}>
         {page && (
           <AppFactoryContext.Provider value={widgetFactory}>
             <CanvasDesigner page={page} onPageChange={setPage} />
@@ -36,4 +37,13 @@ export const Page: FC = () => {
       </Col>
     </Row>
   )
+}
+
+const classes = {
+  page: mcss`
+    height: 100%;
+  `,
+  container: mcss`
+    height: 100%;
+  `,
 }

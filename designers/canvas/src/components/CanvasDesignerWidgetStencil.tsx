@@ -11,6 +11,7 @@ import { useDrag } from 'react-dnd'
 import { generateId, getWidgetGroupLabel } from '@modou/core/src/utils'
 import { WidgetDragType } from '../types'
 import { isEmpty } from 'lodash'
+import { mcss } from '@modou/css-in-js'
 
 const WidgetBlock: FC<{
   metadata: WidgetMetadata
@@ -58,11 +59,11 @@ const WidgetBlock: FC<{
 
   const opacity = isDragging ? 0.3 : 1
   return (
-    <Col className="bg-white" style={{ opacity }} span={12}>
+    <Col className={classes.widgetWrapper} style={{ opacity }} span={12}>
       <Card
         ref={previewRef}
         size="small"
-        className="text-center cursor-move select-none overflow-hidden absolute z-0"
+        className={`${classes.widget} ${classes.previewWidget}`}
         style={{
           fontSize: '12px',
         }}
@@ -72,23 +73,19 @@ const WidgetBlock: FC<{
           backgroundColor: 'rgba(0,0,0,.04)',
         }}
       >
-        <div style={{ fontSize: '14px', lineHeight: '14px' }}>
-          {metadata.icon}
-        </div>
+        <div className={classes.previewWidgetIcon}>{metadata.icon}</div>
         <div>{metadata.widgetName}</div>
       </Card>
       <Card
         ref={drag}
         size="small"
-        className="text-center cursor-move select-none overflow-hidden"
+        className={classes.widget}
         bodyStyle={{
           padding: '8px 0',
           backgroundColor: 'rgba(0,0,0,.04)',
         }}
       >
-        <div style={{ fontSize: '24px', lineHeight: '24px' }}>
-          {metadata.icon}
-        </div>
+        <div className={classes.widgetIcon}>{metadata.icon}</div>
         <div>{metadata.widgetName}</div>
       </Card>
     </Col>
@@ -136,9 +133,9 @@ export const CanvasDesignerWidgetStencil: FC = () => {
   }, [widgetFactory.widgetByType])
   // console.log('widgetsByGroup', widgetsByGroup)
   return (
-    <div style={{ padding: '16px' }}>
+    <div className={classes.widgetsPanel}>
       {Object.entries(widgetsByGroup).map(([group, { name, widgets }]) => (
-        <div style={{ marginBottom: '16px' }} key={group}>
+        <div className={classes.widgetsPanel} key={group}>
           <Typography.Title level={5}>{name}</Typography.Title>
           <Row gutter={[8, 8]}>
             {widgets.map(({ metadata }) => {
@@ -151,4 +148,34 @@ export const CanvasDesignerWidgetStencil: FC = () => {
       ))}
     </div>
   )
+}
+
+const classes = {
+  widgetWrapper: mcss`
+    background-color: white;
+  `,
+  widget: mcss`
+    text-align: center;
+    cursor: move;
+    user-select: none;
+    overflow: hidden;
+  `,
+  previewWidget: mcss`
+		position: absolute;
+		z-index: 0;
+  `,
+  previewWidgetIcon: mcss`
+    font-size: 14px;
+    line-height: 14px;
+  `,
+  widgetIcon: mcss`
+    font-size: 24px;
+    line-height: 24px;
+  `,
+  widgetsPanel: mcss`
+    padding: 16px;
+  `,
+  widgetGroup: mcss`
+    padding: 16px;
+  `,
 }

@@ -1,7 +1,7 @@
 import { ComponentProps, FC, useCallback, useEffect, useState } from 'react'
 import { Layout, Avatar, Button, Menu } from 'antd'
 import { Outlet, useParams } from 'react-router-dom'
-import classes from './app.module.scss'
+// import classes from './app.css'
 import { ModuleManager } from '../components'
 import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
 import { EntityRouterParamsKey, PageRouterParamsKey } from '@/types'
@@ -12,6 +12,7 @@ import { MOCK_PAGE_ID, MOCK_ROOT_WIDGET_ID, MOCK_WIDGETS } from '../mock'
 import { useSetRecoilState } from 'recoil'
 import { Metadata } from '@modou/core'
 import produce from 'immer'
+import { mcss } from '@modou/css-in-js'
 
 const menuItems: ComponentProps<typeof Menu>['items'] = [
   {
@@ -92,14 +93,12 @@ export const App: FC = () => {
   }, [setApp])
 
   return (
-    <Layout className="h-full">
-      <Layout.Header
-        className={`${classes.header} !bg-white shadow-md flex justify-between items-center`}
-      >
+    <Layout className={classes.layout}>
+      <Layout.Header className={classes.header}>
         <div className={classes.headerLogoWrapper}>
           <img src="/modou.svg" alt="" />
         </div>
-        <div className={`flex justify-end items-center ${classes.headerRight}`}>
+        <div className={classes.headerRight}>
           <Button type="link" href="https://runtime.modou.ink" target="_blank">
             预览
           </Button>
@@ -116,7 +115,7 @@ export const App: FC = () => {
           collapsed={!visibleModuleManger}
         >
           <Menu
-            className="h-full"
+            className={classes.menu}
             style={{ width: '60px' }}
             mode="inline"
             selectedKeys={[module]}
@@ -124,7 +123,7 @@ export const App: FC = () => {
             items={menuItems}
           />
         </Layout.Sider>
-        <Layout.Content className="relative">
+        <Layout.Content className={classes.layoutContent}>
           <ModuleManager
             onClose={() => {
               setVisibleModuleManger(false)
@@ -139,4 +138,63 @@ export const App: FC = () => {
       </Layout>
     </Layout>
   )
+}
+
+const classes = {
+  layout: mcss`
+    height: 100%;
+  `,
+  header: mcss`
+    height: 48px !important;
+    line-height: 48px !important;
+    padding: 0 !important;
+    z-index: 999999 !important;
+    background-color: white !important;
+    box-shadow: rgba(0, 0, 0, 0) 0 0 0 0, rgba(0, 0, 0, 0) 0 0 0 0,
+      rgba(0, 0, 0, 0.1) 0 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  `,
+  headerLogoWrapper: mcss`
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      height: 32px;
+    }
+  `,
+  headerRight: mcss`
+    padding-right: 16px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  `,
+  menu: mcss`
+    height: 100%;
+  `,
+  layoutContent: mcss`
+    position: relative;
+  `,
+  sider: mcss`
+    z-index: 2000 !important;
+    position: relative !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+    .ant-layout-sider-trigger {
+      display: none;
+    }
+    .ant-menu-item {
+      padding: 0 calc(50% - 16px / 2) !important;
+      border: 1px solid transparent !important;
+      &::after {
+        display: none !important;
+      }
+    }
+    .ant-menu-item-icon {
+      font-size: 16px !important;
+      //line-height: 40px;
+    }
+  `,
 }

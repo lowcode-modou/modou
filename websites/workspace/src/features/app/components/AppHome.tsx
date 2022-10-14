@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { BaseRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { ROUTER_PATH } from '@/constants'
+import { mcss } from '@modou/css-in-js'
 
 export const AppHome: FC = () => {
   const params = useParams<BaseRouterParamsKey>()
@@ -42,11 +43,20 @@ export const AppHome: FC = () => {
   }, [app.entities, app.pages, isEmptyApp, isEmptyPage, navigate, params])
 
   return (
-    <div className="h-full flex justify-center items-center">
+    <div className={classes.wrapper}>
       <Spin size="large" />
       {/* <div> */}
       {/*   <Typography.Title>应用首页</Typography.Title> */}
       {/* </div> */}
     </div>
   )
+}
+
+const classes = {
+  wrapper: mcss`
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  `,
 }

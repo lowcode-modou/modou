@@ -14,7 +14,7 @@ import { Button, Divider, Form, Input, Typography } from 'antd'
 import { AppFactoryContext } from '@modou/core'
 import { useRemoveWidget } from '../hooks'
 import produce from 'immer'
-import './CanvasDesignerPropsPanel.scss'
+import { mcss } from '@modou/css-in-js'
 
 const WidgetPropsPanel: FC = () => {
   const widgetById = useRecoilValue(widgetByIdSelector)
@@ -66,7 +66,7 @@ const WidgetPropsPanel: FC = () => {
     <Form
       // labelCol={{ span: 10 }}
       // wrapperCol={{ span: 14 }}
-      className="CanvasDesignerPropsPanel"
+      className={classes.panel}
       labelWrap
       size={'small'}
     >
@@ -108,7 +108,7 @@ const WidgetPropsPanel: FC = () => {
 const PagePropsPanel: FC = () => {
   const [page, setPage] = useRecoilState(pageSelector)
   return (
-    <Form className="CanvasDesignerPropsPanel" labelWrap size={'small'}>
+    <Form className={classes.panel} labelWrap size={'small'}>
       <Form.Item label="页面名称">
         <Input
           onChange={(e) => {
@@ -132,4 +132,18 @@ export const CanvasDesignerPropsPanel: FC = () => {
       {selectedWidgetId ? <WidgetPropsPanel /> : <PagePropsPanel />}
     </div>
   )
+}
+
+const classes = {
+  panel: mcss`
+		& .ant-form-item {
+			margin-bottom: 12px !important;
+			&-control-input-content {
+				justify-content: flex-end !important;
+				.ant-input-number {
+					flex: 1 !important;
+				}
+			}
+		}
+  `,
 }

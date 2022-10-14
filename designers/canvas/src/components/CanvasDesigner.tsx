@@ -10,9 +10,9 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { selectedWidgetIdAtom } from '../store'
 import { Tabs } from 'antd'
-import './CanvasDesigner.scss'
 import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
 import { CanvasDesignerKeyPress } from './CanvasDesignerKeyPress'
+import { mcss } from '@modou/css-in-js'
 
 interface CanvasDesignerProps {
   page: Page
@@ -30,15 +30,10 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
     <RecoilRoot>
       <RecoilWidgetsSync page={page} onPageChange={onPageChange}>
         <DndProvider backend={HTML5Backend}>
-          <div className="h-full flex justify-between">
-            <div
-              className="h-full bg-white"
-              style={{
-                width: '220px',
-              }}
-            >
+          <div className={classes.wrapper}>
+            <div className={`${classes.section} ${classes.sectionLeft}`}>
               <Tabs
-                className="designer-panel-tabs"
+                className={classes.designerPanelTabs}
                 type="card"
                 tabBarGutter={0}
                 items={[
@@ -51,7 +46,7 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
               />
             </div>
             <div
-              className="h-full relative flex-1 bg-white border-solid border-gray-100 border-t-0 border-b-0"
+              className={`${classes.section} ${classes.canvasWrapper}`}
               ref={canvasRef}
               onClick={() => setSelectedWidgetId('')}
             >
@@ -59,14 +54,9 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
               <DesignerIndicator canvasRef={canvasRef} />
               <CanvasDesignerKeyPress />
             </div>
-            <div
-              className="h-full bg-white"
-              style={{
-                width: '280px',
-              }}
-            >
+            <div className={`${classes.section} ${classes.sectionRight}`}>
               <Tabs
-                className="designer-panel-tabs"
+                className={classes.designerPanelTabs}
                 type="card"
                 tabBarGutter={0}
                 items={[
@@ -88,4 +78,48 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
       </RecoilWidgetsSync>
     </RecoilRoot>
   )
+}
+
+const classes = {
+  wrapper: mcss`
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+  `,
+  section: mcss`
+    height: 100%;
+    background-color: white;
+  `,
+  sectionLeft: mcss`
+    width: 220px;
+  `,
+  sectionRight: mcss`
+    width: 280px;
+  `,
+  canvasWrapper: mcss`
+		position: revert;
+    flex: 1;
+    border: 1px solid rgba(0,0,0,.05);
+    border-top: none;
+    border-bottom: 0;
+  `,
+  designerPanelTabs: mcss`
+		& > .ant-tabs-nav {
+			margin-bottom: 0;
+		}
+		& .ant-tabs-nav-list {
+			display: flex;
+			width: 100%;
+			& .ant-tabs-tab {
+				flex: 1;
+				border-radius: 0 !important;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				&.ant-tabs-tab-active {
+					border-bottom-color: rgba(5, 5, 5, 0.13) !important;
+				}
+			}
+		}
+  `,
 }

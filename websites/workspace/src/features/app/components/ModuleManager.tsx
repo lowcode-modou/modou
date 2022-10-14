@@ -2,6 +2,7 @@ import { ComponentProps, FC, useEffect, useRef, useState } from 'react'
 import { Drawer, Input } from 'antd'
 import { ModuleEnum } from '../types'
 import { match } from 'ts-pattern'
+import { mcss } from '@modou/css-in-js'
 import { ModuleManagerPage } from './ModuleManagerPage'
 import { ModuleManagerEntity } from './ModuleManagerEntity'
 
@@ -25,14 +26,11 @@ export const ModuleManager: FC<{
   const moduleItemAddElementRef = useRef<HTMLElement>(null)
 
   return (
-    <div className="absolute inset-0">
+    <div className={classes.drawerWrapper}>
       <Drawer
         title={
           <div>
-            <div
-              className="flex justify-between items-center"
-              style={{ paddingBottom: '16px' }}
-            >
+            <div className={classes.drawerTitleWrapper}>
               <span>{moduleTitle}</span>
               <span ref={moduleItemAddElementRef} />
             </div>
@@ -50,7 +48,7 @@ export const ModuleManager: FC<{
         bodyStyle={{
           padding: '16px',
         }}
-        className="absolute"
+        className={classes.drawer}
         placement="left"
         width={288}
         maskClosable
@@ -74,4 +72,23 @@ export const ModuleManager: FC<{
       </Drawer>
     </div>
   )
+}
+
+const classes = {
+  drawerWrapper: mcss`
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  `,
+  drawerTitleWrapper: mcss`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+  `,
+  drawer: mcss`
+    position: absolute;
+  `,
 }

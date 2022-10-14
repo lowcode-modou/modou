@@ -8,22 +8,55 @@ import * as fs from 'fs'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      babel: {
+        presets: [
+          [
+            '@emotion/babel-preset-css-prop',
+            {
+              autoLabel: 'always',
+              labelFormat: '[local]',
+              importMap: {
+                '@modou/css-in-js': {
+                  mcss: {
+                    canonicalImport: ['@emotion/css', 'css'],
+                  },
+                  injectGlobal: {
+                    canonicalImport: ['@emotion/css', 'injectGlobal'],
+                  },
+                  keyframes: {
+                    canonicalImport: ['@emotion/css', 'keyframes'],
+                  },
+                  // useTheme: {
+                  //   canonicalImport: ['@emotion/react', 'useTheme'],
+                  // },
+                  // ThemeProvider: {
+                  //   canonicalImport: ['@emotion/react', 'ThemeProvider'],
+                  // },
+                },
+              },
+              // useBuiltIns: false,
+              // throwIfNamespace: true,
+            },
+          ],
+        ],
+      },
+    }),
     // basicSsl()
     // visualizer()
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
-    }
+      '@': path.resolve(__dirname, 'src'),
+    },
   },
   css: {
-    devSourcemap: true
+    devSourcemap: true,
   },
   server: {
     https: {
       cert: fs.readFileSync(path.join(__dirname, '../../keys/cert.crt')),
-      key: fs.readFileSync(path.join(__dirname, '../../keys/cert.key'))
-    }
-  }
+      key: fs.readFileSync(path.join(__dirname, '../../keys/cert.key')),
+    },
+  },
 })
