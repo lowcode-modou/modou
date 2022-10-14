@@ -35,7 +35,7 @@ interface BaseWidgetMetadata<S extends string> {
   mrPropsScheme: MRScheme
 }
 
-interface MRWidgetProps {
+export interface MRWidgetProps {
   [k: string]: {
     setter?:
       | MRNumberSetterType
@@ -110,7 +110,7 @@ export class WidgetMetadata<S extends string = string>
       widgetType: mr.literal(widgetType),
       widgetName: mr.literal(widgetName),
       props: mr.object(propsRawShape),
-      slots: mr.object(slots ?? ({} as S)),
+      slots: mr.object(slots ?? ({} as unknown as S)),
     })
   }
 
