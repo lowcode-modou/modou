@@ -100,13 +100,16 @@ export class WidgetMetadata<S extends string = string>
       [K in keyof S]: S[K]['def']
     }
     const propsRawShape: PropsRawShape<T> = mapValues(props, (prop) => {
+      console.log('propsRawShape', prop)
+
       if (prop.setter) {
-        prop.def._extra({
+        return prop.def._extra({
           [SETTER_KEY]: prop.setter,
         })
       }
       return prop.def
     })
+
     return mr.object({
       widgetId: mr.string(),
       widgetType: mr.literal(widgetType),

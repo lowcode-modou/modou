@@ -40,6 +40,8 @@ export const SelectedToolBox: FC = () => {
     [widget],
   )
 
+  useEffect(() => {}, [isDragging])
+
   const opacity = isDragging ? '0.4' : '1'
 
   useEffect(() => {

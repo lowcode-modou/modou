@@ -42,7 +42,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
     dropNode,
     dropPosition,
   }) => {
-    console.log('dropNode', dropNode, dropPosition)
+    // console.log('dropNode', dropNode, dropPosition)
     const { widget } = dropNode
     if (!widget) {
       return false
@@ -118,7 +118,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
   // TODO 支持大纲树和其画布及面板组件互相拖拽 IMPORTANT
   const ref = useRef<RcTree<WidgetTreeNode>>()
   useEffect(() => {
-    // console.log(ref.current?.onBlur)
+    console.log('tree.ref', ref.current?.state.flattenNodes)
   })
 
   return (

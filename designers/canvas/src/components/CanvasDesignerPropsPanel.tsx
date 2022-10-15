@@ -32,6 +32,8 @@ const WidgetPropsPanel: FC = () => {
 
   const { removeWidget } = useRemoveWidget()
 
+  console.log('widgetMetadata', widgetMetadata)
+
   const render = Object.entries(
     (
       widgetMetadata.jsonPropsSchema.properties
@@ -93,6 +95,7 @@ const WidgetPropsPanel: FC = () => {
       {!isRootWidget && (
         <Form.Item wrapperCol={{ span: 24 }}>
           <Button
+            type={'primary'}
             block
             danger
             onClick={() => {
