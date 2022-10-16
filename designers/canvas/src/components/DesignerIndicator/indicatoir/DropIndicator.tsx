@@ -1,5 +1,5 @@
 import { useMutationObserver } from 'ahooks'
-import { Col, Row, Typography, theme } from 'antd'
+import { Col, Row, Typography } from 'antd'
 import {
   CSSProperties,
   FC,

@@ -42,7 +42,7 @@
     "@modou/widgets": "workspace:^1.0.0",
     "@recoiljs/refine": "^0.1.1",
     "ahooks": "^3.7.0",
-    "antd": "^5.0.0-alpha.0",
+    "antd": "^5.0.0-alpha.2",
     "immer": "^9.0.15",
     "lodash": "^4.17.21",
     "react": "^18.2.0",

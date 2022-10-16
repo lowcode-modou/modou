@@ -21,7 +21,7 @@ importers:
       '@vitejs/plugin-basic-ssl': ^0.1.2
       '@vitejs/plugin-react': ^2.1.0
       ahooks: ^3.7.0
-      antd: ^5.0.0-alpha.0
+      antd: ^5.0.0-alpha.2
       autoprefixer: ^10.4.8
       commitizen: 4.2.5
       cz-conventional-changelog: 3.3.0
