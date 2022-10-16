@@ -28,5 +28,5 @@ export interface Entity {
 export enum WidgetGroupEnum {
   Button = 'Button',
   Input = 'Input',
-  Container = 'Container'
+  Container = 'Container',
 }

@@ -1,6 +1,15 @@
-import { name, version } from '../package.json'
-import type { ZodType, ZodSchema, ZodTypeAny, ZodRawShape, ZodArray, ZodString, ZodDefault } from '@lowcode-modou/zod'
+import type {
+  ZodArray,
+  ZodDefault,
+  ZodRawShape,
+  ZodSchema,
+  ZodString,
+  ZodType,
+  ZodTypeAny,
+} from '@lowcode-modou/zod'
 import { ZodObject } from '@lowcode-modou/zod'
+
+import { name, version } from '../package.json'
 
 export { z as mr } from '@lowcode-modou/zod'
 
@@ -22,5 +31,5 @@ export type { JsonSchema7ObjectType } from '@lowcode-modou/zod-to-json-schema/sr
 
 export const pkg = {
   name,
-  version
+  version,
 }

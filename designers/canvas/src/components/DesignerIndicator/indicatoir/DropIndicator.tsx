@@ -1,10 +1,29 @@
-import { CSSProperties, FC, memo, RefObject, useEffect, useMemo, useState } from 'react'
-import { Col, Row, Typography } from 'antd'
-import { useElementRect, useWidgetDrop } from '../../../hooks'
-import { useRecoilValue } from 'recoil'
-import { dropIndicatorAtom, DropIndicatorPositionEnum, widgetByIdSelector, widgetsSelector } from '../../../store'
 import { useMutationObserver } from 'ahooks'
-import { getWidgetIdFromElement, getWidgetSlotNameFromElement } from '../../../utils'
+import { Col, Row, Typography } from 'antd'
+import {
+  CSSProperties,
+  FC,
+  RefObject,
+  memo,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import { useRecoilValue } from 'recoil'
+
+import { mcss, useTheme } from '@modou/css-in-js'
+
+import { useElementRect, useWidgetDrop } from '../../../hooks'
+import {
+  DropIndicatorPositionEnum,
+  dropIndicatorAtom,
+  widgetByIdSelector,
+  widgetsSelector,
+} from '../../../store'
+import {
+  getWidgetIdFromElement,
+  getWidgetSlotNameFromElement,
+} from '../../../utils'
 
 const DROP_INDICATOR_PX = '3px'
 const DROP_INDICATOR_OFFSET_PX = '-2px'
@@ -16,22 +35,20 @@ interface DropElement {
 
 const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
   const widgets = useRecoilValue(widgetsSelector)
-  const {
-    isEmptySlot,
-    widget,
-    isActive,
-    element
-  } = useWidgetDrop({ widgetId, slotName })
+  const { isEmptySlot, widget, isActive, element } = useWidgetDrop({
+    widgetId,
+    slotName,
+  })
   const dropIndicator = useRecoilValue(dropIndicatorAtom)
 
   const [styleUpdater, setStyleUpdater] = useState(0)
   const { style } = useElementRect(element, {
-    deps: [styleUpdater]
+    deps: [styleUpdater],
   })
 
   useEffect(() => {
     void Promise.resolve().then(() => {
-      setStyleUpdater(prevState => prevState + 1)
+      setStyleUpdater((prevState) => prevState + 1)
     })
   }, [widgets])
 
@@ -46,57 +63,82 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
           width: '100%',
           height: DROP_INDICATOR_PX,
           top: DROP_INDICATOR_OFFSET_PX,
-          left: 0
+          left: 0,
         }
       case DropIndicatorPositionEnum.Right:
         return {
           width: DROP_INDICATOR_PX,
           height: '100%',
           top: 0,
-          right: DROP_INDICATOR_OFFSET_PX
+          right: DROP_INDICATOR_OFFSET_PX,
         }
       case DropIndicatorPositionEnum.Bottom:
         return {
           width: '100%',
           height: DROP_INDICATOR_PX,
           bottom: DROP_INDICATOR_OFFSET_PX,
-          left: 0
+          left: 0,
         }
       case DropIndicatorPositionEnum.Left:
         return {
           width: DROP_INDICATOR_PX,
           height: '100%',
           top: 0,
-          left: DROP_INDICATOR_OFFSET_PX
+          left: DROP_INDICATOR_OFFSET_PX,
         }
       default:
         return {}
     }
   }, [dropIndicator.position, dropIndicator.show])
 
-  return <>{
-    isEmptySlot
-      ? <Row
-        justify='center'
-        align='middle'
-        className='border-dashed border-gray-400 fixed pointer-events-none'
-        style={style}>
-        <Col>
-          <Typography.Text type={'secondary'} strong>{widget.widgetType}</Typography.Text>
-        </Col>
-      </Row>
-      : null
-  }
-    {
-      isActive
-        ? <Row
-          className='pointer-events-none fixed'
-          style={{ ...style, zIndex: 999 }}>
-          <div className={'absolute bg-red-500'} style={dropIndicatorStyle} />
+  const theme = useTheme()
+
+  return (
+    <>
+      {isEmptySlot ? (
+        <Row
+          justify="center"
+          align="middle"
+          className={widgetDropClasses.emptyWrapper}
+          style={style}
+        >
+          <Col>
+            <Typography.Text type={'secondary'} strong>
+              {widget.widgetType}
+            </Typography.Text>
+          </Col>
         </Row>
-        : null
-    }
-  </>
+      ) : null}
+      {isActive ? (
+        <Row className={widgetDropClasses.activeWrapper} style={{ ...style }}>
+          <div
+            className={widgetDropClasses.active}
+            style={{
+              ...dropIndicatorStyle,
+              '--bg-color': theme.colorError,
+            }}
+          />
+        </Row>
+      ) : null}
+    </>
+  )
+}
+
+const widgetDropClasses = {
+  emptyWrapper: mcss`
+    border: 1px dashed rgba(0,0,0,.6);
+		position: fixed;
+    pointer-events: none;
+  `,
+  activeWrapper: mcss`
+    pointer-events: none;
+    position: fixed;
+    z-index: 999;
+  `,
+  active: mcss`
+    position: absolute;
+    background-color: var(--bg-color);
+  `,
 }
 
 const MemoWidgetDrop = memo(WidgetDrop)
@@ -107,27 +149,48 @@ export const DropIndicator: FC<{
   // TODO use Memo 优化性能
   const widgetById = useRecoilValue(widgetByIdSelector)
 
-  const [dropElements, setDropElements] = useState<Array<{
-    widgetId: string
-    slotName: string
-  }>>([])
+  const [dropElements, setDropElements] = useState<
+    Array<{
+      widgetId: string
+      slotName: string
+    }>
+  >([])
 
   // TODO target 切换为 canvas root element
-  useMutationObserver(() => {
-    const elements = [...document.querySelectorAll('[data-widget-id]')] as HTMLElement[]
-    setDropElements(elements.map(element => ({
-      widgetId: getWidgetIdFromElement(element),
-      slotName: getWidgetSlotNameFromElement(element)
-    })).filter((widget) => !!widget))
-  }, canvasRef, {
-    childList: true,
-    subtree: true
-  })
+  useMutationObserver(
+    () => {
+      const elements = [
+        ...document.querySelectorAll('[data-widget-id]'),
+      ] as HTMLElement[]
+      setDropElements(
+        elements
+          .map((element) => ({
+            widgetId: getWidgetIdFromElement(element),
+            slotName: getWidgetSlotNameFromElement(element),
+          }))
+          .filter((widget) => !!widget),
+      )
+    },
+    canvasRef,
+    {
+      childList: true,
+      subtree: true,
+    },
+  )
   const dropElementsRendered = useMemo(() => {
-    return dropElements.filter(({ widgetId }) => Reflect.has(widgetById, widgetId))
+    return dropElements.filter(({ widgetId }) =>
+      Reflect.has(widgetById, widgetId),
+    )
   }, [dropElements, widgetById])
-  return <>{
-    dropElementsRendered.map(({ widgetId, slotName }) =>
-      <MemoWidgetDrop key={widgetId} widgetId={widgetId} slotName={slotName} />)
-  }</>
+  return (
+    <>
+      {dropElementsRendered.map(({ widgetId, slotName }) => (
+        <MemoWidgetDrop
+          key={widgetId}
+          widgetId={widgetId}
+          slotName={slotName}
+        />
+      ))}
+    </>
+  )
 }

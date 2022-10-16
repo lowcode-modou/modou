@@ -1,21 +1,26 @@
-import { BaseMRSetterOptions, BaseSetterProps, MRSetter } from '../types'
-import { SETTER_KEY, SetterTypeEnum } from '../constants'
-import { FC } from 'react'
 import { Switch } from 'antd'
+import { FC } from 'react'
 
-export const mrBooleanSetter: MRSetter<BaseMRSetterOptions> = (options) => {
-  // return mrInstance._extra({
-  //   [SETTER_KEY]: {
-  //     type: SetterTypeEnum.Boolean,
-  //     ...options
-  //   }
-  // })
-  return {
-    [SETTER_KEY]: {
-      type: SetterTypeEnum.Boolean,
-      ...options
-    }
-  }
+import { SetterTypeEnum } from '../constants'
+import { BaseMRSetterOptions, BaseSetterProps } from '../types'
+
+// export const mrBooleanSetter: MRSetter<BaseMRSetterOptions> = (options) => {
+//   // return mrInstance._extra({
+//   //   [SETTER_KEY]: {
+//   //     type: SetterTypeEnum.Boolean,
+//   //     ...options
+//   //   }
+//   // })
+//   return {
+//     [SETTER_KEY]: {
+//       type: SetterTypeEnum.Boolean,
+//       ...options,
+//     },
+//   }
+// }
+
+export interface MRBooleanSetterType extends BaseMRSetterOptions {
+  type: SetterTypeEnum.Boolean
 }
 
 type Props = BaseSetterProps<boolean>

@@ -1,11 +1,11 @@
-
 ## ButtonWidget
 
 Demo:
 
 ```tsx
-import React from 'react';
-import { ButtonWidget } from '@modou/widgets';
+import React from 'react'
 
-export default () => <ButtonWidget />;
+import { ButtonWidget } from '@modou/widgets'
+
+export default () => <ButtonWidget />
 ```

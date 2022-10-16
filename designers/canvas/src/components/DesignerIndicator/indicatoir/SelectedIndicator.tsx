@@ -1,12 +1,16 @@
+import { theme } from 'antd'
 import { CSSProperties, FC, RefObject, useEffect, useState } from 'react'
-import { useWidgetSelected } from '../../../hooks/useWidgetSelected'
+import { useDrag } from 'react-dnd'
 import { useRecoilValue } from 'recoil'
+
+import { mcss, useTheme } from '@modou/css-in-js'
+import { widgetSelector } from '@modou/render/src/store'
+
+import { useWidgetSelected } from '../../../hooks/useWidgetSelected'
 import { selectedWidgetIdAtom, widgetsSelector } from '../../../store'
+import { WidgetDragType } from '../../../types'
 import { getElementFromWidgetId } from '../../../utils'
 import { SelectedToolBox } from './SelectedToolBox'
-import { useDrag } from 'react-dnd'
-import { WidgetDragType } from '../../../types'
-import { widgetSelector } from '@modou/render/src/store'
 
 const SelectIndicatorContent: FC = () => {
   const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
@@ -19,14 +23,14 @@ const SelectIndicatorContent: FC = () => {
     x: 0,
     y: 0,
     width: 0,
-    height: 0
+    height: 0,
   })
   const widgets = useRecoilValue(widgetsSelector)
   const [display, setDisplay] = useState(false)
   const [styleUpdater, setStyleUpdater] = useState(0)
   useEffect(() => {
     void Promise.resolve().then(() => {
-      setStyleUpdater(prevState => prevState + 1)
+      setStyleUpdater((prevState) => prevState + 1)
     })
   }, [widgets])
   useEffect(() => {
@@ -42,7 +46,7 @@ const SelectIndicatorContent: FC = () => {
         x: rect.x,
         y: rect.y,
         width: rect.width,
-        height: rect.height
+        height: rect.height,
       })
       setDisplay(true)
     } else {
@@ -50,7 +54,7 @@ const SelectIndicatorContent: FC = () => {
         x: 0,
         y: 0,
         width: 0,
-        height: 0
+        height: 0,
       })
       setDisplay(false)
     }
@@ -60,26 +64,29 @@ const SelectIndicatorContent: FC = () => {
     height: `${selectedElementRect.height ?? 0}px`,
     left: `${selectedElementRect.x ?? 0}px`,
     top: `${selectedElementRect.y ?? 0}px`,
-    display: display ? 'block' : 'none'
+    display: display ? 'block' : 'none',
   }
 
   const widget = useRecoilValue(widgetSelector(selectedWidgetId))
   // TODO 使用element
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
-    type: widget.widgetType,
-    item: () => {
-      return {
-        type: WidgetDragType.Move,
-        widget
-      }
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging()
+  const [{ isDragging }, drag, preview] = useDrag(
+    () => ({
+      type: widget.widgetType,
+      item: () => {
+        return {
+          type: WidgetDragType.Move,
+          widget,
+        }
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+      options: {
+        dropEffect: 'copy',
+      },
     }),
-    options: {
-      dropEffect: 'copy'
-    }
-  }), [widget])
+    [widget],
+  )
   const opacity = isDragging ? '0.4' : '1'
 
   useEffect(() => {
@@ -89,24 +96,38 @@ const SelectIndicatorContent: FC = () => {
       preview(element)
     }
   }, [opacity, preview, selectedWidgetId])
+  const theme = useTheme()
 
-  return <div
-    ref={drag}
-    className='border-sky-400 border-dashed absolute z-50'
-    style={style}
-  >
-    <SelectedToolBox/>
-  </div>
+  return (
+    <div
+      ref={drag}
+      className={classes.wrapper}
+      style={{
+        ...style,
+        '--border-color': theme.colorPrimary,
+      }}
+    >
+      <SelectedToolBox />
+    </div>
+  )
 }
 
 interface SelectedIndicatorProps {
   canvasRef: RefObject<HTMLElement>
 }
 
-export const SelectedIndicator: FC<SelectedIndicatorProps> = ({ canvasRef }) => {
+export const SelectedIndicator: FC<SelectedIndicatorProps> = ({
+  canvasRef,
+}) => {
   useWidgetSelected(canvasRef)
   const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
-  return selectedWidgetId
-    ? <SelectIndicatorContent/>
-    : null
+  return selectedWidgetId ? <SelectIndicatorContent /> : null
+}
+
+const classes = {
+  wrapper: mcss`
+    border: 1px dashed var(--border-color);
+    position: absolute;
+    z-index: 50;
+  `,
 }

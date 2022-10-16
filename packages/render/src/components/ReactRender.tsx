@@ -1,8 +1,10 @@
-import { FC, memo, useContext, useEffect, useMemo } from 'react'
-import { WidgetBaseProps, AppFactoryContext } from '@modou/core'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { widgetsAtom, widgetSelector } from '../store'
 import { Spin } from 'antd'
+import { FC, memo, useContext, useEffect, useMemo } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+
+import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
+
+import { widgetSelector, widgetsAtom } from '../store'
 
 // const ErrorWidget: FC = () => {
 //   return <div>Error</div>
@@ -19,38 +21,48 @@ const WidgetWrapper: FC<{
   }, [widget.widgetType, widgetFactory.widgetByType])
 
   const renderSlots = useMemo(() => {
-    return Object.entries((widget.slots || {})).map(([key, widgetIds]) => {
-      return {
-        key,
-        elements: widgetIds.map(widgetId => <WidgetWrapper key={widgetId} widgetId={widgetId} />)
-      }
-    }).reduce<Record<string, Element[]>>((pre, { key, elements }) => {
-      // FIXME 不知道为什么类型不对😂
-      // pre[key] = elements
-      Reflect.set(pre, key, elements)
-      return pre
-    }, {})
+    return Object.entries(widget.slots || {})
+      .map(([key, widgetIds]) => {
+        return {
+          key,
+          elements: widgetIds.map((widgetId) => (
+            <WidgetWrapper key={widgetId} widgetId={widgetId} />
+          )),
+        }
+      })
+      .reduce<Record<string, Element[]>>((pre, { key, elements }) => {
+        // FIXME 不知道为什么类型不对😂
+        // pre[key] = elements
+        Reflect.set(pre, key, elements)
+        return pre
+      }, {})
   }, [widget.slots])
   const instance = useMemo(() => {
     return {
       id: widgetId,
-      widgetId
+      widgetId,
     }
   }, [widgetId])
 
   const renderSlotNames = useMemo(() => {
-    return Object.keys(renderSlots).reduce<Record<string, string>>((pre, cur) => {
-      pre[cur] = cur
-      return pre
-    }, {})
+    return Object.keys(renderSlots).reduce<Record<string, string>>(
+      (pre, cur) => {
+        pre[cur] = cur
+        return pre
+      },
+      {},
+    )
   }, [renderSlots])
 
   // FIXME 会导致重新渲染
-  return <Widget
-    {...widget.props}
-    renderSlots={renderSlots}
-    renderSlotNames={renderSlotNames}
-    instance={instance} />
+  return (
+    <Widget
+      {...widget.props}
+      renderSlots={renderSlots}
+      renderSlotNames={renderSlotNames}
+      instance={instance}
+    />
+  )
 }
 
 interface MoDouRenderProps {
@@ -62,7 +74,7 @@ const MemoWidgetWrapper = memo(WidgetWrapper)
 
 export const ReactRender: FC<MoDouRenderProps> = ({
   widgets,
-  rootWidgetId
+  rootWidgetId,
 }) => {
   // TODO 使用 recoil-async
   const setWidgets = useSetRecoilState(widgetsAtom)
@@ -70,7 +82,9 @@ export const ReactRender: FC<MoDouRenderProps> = ({
     setWidgets(widgets)
   }, [setWidgets, widgets])
   const rootWidget = useRecoilValue(widgetSelector(rootWidgetId))
-  return rootWidget
-    ? <MemoWidgetWrapper widgetId={rootWidgetId} />
-    : <Spin size={'large'} />
+  return rootWidget ? (
+    <MemoWidgetWrapper widgetId={rootWidgetId} />
+  ) : (
+    <Spin size={'large'} />
+  )
 }

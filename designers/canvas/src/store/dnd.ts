@@ -1,17 +1,18 @@
 import { atom } from 'recoil'
+
 import { generateRecoilKey } from '../utils'
 
 export enum DropIndicatorPositionEnum {
   Top,
   Right,
   Bottom,
-  Left
+  Left,
 }
 
 export enum DropIndicatorInsertPositionEnum {
   Before,
   After,
-  Inner
+  Inner,
 }
 
 export interface DropIndicator {
@@ -25,6 +26,6 @@ export const dropIndicatorAtom = atom<DropIndicator>({
   default: {
     position: DropIndicatorPositionEnum.Left,
     insertPosition: DropIndicatorInsertPositionEnum.Inner,
-    show: false
-  }
+    show: false,
+  },
 })

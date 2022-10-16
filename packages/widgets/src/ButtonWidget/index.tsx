@@ -1,9 +1,12 @@
-import { FC, useEffect } from 'react'
-import { ButtonWidgetState } from './types'
 import { Button } from 'antd'
+import { FC, useEffect } from 'react'
 
-export * from './metadata'
-export const ButtonWidget: FC<ButtonWidgetState> = ({
+import { InferWidgetState } from '../_'
+import { MRSchemeButtonWidgetState } from './metadata'
+
+export const ButtonWidget: FC<
+  InferWidgetState<typeof MRSchemeButtonWidgetState>
+> = ({
   block,
   danger,
   disabled,
@@ -14,7 +17,7 @@ export const ButtonWidget: FC<ButtonWidgetState> = ({
   size,
   type,
   title,
-  instance
+  instance,
 }) => {
   useEffect(() => {
     console.log('我是按钮 我重新渲染了', block)
