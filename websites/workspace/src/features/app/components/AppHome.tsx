@@ -3,7 +3,7 @@ import { BaseRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { Spin } from 'antd'
 import { head, isEmpty } from 'lodash'
-import { FC, useLayoutEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useRecoilValue } from 'recoil'
 
@@ -17,7 +17,7 @@ export const AppHome: FC = () => {
   const isEmptyApp = isEmpty(app)
   const isEmptyPage = isEmpty(app.pages)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!isEmptyApp) {
       if (!isEmptyPage) {
         navigate(
