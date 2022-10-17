@@ -1,6 +1,7 @@
 import { isEqual, unionWith } from 'lodash'
 import { FC } from 'react'
 
+import { MRScheme } from '@modou/refine'
 import { BaseSetterProps } from '@modou/setters/src/types'
 import { rowWidgetMetadata } from '@modou/widgets'
 
@@ -11,7 +12,7 @@ import { WidgetMetadata } from '../widget'
 interface Widget {
   // FIXME 完善WidgetBaseState定义
   component: FC<any>
-  metadata: WidgetMetadata
+  metadata: WidgetMetadata<any, any>
   group: WidgetGroupEnum
 }
 

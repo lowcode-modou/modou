@@ -66,7 +66,7 @@ export interface MRWidgetProps {
 export class WidgetMetadata<
   PropsMRScheme extends MRScheme,
   StateMRScheme extends MRScheme,
-  S extends string = '',
+  S extends string = string,
 > implements BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>
 {
   constructor({
