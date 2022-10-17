@@ -55,6 +55,15 @@ const WidgetWrapper: FC<{
     ...widgetDef.metadata.initState(widget),
   }))
 
+  useEffect(() => {
+    // FIXME 为什么会渲染两遍
+    console.log('widget.props', widget.props)
+    updateWidgetState((prev) => ({
+      ...prev,
+      ...widget.props,
+    }))
+  }, [widget.props])
+
   // FIXME 会导致重新渲染
   // FIXME 完善组件类型
   return (
