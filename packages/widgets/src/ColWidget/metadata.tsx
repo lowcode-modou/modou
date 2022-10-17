@@ -28,9 +28,14 @@ export const MRSchemeColWidgetProps = WidgetMetadata.createMRWidgetProps({
 
 export const MRSchemeColWidgetState = WidgetMetadata.createMRWidgetState(
   MRSchemeColWidgetProps,
+  {},
 )
 
-export const colWidgetMetadata = WidgetMetadata.createMetadata<SlotEnum>({
+export const colWidgetMetadata = WidgetMetadata.createMetadata<
+  typeof MRSchemeColWidgetProps,
+  typeof MRSchemeColWidgetState,
+  SlotEnum
+>({
   version: '0.0.1',
   widgetType: 'ColWidget',
   widgetName: '栅格列',
@@ -39,4 +44,14 @@ export const colWidgetMetadata = WidgetMetadata.createMetadata<SlotEnum>({
     children: {},
   },
   mrPropsScheme: MRSchemeColWidgetProps,
+  mrStateScheme: MRSchemeColWidgetState,
+  initState: ({ widgetId }) => {
+    return {
+      instance: {
+        id: widgetId,
+        widgetId,
+        initialized: true,
+      },
+    }
+  },
 })

@@ -55,15 +55,30 @@ export const MRSchemeRowWidgetProps = WidgetMetadata.createMRWidgetProps({
 
 export const MRSchemeRowWidgetState = WidgetMetadata.createMRWidgetState(
   MRSchemeRowWidgetProps,
+  {},
 )
 
-export const rowWidgetMetadata = WidgetMetadata.createMetadata<SlotEnum>({
+export const rowWidgetMetadata = WidgetMetadata.createMetadata<
+  typeof MRSchemeRowWidgetProps,
+  typeof MRSchemeRowWidgetState,
+  SlotEnum
+>({
   version: '0.0.1',
   widgetType: 'RowWidget',
   widgetName: '栅格行',
   icon: <WidgetIcon type="row" />,
   mrPropsScheme: MRSchemeRowWidgetProps,
+  mrStateScheme: MRSchemeRowWidgetState,
   slots: {
     children: {},
+  },
+  initState: ({ widgetId }) => {
+    return {
+      instance: {
+        id: widgetId,
+        widgetId,
+        initialized: true,
+      },
+    }
   },
 })

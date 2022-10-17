@@ -94,7 +94,9 @@ export const App: FC = () => {
     )
   }, [setApp])
 
-  return (
+  return Object.keys(params).length === 1 ? (
+    <AppHome />
+  ) : (
     <Layout className={classes.layout}>
       <Layout.Header className={classes.header}>
         <div className={classes.headerLogoWrapper}>
@@ -134,7 +136,6 @@ export const App: FC = () => {
             module={module}
             visible={visibleModuleManger}
           />
-          {Object.keys(params).length === 1 && <AppHome />}
           <Outlet />
         </Layout.Content>
       </Layout>

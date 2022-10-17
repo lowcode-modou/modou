@@ -6,7 +6,7 @@ import { MRSchemeInputWidgetState } from './metadata'
 
 export const InputWidget: FC<
   InferWidgetState<typeof MRSchemeInputWidgetState>
-> = ({ defaultValue, label, instance }) => {
+> = ({ defaultValue, label, instance, value, updateState }) => {
   useEffect(() => {
     console.log('我是Input 我重新渲染了')
   })
@@ -21,7 +21,16 @@ export const InputWidget: FC<
   }, [instance.widgetId])
   return (
     <Form.Item data-hack-widget-id={instance.widgetId} label={label}>
-      <Input defaultValue={defaultValue} />
+      <Input
+        defaultValue={defaultValue}
+        value={value}
+        onChange={(e) => {
+          updateState((prev) => ({
+            ...prev,
+            value: e.target.value,
+          }))
+        }}
+      />
     </Form.Item>
   )
 }

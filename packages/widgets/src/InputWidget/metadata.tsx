@@ -29,6 +29,9 @@ export const MRSchemeInputWidgetProps = WidgetMetadata.createMRWidgetProps({
 
 export const MRSchemeInputWidgetState = WidgetMetadata.createMRWidgetState(
   MRSchemeInputWidgetProps,
+  {
+    value: mr.string().describe('输入框的值'),
+  },
 )
 
 export const inputWidgetMetadata = WidgetMetadata.createMetadata({
@@ -37,5 +40,16 @@ export const inputWidgetMetadata = WidgetMetadata.createMetadata({
   widgetName: '输入框',
   icon: <WidgetIcon type="input" />,
   mrPropsScheme: MRSchemeInputWidgetProps,
+  mrStateScheme: MRSchemeInputWidgetState,
   slots: {},
+  initState: ({ widgetId, props }) => {
+    return {
+      value: props.defaultValue,
+      instance: {
+        id: widgetId,
+        widgetId,
+        initialized: true,
+      },
+    }
+  },
 })

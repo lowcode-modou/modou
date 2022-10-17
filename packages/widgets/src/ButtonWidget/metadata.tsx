@@ -107,6 +107,7 @@ export const MRSchemeButtonWidgetProps = WidgetMetadata.createMRWidgetProps({
 
 export const MRSchemeButtonWidgetState = WidgetMetadata.createMRWidgetState(
   MRSchemeButtonWidgetProps,
+  {},
 )
 
 export const buttonWidgetMetadata = WidgetMetadata.createMetadata({
@@ -115,5 +116,15 @@ export const buttonWidgetMetadata = WidgetMetadata.createMetadata({
   widgetName: '按钮',
   icon: <WidgetIcon type="button" />,
   mrPropsScheme: MRSchemeButtonWidgetProps,
+  mrStateScheme: MRSchemeButtonWidgetState,
   slots: {},
+  initState: ({ widgetId }) => {
+    return {
+      instance: {
+        id: widgetId,
+        widgetId,
+        initialized: true,
+      },
+    }
+  },
 })

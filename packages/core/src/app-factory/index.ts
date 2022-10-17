@@ -9,6 +9,7 @@ import { generateId } from '../utils'
 import { WidgetMetadata } from '../widget'
 
 interface Widget {
+  // FIXME 完善WidgetBaseState定义
   component: FC<any>
   metadata: WidgetMetadata
   group: WidgetGroupEnum
