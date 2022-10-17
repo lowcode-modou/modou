@@ -17,6 +17,7 @@ import {
   MRStringSetterType,
   SETTER_KEY,
 } from '@modou/setters'
+import { InferWidgetState } from '@modou/widgets/src/_'
 
 import { WidgetBaseProps } from './types'
 
@@ -28,13 +29,27 @@ type Slots<S extends string> = Record<
   }
 >
 
-interface BaseWidgetMetadata<S extends string> {
+interface BaseWidgetMetadata<
+  PropsMRScheme extends MRScheme,
+  StateMRScheme extends MRScheme,
+  S extends string = '',
+> {
   version: `${number}.${number}.${number}`
   icon: ReactNode
   widgetType: WidgetType
   widgetName: string
   slots: Slots<S>
-  mrPropsScheme: MRScheme
+  mrPropsScheme: PropsMRScheme
+  mrStateScheme: StateMRScheme
+  initState: (
+    widget: mr.infer<PropsMRScheme>,
+  ) => Omit<
+    InferWidgetState<StateMRScheme>,
+    | keyof mr.infer<PropsMRScheme>['props']
+    | 'renderSlotNames'
+    | 'renderSlots'
+    | 'updateState'
+  >
 }
 
 export interface MRWidgetProps {
@@ -48,26 +63,36 @@ export interface MRWidgetProps {
   }
 }
 
-export class WidgetMetadata<S extends string = string>
-  implements BaseWidgetMetadata<S>
+export class WidgetMetadata<
+  PropsMRScheme extends MRScheme,
+  StateMRScheme extends MRScheme,
+  S extends string = '',
+> implements BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>
 {
   constructor({
     version,
     widgetType,
     widgetName,
     mrPropsScheme,
+    mrStateScheme,
     slots,
     icon,
-  }: BaseWidgetMetadata<S>) {
+    initState,
+  }: BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>) {
     this.version = version
     this.widgetType = widgetType
     this.widgetName = widgetName
     this.mrPropsScheme = mrPropsScheme
+    this.mrStateScheme = mrStateScheme
     this.jsonPropsSchema = mrToJsonSchema(
       mrPropsScheme,
     ) as unknown as JsonSchema7ObjectType
+    this.jsonStateSchema = mrToJsonSchema(
+      mrStateScheme,
+    ) as unknown as JsonSchema7ObjectType
     this.slots = slots
     this.icon = icon
+    this.initState = initState
   }
 
   version
@@ -75,12 +100,17 @@ export class WidgetMetadata<S extends string = string>
   widgetName
   icon
   mrPropsScheme
+  mrStateScheme
   jsonPropsSchema: JsonSchema7ObjectType
+  jsonStateSchema: JsonSchema7ObjectType
+  initState
   slots: Slots<S>
 
-  static createMetadata<S extends string = ''>(
-    metadata: BaseWidgetMetadata<S>,
-  ) {
+  static createMetadata<
+    PropsMRScheme extends MRScheme,
+    StateMRScheme extends MRScheme,
+    S extends string = '',
+  >(metadata: BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>) {
     return new WidgetMetadata(metadata)
   }
 
@@ -100,8 +130,6 @@ export class WidgetMetadata<S extends string = string>
       [K in keyof S]: S[K]['def']
     }
     const propsRawShape: PropsRawShape<T> = mapValues(props, (prop) => {
-      console.log('propsRawShape', prop)
-
       if (prop.setter) {
         return prop.def._extra({
           [SETTER_KEY]: prop.setter,
@@ -121,31 +149,40 @@ export class WidgetMetadata<S extends string = string>
 
   static createMRWidgetState<
     T extends ReturnType<typeof WidgetMetadata.createMRWidgetProps>,
-  >(mrWidgetProps: T) {
+    S extends MRRawShape,
+  >(mrWidgetProps: T, state: S) {
     const HACK_TYPE_REACT_NODE = mr.literal('HACK_TYPE_ReactNode')
     const RENDER_SLOT_NAMES_VALUE = mr.string()
-    return mr
-      .object({
-        instance: mr.object({
-          id: mr.string(),
-          widgetId: mrWidgetProps.shape.widgetId as T['shape']['widgetId'],
-        }),
-        widgetName: mrWidgetProps.shape.widgetName as T['shape']['widgetName'],
-        renderSlots: mr.object(
-          mapValues(
-            mrWidgetProps.shape.slots,
-            (slot) => HACK_TYPE_REACT_NODE,
-          ) as {
-            [K in keyof mr.infer<T>['slots']]: typeof HACK_TYPE_REACT_NODE
-          },
-        ),
-        renderSlotNames: mr.object(
-          mapValues(mrWidgetProps.shape.slots, (slot) => mr.string()) as {
-            [K in keyof mr.infer<T>['slots']]: typeof RENDER_SLOT_NAMES_VALUE
-          },
-        ),
-      })
-      .merge(mrWidgetProps.shape.props as T['shape']['props'])
+    return (
+      mr
+        .object({
+          renderSlots: mr.object(
+            mapValues(
+              mrWidgetProps.shape.slots,
+              (slot) => HACK_TYPE_REACT_NODE,
+            ) as {
+              [K in keyof mr.infer<T>['slots']]: typeof HACK_TYPE_REACT_NODE
+            },
+          ),
+          renderSlotNames: mr.object(
+            mapValues(mrWidgetProps.shape.slots, (slot) => mr.string()) as {
+              [K in keyof mr.infer<T>['slots']]: typeof RENDER_SLOT_NAMES_VALUE
+            },
+          ),
+        })
+        .merge(mrWidgetProps.shape.props as T['shape']['props'])
+        // .merge(mr.object(state ?? ({} as unknown as S)))
+        .merge(
+          mr.object({
+            ...state,
+            instance: mr.object({
+              id: mr.string(),
+              widgetId: mrWidgetProps.shape.widgetId as T['shape']['widgetId'],
+              initialized: mr.boolean(),
+            }),
+          }),
+        )
+    )
   }
 
   // static createMRSchemeWidgetProps({

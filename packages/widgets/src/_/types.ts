@@ -15,4 +15,10 @@ export type InferWidgetState<T extends MRTypeAny> = {
         [SK in keyof mr.infer<T>[K]]: ReactNode
       }
     : mr.infer<T>[K]
+} & {
+  updateState: (
+    state:
+      | Partial<mr.infer<T>>
+      | ((state: mr.infer<T>) => Partial<mr.infer<T>>),
+  ) => void
 }

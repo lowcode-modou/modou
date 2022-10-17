@@ -9,10 +9,9 @@ export const ColWidget: FC<InferWidgetState<typeof MRSchemeColWidgetState>> = ({
   instance,
   renderSlots,
   renderSlotNames,
-  widgetName,
 }) => {
   useEffect(() => {
-    console.log('我是Col 我重新渲染了', widgetName)
+    console.log('我是Col 我重新渲染了', instance.widgetId)
   })
   return (
     <Col

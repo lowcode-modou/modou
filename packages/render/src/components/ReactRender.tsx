@@ -1,5 +1,5 @@
 import { Spin } from 'antd'
-import { FC, memo, useContext, useEffect, useMemo } from 'react'
+import { FC, memo, useContext, useEffect, useMemo, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
 import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
@@ -15,10 +15,11 @@ const WidgetWrapper: FC<{
 }> = ({ widgetId }) => {
   const widget = useRecoilValue(widgetSelector(widgetId))
   const widgetFactory = useContext(AppFactoryContext)
+  const widgetDef = widgetFactory.widgetByType[widget.widgetType]
   // TODO any 替换 state 定义
   const Widget = useMemo(() => {
-    return widgetFactory.widgetByType[widget.widgetType].component
-  }, [widget.widgetType, widgetFactory.widgetByType])
+    return widgetDef.component
+  }, [widgetDef.component])
 
   const renderSlots = useMemo(() => {
     return Object.entries(widget.slots || {})
@@ -37,12 +38,6 @@ const WidgetWrapper: FC<{
         return pre
       }, {})
   }, [widget.slots])
-  const instance = useMemo(() => {
-    return {
-      id: widgetId,
-      widgetId,
-    }
-  }, [widgetId])
 
   const renderSlotNames = useMemo(() => {
     return Object.keys(renderSlots).reduce<Record<string, string>>(
@@ -54,13 +49,20 @@ const WidgetWrapper: FC<{
     )
   }, [renderSlots])
 
+  // TODO 全局存储状态
+  const [widgetState, updateWidgetState] = useState(() => ({
+    ...widget.props,
+    ...widgetDef.metadata.initState(widget),
+  }))
+
   // FIXME 会导致重新渲染
+  // FIXME 完善组件类型
   return (
     <Widget
-      {...widget.props}
+      {...widgetState}
+      updateState={updateWidgetState}
       renderSlots={renderSlots}
       renderSlotNames={renderSlotNames}
-      instance={instance}
     />
   )
 }
