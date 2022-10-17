@@ -16,7 +16,7 @@ import { mcss } from '@modou/css-in-js'
 import { WidgetDragType } from '../types'
 
 const WidgetBlock: FC<{
-  metadata: WidgetMetadata
+  metadata: WidgetMetadata<any, any>
 }> = ({ metadata }) => {
   const widgetFactory = useContext(AppFactoryContext)
   const [{ isDragging }, drag, preview] = useDrag(() => ({
