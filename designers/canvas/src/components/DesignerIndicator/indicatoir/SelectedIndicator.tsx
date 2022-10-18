@@ -29,7 +29,10 @@ const SelectIndicatorContent: FC = () => {
   const [display, setDisplay] = useState(false)
   const [styleUpdater, setStyleUpdater] = useState(0)
   useEffect(() => {
-    void Promise.resolve().then(() => {
+    // void Promise.resolve().then(() => {
+    //   setStyleUpdater((prevState) => prevState + 1)
+    // })
+    setTimeout(() => {
       setStyleUpdater((prevState) => prevState + 1)
     })
   }, [widgets])

@@ -17,9 +17,7 @@ const WidgetWrapper: FC<{
   const widgetFactory = useContext(AppFactoryContext)
   const widgetDef = widgetFactory.widgetByType[widget.widgetType]
   // TODO any 替换 state 定义
-  const Widget = useMemo(() => {
-    return widgetDef.component
-  }, [widgetDef.component])
+  const WidgetComponent = widgetDef.component
 
   const renderSlots = useMemo(() => {
     return Object.entries(widget.slots || {})
@@ -57,7 +55,6 @@ const WidgetWrapper: FC<{
 
   useEffect(() => {
     // FIXME 为什么会渲染两遍
-    console.log('widget.props', widget.props)
     updateWidgetState((prev) => ({
       ...prev,
       ...widget.props,
@@ -67,7 +64,7 @@ const WidgetWrapper: FC<{
   // FIXME 会导致重新渲染
   // FIXME 完善组件类型
   return (
-    <Widget
+    <WidgetComponent
       {...widgetState}
       updateState={updateWidgetState}
       renderSlots={renderSlots}

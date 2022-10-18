@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useMemo, useState } from 'react'
+import { CSSProperties, useEffect, useState } from 'react'
 
 const DEFAULT_DEPS: any[] = []
 export const useElementRect = (

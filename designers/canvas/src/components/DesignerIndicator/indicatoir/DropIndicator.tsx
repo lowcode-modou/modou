@@ -47,7 +47,10 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
   })
 
   useEffect(() => {
-    void Promise.resolve().then(() => {
+    // void Promise.resolve().then(() => {
+    //   setStyleUpdater((prevState) => prevState + 1)
+    // })
+    setTimeout(() => {
       setStyleUpdater((prevState) => prevState + 1)
     })
   }, [widgets])
