@@ -1,28 +1,51 @@
-import { FC } from 'react'
+import { useBoolean } from 'ahooks'
+import { FC, useRef } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { mcss } from '@modou/css-in-js'
 import { ReactRender } from '@modou/render'
+import { SimulatorPC } from '@modou/simulator'
 
+import { SimulatorInstanceContext } from '../contexts'
 import { pageSelector } from '../store'
-
-// interface CanvasDesignerCanvasProps {
-//   // rootWidgetId: string
-// }
+import { CanvasDesignerKeyPress } from './CanvasDesignerKeyPress'
+import { DesignerIndicator } from './DesignerIndicator'
 
 export const CanvasDesignerCanvas: FC = () => {
   const { widgets, rootWidgetId } = useRecoilValue(pageSelector)
+  const simulatorRef = useRef<{
+    document: Document
+  }>(null)
+  const [isMount, { setTrue }] = useBoolean(false)
   return (
-    <div className={classes.wrapper}>
-      <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
-    </div>
+    <>
+      <SimulatorPC
+        ref={simulatorRef}
+        contentDidMount={() => {
+          setTrue()
+        }}
+      >
+        <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
+        {isMount && (
+          <>
+            <SimulatorInstanceContext.Provider
+              value={{ document: simulatorRef?.current?.document }}
+            >
+              <DesignerIndicator
+                canvasRef={simulatorRef?.current?.document as any}
+              />
+            </SimulatorInstanceContext.Provider>
+            <CanvasDesignerKeyPress />
+          </>
+        )}
+      </SimulatorPC>
+    </>
   )
 }
 
-const classes = {
-  wrapper: mcss`
-    height: 100%;
-    position: revert;
-    padding: 16px;
-  `,
-}
+// const classes = {
+//   wrapper: mcss`
+//     height: 100vh;
+//     position: relative;
+//     padding: 16px;
+//   `,
+// }

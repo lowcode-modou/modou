@@ -28,7 +28,7 @@
     "react-hooks/exhaustive-deps": [
       "warn",
       {
-        "additionalHooks": "useRecoilCallback"
+        "additionalHooks": "^(useRecoilCallback|useDrop|useDrag)$"
       }
     ], // 检查 effect 的依赖
     // 'indent': ['error', 2, { 'MemberExpression': 0 }],

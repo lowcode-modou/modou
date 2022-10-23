@@ -1,7 +1,7 @@
 import { DownOutlined } from '@ant-design/icons'
 import { Tree } from 'antd'
 import type RcTree from 'rc-tree'
-import React, { ComponentProps, FC, useContext, useEffect, useRef } from 'react'
+import React, { ComponentProps, FC, useContext, useRef } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { AppFactoryContext } from '@modou/core'
@@ -117,9 +117,9 @@ export const CanvasDesignerOutlineTree: FC = () => {
 
   // TODO 支持大纲树和其画布及面板组件互相拖拽 IMPORTANT
   const ref = useRef<RcTree<WidgetTreeNode>>()
-  useEffect(() => {
-    console.log('tree.ref', ref.current?.state.flattenNodes)
-  })
+  // useEffect(() => {
+  //   console.log('tree.ref', ref.current?.state.flattenNodes)
+  // })
 
   return (
     <div className={classes.treeWrapper}>

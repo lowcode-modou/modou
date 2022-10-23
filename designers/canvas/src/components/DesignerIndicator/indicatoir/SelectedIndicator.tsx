@@ -1,11 +1,18 @@
-import { theme } from 'antd'
-import { CSSProperties, FC, RefObject, useEffect, useState } from 'react'
+import {
+  CSSProperties,
+  FC,
+  RefObject,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { useDrag } from 'react-dnd'
 import { useRecoilValue } from 'recoil'
 
 import { mcss, useTheme } from '@modou/css-in-js'
 import { widgetSelector } from '@modou/render/src/store'
 
+import { SimulatorInstanceContext } from '../../../contexts'
 import { useWidgetSelected } from '../../../hooks/useWidgetSelected'
 import { selectedWidgetIdAtom, widgetsSelector } from '../../../store'
 import { WidgetDragType } from '../../../types'
@@ -29,16 +36,23 @@ const SelectIndicatorContent: FC = () => {
   const [display, setDisplay] = useState(false)
   const [styleUpdater, setStyleUpdater] = useState(0)
   useEffect(() => {
-    void Promise.resolve().then(() => {
+    // void Promise.resolve().then(() => {
+    //   setStyleUpdater((prevState) => prevState + 1)
+    // })
+    setTimeout(() => {
       setStyleUpdater((prevState) => prevState + 1)
     })
   }, [widgets])
+  const simulatorInstance = useContext(SimulatorInstanceContext)
   useEffect(() => {
     if (!selectedWidgetId) {
       setDisplay(false)
       return
     }
-    const rawElement = getElementFromWidgetId(selectedWidgetId)
+    const rawElement = getElementFromWidgetId(
+      selectedWidgetId,
+      simulatorInstance.document!,
+    )
     if (rawElement) {
       // TODO 可能有多个累加计算位置的情况
       const rect = rawElement.getClientRects()[0]
@@ -90,7 +104,10 @@ const SelectIndicatorContent: FC = () => {
   const opacity = isDragging ? '0.4' : '1'
 
   useEffect(() => {
-    const element = getElementFromWidgetId(selectedWidgetId)
+    const element = getElementFromWidgetId(
+      selectedWidgetId,
+      simulatorInstance.document!,
+    )
     if (element) {
       element.style.opacity = opacity
       preview(element)

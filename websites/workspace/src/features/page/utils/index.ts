@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 import { AppFactory, WidgetGroupEnum } from '@modou/core'
 import {
   BooleanSetter,
@@ -39,7 +41,10 @@ export const widgetFactory = AppFactory.create({
       metadata: inputWidgetMetadata,
       group: WidgetGroupEnum.Input,
     },
-  ],
+  ].map((widget) => ({
+    ...widget,
+    component: memo(widget.component),
+  })),
   setters: {
     [SetterTypeEnum.Select]: SelectSetter,
     [SetterTypeEnum.String]: StringSetter,

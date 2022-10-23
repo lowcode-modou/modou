@@ -13,6 +13,7 @@ export const getWidgetSlotNameFromElement = (element: HTMLElement): string => {
 
 export const getElementFromWidgetId = (
   widgetId: string,
+  document: Document,
 ): HTMLElement | null => {
   return document.querySelector(`[data-widget-id=${widgetId}]`)
 }

@@ -41,6 +41,7 @@ const WidgetBlock: FC<{
       if (item && dropResult) {
         // console.log(item, dropResult)
       }
+      console.log('drag_end', item, dropResult)
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
