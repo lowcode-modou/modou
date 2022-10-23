@@ -1,18 +1,21 @@
-import { useMutationObserver } from 'ahooks'
+import { useMount, useMutationObserver } from 'ahooks'
 import { Col, Row, Typography } from 'antd'
 import {
   CSSProperties,
   FC,
-  RefObject,
   memo,
+  useCallback,
+  useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { mcss, useTheme } from '@modou/css-in-js'
 
+import { SimulatorInstanceContext } from '../../../contexts'
 import { useElementRect, useWidgetDrop } from '../../../hooks'
 import {
   DropIndicatorPositionEnum,
@@ -33,11 +36,68 @@ interface DropElement {
   slotName: string
 }
 
-const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
-  const widgets = useRecoilValue(widgetsSelector)
-  const { isEmptySlot, widget, isActive, element } = useWidgetDrop({
+const WidgetDropIframeContext: FC<{ element: HTMLElement } & DropElement> = ({
+  widgetId,
+  slotName,
+  element,
+}) => {
+  useWidgetDrop({
     widgetId,
     slotName,
+    element,
+  })
+  return null
+}
+
+const WidgetDropIframe: FC<
+  {
+    style: CSSProperties
+  } & DropElement
+> = ({ style, slotName, widgetId }) => {
+  const wrapperRef = useRef<HTMLDivElement>(null)
+
+  return (
+    <div
+      ref={wrapperRef}
+      className={widgetDropIframeClasses.wrapper}
+      style={{
+        ...style,
+      }}
+    >
+      {wrapperRef.current && (
+        <WidgetDropIframeContext
+          widgetId={widgetId}
+          slotName={slotName}
+          element={wrapperRef.current}
+        />
+      )}
+    </div>
+  )
+}
+const widgetDropIframeClasses = {
+  wrapper: mcss`
+    position: fixed;
+    z-index: 99999999;
+    border: 1px solid green;
+    pointer-events: auto;
+  `,
+}
+
+const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
+  const widgets = useRecoilValue(widgetsSelector)
+  // FIXME element 有可能会重复
+  const elementSelector = `[data-widget-id=${widgetId}]${
+    slotName ? `[data-widget-slot-name=${slotName}]` : ''
+  }`
+  const simulatorInstance = useContext(SimulatorInstanceContext)
+
+  const element = simulatorInstance.document!.querySelector(
+    elementSelector,
+  ) as HTMLElement
+  const { isEmptySlot, widget, isActive } = useWidgetDrop({
+    widgetId,
+    slotName,
+    element,
   })
   const dropIndicator = useRecoilValue(dropIndicatorAtom)
 
@@ -45,7 +105,6 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
   const { style } = useElementRect(element, {
     deps: [styleUpdater],
   })
-
   useEffect(() => {
     // void Promise.resolve().then(() => {
     //   setStyleUpdater((prevState) => prevState + 1)
@@ -98,6 +157,7 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
 
   return (
     <>
+      {/* <WidgetDropIframe style={style} slotName={slotName} widgetId={widgetId} /> */}
       {isEmptySlot ? (
         <Row
           justify="center"
@@ -129,26 +189,24 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
 
 const widgetDropClasses = {
   emptyWrapper: mcss`
-    border: 1px dashed rgba(0,0,0,.6);
+		border: 1px dashed rgba(0,0,0,.6);
 		position: fixed;
-    pointer-events: none;
+		pointer-events: none;
   `,
   activeWrapper: mcss`
-    pointer-events: none;
-    position: fixed;
-    z-index: 999;
+		pointer-events: none;
+		position: fixed;
+		z-index: 999;
   `,
   active: mcss`
-    position: absolute;
-    background-color: var(--bg-color);
+		position: absolute;
+		background-color: var(--bg-color);
   `,
 }
 
 const MemoWidgetDrop = memo(WidgetDrop)
 
-export const DropIndicator: FC<{
-  canvasRef: RefObject<HTMLElement>
-}> = ({ canvasRef }) => {
+export const DropIndicator: FC = () => {
   // TODO use Memo 优化性能
   const widgetById = useRecoilValue(widgetByIdSelector)
 
@@ -158,28 +216,27 @@ export const DropIndicator: FC<{
       slotName: string
     }>
   >([])
+  const simulatorInstance = useContext(SimulatorInstanceContext)
 
-  // TODO target 切换为 canvas root element
-  useMutationObserver(
-    () => {
-      const elements = [
-        ...document.querySelectorAll('[data-widget-id]'),
-      ] as HTMLElement[]
-      setDropElements(
-        elements
-          .map((element) => ({
-            widgetId: getWidgetIdFromElement(element),
-            slotName: getWidgetSlotNameFromElement(element),
-          }))
-          .filter((widget) => !!widget),
-      )
-    },
-    canvasRef,
-    {
-      childList: true,
-      subtree: true,
-    },
-  )
+  const initDrop = useCallback(() => {
+    const elements = [
+      ...(simulatorInstance?.document?.querySelectorAll('[data-widget-id]') ??
+        []),
+    ] as HTMLElement[]
+    setDropElements(
+      elements
+        .map((element) => ({
+          widgetId: getWidgetIdFromElement(element),
+          slotName: getWidgetSlotNameFromElement(element),
+        }))
+        .filter((widget) => !!widget),
+    )
+  }, [simulatorInstance?.document])
+  useMount(initDrop)
+  useMutationObserver(initDrop, simulatorInstance.document?.body, {
+    childList: true,
+    subtree: true,
+  })
   const dropElementsRendered = useMemo(() => {
     return dropElements.filter(({ widgetId }) =>
       Reflect.has(widgetById, widgetId),

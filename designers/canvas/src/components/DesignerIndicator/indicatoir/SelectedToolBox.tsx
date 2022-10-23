@@ -1,12 +1,13 @@
 import { FullscreenOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
-import { FC, useEffect } from 'react'
+import { FC, useContext, useEffect } from 'react'
 import { useDrag } from 'react-dnd'
 import { useRecoilValue } from 'recoil'
 
 import { mcss, useTheme } from '@modou/css-in-js'
 import { widgetSelector } from '@modou/render/src/store'
 
+import { SimulatorInstanceContext } from '../../../contexts'
 import {
   selectedWidgetIdAtom,
   widgetRelationByWidgetIdSelector,
@@ -43,14 +44,18 @@ export const SelectedToolBox: FC = () => {
   useEffect(() => {}, [isDragging])
 
   const opacity = isDragging ? '0.4' : '1'
+  const simulatorInstance = useContext(SimulatorInstanceContext)
 
   useEffect(() => {
-    const element = getElementFromWidgetId(selectedWidgetId)
+    const element = getElementFromWidgetId(
+      selectedWidgetId,
+      simulatorInstance.document!,
+    )
     if (element) {
       element.style.opacity = opacity
       preview(element)
     }
-  }, [opacity, preview, selectedWidgetId])
+  }, [opacity, preview, selectedWidgetId, simulatorInstance.document])
   const theme = useTheme()
 
   return isDragging ||

@@ -1,5 +1,5 @@
 import { Tabs } from 'antd'
-import { FC, useRef } from 'react'
+import { FC } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { RecoilRoot, useSetRecoilState } from 'recoil'
@@ -9,11 +9,9 @@ import { mcss } from '@modou/css-in-js'
 
 import { selectedWidgetIdAtom } from '../store'
 import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
-import { CanvasDesignerKeyPress } from './CanvasDesignerKeyPress'
 import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
 import { CanvasDesignerPropsPanel } from './CanvasDesignerPropsPanel'
 import { CanvasDesignerWidgetStencil } from './CanvasDesignerWidgetStencil'
-import { DesignerIndicator } from './DesignerIndicator'
 import { RecoilWidgetsSync } from './RecoilWidgetsSync'
 
 interface CanvasDesignerProps {
@@ -25,7 +23,6 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
   page,
   onPageChange,
 }) => {
-  const canvasRef = useRef<HTMLDivElement>(null)
   const setSelectedWidgetId = useSetRecoilState(selectedWidgetIdAtom)
 
   return (
@@ -49,12 +46,9 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
             </div>
             <div
               className={`${classes.section} ${classes.canvasWrapper}`}
-              ref={canvasRef}
               onClick={() => setSelectedWidgetId('')}
             >
               <CanvasDesignerCanvas />
-              <DesignerIndicator canvasRef={canvasRef} />
-              <CanvasDesignerKeyPress />
             </div>
             <div className={`${classes.section} ${classes.sectionRight}`}>
               <Tabs
@@ -99,7 +93,7 @@ const classes = {
     width: 280px;
   `,
   canvasWrapper: mcss`
-		position: revert;
+		position: relative;
     flex: 1;
     border: 1px solid rgba(0,0,0,.05);
     border-top: none;

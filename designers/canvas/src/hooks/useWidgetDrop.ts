@@ -103,19 +103,17 @@ const useWidgetMinHeight = ({
 export const useWidgetDrop = ({
   widgetId,
   slotName,
+  element,
 }: {
   widgetId: string
   slotName: string
+  element: HTMLElement
 }) => {
   const widgetFactory = useContext(AppFactoryContext)
   const widget = useRecoilValue(widgetSelector(widgetId))
   const { addWidget } = useAddWidget()
   const { moveWidget } = useMoveWidget()
-  // FIXME element 有可能会重复
-  const elementSelector = `[data-widget-id=${widgetId}]${
-    slotName ? `[data-widget-slot-name=${slotName}]` : ''
-  }`
-  const element = document.querySelector(elementSelector) as HTMLElement
+
   const isEmptySlot = !!slotName && isEmpty(widget.slots[slotName])
   const setDropIndicator = useSetRecoilState(dropIndicatorAtom)
 
@@ -318,8 +316,19 @@ export const useWidgetDrop = ({
         isOverCurrent: monitor.isOver({ shallow: true }),
       }),
     }),
-    [element, widget],
+    [
+      addWidget,
+      element,
+      getDropIndicator,
+      getWidgetRelationByWidgetId,
+      moveWidget,
+      setDropIndicator,
+      slotName,
+      widget,
+      widgetFactory.widgetByType,
+    ],
   )
+
   drop(element)
 
   const isActive = canDrop && isOverCurrent
@@ -341,7 +350,6 @@ export const useWidgetDrop = ({
     // style,
     isEmptySlot,
     widget,
-    element,
     isActive,
   }
 }
