@@ -3,14 +3,15 @@ import Frame from 'react-frame-component'
 
 import { mcss } from '@modou/css-in-js'
 
-import { FrameBindingContext } from './FrameBindingContext'
+import pkg from '../../package.json'
+// import { FrameBindingContext } from './FrameBindingContext'
 import { FrameWrapperContext } from './FrameWrapperContext'
 
 const INITIAL_CONTENT = `
 <!DOCTYPE html>
 <html lang='zh'>
   <head>
-    <title>Render</title>
+    <title>${pkg.name}@${pkg.version}</title>
   </head>
   <body style='padding: 16px'></body>
 </html>`
@@ -42,8 +43,11 @@ export const SimulatorPC = forwardRef<SimulatorPCRef, SimulatorPCProps>(
         contentDidUpdate={contentDidUpdate}
         contentDidMount={contentDidMount}
       >
-        <FrameBindingContext>{children}</FrameBindingContext>
-        <FrameWrapperContext ref={frameWrapperContextRef} />
+        {/* <FrameBindingContext>{children}</FrameBindingContext> */}
+        <div className={classes.wrapper}>
+          {children}
+          <FrameWrapperContext ref={frameWrapperContextRef} />
+        </div>
       </Frame>
     )
   },
@@ -56,5 +60,9 @@ const classes = {
     width: 100%;
     border: none;
     display: block;
+  `,
+  wrapper: mcss`
+    height: 100%;
+    width: 100%;
   `,
 }

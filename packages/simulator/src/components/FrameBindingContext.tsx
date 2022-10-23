@@ -7,7 +7,7 @@ export const FrameBindingContext: FC<{ children: ReactNode }> = ({
   children,
 }) => (
   <FrameContextConsumer>
-    {({ window }: any) => (
+    {({ window, document }: any) => (
       <DndProvider backend={HTML5Backend} context={window}>
         {children}
       </DndProvider>
