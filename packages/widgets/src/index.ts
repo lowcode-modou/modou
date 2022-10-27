@@ -7,5 +7,8 @@ export * from './RowWidget/metadata'
 export * from './ColWidget'
 export * from './ColWidget/metadata'
 
+export * from './FormWidget'
+export * from './FormWidget/metadata'
+
 export * from './InputWidget'
 export * from './InputWidget/metadata'

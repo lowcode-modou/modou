@@ -24,19 +24,21 @@ export const CanvasDesignerCanvas: FC = () => {
           setTrue()
         }}
       >
-        <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
-        {isMount && (
-          <>
-            <SimulatorInstanceContext.Provider
-              value={{ document: simulatorRef?.current?.document }}
-            >
-              <DesignerIndicator
-                canvasRef={simulatorRef?.current?.document as any}
-              />
-            </SimulatorInstanceContext.Provider>
-            <CanvasDesignerKeyPress />
-          </>
-        )}
+        <>
+          <ReactRender rootWidgetId={rootWidgetId} widgets={widgets} />
+          {isMount && (
+            <>
+              <SimulatorInstanceContext.Provider
+                value={{ document: simulatorRef?.current?.document }}
+              >
+                <DesignerIndicator
+                  canvasRef={simulatorRef?.current?.document as any}
+                />
+              </SimulatorInstanceContext.Provider>
+              <CanvasDesignerKeyPress />
+            </>
+          )}
+        </>
       </SimulatorPC>
     </>
   )

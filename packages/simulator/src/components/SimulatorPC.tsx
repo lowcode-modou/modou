@@ -1,4 +1,4 @@
-import { ReactNode, forwardRef, useImperativeHandle, useRef } from 'react'
+import { ReactElement, forwardRef, useImperativeHandle, useRef } from 'react'
 import Frame from 'react-frame-component'
 
 import { mcss } from '@modou/css-in-js'
@@ -9,15 +9,15 @@ import { FrameWrapperContext } from './FrameWrapperContext'
 
 const INITIAL_CONTENT = `
 <!DOCTYPE html>
-<html lang='zh'>
+<html lang='zh' style='height: 100vh'>
   <head>
     <title>${pkg.name}@${pkg.version}</title>
   </head>
-  <body style='padding: 16px'></body>
+  <body style='height: 100vh;padding: 16px;box-sizing: border-box'></body>
 </html>`
 
 interface SimulatorPCProps {
-  children: ReactNode
+  children: ReactElement
   contentDidMount?: () => void
   contentDidUpdate?: () => void
 }
@@ -45,8 +45,9 @@ export const SimulatorPC = forwardRef<SimulatorPCRef, SimulatorPCProps>(
       >
         {/* <FrameBindingContext>{children}</FrameBindingContext> */}
         <div className={classes.wrapper}>
-          {children}
-          <FrameWrapperContext ref={frameWrapperContextRef} />
+          <FrameWrapperContext ref={frameWrapperContextRef}>
+            {children}
+          </FrameWrapperContext>
         </div>
       </Frame>
     )

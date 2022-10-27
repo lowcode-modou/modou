@@ -11,10 +11,12 @@ import {
 import {
   ButtonWidget,
   ColWidget,
+  FormWidget,
   InputWidget,
   RowWidget,
   buttonWidgetMetadata,
   colWidgetMetadata,
+  formWidgetMetadata,
   inputWidgetMetadata,
   rowWidgetMetadata,
 } from '@modou/widgets'
@@ -34,6 +36,11 @@ export const widgetFactory = AppFactory.create({
     {
       component: ColWidget,
       metadata: colWidgetMetadata,
+      group: WidgetGroupEnum.Container,
+    },
+    {
+      component: FormWidget,
+      metadata: formWidgetMetadata,
       group: WidgetGroupEnum.Container,
     },
     {

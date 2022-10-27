@@ -136,7 +136,7 @@ export const CanvasDesignerWidgetStencil: FC = () => {
   }, [widgetFactory.widgetByType])
   // console.log('widgetsByGroup', widgetsByGroup)
   return (
-    <div className={classes.widgetsPanel}>
+    <div>
       {Object.entries(widgetsByGroup).map(([group, { name, widgets }]) => (
         <div className={classes.widgetsPanel} key={group}>
           <Typography.Title level={5}>{name}</Typography.Title>

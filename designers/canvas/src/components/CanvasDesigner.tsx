@@ -57,14 +57,14 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
                 tabBarGutter={0}
                 items={[
                   {
-                    key: 'CanvasDesignerWidgetStencil',
-                    label: '组件列表',
-                    children: <CanvasDesignerWidgetStencil />,
-                  },
-                  {
                     key: 'CanvasDesignerPropsPanel',
                     label: '属性',
                     children: <CanvasDesignerPropsPanel />,
+                  },
+                  {
+                    key: 'CanvasDesignerWidgetStencil',
+                    label: '组件列表',
+                    children: <CanvasDesignerWidgetStencil />,
                   },
                 ]}
               />

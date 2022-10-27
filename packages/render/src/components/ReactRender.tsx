@@ -1,8 +1,20 @@
 import { Spin } from 'antd'
-import { FC, memo, useContext, useEffect, useMemo, useState } from 'react'
+import {
+  FC,
+  memo,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
+import {
+  AppFactoryContext,
+  DocumentContext,
+  WidgetBaseProps,
+} from '@modou/core'
 
 import { widgetSelector, widgetsAtom } from '../store'
 
@@ -90,8 +102,21 @@ export const ReactRender: FC<MoDouRenderProps> = ({
     setWidgets(widgets)
   }, [setWidgets, widgets])
   const rootWidget = useRecoilValue(widgetSelector(rootWidgetId))
+  const documentContext = useContext(DocumentContext)
+  const documentContextRef = useRef<{
+    document: Document
+    window: Window
+  }>({
+    document: documentContext.current.document || document,
+    window: documentContext.current.window || window,
+  })
+  documentContextRef.current.document =
+    documentContext.current.document || document
+  documentContextRef.current.window = documentContext.current.window || window
   return rootWidget ? (
-    <MemoWidgetWrapper widgetId={rootWidgetId} />
+    <DocumentContext.Provider value={documentContextRef}>
+      <MemoWidgetWrapper widgetId={rootWidgetId} />
+    </DocumentContext.Provider>
   ) : (
     <Spin size={'large'} />
   )

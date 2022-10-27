@@ -12,7 +12,7 @@ export type MRSelectOptions = Array<{
 export type InferWidgetState<T extends MRTypeAny> = {
   [K in keyof mr.infer<T>]: K extends 'renderSlots'
     ? {
-        [SK in keyof mr.infer<T>[K]]: ReactNode
+        [SK in keyof mr.infer<T>[K]]: ReactNode[]
       }
     : mr.infer<T>[K]
 } & {
