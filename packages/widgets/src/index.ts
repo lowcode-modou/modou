@@ -12,3 +12,6 @@ export * from './FormWidget/metadata'
 
 export * from './InputWidget'
 export * from './InputWidget/metadata'
+
+export * from './TableWidget'
+export * from './TableWidget/metadata'

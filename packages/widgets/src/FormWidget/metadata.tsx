@@ -11,6 +11,15 @@ export const MRSchemeFormWidgetProps = WidgetMetadata.createMRWidgetProps({
   widgetType: 'FormWidget',
   widgetName: '表单',
   props: {
+    initialData: {
+      def: mr.object({}).default({}),
+      setter: {
+        type: SetterTypeEnum.String,
+        label: '初始值',
+        description: '表单初始值',
+        textArea: true,
+      },
+    },
     readonly: {
       def: mr.boolean().default(false),
       setter: {

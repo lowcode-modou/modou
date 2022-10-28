@@ -1,4 +1,5 @@
 // import { useMutationObserver } from 'ahooks'
+import { ConfigProvider } from 'antd'
 import {
   ReactElement,
   forwardRef,
@@ -50,7 +51,16 @@ export const FrameWrapperContext = forwardRef<
   const isInit = document && window
   return isInit ? (
     <DocumentContext.Provider value={documentContextRef}>
-      {children}
+      <ConfigProvider
+        getPopupContainer={() =>
+          documentContextRef.current.document?.body as unknown as HTMLElement
+        }
+        getTargetContainer={() =>
+          documentContextRef.current.window as unknown as HTMLElement
+        }
+      >
+        {children}
+      </ConfigProvider>
     </DocumentContext.Provider>
   ) : null
 })

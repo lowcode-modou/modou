@@ -14,11 +14,13 @@ import {
   FormWidget,
   InputWidget,
   RowWidget,
+  TableWidget,
   buttonWidgetMetadata,
   colWidgetMetadata,
   formWidgetMetadata,
   inputWidgetMetadata,
   rowWidgetMetadata,
+  tableWidgetMetadata,
 } from '@modou/widgets'
 
 export const widgetFactory = AppFactory.create({
@@ -47,6 +49,11 @@ export const widgetFactory = AppFactory.create({
       component: InputWidget,
       metadata: inputWidgetMetadata,
       group: WidgetGroupEnum.Input,
+    },
+    {
+      component: TableWidget,
+      metadata: tableWidgetMetadata,
+      group: WidgetGroupEnum.Container,
     },
   ].map((widget) => ({
     ...widget,
