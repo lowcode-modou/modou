@@ -1,9 +1,6 @@
 import { ProTable, TableDropdown } from '@ant-design/pro-components'
 import type { ProColumns } from '@ant-design/pro-components'
-import { Tooltip } from 'antd'
-import { FC, useContext, useEffect } from 'react'
-
-import { DocumentContext } from '@modou/core'
+import { FC, useEffect } from 'react'
 
 import { InferWidgetState } from '../_'
 import { MRSchemeTableWidgetState } from './metadata'
