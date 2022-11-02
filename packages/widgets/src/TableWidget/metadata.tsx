@@ -35,11 +35,11 @@ export const tableWidgetMetadata = WidgetMetadata.createMetadata<
   },
   mrPropsScheme: MRSchemeTableWidgetProps,
   mrStateScheme: MRSchemeTableWidgetState,
-  initState: ({ widgetId }) => {
+  initState: ({ id }) => {
     return {
       instance: {
-        id: widgetId,
-        widgetId,
+        id,
+        widgetId: id,
         initialized: true,
       },
     }

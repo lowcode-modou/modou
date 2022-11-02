@@ -41,11 +41,11 @@ export const useMoveWidget = () => {
               })
             }
             // 添加
-            if (widget.widgetId === targetWidgetId) {
+            if (widget.id === targetWidgetId) {
               // 如果是同一个parent的同一个slot内移动
               const isSameParentSlot =
-                widgetRelationByWidgetId[sourceWidgetId]?.parent?.props
-                  .widgetId === targetWidgetId &&
+                widgetRelationByWidgetId[sourceWidgetId]?.parent?.props.id ===
+                  targetWidgetId &&
                 widgetRelationByWidgetId[sourceWidgetId].slotName ===
                   targetSlotName
               if (isSameParentSlot) {

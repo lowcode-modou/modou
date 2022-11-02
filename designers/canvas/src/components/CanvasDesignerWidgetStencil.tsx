@@ -28,7 +28,7 @@ const WidgetBlock: FC<{
       )
       const newWidget: WidgetBaseProps = {
         ...widget,
-        widgetId: generateId(),
+        id: generateId(),
         widgetName: `${widget.widgetName}-${generateId(4)}`,
       }
       return {

@@ -1,7 +1,6 @@
 import { isEqual, unionWith } from 'lodash'
 import { FC } from 'react'
 
-import { MRScheme } from '@modou/refine'
 import { BaseSetterProps } from '@modou/setters/src/types'
 import { rowWidgetMetadata } from '@modou/widgets'
 
@@ -84,7 +83,7 @@ export class AppFactory {
       ...WidgetMetadata.mrSchemeToDefaultJson(
         rowWidgetMetadata.jsonPropsSchema,
       ),
-      widgetId: generateId(),
+      id: generateId(),
       slots: {
         children: [],
       },
@@ -93,7 +92,7 @@ export class AppFactory {
       id: generateId(),
       name: name ?? `页面-${generateId(4)}`,
       widgets: [rootWidget],
-      rootWidgetId: rootWidget.widgetId,
+      rootWidgetId: rootWidget.id,
     }
   }
 }

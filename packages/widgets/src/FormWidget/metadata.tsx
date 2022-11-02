@@ -53,11 +53,11 @@ export const formWidgetMetadata = WidgetMetadata.createMetadata<
   },
   mrPropsScheme: MRSchemeFormWidgetProps,
   mrStateScheme: MRSchemeFormWidgetState,
-  initState: ({ widgetId }) => {
+  initState: ({ id }) => {
     return {
       instance: {
-        id: widgetId,
-        widgetId,
+        id,
+        widgetId: id,
         initialized: true,
       },
     }

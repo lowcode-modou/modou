@@ -27,9 +27,7 @@ export const useRemoveWidget = () => {
           })
           const deletedWidgetIds: string[] = [widgetId]
           const deletedWidgets: WidgetBaseProps[] = [
-            draft.find(
-              (widget) => widget.widgetId === widgetId,
-            ) as WidgetBaseProps,
+            draft.find((widget) => widget.id === widgetId) as WidgetBaseProps,
           ]
           while (!isEmpty(deletedWidgets)) {
             const currentDeletedWidget =
@@ -40,7 +38,7 @@ export const useRemoveWidget = () => {
                   deletedWidgetIds.push(slotWidgetId)
                   deletedWidgets.push(
                     draft.find(
-                      (widget) => widget.widgetId === slotWidgetId,
+                      (widget) => widget.id === slotWidgetId,
                     ) as WidgetBaseProps,
                   )
                 })
@@ -49,7 +47,7 @@ export const useRemoveWidget = () => {
           }
           deletedWidgetIds.forEach((deletedWidgetId) => {
             const deletedIndex = draft.findIndex(
-              (widget) => widget.widgetId === deletedWidgetId,
+              (widget) => widget.id === deletedWidgetId,
             )
             if (deletedIndex !== -1) {
               draft.splice(deletedIndex, 1)

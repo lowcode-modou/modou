@@ -14,30 +14,26 @@ export const InputWidget: FC<
     const hackElement = document.querySelector(
       `[data-hack-widget-id=${instance.widgetId}]`,
     )
-    hackElement?.parentElement?.parentElement?.setAttribute(
+    hackElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.setAttribute(
       'data-widget-id',
       instance.widgetId,
     )
   }, [instance.widgetId])
   return (
-    <ProForm.Item
+    <ProFormText
       name="name"
-      data-hack-widget-id={instance.widgetId}
       label={label}
-    >
-      <ProFormText
-        noStyle
-        fieldProps={{
-          defaultValue,
-          onChange: (e) => {
-            console.log('onChange', e)
-            updateState((prev) => ({
-              ...prev,
-              value: e.target.value,
-            }))
-          },
-        }}
-      />
-    </ProForm.Item>
+      fieldProps={{
+        'data-hack-widget-id': instance.widgetId,
+        defaultValue,
+        onChange: (e) => {
+          console.log('onChange', e)
+          updateState((prev) => ({
+            ...prev,
+            value: e.target.value,
+          }))
+        },
+      }}
+    />
   )
 }

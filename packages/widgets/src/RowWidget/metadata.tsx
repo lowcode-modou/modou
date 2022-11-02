@@ -72,11 +72,11 @@ export const rowWidgetMetadata = WidgetMetadata.createMetadata<
   slots: {
     children: {},
   },
-  initState: ({ widgetId }) => {
+  initState: ({ id }) => {
     return {
       instance: {
-        id: widgetId,
-        widgetId,
+        id,
+        widgetId: id,
         initialized: true,
       },
     }

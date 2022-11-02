@@ -23,7 +23,7 @@ export const useAddWidget = () => {
       setWidgets(
         produce((draft) => {
           const targetWidget = draft.find(
-            (widget) => widget.widgetId === targetWidgetId,
+            (widget) => widget.id === targetWidgetId,
           )
           if (!targetWidget) {
             return
@@ -32,7 +32,7 @@ export const useAddWidget = () => {
           targetWidget.slots[targetSlotName].splice(
             targetPosition,
             0,
-            sourceWidget.widgetId,
+            sourceWidget.id,
           )
           // targetWidget.slots[targetSlotName].splice(0, 1)
         }),

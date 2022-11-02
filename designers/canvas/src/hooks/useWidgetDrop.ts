@@ -166,17 +166,17 @@ export const useWidgetDrop = ({
         const dropIndicator = getDropIndicator()
         const widgetRelationByWidgetId = getWidgetRelationByWidgetId()
         const { parent, slotName: parentSlotName } =
-          widgetRelationByWidgetId[widget.widgetId]
+          widgetRelationByWidgetId[widget.id]
         if (item.type === WidgetDragType.Move) {
           switch (dropIndicator.insertPosition) {
             case DropIndicatorInsertPositionEnum.Before:
               if (parent && parentSlotName) {
                 moveWidget({
-                  sourceWidgetId: item.widget.widgetId,
-                  targetWidgetId: parent.props.widgetId,
+                  sourceWidgetId: item.widget.id,
+                  targetWidgetId: parent.props.id,
                   targetSlotName: parentSlotName,
                   targetPosition: parent.props.slots[parentSlotName].findIndex(
-                    (widgetId) => widget.widgetId === widgetId,
+                    (widgetId) => widget.id === widgetId,
                   ),
                 })
               }
@@ -184,20 +184,20 @@ export const useWidgetDrop = ({
             case DropIndicatorInsertPositionEnum.After:
               if (parent && parentSlotName) {
                 moveWidget({
-                  sourceWidgetId: item.widget.widgetId,
-                  targetWidgetId: parent.props.widgetId,
+                  sourceWidgetId: item.widget.id,
+                  targetWidgetId: parent.props.id,
                   targetSlotName: parentSlotName,
                   targetPosition:
                     parent.props.slots[parentSlotName].findIndex(
-                      (widgetId) => widget.widgetId === widgetId,
+                      (widgetId) => widget.id === widgetId,
                     ) + 1,
                 })
               }
               break
             case DropIndicatorInsertPositionEnum.Inner:
               moveWidget({
-                sourceWidgetId: item.widget.widgetId,
-                targetWidgetId: widget.widgetId,
+                sourceWidgetId: item.widget.id,
+                targetWidgetId: widget.id,
                 targetSlotName: slotName,
                 targetPosition: widget.slots[slotName].length,
               })
@@ -210,10 +210,10 @@ export const useWidgetDrop = ({
               if (parent && parentSlotName) {
                 addWidget({
                   sourceWidget: item.widget,
-                  targetWidgetId: parent.props.widgetId,
+                  targetWidgetId: parent.props.id,
                   targetSlotName: parentSlotName,
                   targetPosition: parent.props.slots[parentSlotName].findIndex(
-                    (widgetId) => widget.widgetId === widgetId,
+                    (widgetId) => widget.id === widgetId,
                   ),
                 })
               }
@@ -222,11 +222,11 @@ export const useWidgetDrop = ({
               if (parent && parentSlotName) {
                 addWidget({
                   sourceWidget: item.widget,
-                  targetWidgetId: parent.props.widgetId,
+                  targetWidgetId: parent.props.id,
                   targetSlotName: parentSlotName,
                   targetPosition:
                     parent.props.slots[parentSlotName].findIndex(
-                      (widgetId) => widget.widgetId === widgetId,
+                      (widgetId) => widget.id === widgetId,
                     ) + 1,
                 })
               }
@@ -234,7 +234,7 @@ export const useWidgetDrop = ({
             case DropIndicatorInsertPositionEnum.Inner:
               addWidget({
                 sourceWidget: item.widget,
-                targetWidgetId: widget.widgetId,
+                targetWidgetId: widget.id,
                 targetSlotName: slotName,
                 targetPosition: widget.slots[slotName].length,
               })

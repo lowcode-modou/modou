@@ -53,16 +53,16 @@ export const CanvasDesignerOutlineTree: FC = () => {
     // console.log(
     //   'dropPosition',
     //   dropPosition,
-    //   widget.widgetId,
+    //   widget.id,
     //   widget.widgetName,
     // )
 
     if (dropPosition === DropPositionEnum.Before) {
-      return !!widgetRelationByWidgetId[widget.widgetId].parent
+      return !!widgetRelationByWidgetId[widget.id].parent
     } else if (dropPosition === DropPositionEnum.Inner) {
       return !!widgetMetadata.slots?.children
     } else if (dropPosition === DropPositionEnum.After) {
-      return !!widgetRelationByWidgetId[widget.widgetId].parent
+      return !!widgetRelationByWidgetId[widget.id].parent
     }
     return false
   }
@@ -80,7 +80,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
       return
     }
 
-    const parent = widgetRelationByWidgetId[dropWidget.widgetId].parent
+    const parent = widgetRelationByWidgetId[dropWidget.id].parent
 
     // TODO 替换真实的 SLOT NAME
     const parentSlotName = 'children'
@@ -88,11 +88,11 @@ export const CanvasDesignerOutlineTree: FC = () => {
       case DropPositionEnum.Before:
         if (parent && parentSlotName) {
           moveWidget({
-            sourceWidgetId: dragWidget.widgetId,
-            targetWidgetId: parent.props.widgetId,
+            sourceWidgetId: dragWidget.id,
+            targetWidgetId: parent.props.id,
             targetSlotName: parentSlotName,
             targetPosition: parent.props.slots[parentSlotName].findIndex(
-              (widgetId) => dropWidget.widgetId === widgetId,
+              (widgetId) => dropWidget.id === widgetId,
             ),
           })
         }
@@ -100,20 +100,20 @@ export const CanvasDesignerOutlineTree: FC = () => {
       case DropPositionEnum.After:
         if (parent && parentSlotName) {
           moveWidget({
-            sourceWidgetId: dragWidget.widgetId,
-            targetWidgetId: parent.props.widgetId,
+            sourceWidgetId: dragWidget.id,
+            targetWidgetId: parent.props.id,
             targetSlotName: parentSlotName,
             targetPosition:
               parent.props.slots[parentSlotName].findIndex(
-                (widgetId) => dropWidget.widgetId === widgetId,
+                (widgetId) => dropWidget.id === widgetId,
               ) + 1,
           })
         }
         break
       case DropPositionEnum.Inner:
         moveWidget({
-          sourceWidgetId: dragWidget.widgetId,
-          targetWidgetId: dropWidget.widgetId,
+          sourceWidgetId: dragWidget.id,
+          targetWidgetId: dropWidget.id,
           targetSlotName: parentSlotName,
           targetPosition: 0,
         })

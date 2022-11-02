@@ -67,7 +67,7 @@ export const widgetsSelector = selector<WidgetBaseProps[]>({
 export const widgetByIdSelector = selector<Record<string, WidgetBaseProps>>({
   key: generateRecoilKey('widgetByIdSelector'),
   get: ({ get }) => {
-    return keyBy(get(widgetsSelector), 'widgetId')
+    return keyBy(get(widgetsSelector), 'id')
   },
   cachePolicy_UNSTABLE: { eviction: 'most-recent' },
 })
@@ -111,7 +111,7 @@ export const widgetRelationByWidgetIdSelector =
       const widgetById = get(widgetByIdSelector)
       return get(widgetsSelector).reduce<WidgetRelationByWidgetId>(
         (pre, cur) => {
-          const widgetId = cur.widgetId
+          const widgetId = cur.id
           if (!Reflect.has(pre, widgetId)) {
             pre[widgetId] = {
               props: cur,
@@ -170,7 +170,7 @@ export const pageOutlineTreeSelector = selector<WidgetTreeNode>({
     while (widgetStack.length !== 0) {
       const curWidget = widgetStack.pop()
       const curTreeNode: WidgetTreeNode = {
-        key: curWidget?.widgetId ?? '',
+        key: curWidget?.id ?? '',
         title: curWidget?.widgetName ?? '',
         nodeType: 'widget',
         widget: curWidget,

@@ -45,11 +45,11 @@ export const colWidgetMetadata = WidgetMetadata.createMetadata<
   },
   mrPropsScheme: MRSchemeColWidgetProps,
   mrStateScheme: MRSchemeColWidgetState,
-  initState: ({ widgetId }) => {
+  initState: ({ id }) => {
     return {
       instance: {
-        id: widgetId,
-        widgetId,
+        id,
+        widgetId: id,
         initialized: true,
       },
     }

@@ -12,7 +12,7 @@ export const widgetsAtom = atom<WidgetBaseProps[]>({
 
 export const widgetByIdSelector = selector<Record<string, WidgetBaseProps>>({
   key: generateRecoilKey('widgetByIdSelector'),
-  get: ({ get }) => keyBy(get(widgetsAtom), 'widgetId'),
+  get: ({ get }) => keyBy(get(widgetsAtom), 'id'),
   cachePolicy_UNSTABLE: { eviction: 'most-recent' },
 })
 

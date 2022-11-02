@@ -13,11 +13,11 @@ export const RowWidget: FC<InferWidgetState<typeof MRSchemeRowWidgetState>> = ({
   renderSlotNames,
 }) => {
   useEffect(() => {
-    console.log('我是Row 我重新渲染了', instance.widgetId)
+    console.log('我是Row 我重新渲染了', instance.id)
   })
   return (
     <Row
-      data-widget-id={instance.widgetId}
+      data-widget-id={instance.id}
       data-widget-slot-name={renderSlotNames.children}
       align={align}
       justify={justify}

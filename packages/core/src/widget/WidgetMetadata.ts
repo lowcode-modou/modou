@@ -139,7 +139,7 @@ export class WidgetMetadata<
     })
 
     return mr.object({
-      widgetId: mr.string(),
+      id: mr.string(),
       widgetType: mr.literal(widgetType),
       widgetName: mr.literal(widgetName),
       props: mr.object(propsRawShape),
@@ -177,7 +177,7 @@ export class WidgetMetadata<
             ...state,
             instance: mr.object({
               id: mr.string(),
-              widgetId: mrWidgetProps.shape.widgetId as T['shape']['widgetId'],
+              widgetId: mrWidgetProps.shape.id as T['shape']['id'],
               initialized: mr.boolean(),
             }),
           }),
@@ -197,7 +197,7 @@ export class WidgetMetadata<
   //   // slots: Record<SlotName, MRArray<MRString> | MRDefault<MRArray<MRString>>>
   // }) {
   //   return mr.object({
-  //     widgetId: mr.string(),
+  //     id: mr.string(),
   //     widgetType: mr.literal(widgetType),
   //     widgetName: mr.literal(widgetName),
   //     // props: mr.object(props),
@@ -211,7 +211,7 @@ export class WidgetMetadata<
   //   return mrSchemeProps.shape.props.extend({
   //     instance: mr.object({
   //       id: mr.string(),
-  //       widgetId: mrSchemeProps.shape.widgetId
+  //       id: mrSchemeProps.shape.id
   //     }),
   //     widgetName: mrSchemeProps.shape.widgetName
   //   })
