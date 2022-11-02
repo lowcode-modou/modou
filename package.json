@@ -42,6 +42,7 @@
     "@modou/refine": "workspace:^1.0.0",
     "@modou/render": "workspace:^1.0.0",
     "@modou/setters": "workspace:^1.0.0",
+    "@modou/simulator": "workspace:^1.0.0",
     "@modou/widgets": "workspace:^1.0.0",
     "@recoiljs/refine": "^0.1.1",
     "ahooks": "^3.7.0",
@@ -62,6 +63,11 @@
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "react-dnd-html5-backend@16.0.1": "patches/react-dnd-html5-backend@16.0.1.patch"
     }
   }
 }

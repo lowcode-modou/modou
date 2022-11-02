@@ -1,21 +1,11 @@
 import { Spin } from 'antd'
-import {
-  FC,
-  memo,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { FC, memo, useContext, useEffect, useMemo, useState } from 'react'
+import { RecoilRoot, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import {
-  AppFactoryContext,
-  DocumentContext,
-  WidgetBaseProps,
-} from '@modou/core'
+import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
+import { mcss } from '@modou/css-in-js'
 
+import { useInitRender } from '../hooks'
 import { widgetSelector, widgetsAtom } from '../store'
 
 // const ErrorWidget: FC = () => {
@@ -26,8 +16,8 @@ const WidgetWrapper: FC<{
   widgetId: string
 }> = ({ widgetId }) => {
   const widget = useRecoilValue(widgetSelector(widgetId))
-  const widgetFactory = useContext(AppFactoryContext)
-  const widgetDef = widgetFactory.widgetByType[widget.widgetType]
+  const appFactory = useContext(AppFactoryContext)
+  const widgetDef = appFactory.widgetByType[widget.widgetType]
   // TODO any 替换 state 定义
   const WidgetComponent = widgetDef.component
 
@@ -92,32 +82,47 @@ interface MoDouRenderProps {
 
 const MemoWidgetWrapper = memo(WidgetWrapper)
 
-export const ReactRender: FC<MoDouRenderProps> = ({
+const _ReactRender: FC<MoDouRenderProps> = ({
   widgets,
-  rootWidgetId,
+  rootWidgetId: _rootWidgetId,
 }) => {
   // TODO 使用 recoil-async
   const setWidgets = useSetRecoilState(widgetsAtom)
+  const [rootWidgetId, setRootWidgetId] = useState(_rootWidgetId)
+
+  useInitRender({ setWidgets, setRootWidgetId })
+
   useEffect(() => {
     setWidgets(widgets)
   }, [setWidgets, widgets])
+
   const rootWidget = useRecoilValue(widgetSelector(rootWidgetId))
-  const documentContext = useContext(DocumentContext)
-  const documentContextRef = useRef<{
-    document: Document
-    window: Window
-  }>({
-    document: documentContext.current.document || document,
-    window: documentContext.current.window || window,
-  })
-  documentContextRef.current.document =
-    documentContext.current.document || document
-  documentContextRef.current.window = documentContext.current.window || window
   return rootWidget ? (
-    <DocumentContext.Provider value={documentContextRef}>
-      <MemoWidgetWrapper widgetId={rootWidgetId} />
-    </DocumentContext.Provider>
+    <MemoWidgetWrapper widgetId={rootWidgetId} />
   ) : (
-    <Spin size={'large'} />
+    <div className={classes.spinWrapper}>
+      <Spin size={'large'} />
+    </div>
   )
+}
+
+export const ReactRender: FC<MoDouRenderProps> = (props) => {
+  const appFactory = useContext(AppFactoryContext)
+  return (
+    <RecoilRoot>
+      <AppFactoryContext.Provider value={appFactory}>
+        <_ReactRender {...props} />
+      </AppFactoryContext.Provider>
+    </RecoilRoot>
+  )
+}
+
+const classes = {
+  spinWrapper: mcss`
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `,
 }

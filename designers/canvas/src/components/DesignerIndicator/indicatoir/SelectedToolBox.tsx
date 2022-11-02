@@ -5,12 +5,12 @@ import { useDrag } from 'react-dnd'
 import { useRecoilValue } from 'recoil'
 
 import { mcss, useTheme } from '@modou/css-in-js'
-import { widgetSelector } from '@modou/render/src/store'
 
 import { SimulatorInstanceContext } from '../../../contexts'
 import {
   selectedWidgetIdAtom,
   widgetRelationByWidgetIdSelector,
+  widgetSelector,
 } from '../../../store'
 import { WidgetDragType } from '../../../types'
 import { getElementFromWidgetId } from '../../../utils'

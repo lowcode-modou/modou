@@ -8,7 +8,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react'
 import { useRecoilValue } from 'recoil'
@@ -34,53 +33,6 @@ const DROP_INDICATOR_OFFSET_PX = '-2px'
 interface DropElement {
   widgetId: string
   slotName: string
-}
-
-const WidgetDropIframeContext: FC<{ element: HTMLElement } & DropElement> = ({
-  widgetId,
-  slotName,
-  element,
-}) => {
-  useWidgetDrop({
-    widgetId,
-    slotName,
-    element,
-  })
-  return null
-}
-
-const WidgetDropIframe: FC<
-  {
-    style: CSSProperties
-  } & DropElement
-> = ({ style, slotName, widgetId }) => {
-  const wrapperRef = useRef<HTMLDivElement>(null)
-
-  return (
-    <div
-      ref={wrapperRef}
-      className={widgetDropIframeClasses.wrapper}
-      style={{
-        ...style,
-      }}
-    >
-      {wrapperRef.current && (
-        <WidgetDropIframeContext
-          widgetId={widgetId}
-          slotName={slotName}
-          element={wrapperRef.current}
-        />
-      )}
-    </div>
-  )
-}
-const widgetDropIframeClasses = {
-  wrapper: mcss`
-    position: fixed;
-    z-index: 99999999;
-    border: 1px solid green;
-    pointer-events: auto;
-  `,
 }
 
 const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
@@ -157,7 +109,6 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
 
   return (
     <>
-      {/* <WidgetDropIframe style={style} slotName={slotName} widgetId={widgetId} /> */}
       {isEmptySlot ? (
         <Row
           justify="center"
@@ -190,12 +141,12 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
 const widgetDropClasses = {
   emptyWrapper: mcss`
 		border: 1px dashed rgba(0,0,0,.6);
-		position: fixed;
+		position: absolute;
 		pointer-events: none;
   `,
   activeWrapper: mcss`
 		pointer-events: none;
-		position: fixed;
+		position: absolute;
 		z-index: 999;
   `,
   active: mcss`

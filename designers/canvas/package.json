@@ -10,7 +10,5 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@dnd-kit/core": "^6.0.5",
-    "@modou/simulator": "workspace:^1.0.0"
   }
 }

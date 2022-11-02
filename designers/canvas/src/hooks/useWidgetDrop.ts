@@ -5,7 +5,6 @@ import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
 import { match } from 'ts-pattern'
 
 import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
-import { widgetSelector } from '@modou/render/src/store'
 
 import {
   DropIndicator,
@@ -14,6 +13,7 @@ import {
   WidgetRelationByWidgetId,
   dropIndicatorAtom,
   widgetRelationByWidgetIdSelector,
+  widgetSelector,
 } from '../store'
 import { WidgetDragType } from '../types'
 import { useAddWidget } from './useAddWidget'
@@ -111,6 +111,7 @@ export const useWidgetDrop = ({
 }) => {
   const widgetFactory = useContext(AppFactoryContext)
   const widget = useRecoilValue(widgetSelector(widgetId))
+
   const { addWidget } = useAddWidget()
   const { moveWidget } = useMoveWidget()
 

@@ -10,11 +10,14 @@ import { useDrag } from 'react-dnd'
 import { useRecoilValue } from 'recoil'
 
 import { mcss, useTheme } from '@modou/css-in-js'
-import { widgetSelector } from '@modou/render/src/store'
 
 import { SimulatorInstanceContext } from '../../../contexts'
 import { useWidgetSelected } from '../../../hooks/useWidgetSelected'
-import { selectedWidgetIdAtom, widgetsSelector } from '../../../store'
+import {
+  selectedWidgetIdAtom,
+  widgetSelector,
+  widgetsSelector,
+} from '../../../store'
 import { WidgetDragType } from '../../../types'
 import { getElementFromWidgetId } from '../../../utils'
 import { SelectedToolBox } from './SelectedToolBox'
@@ -72,7 +75,7 @@ const SelectIndicatorContent: FC = () => {
       })
       setDisplay(false)
     }
-  }, [selectedWidgetId, styleUpdater])
+  }, [selectedWidgetId, simulatorInstance.document, styleUpdater])
   const style: CSSProperties = {
     width: `${selectedElementRect.width ?? 0}px`,
     height: `${selectedElementRect.height ?? 0}px`,
@@ -112,7 +115,7 @@ const SelectIndicatorContent: FC = () => {
       element.style.opacity = opacity
       preview(element)
     }
-  }, [opacity, preview, selectedWidgetId])
+  }, [opacity, preview, selectedWidgetId, simulatorInstance.document])
   const theme = useTheme()
 
   return (
