@@ -7,10 +7,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useRecoilState } from 'recoil'
 
 import { CanvasDesigner } from '@modou/canvas-designer'
-import { AppFactoryContext, Metadata } from '@modou/core'
+import { AppFactoryContext, Metadata, defaultAppFactory } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
-
-import { widgetFactory } from '../utils'
+import { SimulatorPC } from '@modou/simulator'
 
 export const Page: FC = () => {
   const { pageId, appId } = useParams<PageRouterParamsKey>()
@@ -33,8 +32,10 @@ export const Page: FC = () => {
     <Row justify="center" align="middle" className={classes.page}>
       <Col span={24} className={classes.container}>
         {page && (
-          <AppFactoryContext.Provider value={widgetFactory}>
-            <CanvasDesigner page={page} onPageChange={setPage} />
+          <AppFactoryContext.Provider value={defaultAppFactory}>
+            <CanvasDesigner page={page} onPageChange={setPage}>
+              <SimulatorPC src="/simulator/pc.html" />
+            </CanvasDesigner>
           </AppFactoryContext.Provider>
         )}
       </Col>

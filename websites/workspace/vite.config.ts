@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
+import { resolve } from 'path'
 // import { visualizer } from "rollup-plugin-visualizer";
 // import basicSsl from '@vitejs/plugin-basic-ssl'
 import * as path from 'path'
@@ -57,6 +58,14 @@ export default defineConfig({
     https: {
       cert: fs.readFileSync(path.join(__dirname, '../../keys/cert.crt')),
       key: fs.readFileSync(path.join(__dirname, '../../keys/cert.key')),
+    },
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        simulatorPC: resolve(__dirname, 'simulator/pc.html'),
+      },
     },
   },
 })

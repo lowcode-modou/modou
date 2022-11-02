@@ -1,5 +1,5 @@
 import { Tabs } from 'antd'
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { RecoilRoot, useSetRecoilState } from 'recoil'
@@ -17,11 +17,13 @@ import { RecoilWidgetsSync } from './RecoilWidgetsSync'
 interface CanvasDesignerProps {
   page: Page
   onPageChange: (page: Page) => void
+  children: ReactElement
 }
 
 export const CanvasDesigner: FC<CanvasDesignerProps> = ({
   page,
   onPageChange,
+  children,
 }) => {
   const setSelectedWidgetId = useSetRecoilState(selectedWidgetIdAtom)
 
@@ -48,7 +50,7 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
               className={`${classes.section} ${classes.canvasWrapper}`}
               onClick={() => setSelectedWidgetId('')}
             >
-              <CanvasDesignerCanvas />
+              <CanvasDesignerCanvas>{children}</CanvasDesignerCanvas>
             </div>
             <div className={`${classes.section} ${classes.sectionRight}`}>
               <Tabs
@@ -57,14 +59,14 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
                 tabBarGutter={0}
                 items={[
                   {
-                    key: 'CanvasDesignerWidgetStencil',
-                    label: '组件列表',
-                    children: <CanvasDesignerWidgetStencil />,
-                  },
-                  {
                     key: 'CanvasDesignerPropsPanel',
                     label: '属性',
                     children: <CanvasDesignerPropsPanel />,
+                  },
+                  {
+                    key: 'CanvasDesignerWidgetStencil',
+                    label: '组件列表',
+                    children: <CanvasDesignerWidgetStencil />,
                   },
                 ]}
               />

@@ -1,4 +1,4 @@
-import { Form, Input } from 'antd'
+import { ProForm, ProFormText } from '@ant-design/pro-components'
 import { FC, useEffect } from 'react'
 
 import { InferWidgetState } from '../_'
@@ -14,23 +14,30 @@ export const InputWidget: FC<
     const hackElement = document.querySelector(
       `[data-hack-widget-id=${instance.widgetId}]`,
     )
-    hackElement?.parentElement?.setAttribute(
+    hackElement?.parentElement?.parentElement?.setAttribute(
       'data-widget-id',
       instance.widgetId,
     )
   }, [instance.widgetId])
   return (
-    <Form.Item data-hack-widget-id={instance.widgetId} label={label}>
-      <Input
-        defaultValue={defaultValue}
-        value={value}
-        onChange={(e) => {
-          updateState((prev) => ({
-            ...prev,
-            value: e.target.value,
-          }))
+    <ProForm.Item
+      name="name"
+      data-hack-widget-id={instance.widgetId}
+      label={label}
+    >
+      <ProFormText
+        noStyle
+        fieldProps={{
+          defaultValue,
+          onChange: (e) => {
+            console.log('onChange', e)
+            updateState((prev) => ({
+              ...prev,
+              value: e.target.value,
+            }))
+          },
         }}
       />
-    </Form.Item>
+    </ProForm.Item>
   )
 }

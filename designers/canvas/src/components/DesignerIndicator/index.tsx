@@ -1,4 +1,4 @@
-import { FC, RefObject } from 'react'
+import { CSSProperties, FC, RefObject } from 'react'
 
 import { mcss } from '@modou/css-in-js'
 
@@ -8,13 +8,15 @@ import { SelectedIndicator } from './indicatoir/SelectedIndicator'
 
 interface DesignerIndicatorProps {
   canvasRef: RefObject<HTMLElement>
+  style: CSSProperties
 }
 
 export const DesignerIndicator: FC<DesignerIndicatorProps> = ({
   canvasRef,
+  style,
 }) => {
   return (
-    <div className={classes.wrapper}>
+    <div className={classes.wrapper} style={style}>
       <HoveringIndicator canvasRef={canvasRef} />
       <SelectedIndicator canvasRef={canvasRef} />
       <DropIndicator />

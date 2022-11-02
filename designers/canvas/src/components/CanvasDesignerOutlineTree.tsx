@@ -41,6 +41,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
   const allowDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['allowDrop'] = ({
     dropNode,
     dropPosition,
+    dragNode,
   }) => {
     // console.log('dropNode', dropNode, dropPosition)
     const { widget } = dropNode
@@ -48,6 +49,13 @@ export const CanvasDesignerOutlineTree: FC = () => {
       return false
     }
     const widgetMetadata = appFactory.widgetByType[widget.widgetType].metadata
+
+    // console.log(
+    //   'dropPosition',
+    //   dropPosition,
+    //   widget.widgetId,
+    //   widget.widgetName,
+    // )
 
     if (dropPosition === DropPositionEnum.Before) {
       return !!widgetRelationByWidgetId[widget.widgetId].parent
@@ -121,6 +129,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
   //   console.log('tree.ref', ref.current?.state.flattenNodes)
   // })
 
+  // FIXME 跨层架拖拽
   return (
     <div className={classes.treeWrapper}>
       <Tree<WidgetTreeNode>
