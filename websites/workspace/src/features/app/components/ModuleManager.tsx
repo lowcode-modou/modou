@@ -1,3 +1,4 @@
+import { useMount } from 'ahooks'
 import { Drawer, Input } from 'antd'
 import { ComponentProps, FC, useEffect, useRef, useState } from 'react'
 import { match } from 'ts-pattern'
@@ -26,6 +27,14 @@ export const ModuleManager: FC<{
   const [searchVal, setSearchVal] = useState<string>('')
 
   const moduleItemAddElementRef = useRef<HTMLElement>(null)
+
+  const [initialized, setInitialize] = useState(false)
+
+  useEffect(() => {
+    if (visible) {
+      setInitialize(true)
+    }
+  }, [visible])
 
   return (
     <div className={classes.drawerWrapper}>
@@ -59,17 +68,21 @@ export const ModuleManager: FC<{
         onClose={onClose}
         open={visible}
       >
-        {module === ModuleEnum.Page && (
-          <ModuleManagerPage
-            itemAddRef={moduleItemAddElementRef.current}
-            searchVal={searchVal}
-          />
-        )}
-        {module === ModuleEnum.Entity && (
-          <ModuleManagerEntity
-            itemAddRef={moduleItemAddElementRef.current}
-            searchVal={searchVal}
-          />
+        {initialized && (
+          <>
+            {module === ModuleEnum.Page && (
+              <ModuleManagerPage
+                itemAddRef={moduleItemAddElementRef.current}
+                searchVal={searchVal}
+              />
+            )}
+            {module === ModuleEnum.Entity && (
+              <ModuleManagerEntity
+                itemAddRef={moduleItemAddElementRef.current}
+                searchVal={searchVal}
+              />
+            )}
+          </>
         )}
       </Drawer>
     </div>

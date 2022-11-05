@@ -29,6 +29,6 @@ const classes = {
     position: fixed;
     left: 0;right: 0;bottom: 0;top: 0;
     pointer-events: none;
-    z-index: 999999;
+    z-index: 999;
   `,
 }

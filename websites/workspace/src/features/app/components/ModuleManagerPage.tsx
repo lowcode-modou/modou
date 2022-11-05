@@ -55,7 +55,7 @@ export const ModuleManagerPage: FC<{
           <Typography.Text>{page.name}</Typography.Text>
         )}
         <Dropdown
-          trigger={['click']}
+          trigger={['hover']}
           key={page.id}
           overlay={
             <Menu
