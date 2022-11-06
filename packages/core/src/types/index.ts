@@ -1,4 +1,7 @@
 import { WidgetBaseProps } from '../widget'
+import { EntityField } from './entity-field'
+
+export { FieldEnum } from './entity-field'
 
 export interface App {
   id: string
@@ -14,14 +17,10 @@ export interface Page {
   rootWidgetId: string
 }
 
-export interface EntityField {
-  id: string
-  name: string
-}
-
 export interface Entity {
   id: string
   name: string
+  description: string
   fields: EntityField[]
 }
 

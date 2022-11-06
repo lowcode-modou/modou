@@ -173,17 +173,29 @@ importers:
 
   websites/workspace:
     specifiers:
+      '@ahooksjs/use-url-state': ^3.5.0
       '@modou/canvas-designer': workspace:^1.0.0
-      reactflow: ^11.1.0
+      reactflow: ^11.2.0
     dependencies:
+      '@ahooksjs/use-url-state': 3.5.0
       '@modou/canvas-designer': link:../../designers/canvas
-      reactflow: 11.1.0
+      reactflow: 11.2.0
 
 packages:
 
   /@adobe/css-tools/4.0.1:
     resolution: {integrity: sha512-+u76oB43nOHrF4DDWRLWDCtci7f3QJoEBigemIdIeTi1ODqjx6Tad9NCVnPRwewWlKkVab5PlK8DCtPTyX7S8g==}
     dev: true
+
+  /@ahooksjs/use-url-state/3.5.0:
+    resolution: {integrity: sha512-DGKV9py3GMIvF0nRSr+fvuZsHRarT6y+XYNl5UnzLoszTwVJGh3hr27EJ97vEMSilI9POFf91MLKFyfkE1t44A==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-router: ^5.0.0 || ^6.0.0
+    dependencies:
+      ahooks: 3.7.1
+      query-string: 6.14.1
+    dev: false
 
   /@ampproject/remapping/2.2.0:
     resolution: {integrity: sha512-qRmjj8nj9qmLTQXXmaR1cck3UXSRMPrbsLJAasZpF+t3riI71BXed5ebIOYwQntykeZuhjsdweEc9BxH5Jc26w==}
@@ -3031,35 +3043,35 @@ packages:
     resolution: {integrity: sha512-/RVXdLvJxLg4QKvMoM5WlwNR9ViO9z8B/qPcc+C0Sa/teJY7QG7kJ441DwzOjMYEY7GmU4dj5EcGHIkKZiQZCA==}
     dev: false
 
-  /@reactflow/background/11.0.1:
-    resolution: {integrity: sha512-j2+P6vVzKIDeGmobmLFBHN8gpYZ9f035V4piVg/BL2HBLVebJkWlXOEqPtX/G/bIsMVbmMWZHm8g8Z6JOpnepw==}
+  /@reactflow/background/11.0.4:
+    resolution: {integrity: sha512-AACdU1B63BJCL0mO6I2ceehkv0ijKxzhh4UMc0JQs8sSgbAQjvnMSt/VcjIJ1e8V4o/wjPejj3xWm2Jxsv0Qhw==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
     dependencies:
       '@babel/runtime': 7.19.4
-      '@reactflow/core': 11.1.0
+      '@reactflow/core': 11.2.0
       classcat: 5.0.4
       zustand: 4.1.1
     transitivePeerDependencies:
       - immer
     dev: false
 
-  /@reactflow/controls/11.0.1:
-    resolution: {integrity: sha512-ogMb6muwKzeL8DwrP7aBQm/Y93p3RUdBvQvQPc70yhcMg2rn2h2CVOpVH4ZyItuxRHX7U8BpqffCLP0/ChzB3g==}
+  /@reactflow/controls/11.0.4:
+    resolution: {integrity: sha512-NLycgcW+hS2CcZiUqvTOXkug+UMmq7dzORxdzxosvBI0b1La+xNXi+UxVMlMAYrNZH3lm+SWyftksXQ/r010bQ==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
     dependencies:
       '@babel/runtime': 7.19.4
-      '@reactflow/core': 11.1.0
+      '@reactflow/core': 11.2.0
       classcat: 5.0.4
     transitivePeerDependencies:
       - immer
     dev: false
 
-  /@reactflow/core/11.1.0:
-    resolution: {integrity: sha512-ayGejz54OXiWsIXBon1M4WzydvnfF/aXSbtOMas0Bqn0UWSP21AAcTvCKz6/evX2q3+87OGi9u/IJT6c2P7r0A==}
+  /@reactflow/core/11.2.0:
+    resolution: {integrity: sha512-8rYp9bQON7MMtHZ3opU37Bfp4NaGGrJFeu+tcokz9bQZcGo43oCKl8xkURn8HlC8FnpVwpQ7e3DBdsOtnEbaEg==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
@@ -3077,15 +3089,19 @@ packages:
       - immer
     dev: false
 
-  /@reactflow/minimap/11.0.1:
-    resolution: {integrity: sha512-jXhzZaFRPkhq3h2TlRGAh028MRB3NbxBFPDepi9noe+KOuQlh1I9EOzA+O4SRgcyfthfMzRKdOeJ97XPqMF6ww==}
+  /@reactflow/minimap/11.1.0:
+    resolution: {integrity: sha512-igquYRc9QdV5hu7KZiBjQgynvy/oMH5+i5eDvI0aLSkLC68NVnHFFpEZlk4bSVav+nGeWbHOZK/tryd3Sa39TQ==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
     dependencies:
       '@babel/runtime': 7.19.4
-      '@reactflow/core': 11.1.0
+      '@reactflow/core': 11.2.0
+      '@types/d3-selection': 3.0.3
+      '@types/d3-zoom': 3.0.1
       classcat: 5.0.4
+      d3-selection: 3.0.0
+      d3-zoom: 3.0.0
       zustand: 4.1.1
     transitivePeerDependencies:
       - immer
@@ -4772,6 +4788,22 @@ packages:
 
   /ahooks-v3-count/1.0.0:
     resolution: {integrity: sha512-V7uUvAwnimu6eh/PED4mCDjE7tokeZQLKlxg9lCTMPhN+NjsSbtdacByVlR1oluXQzD3MOw55wylDmQo4+S9ZQ==}
+    dev: false
+
+  /ahooks/3.7.1:
+    resolution: {integrity: sha512-9fooKjhScNyJaIPnlWd13LkY1gQYqv3BqwSA9ynHg1ZUtDqAICuCRoedV97ylrEL6QqI4zeq3bO3lQxkfWVNcg==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@types/js-cookie': 2.2.7
+      ahooks-v3-count: 1.0.0
+      dayjs: 1.11.5
+      intersection-observer: 0.12.2
+      js-cookie: 2.2.1
+      lodash: 4.17.21
+      resize-observer-polyfill: 1.5.1
+      screenfull: 5.2.0
     dev: false
 
   /ahooks/3.7.1_react@18.2.0:
@@ -6744,7 +6776,6 @@ packages:
   /decode-uri-component/0.2.0:
     resolution: {integrity: sha512-hjf+xovcEn31w/EUYdTXQh/8smFL/dzYjohQGEIgjyNavaJfBY2p5F527Bo1VPATxv0VYTUC2bOcXvqFwk78Og==}
     engines: {node: '>=0.10'}
-    dev: true
 
   /dedent/0.7.0:
     resolution: {integrity: sha512-Q6fKUPqnAHAyhiUgFU7BUzLiv0kd8saH9al7tnu5Q/okj6dnupxyTgFIBjVzJATdfIAm9NAsvXNzjaKa+bxVyA==}
@@ -8552,7 +8583,6 @@ packages:
   /filter-obj/1.1.0:
     resolution: {integrity: sha512-8rXg1ZnX7xzy2NGDVkBVaAy+lSlPNwad13BtgSlLuxfIslyt5Vg64U7tFcCt4WS1R0hvtnQybT/IyCkGZ3DpXQ==}
     engines: {node: '>=0.10.0'}
-    dev: true
 
   /find-babel-config/1.2.0:
     resolution: {integrity: sha512-jB2CHJeqy6a820ssiqwrKMeyC6nNdmrcgkKWJWmpoxpE8RKciYJXCcXRq1h2AzCo5I5BJeN2tkGEO3hLTuePRA==}
@@ -13661,7 +13691,6 @@ packages:
       filter-obj: 1.1.0
       split-on-first: 1.1.0
       strict-uri-encode: 2.0.0
-    dev: true
 
   /querystring-es3/0.2.1:
     resolution: {integrity: sha512-773xhDQnZBMFobEiztv8LIl70ch5MSF/jUQVlhwFyBILqq96anmoctVIYz+ZRp0qbCKATTn6ev02M3r7Ga5vqA==}
@@ -14686,16 +14715,16 @@ packages:
       react: 18.2.0
     dev: false
 
-  /reactflow/11.1.0:
-    resolution: {integrity: sha512-K3rxAZ4s2f62fLUB60YeRKWN2NQSS6GXxFoca1cNwXGAN7+QXrZNNV2obJWM8ZX7TyXjnLA8QcuzqzqOfADADQ==}
+  /reactflow/11.2.0:
+    resolution: {integrity: sha512-wrpcpY1J1QY87meJXrd7Y1jZQ9s0VvXudpeMrXeq1HEgYOyYmZrg2oxv4ck9m9liq0Urz9z/eWrIQTkdb/6P5A==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
     dependencies:
-      '@reactflow/background': 11.0.1
-      '@reactflow/controls': 11.0.1
-      '@reactflow/core': 11.1.0
-      '@reactflow/minimap': 11.0.1
+      '@reactflow/background': 11.0.4
+      '@reactflow/controls': 11.0.4
+      '@reactflow/core': 11.2.0
+      '@reactflow/minimap': 11.1.0
     transitivePeerDependencies:
       - immer
     dev: false
@@ -15722,7 +15751,6 @@ packages:
   /split-on-first/1.1.0:
     resolution: {integrity: sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==}
     engines: {node: '>=6'}
-    dev: true
 
   /split-string/3.1.0:
     resolution: {integrity: sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw==}
@@ -15812,7 +15840,6 @@ packages:
   /strict-uri-encode/2.0.0:
     resolution: {integrity: sha512-QwiXZgpRcKkhTj2Scnn++4PKtWsH0kpzZ62L2R6c/LUVYv7hVnZqcg2+sMuT6R7Jusu1vviK/MFsu6kNJfWlEQ==}
     engines: {node: '>=4'}
-    dev: true
 
   /string-argv/0.3.1:
     resolution: {integrity: sha512-a1uQGz7IyVy9YwhqjZIZu1c8JO8dNIe20xBmSS6qu9kv++k3JGzCVmprbNN5Kn+BgzD5E7YYwg1CcjuJMRNsvg==}

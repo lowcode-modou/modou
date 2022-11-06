@@ -1,20 +1,22 @@
-import { AppHeader } from '@/features/app/components/AppHeader'
+import { ROUTER_PATH } from '@/constants'
 import { EntityRouterParamsKey, PageRouterParamsKey } from '@/types'
+import { generateRouterPath } from '@/utils/router'
 import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
-import { Avatar, Button, Layout, Menu } from 'antd'
-import produce from 'immer'
-import { isEmpty } from 'lodash'
+import { Layout, Menu } from 'antd'
 import { ComponentProps, FC, useCallback, useEffect, useState } from 'react'
-import { Outlet, useParams } from 'react-router-dom'
-import { useSetRecoilState } from 'recoil'
+import {
+  Outlet,
+  matchPath,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
 
-import { Metadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
-// import classes from './app.css'
 import { ModuleManager } from '../components'
+import { AppHeader } from '../components/AppHeader'
 import { AppHome } from '../components/AppHome'
-import { MOCK_PAGE_ID, MOCK_ROOT_WIDGET_ID, MOCK_WIDGETS } from '../mock'
 import { ModuleEnum } from '../types'
 
 const menuItems: ComponentProps<typeof Menu>['items'] = [
@@ -33,6 +35,8 @@ const menuItems: ComponentProps<typeof Menu>['items'] = [
 export const App: FC = () => {
   const params = useParams<PageRouterParamsKey | EntityRouterParamsKey>()
   const [module, setModule] = useState<ModuleEnum | ''>('')
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
 
   const updateModule = useCallback(() => {
     if (params.pageId) {
@@ -51,51 +55,29 @@ export const App: FC = () => {
 
   const handleClickMenuItem: ComponentProps<typeof Menu>['onClick'] = ({
     key,
-    keyPath,
   }) => {
-    if (key === module) {
-      setVisibleModuleManger((prevState) => !prevState)
-    } else {
-      setModule(key as ModuleEnum)
-      setVisibleModuleManger(true)
+    switch (key) {
+      case ModuleEnum.Page:
+        if (key === module) {
+          setVisibleModuleManger((prevState) => !prevState)
+        } else {
+          setModule(key as ModuleEnum)
+          setVisibleModuleManger(true)
+        }
+        break
+      case ModuleEnum.Entity:
+        setVisibleModuleManger(false)
+        navigate(
+          generateRouterPath(ROUTER_PATH.Entities, {
+            appId: params.appId,
+          }),
+        )
+        break
+      default:
     }
   }
 
-  // MOCK
-  const setApp = useSetRecoilState(Metadata.appAtom)
-  useEffect(() => {
-    const MOCK_PAGES = [
-      {
-        name: '大漠孤烟直',
-        id: MOCK_PAGE_ID,
-        widgets: MOCK_WIDGETS,
-        rootWidgetId: MOCK_ROOT_WIDGET_ID,
-      },
-      {
-        name: '测试',
-        id: MOCK_PAGE_ID + '___',
-        widgets: MOCK_WIDGETS,
-        rootWidgetId: MOCK_ROOT_WIDGET_ID,
-      },
-      {
-        name: '长河落日圆',
-        id: MOCK_PAGE_ID + '________',
-        widgets: MOCK_WIDGETS,
-        rootWidgetId: MOCK_ROOT_WIDGET_ID,
-      },
-    ]
-    setApp(
-      produce((draft) => {
-        if (isEmpty(draft.pages)) {
-          draft.pages = MOCK_PAGES
-        } else {
-          return draft
-        }
-      }),
-    )
-  }, [setApp])
-
-  const isAppHome = Object.keys(params).length === 1
+  const isAppHome = matchPath(ROUTER_PATH.APP, pathname)
   return isAppHome ? (
     <AppHome />
   ) : (
