@@ -1,8 +1,9 @@
-import { ChangeEventHandler, FC, memo, useCallback } from 'react'
+import { FC, memo, useCallback } from 'react'
 import ReactFlow, {
+  Background,
+  BackgroundVariant,
   Controls,
   Edge,
-  Handle,
   MiniMap,
   Node,
   NodeProps,
@@ -12,50 +13,12 @@ import ReactFlow, {
   useEdgesState,
   useNodesState,
 } from 'reactflow'
+import { useRecoilValue } from 'recoil'
 
+import { Metadata } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
 
-const ColorSelectorNode: FC<
-  NodeProps<{
-    color: string
-    onChange: ChangeEventHandler
-  }>
-> = ({ data, isConnectable }) => {
-  return (
-    <>
-      <Handle
-        type="target"
-        position={Position.Left}
-        style={{ background: '#555' }}
-        onConnect={(params) => console.log('handle onConnect', params)}
-        isConnectable={isConnectable}
-      />
-      <div>
-        Custom Color Picker Node: <strong>{data.color}</strong>
-      </div>
-      <input
-        className="nodrag"
-        type="color"
-        onChange={data.onChange}
-        defaultValue={data.color}
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="a"
-        style={{ top: 10, background: '#555' }}
-        isConnectable={isConnectable}
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="b"
-        style={{ bottom: 10, top: 'auto', background: '#555' }}
-        isConnectable={isConnectable}
-      />
-    </>
-  )
-}
+import { EntityNode } from '../components/EntityNode'
 
 const MOCK_NODES: Node[] = [
   {
@@ -64,13 +27,6 @@ const MOCK_NODES: Node[] = [
     data: { label: 'An input node' },
     position: { x: 0, y: 50 },
     sourcePosition: Position.Right,
-  },
-  {
-    id: '2',
-    type: 'selectorNode',
-    data: { onChange: () => {}, color: 'red' },
-    style: { border: '1px solid #777', padding: 10 },
-    position: { x: 300, y: 50 },
   },
   {
     id: '3',
@@ -92,21 +48,13 @@ const MOCK_EDGES: Edge[] = [
   {
     id: 'e1-2',
     source: '1',
-    target: '2',
-    animated: true,
-    style: { stroke: 'red' },
-  },
-  {
-    id: 'e2a-3',
-    source: '2',
     target: '3',
-    sourceHandle: 'a',
     animated: true,
     style: { stroke: 'red' },
   },
   {
     id: 'e2b-4',
-    source: '2',
+    source: '1',
     target: '4',
     sourceHandle: 'b',
     animated: true,
@@ -115,13 +63,21 @@ const MOCK_EDGES: Edge[] = [
 ]
 
 const nodeTypes: Record<string, FC<NodeProps>> = {
-  selectorNode: memo(ColorSelectorNode),
+  EntityNode: memo(EntityNode),
 }
 
 export const EntitiesER: FC = () => {
-  // const entities = useRecoilValue(Metadata.entitiesSelector)
+  const entities = useRecoilValue(Metadata.entitiesSelector)
   const theme = useTheme()
-  const [nodes, , onNodesChange] = useNodesState(MOCK_NODES)
+  const [nodes, , onNodesChange] = useNodesState([
+    ...MOCK_NODES,
+    ...entities.map((entity, index) => ({
+      id: entity.id,
+      type: 'EntityNode',
+      data: entity,
+      position: { x: 300 * (index + 1), y: 200 },
+    })),
+  ])
   const [edges, setEdges, onEdgesChange] = useEdgesState(MOCK_EDGES)
   const onConnect = useCallback<OnConnect>(
     (params) =>
@@ -147,6 +103,7 @@ export const EntitiesER: FC = () => {
         // fitView
         attributionPosition="bottom-left"
       >
+        <Background variant={BackgroundVariant.Cross} gap={10} size={2} />
         <Controls />
         <MiniMap pannable zoomable />
       </ReactFlow>
@@ -159,6 +116,15 @@ const classes = {
     height: 100%;
     .react-flow__attribution{
       display: none;
+    }
+    .react-flow__node{
+      border: none;
+    }
+    .react-flow__handle{
+      z-index: 9;
+    }
+    .react-flow__edges{
+      z-index: 99;
     }
     //.react-flow__minimap{
     //  title{

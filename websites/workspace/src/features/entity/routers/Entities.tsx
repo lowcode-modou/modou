@@ -4,8 +4,8 @@ import { FC } from 'react'
 
 import { mcss } from '@modou/css-in-js'
 
-import { EntitiesER } from './components/EntitiesER'
-import { EntitiesList } from './components/EntitiesList'
+import { EntitiesER } from '../components/EntitiesER'
+import { EntitiesList } from '../components/EntitiesList'
 
 enum EntityTabKeyEnum {
   List = 'List',

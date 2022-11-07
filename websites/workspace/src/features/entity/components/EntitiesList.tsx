@@ -7,14 +7,14 @@ import { Entity, Metadata } from '@modou/core'
 
 const columns: ColumnsType<Entity> = [
   {
-    title: '名称',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
     title: '描述',
     dataIndex: 'description',
     key: 'description',
+  },
+  {
+    title: '名称',
+    dataIndex: 'name',
+    key: 'name',
   },
   {
     title: '操作',

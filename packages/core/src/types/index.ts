@@ -1,6 +1,8 @@
 import { WidgetBaseProps } from '../widget'
 import { EntityField } from './entity-field'
 
+export type { EntityField } from './entity-field'
+
 export { FieldEnum } from './entity-field'
 
 export interface App {
