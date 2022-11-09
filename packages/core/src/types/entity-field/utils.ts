@@ -15,7 +15,8 @@ export enum FieldEnum {
 export interface BaseEntityField<T extends FieldEnum> {
   id: string
   name: string
-  type: T
+  title: string
   description: string
+  type: T
   required: boolean
 }

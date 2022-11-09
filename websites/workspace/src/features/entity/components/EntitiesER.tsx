@@ -70,12 +70,11 @@ export const EntitiesER: FC = () => {
   const entities = useRecoilValue(Metadata.entitiesSelector)
   const theme = useTheme()
   const [nodes, , onNodesChange] = useNodesState([
-    ...MOCK_NODES,
     ...entities.map((entity, index) => ({
       id: entity.id,
       type: 'EntityNode',
       data: entity,
-      position: { x: 300 * (index + 1), y: 200 },
+      position: { x: 400 * (index + 1), y: 100 },
     })),
   ])
   const [edges, setEdges, onEdgesChange] = useEdgesState(MOCK_EDGES)

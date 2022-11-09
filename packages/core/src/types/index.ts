@@ -1,7 +1,18 @@
 import { WidgetBaseProps } from '../widget'
 import { EntityField } from './entity-field'
+import { EntityRelation } from './entity-relation'
 
 export type { EntityField } from './entity-field'
+export type {
+  EntityRelation,
+  MasterDetailEntityRelation,
+  LookupEntityRelation,
+} from './entity-relation'
+
+export {
+  EntityRelationLookupRelationTypeEnum,
+  EntityRelationMasterDetailRelationTypeEnum,
+} from './entity-relation'
 
 export { FieldEnum } from './entity-field'
 
@@ -22,8 +33,10 @@ export interface Page {
 export interface Entity {
   id: string
   name: string
+  title: string
   description: string
   fields: EntityField[]
+  relations: EntityRelation[]
 }
 
 export enum WidgetGroupEnum {

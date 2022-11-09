@@ -4,6 +4,7 @@ import { FC } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { Entity, Metadata } from '@modou/core'
+import { mcss } from '@modou/css-in-js'
 
 const columns: ColumnsType<Entity> = [
   {
@@ -39,11 +40,19 @@ export const EntitiesList: FC = () => {
   const entities = useRecoilValue(Metadata.entitiesSelector)
 
   return (
-    <Table<Entity>
-      rowKey={'id'}
-      size={'small'}
-      columns={columns}
-      dataSource={entities}
-    />
+    <div className={classes.wrapper}>
+      <Table<Entity>
+        rowKey={'id'}
+        size={'small'}
+        columns={columns}
+        dataSource={entities}
+      />
+    </div>
   )
+}
+
+const classes = {
+  wrapper: mcss`
+    padding: 24px;
+  `,
 }
