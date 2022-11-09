@@ -1,5 +1,12 @@
 import { appAtom } from './app'
-import { entitiesSelector, entityByIdSelector, entitySelector } from './entity'
+import {
+  entitiesSelector,
+  entityByIdSelector,
+  entityRelationsBySourceEntityNameMapSelector,
+  entityRelationsByTargetEntityNameMapSelector,
+  entityRelationsSelector,
+  entitySelector,
+} from './entity'
 import { pageByIdSelector, pageSelector, pagesSelector } from './page'
 
 export const Metadata = {
@@ -10,4 +17,7 @@ export const Metadata = {
   entitySelector,
   entityByIdSelector,
   entitiesSelector,
+  entityRelationsSelector,
+  entityRelationsBySourceEntityNameMapSelector,
+  entityRelationsByTargetEntityNameMapSelector,
 }

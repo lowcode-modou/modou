@@ -1,3 +1,5 @@
+import { EntityNodeData } from '@/features/entity/types'
+import { generateSourceHandle } from '@/features/entity/utils'
 import { FC, memo, useCallback } from 'react'
 import ReactFlow, {
   Background,
@@ -67,17 +69,36 @@ const nodeTypes: Record<string, FC<NodeProps>> = {
 }
 
 export const EntitiesER: FC = () => {
-  const entities = useRecoilValue(Metadata.entitiesSelector)
   const theme = useTheme()
-  const [nodes, , onNodesChange] = useNodesState([
+  const entities = useRecoilValue(Metadata.entitiesSelector)
+  const entityRelations = useRecoilValue(Metadata.entityRelationsSelector)
+  const entityRelationsByTargetEntityNameMap = useRecoilValue(
+    Metadata.entityRelationsByTargetEntityNameMapSelector,
+  )
+  const [nodes, , onNodesChange] = useNodesState<EntityNodeData>([
     ...entities.map((entity, index) => ({
-      id: entity.id,
+      id: entity.name,
       type: 'EntityNode',
-      data: entity,
+      data: {
+        entity,
+        passiveEntityRelations:
+          entityRelationsByTargetEntityNameMap[entity.name] || [],
+      },
       position: { x: 400 * (index + 1), y: 100 },
     })),
   ])
-  const [edges, setEdges, onEdgesChange] = useEdgesState(MOCK_EDGES)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(
+    entityRelations.map((entityRelation) => {
+      return {
+        id: entityRelation.id,
+        source: entityRelation.sourceEntity,
+        target: entityRelation.targetEntity,
+        sourceHandle: generateSourceHandle(entityRelation),
+        targetHandle: generateSourceHandle(entityRelation),
+        style: { stroke: 'red', zIndex: 999999 },
+      }
+    }),
+  )
   const onConnect = useCallback<OnConnect>(
     (params) =>
       setEdges((eds) =>
@@ -95,7 +116,7 @@ export const EntitiesER: FC = () => {
         onConnect={onConnect}
         style={{ background: '#fff' }}
         nodeTypes={nodeTypes}
-        connectionLineStyle={{ stroke: theme.colorPrimary }}
+        connectionLineStyle={{ stroke: theme.colorPrimary, zIndex: 999999 }}
         snapToGrid={true}
         snapGrid={[20, 20]}
         // defaultZoom={1.5}
@@ -123,7 +144,7 @@ const classes = {
       z-index: 9;
     }
     .react-flow__edges{
-      z-index: 99;
+      z-index: 999999!important;
     }
     //.react-flow__minimap{
     //  title{

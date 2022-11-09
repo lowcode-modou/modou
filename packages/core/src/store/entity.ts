@@ -1,8 +1,8 @@
 import { produce } from 'immer'
-import { keyBy } from 'lodash'
+import { flatten, isArray, keyBy, map } from 'lodash'
 import { DefaultValue, selector, selectorFamily } from 'recoil'
 
-import { App, Entity } from '../types'
+import { App, Entity, EntityRelation } from '../types'
 import { generateRecoilKey } from '../utils'
 import { appAtom } from './app'
 
@@ -48,4 +48,47 @@ export const entitySelector = selectorFamily<Entity, string>({
         }),
       ),
   cachePolicy_UNSTABLE: { eviction: 'most-recent' },
+})
+
+export const entityRelationsSelector = selector<EntityRelation[]>({
+  key: generateRecoilKey('entityRelationsSelector'),
+  get: ({ get }) => {
+    return flatten(get(entitiesSelector).map((entity) => entity.relations))
+  },
+})
+
+export const entityRelationsByTargetEntityNameMapSelector = selector<
+  Record<string, EntityRelation[]>
+>({
+  key: generateRecoilKey('entityRelationsByTargetEntityNameMapSelector'),
+  get: ({ get }) =>
+    get(entityRelationsSelector).reduce<Record<string, EntityRelation[]>>(
+      (pre, cur) => {
+        const targetEntityName = cur.targetEntity
+        if (!isArray(pre[targetEntityName])) {
+          pre[targetEntityName] = []
+        }
+        pre[targetEntityName].push(cur)
+        return pre
+      },
+      {},
+    ),
+})
+
+export const entityRelationsBySourceEntityNameMapSelector = selector<
+  Record<string, EntityRelation[]>
+>({
+  key: generateRecoilKey('entityRelationsBySourceEntityNameMapSelector'),
+  get: ({ get }) =>
+    get(entityRelationsSelector).reduce<Record<string, EntityRelation[]>>(
+      (pre, cur) => {
+        const sourceEntityName = cur.sourceEntity
+        if (!isArray(pre[sourceEntityName])) {
+          pre[sourceEntityName] = []
+        }
+        pre[sourceEntityName].push(cur)
+        return pre
+      },
+      {},
+    ),
 })
