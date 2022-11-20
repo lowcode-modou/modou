@@ -1,5 +1,3 @@
-import { EntityNodeData } from '@/features/entity/types'
-import { generateSourceHandle } from '@/features/entity/utils'
 import { FC, memo, useCallback } from 'react'
 import ReactFlow, {
   Background,
@@ -21,48 +19,8 @@ import { Metadata } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
 
 import { EntityNode } from '../components/EntityNode'
-
-const MOCK_NODES: Node[] = [
-  {
-    id: '1',
-    type: 'input',
-    data: { label: 'An input node' },
-    position: { x: 0, y: 50 },
-    sourcePosition: Position.Right,
-  },
-  {
-    id: '3',
-    type: 'output',
-    data: { label: 'Output A' },
-    position: { x: 650, y: 25 },
-    sourcePosition: Position.Left,
-  },
-  {
-    id: '4',
-    type: 'output',
-    data: { label: 'Output B' },
-    position: { x: 650, y: 100 },
-    sourcePosition: Position.Left,
-  },
-]
-
-const MOCK_EDGES: Edge[] = [
-  {
-    id: 'e1-2',
-    source: '1',
-    target: '3',
-    animated: true,
-    style: { stroke: 'red' },
-  },
-  {
-    id: 'e2b-4',
-    source: '1',
-    target: '4',
-    sourceHandle: 'b',
-    animated: true,
-    style: { stroke: 'red' },
-  },
-]
+import { EntityNodeData } from '../types'
+import { generateSourceHandle, getEntityRelationColor } from '../utils'
 
 const nodeTypes: Record<string, FC<NodeProps>> = {
   EntityNode: memo(EntityNode),
@@ -95,7 +53,10 @@ export const EntitiesER: FC = () => {
         target: entityRelation.targetEntity,
         sourceHandle: generateSourceHandle(entityRelation),
         targetHandle: generateSourceHandle(entityRelation),
-        style: { stroke: 'red', zIndex: 999999 },
+        style: {
+          stroke: getEntityRelationColor(entityRelation),
+          zIndex: 999999,
+        },
       }
     }),
   )

@@ -68,7 +68,8 @@ const classes = {
       position: relative;
       display: flex;
       align-items: center;
-      &-title{
+			padding: 8px 24px;
+			&-title{
         padding-top: 0;
         min-height: auto!important;
         display: inline;

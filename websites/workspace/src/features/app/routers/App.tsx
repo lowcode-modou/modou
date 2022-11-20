@@ -136,7 +136,9 @@ const classes = {
       display: none;
     }
     .ant-menu-item {
-      padding: 0 calc(50% - 16px / 2) !important;
+      //padding: 0 calc(50% - 16px / 2) !important;
+      padding-left: 16px!important;
+      padding-inline: 16px;
       border: 1px solid transparent !important;
       &::after {
         display: none !important;

@@ -1,8 +1,14 @@
 import { produce } from 'immer'
-import { flatten, isArray, keyBy, map } from 'lodash'
+import { flatten, isArray, keyBy } from 'lodash'
 import { DefaultValue, selector, selectorFamily } from 'recoil'
 
-import { App, Entity, EntityRelation } from '../types'
+import {
+  App,
+  Entity,
+  EntityRelation,
+  EntityRelationLookupRelationTypeEnum,
+} from '../types'
+import { EntityRelationTypeEnum } from '../types/entity-relation'
 import { generateRecoilKey } from '../utils'
 import { appAtom } from './app'
 
@@ -64,6 +70,13 @@ export const entityRelationsByTargetEntityNameMapSelector = selector<
   get: ({ get }) =>
     get(entityRelationsSelector).reduce<Record<string, EntityRelation[]>>(
       (pre, cur) => {
+        // TODO 如果是ManyToOne 的 Lookup 则不在对方双向生成关系
+        // if (
+        //   cur.type === EntityRelationTypeEnum.Lookup &&
+        //   cur.relationType === EntityRelationLookupRelationTypeEnum.ManyToOne
+        // ) {
+        //   return pre
+        // }
         const targetEntityName = cur.targetEntity
         if (!isArray(pre[targetEntityName])) {
           pre[targetEntityName] = []

@@ -115,7 +115,7 @@ export const MOCK_ENTITIES: Entity[] = [
         name: 'department',
         title: '部门',
         type: EntityRelationTypeEnum.Lookup,
-        relationType: EntityRelationLookupRelationTypeEnum.ManyToMany,
+        relationType: EntityRelationLookupRelationTypeEnum.ManyToOne,
         description: '部门',
         sourceEntity: 'user',
         targetEntity: 'department',

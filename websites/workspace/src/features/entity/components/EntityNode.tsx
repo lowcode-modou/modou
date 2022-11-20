@@ -1,79 +1,21 @@
 import { Button, Col, Row, Space, Typography } from 'antd'
 import { isEmpty } from 'lodash'
-import { FC, useEffect, useState } from 'react'
-import {
-  Handle,
-  NodeProps,
-  Position,
-  useReactFlow,
-  useUpdateNodeInternals,
-} from 'reactflow'
+import { FC } from 'react'
+import { NodeProps } from 'reactflow'
 
-import { Entity, EntityRelation } from '@modou/core'
+import {
+  EntityRelationLookupRelationTypeEnum,
+  EntityRelationTypeEnum,
+} from '@modou/core/src/types/entity-relation'
 import { cx, mcss, useTheme } from '@modou/css-in-js'
 
 import { EntityNodeData } from '../types'
-import { generateSourceHandle, generateTargetHandle } from '../utils'
-
-const generateEntityDomId = (entity: Entity) => {
-  return `entity_er_node_id_${entity.id}`
-}
-
-const generateEntityRelationDomId = (
-  entity: Entity,
-  relation: EntityRelation,
-) => {
-  return `${generateEntityDomId(entity)}_${relation.id}`
-}
-
-const EntityRelationHeight = 22
-
-const EntityNodeHandle: FC<
-  NodeProps<EntityNodeData> & { relation: EntityRelation; passive: boolean }
-> = ({
-  data: {
-    entity,
-    entity: { relations },
-  },
-  isConnectable,
-  relation,
-  passive,
-}) => {
-  const theme = useTheme()
-  const reactFlow = useReactFlow()
-  const updateNodeInternals = useUpdateNodeInternals()
-  const id = passive
-    ? generateTargetHandle(relation)
-    : generateSourceHandle(relation)
-  const [top, setTop] = useState(Number.MAX_SAFE_INTEGER)
-  useEffect(() => {
-    const entityNodeRect = document
-      .getElementById(generateEntityDomId(entity))
-      ?.getClientRects()[0]
-    const entityRelationRect = document
-      .getElementById(generateEntityRelationDomId(entity, relation))
-      ?.getClientRects()[0]
-
-    const handleTop =
-      (entityRelationRect?.top ?? 0) - (entityNodeRect?.top ?? 0)
-    setTop(handleTop)
-    setTimeout(() => updateNodeInternals(entity.name))
-  }, [entity, reactFlow, relation, updateNodeInternals])
-  return (
-    <Handle
-      key={relation.id}
-      id={id}
-      type={passive ? 'target' : 'source'}
-      position={passive ? Position.Left : Position.Right}
-      style={{
-        background: theme.colorPrimary,
-        top: top + EntityRelationHeight / 2,
-      }}
-      onConnect={(params) => console.log('handle onConnect', params)}
-      isConnectable={false}
-    />
-  )
-}
+import {
+  generateEntityDomId,
+  generateEntityRelationDomId,
+  isLookupManyToOneRelation,
+} from '../utils'
+import { EntityNodeHandle } from './EntityNodeHandle'
 
 const EntityNodeHandles: FC<NodeProps<EntityNodeData>> = (props) => {
   const {
@@ -82,7 +24,6 @@ const EntityNodeHandles: FC<NodeProps<EntityNodeData>> = (props) => {
       passiveEntityRelations,
     },
   } = props
-
   return (
     <>
       {relations.map((relation) => (
@@ -136,7 +77,10 @@ const EntityNodeRelations: FC<NodeProps<EntityNodeData>> = ({
     passiveEntityRelations,
   },
 }) => {
-  const allRelations = [relations, ...passiveEntityRelations]
+  const enabledPassiveEntityRelations = passiveEntityRelations.filter(
+    (relation) => !isLookupManyToOneRelation(relation),
+  )
+  const allRelations = [...relations, ...enabledPassiveEntityRelations]
   return isEmpty(allRelations) ? null : (
     <div className={cx(classes.section)}>
       <Typography.Title className={cx(classes.sectionTitle)} level={5}>
@@ -156,7 +100,7 @@ const EntityNodeRelations: FC<NodeProps<EntityNodeData>> = ({
           <Typography.Text>{relation.type}</Typography.Text>
         </div>
       ))}
-      {passiveEntityRelations.map((relation) => (
+      {enabledPassiveEntityRelations.map((relation) => (
         <div
           key={relation.targetName}
           className={cx(classes.sectionItem)}
@@ -197,12 +141,17 @@ export const EntityNode: FC<NodeProps<EntityNodeData>> = (props) => {
           <EntityNodeRelations {...props} />
         </div>
         <Row className={classes.footer}>
-          <Col span={12}>
+          <Col span={8}>
+            <Button block type="link">
+              新建字段
+            </Button>
+          </Col>
+          <Col span={8}>
             <Button block type="link">
               编辑
             </Button>
           </Col>
-          <Col span={12}>
+          <Col span={8}>
             <Button block type="text" danger>
               删除
             </Button>
