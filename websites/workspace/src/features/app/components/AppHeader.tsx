@@ -24,7 +24,7 @@ const classes = {
     height: 48px !important;
     line-height: 48px !important;
     padding: 0 !important;
-    z-index: 999999 !important;
+    z-index: 10 !important;
     background-color: white !important;
     box-shadow: rgba(0, 0, 0, 0) 0 0 0 0, rgba(0, 0, 0, 0) 0 0 0 0,
       rgba(0, 0, 0, 0.1) 0 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px;

@@ -1,50 +1,120 @@
-import { FC, memo, useCallback } from 'react'
+import { entityEmitter } from '@/features/entity/mitts'
+import { keyBy } from 'lodash'
+import { FC, memo, useCallback, useEffect } from 'react'
 import ReactFlow, {
   Background,
   BackgroundVariant,
   Controls,
-  Edge,
   MiniMap,
-  Node,
+  NodeChange,
   NodeProps,
   OnConnect,
-  Position,
   addEdge,
+  applyNodeChanges,
   useEdgesState,
   useNodesState,
 } from 'reactflow'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { Metadata } from '@modou/core'
+import { Entity, Metadata } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
 
 import { EntityNode } from '../components/EntityNode'
-import { EntityNodeData } from '../types'
 import { generateSourceHandle, getEntityRelationColor } from '../utils'
 
 const nodeTypes: Record<string, FC<NodeProps>> = {
   EntityNode: memo(EntityNode),
 }
 
-export const EntitiesER: FC = () => {
-  const theme = useTheme()
-  const entities = useRecoilValue(Metadata.entitiesSelector)
-  const entityRelations = useRecoilValue(Metadata.entityRelationsSelector)
-  const entityRelationsByTargetEntityNameMap = useRecoilValue(
+const useEntityNodeState = () => {
+  const [entities, setEntities] = useRecoilState(Metadata.entitiesSelector)
+  const passiveEntityRelations = useRecoilValue(
     Metadata.entityRelationsByTargetEntityNameMapSelector,
   )
-  const [nodes, , onNodesChange] = useNodesState<EntityNodeData>([
-    ...entities.map((entity, index) => ({
+  const [nodes, setNodes, onNodesChange] = useNodesState(
+    entities.map((entity) => ({
       id: entity.name,
       type: 'EntityNode',
       data: {
         entity,
-        passiveEntityRelations:
-          entityRelationsByTargetEntityNameMap[entity.name] || [],
+        passiveEntityRelations: passiveEntityRelations[entity.name] || [],
       },
-      position: { x: 400 * (index + 1), y: 100 },
+      position: entity.position,
     })),
-  ])
+  )
+
+  const _onNodeChange = useCallback(
+    (changes: NodeChange[]) => {
+      onNodesChange(changes)
+      const nodeChanges = applyNodeChanges(changes, nodes)
+      // 同步元数据 position
+      const positionChangesByEntityName = keyBy(
+        changes.filter((change) => change.type === 'position'),
+        'id',
+      )
+      const nodeChangeByEntityName = keyBy(nodeChanges, (node) => node.id)
+      setEntities((pre) => {
+        return pre.map((entity) => {
+          if (Reflect.has(positionChangesByEntityName, entity.name)) {
+            return {
+              ...entity,
+              position:
+                nodeChangeByEntityName[entity.name]?.positionAbsolute ??
+                entity.position,
+            }
+          }
+          return entity
+        })
+      })
+    },
+    [nodes, onNodesChange, setEntities],
+  )
+
+  // 元数据同步画布
+  useEffect(() => {
+    setNodes((pre) => {
+      const nodeByEntityName = keyBy(pre, (node) => node.id)
+      return entities.map((entity) => {
+        if (nodeByEntityName[entity.name]) {
+          return {
+            ...nodeByEntityName[entity.name],
+            data: {
+              entity,
+              passiveEntityRelations: passiveEntityRelations[entity.name] || [],
+            },
+            position: entity.position,
+          }
+        } else {
+          return {
+            id: entity.name,
+            type: 'EntityNode',
+            data: {
+              entity,
+              passiveEntityRelations: passiveEntityRelations[entity.name] || [],
+            },
+            position: entity.position,
+          }
+        }
+      })
+    })
+  }, [entities, passiveEntityRelations, setNodes])
+
+  return {
+    nodes,
+    onNodesChange: _onNodeChange,
+  }
+}
+
+export const EntitiesER: FC<{
+  onChangeEntity: (entity: Entity) => void
+  onDeleteEntity: (entityId: string) => void
+}> = ({ onChangeEntity, onDeleteEntity }) => {
+  const theme = useTheme()
+
+  const entityRelations = useRecoilValue(Metadata.entityRelationsSelector)
+
+  const { nodes, onNodesChange } = useEntityNodeState()
+
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     entityRelations.map((entityRelation) => {
       return {
@@ -67,6 +137,16 @@ export const EntitiesER: FC = () => {
       ),
     [setEdges],
   )
+
+  useEffect(() => {
+    entityEmitter.on('onDelete', onDeleteEntity)
+    entityEmitter.on('onChange', onChangeEntity)
+    return () => {
+      entityEmitter.off('onDelete', onDeleteEntity)
+      entityEmitter.off('onChange', onChangeEntity)
+    }
+  }, [onChangeEntity, onDeleteEntity])
+
   return (
     <div className={classes.wrapper}>
       <ReactFlow

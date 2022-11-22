@@ -56,6 +56,7 @@
     "react-dom": "^18.2.0",
     "react-json-view": "^1.21.3",
     "react-router-dom": "^6.3.0",
+    "reactflow": "^11.3.0",
     "recoil": "^0.7.5",
     "recoil-sync": "^0.1.1",
     "ts-pattern": "^4.0.5"

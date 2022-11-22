@@ -37,6 +37,10 @@ export interface Entity {
   description: string
   fields: EntityField[]
   relations: EntityRelation[]
+  position: {
+    x: number
+    y: number
+  }
 }
 
 export enum WidgetGroupEnum {

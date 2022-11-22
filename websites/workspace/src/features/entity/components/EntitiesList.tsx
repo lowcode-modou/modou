@@ -6,39 +6,50 @@ import { useRecoilValue } from 'recoil'
 import { Entity, Metadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
-const columns: ColumnsType<Entity> = [
-  {
-    title: '描述',
-    dataIndex: 'description',
-    key: 'description',
-  },
-  {
-    title: '名称',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    key: 'operation',
-    width: 100,
-    align: 'center',
-    fixed: 'right',
-    render: (_, record) => (
-      <Space size="small">
-        <Button size={'small'} type={'link'}>
-          编辑
-        </Button>
-        <Button size={'small'} danger type={'text'}>
-          删除
-        </Button>
-      </Space>
-    ),
-  },
-]
-export const EntitiesList: FC = () => {
+export const EntitiesList: FC<{
+  onChangeEntity: (entity: Entity) => void
+  onDeleteEntity: (entityId: string) => void
+}> = ({ onChangeEntity, onDeleteEntity }) => {
   const entities = useRecoilValue(Metadata.entitiesSelector)
-
+  const columns: ColumnsType<Entity> = [
+    {
+      title: '名称',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: '标识',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: '操作',
+      dataIndex: 'operation',
+      key: 'operation',
+      width: 100,
+      align: 'center',
+      fixed: 'right',
+      render: (_, record) => (
+        <Space size="small">
+          <Button
+            size={'small'}
+            type={'link'}
+            onClick={() => onChangeEntity(record)}
+          >
+            编辑
+          </Button>
+          <Button
+            size={'small'}
+            danger
+            type={'text'}
+            onClick={() => onDeleteEntity(record.id)}
+          >
+            删除
+          </Button>
+        </Space>
+      ),
+    },
+  ]
   return (
     <div className={classes.wrapper}>
       <Table<Entity>

@@ -12,6 +12,7 @@
   "dependencies": {
     "@ahooksjs/use-url-state": "^3.5.0",
     "@modou/canvas-designer": "workspace:^1.0.0",
+    "mitt": "^3.0.0",
     "reactflow": "^11.2.0"
   }
 }

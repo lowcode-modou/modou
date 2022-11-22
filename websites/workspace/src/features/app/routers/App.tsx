@@ -128,7 +128,7 @@ const classes = {
     position: relative;
   `,
   sider: mcss`
-    z-index: 2000 !important;
+    z-index: 9 !important;
     position: relative !important;
     padding: 0 !important;
     font-size: 16px !important;

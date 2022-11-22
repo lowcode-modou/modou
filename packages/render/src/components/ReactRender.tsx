@@ -1,4 +1,6 @@
 import { Spin } from 'antd'
+import { ConfigProvider } from 'antd'
+import zhCN from 'antd/locale/zh_CN'
 import { FC, memo, useContext, useEffect, useMemo, useState } from 'react'
 import { RecoilRoot, useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -110,9 +112,11 @@ export const ReactRender: FC<MoDouRenderProps> = (props) => {
   const appFactory = useContext(AppFactoryContext)
   return (
     <RecoilRoot>
-      <AppFactoryContext.Provider value={appFactory}>
-        <_ReactRender {...props} />
-      </AppFactoryContext.Provider>
+      <ConfigProvider locale={zhCN}>
+        <AppFactoryContext.Provider value={appFactory}>
+          <_ReactRender {...props} />
+        </AppFactoryContext.Provider>
+      </ConfigProvider>
     </RecoilRoot>
   )
 }

@@ -39,6 +39,7 @@ export const ModuleManager: FC<{
   return (
     <div className={classes.drawerWrapper}>
       <Drawer
+        zIndex={8}
         title={
           <div>
             <div className={classes.drawerTitleWrapper}>

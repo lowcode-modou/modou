@@ -124,6 +124,10 @@ export const MOCK_ENTITIES: Entity[] = [
         targetDescription: '用户',
       },
     ],
+    position: {
+      x: 400,
+      y: 100,
+    },
   },
   {
     id: generateId(),
@@ -135,5 +139,9 @@ export const MOCK_ENTITIES: Entity[] = [
       required: true,
     })),
     relations: [],
+    position: {
+      x: 800,
+      y: 100,
+    },
   },
 ]

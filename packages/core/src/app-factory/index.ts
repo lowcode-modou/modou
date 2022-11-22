@@ -1,10 +1,10 @@
-import { isEqual, unionWith } from 'lodash'
+import { isEqual, pick, unionWith } from 'lodash'
 import { FC } from 'react'
 
 import { BaseSetterProps } from '@modou/setters/src/types'
 import { rowWidgetMetadata } from '@modou/widgets'
 
-import { Page, WidgetGroupEnum } from '../types'
+import { Entity, Page, WidgetGroupEnum } from '../types'
 import { generateId } from '../utils'
 import { WidgetMetadata } from '../widget'
 
@@ -93,6 +93,22 @@ export class AppFactory {
       name: name ?? `页面-${generateId(4)}`,
       widgets: [rootWidget],
       rootWidgetId: rootWidget.id,
+    }
+  }
+
+  static generateDefaultEntity = (
+    entity: Pick<Entity, 'name' | 'title'>,
+  ): Entity => {
+    return {
+      id: generateId(),
+      description: '',
+      fields: [],
+      relations: [],
+      position: {
+        x: 0,
+        y: 0,
+      },
+      ...pick(entity, ['name', 'title']),
     }
   }
 }

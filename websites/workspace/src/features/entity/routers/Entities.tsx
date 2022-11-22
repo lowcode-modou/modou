@@ -1,11 +1,15 @@
 import useUrlState from '@ahooksjs/use-url-state'
-import { Card } from 'antd'
-import { FC } from 'react'
+import { PlusOutlined } from '@ant-design/icons'
+import { useBoolean } from 'ahooks'
+import { Button, Card, Form, Space } from 'antd'
+import produce from 'immer'
+import { ComponentProps, FC, useState } from 'react'
+import { useSetRecoilState } from 'recoil'
 
+import { AppFactory, Entity, Metadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
-import { EntitiesER } from '../components/EntitiesER'
-import { EntitiesList } from '../components/EntitiesList'
+import { EntitiesER, EntitiesList, EntityCreator } from '../components'
 
 enum EntityTabKeyEnum {
   List = 'List',
@@ -29,29 +33,106 @@ export const Entities: FC = () => {
     activeTabKey: EntityTabKeyEnum.List,
   })
 
-  return (
-    <div className={classes.wrapper}>
-      <Card
-        tabProps={{
-          size: 'small',
-        }}
-        className={classes.card}
-        title={'数据模型'}
-        tabList={entityTabs}
-        activeTabKey={urlState.activeTabKey}
-        onTabChange={(key) =>
-          setUrlState({
-            activeTabKey: key as unknown as EntityTabKeyEnum,
-          })
+  const setEntityById = useSetRecoilState(Metadata.entityByIdSelector)
+
+  const [open, { setFalse, setTrue }] = useBoolean(false)
+  const [mode, setMode] =
+    useState<ComponentProps<typeof EntityCreator>['mode']>('edit')
+  const [form] = Form.useForm<Entity>()
+
+  const onSubmitEntity = (entity: Entity) => {
+    setEntityById(
+      produce((draft) => {
+        if (Reflect.has(draft, entity.id)) {
+          // 编辑
+          draft[entity.id] = {
+            ...draft[entity.id],
+            ...entity,
+          }
+        } else {
+          // 新建
+          const newEntity = AppFactory.generateDefaultEntity(entity)
+          const maxX = Math.max(
+            ...Object.values(draft).map((entity) => entity.position.x),
+          )
+          draft[newEntity.id] = {
+            ...newEntity,
+            position: {
+              x: maxX + 400,
+              y: 100,
+            },
+          }
         }
-      >
-        {urlState.activeTabKey === EntityTabKeyEnum.List ? (
-          <EntitiesList />
-        ) : (
-          <EntitiesER />
-        )}
-      </Card>
-    </div>
+      }),
+    )
+    setFalse()
+  }
+
+  const onDeleteEntity = (entityId: string) => {
+    setEntityById(
+      produce((draft) => {
+        Reflect.deleteProperty(draft, entityId)
+      }),
+    )
+  }
+
+  const onChangeEntity = (entity: Entity) => {
+    setMode('edit')
+    form.setFieldsValue(entity)
+    setTrue()
+  }
+  const onCreateEntity = () => {
+    setMode('create')
+    setTrue()
+  }
+
+  return (
+    <>
+      <EntityCreator
+        onOk={onSubmitEntity}
+        onCancel={setFalse}
+        open={open}
+        mode={mode}
+        form={form}
+      />
+      <div className={classes.wrapper}>
+        <Card
+          tabProps={{
+            size: 'small',
+          }}
+          className={classes.card}
+          title={
+            <Space>
+              <span>数据模型</span>
+              <Button
+                type="link"
+                icon={<PlusOutlined />}
+                onClick={onCreateEntity}
+              />
+            </Space>
+          }
+          tabList={entityTabs}
+          activeTabKey={urlState.activeTabKey}
+          onTabChange={(key) =>
+            setUrlState({
+              activeTabKey: key as unknown as EntityTabKeyEnum,
+            })
+          }
+        >
+          {urlState.activeTabKey === EntityTabKeyEnum.List ? (
+            <EntitiesList
+              onDeleteEntity={onDeleteEntity}
+              onChangeEntity={onChangeEntity}
+            />
+          ) : (
+            <EntitiesER
+              onDeleteEntity={onDeleteEntity}
+              onChangeEntity={onChangeEntity}
+            />
+          )}
+        </Card>
+      </div>
+    </>
   )
 }
 

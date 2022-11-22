@@ -2,13 +2,7 @@ import { produce } from 'immer'
 import { flatten, isArray, keyBy } from 'lodash'
 import { DefaultValue, selector, selectorFamily } from 'recoil'
 
-import {
-  App,
-  Entity,
-  EntityRelation,
-  EntityRelationLookupRelationTypeEnum,
-} from '../types'
-import { EntityRelationTypeEnum } from '../types/entity-relation'
+import { App, Entity, EntityRelation } from '../types'
 import { generateRecoilKey } from '../utils'
 import { appAtom } from './app'
 

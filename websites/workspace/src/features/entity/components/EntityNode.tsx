@@ -1,12 +1,9 @@
-import { Button, Col, Row, Space, Typography } from 'antd'
+import { entityEmitter } from '@/features/entity/mitts'
+import { Button, Col, Empty, Row, Space, Typography } from 'antd'
 import { isEmpty } from 'lodash'
 import { FC } from 'react'
 import { NodeProps } from 'reactflow'
 
-import {
-  EntityRelationLookupRelationTypeEnum,
-  EntityRelationTypeEnum,
-} from '@modou/core/src/types/entity-relation'
 import { cx, mcss, useTheme } from '@modou/css-in-js'
 
 import { EntityNodeData } from '../types'
@@ -49,24 +46,28 @@ const EntityNodeHandles: FC<NodeProps<EntityNodeData>> = (props) => {
 const EntityNodeFields: FC<NodeProps<EntityNodeData>> = ({
   data: { entity },
 }) => {
-  return isEmpty(entity.fields) ? null : (
+  return (
     <div className={cx(classes.section)}>
       <Typography.Title className={cx(classes.sectionTitle)} level={5}>
         字段
       </Typography.Title>
-      {entity.fields.map((field) => (
-        <div key={field.name} className={cx(classes.sectionItem)}>
-          <Space size={'small'}>
-            <Typography.Text>
-              {field.description}({field.name})
-            </Typography.Text>
-            {field.required && (
-              <Typography.Text type={'danger'}>*</Typography.Text>
-            )}
-          </Space>
-          <Typography.Text>{field.type}</Typography.Text>
-        </div>
-      ))}
+      {isEmpty(entity.fields) ? (
+        <Empty description={'暂无字段'} />
+      ) : (
+        entity.fields.map((field) => (
+          <div key={field.name} className={cx(classes.sectionItem)}>
+            <Space size={'small'}>
+              <Typography.Text>
+                {field.description}({field.name})
+              </Typography.Text>
+              {field.required && (
+                <Typography.Text type={'danger'}>*</Typography.Text>
+              )}
+            </Space>
+            <Typography.Text>{field.type}</Typography.Text>
+          </div>
+        ))
+      )}
     </div>
   )
 }
@@ -134,7 +135,7 @@ export const EntityNode: FC<NodeProps<EntityNodeData>> = (props) => {
         className={classes.wrapper}
       >
         <div className={classes.header}>
-          <Typography.Title level={5}>{entity.description}</Typography.Title>
+          <Typography.Title level={5}>{entity.title}</Typography.Title>
         </div>
         <div className={classes.body}>
           <EntityNodeFields {...props} />
@@ -142,17 +143,32 @@ export const EntityNode: FC<NodeProps<EntityNodeData>> = (props) => {
         </div>
         <Row className={classes.footer}>
           <Col span={8}>
-            <Button block type="link">
+            <Button
+              block
+              type="link"
+              onClick={() => {
+                console.log('新建字段')
+              }}
+            >
               新建字段
             </Button>
           </Col>
           <Col span={8}>
-            <Button block type="link">
+            <Button
+              block
+              type="link"
+              onClick={() => entityEmitter.emit('onChange', entity)}
+            >
               编辑
             </Button>
           </Col>
           <Col span={8}>
-            <Button block type="text" danger>
+            <Button
+              block
+              type="text"
+              danger
+              onClick={() => entityEmitter.emit('onDelete', entity.id)}
+            >
               删除
             </Button>
           </Col>
