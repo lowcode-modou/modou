@@ -57,28 +57,39 @@ export const ModuleManagerPage: FC<{
         <Dropdown
           trigger={['hover']}
           key={page.id}
-          overlay={
-            <Menu
-              onClick={({ key }) => {
-                switch (key) {
-                  case PageActionEnum.Delete:
-                    removePage(page.id)
-                    break
-                  default:
-                }
-              }}
-              items={[
-                {
-                  label: <Typography.Text>复制</Typography.Text>,
-                  key: PageActionEnum.Copy,
-                },
-                {
-                  label: <Typography.Text type="danger">删除</Typography.Text>,
-                  key: PageActionEnum.Delete,
-                },
-              ]}
-            />
-          }
+          menu={{
+            onClick: ({ key }) => {
+              switch (key) {
+                case PageActionEnum.Delete:
+                  removePage(page.id)
+                  break
+                default:
+              }
+            },
+            items: [
+              {
+                label: <Typography.Text>复制</Typography.Text>,
+                key: PageActionEnum.Copy,
+              },
+              {
+                label: <Typography.Text type="danger">删除</Typography.Text>,
+                key: PageActionEnum.Delete,
+              },
+            ],
+          }}
+          // menu={
+          //   <Menu
+          //     onClick={({ key }) => {
+          //       switch (key) {
+          //         case PageActionEnum.Delete:
+          //           removePage(page.id)
+          //           break
+          //         default:
+          //       }
+          //     }}
+          //     items={}
+          //  />
+          // }
         >
           <MoreOutlined
             className={`${classes.moreAction} mm_p-list_item_more_action`}

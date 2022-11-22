@@ -142,7 +142,7 @@ export const EntityNode: FC<NodeProps<EntityNodeData>> = (props) => {
           <EntityNodeRelations {...props} />
         </div>
         <Row className={classes.footer}>
-          <Col span={8}>
+          {/* <Col span={8}>
             <Button
               block
               type="link"
@@ -152,8 +152,8 @@ export const EntityNode: FC<NodeProps<EntityNodeData>> = (props) => {
             >
               新建字段
             </Button>
-          </Col>
-          <Col span={8}>
+          </Col> */}
+          <Col span={12}>
             <Button
               block
               type="link"
@@ -162,7 +162,7 @@ export const EntityNode: FC<NodeProps<EntityNodeData>> = (props) => {
               编辑
             </Button>
           </Col>
-          <Col span={8}>
+          <Col span={12}>
             <Button
               block
               type="text"
