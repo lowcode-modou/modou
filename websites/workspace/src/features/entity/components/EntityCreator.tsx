@@ -31,7 +31,14 @@ export const EntityCreator: FC<{
         open={open}
         destroyOnClose
       >
-        <Form<Entity> form={form}>
+        <Form<Entity>
+          form={form}
+          labelCol={{
+            style: {
+              width: '50px',
+            },
+          }}
+        >
           <Form.Item label="ID" name="id" hidden>
             <Input />
           </Form.Item>
@@ -54,6 +61,9 @@ export const EntityCreator: FC<{
             ]}
           >
             <Input disabled={mode === 'edit'} />
+          </Form.Item>
+          <Form.Item label="描述" name="description">
+            <Input />
           </Form.Item>
         </Form>
       </Modal>

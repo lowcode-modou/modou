@@ -23,6 +23,11 @@ export const EntitiesList: FC<{
       key: 'name',
     },
     {
+      title: '描述',
+      dataIndex: 'description',
+      key: 'description',
+    },
+    {
       title: '操作',
       dataIndex: 'operation',
       key: 'operation',
@@ -64,6 +69,6 @@ export const EntitiesList: FC<{
 
 const classes = {
   wrapper: mcss`
-    padding: 24px;
+    //padding: 24px;
   `,
 }

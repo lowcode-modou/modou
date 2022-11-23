@@ -1,9 +1,14 @@
+import { ROUTER_PATH } from '@/constants'
+import { useEntityCreator } from '@/features/entity/hooks'
+import { BaseRouterParamsKey } from '@/types'
+import { generateRouterPath } from '@/utils/router'
 import useUrlState from '@ahooksjs/use-url-state'
 import { PlusOutlined } from '@ant-design/icons'
 import { useBoolean } from 'ahooks'
 import { Button, Card, Form, Space } from 'antd'
 import produce from 'immer'
 import { ComponentProps, FC, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useSetRecoilState } from 'recoil'
 
 import { AppFactory, Entity, Metadata } from '@modou/core'
@@ -35,39 +40,8 @@ export const Entities: FC = () => {
 
   const setEntityById = useSetRecoilState(Metadata.entityByIdSelector)
 
-  const [open, { setFalse, setTrue }] = useBoolean(false)
   const [mode, setMode] =
     useState<ComponentProps<typeof EntityCreator>['mode']>('edit')
-  const [form] = Form.useForm<Entity>()
-
-  const onSubmitEntity = (entity: Entity) => {
-    setEntityById(
-      produce((draft) => {
-        if (Reflect.has(draft, entity.id)) {
-          // 编辑
-          draft[entity.id] = {
-            ...draft[entity.id],
-            ...entity,
-          }
-        } else {
-          // 新建
-          const newEntity = AppFactory.generateDefaultEntity(entity)
-          const maxX = Math.max(
-            ...Object.values(draft).map((entity) => entity.position.x),
-          )
-          draft[newEntity.id] = {
-            ...newEntity,
-            position: {
-              x: maxX + 400,
-              y: 100,
-            },
-          }
-        }
-      }),
-    )
-    setFalse()
-  }
-
   const onDeleteEntity = (entityId: string) => {
     setEntityById(
       produce((draft) => {
@@ -76,10 +50,21 @@ export const Entities: FC = () => {
     )
   }
 
+  const { open, setFalse, setTrue, onSubmitEntity, form } = useEntityCreator()
+
+  const navigate = useNavigate()
+  const params = useParams<BaseRouterParamsKey>()
   const onChangeEntity = (entity: Entity) => {
-    setMode('edit')
-    form.setFieldsValue(entity)
-    setTrue()
+    navigate(
+      generateRouterPath(ROUTER_PATH.Entity, {
+        entityId: entity.id,
+        appId: params.appId,
+      }),
+    )
+
+    // setMode('edit')
+    // form.setFieldsValue(entity)
+    // setTrue()
   }
   const onCreateEntity = () => {
     setMode('create')
@@ -97,21 +82,22 @@ export const Entities: FC = () => {
       />
       <div className={classes.wrapper}>
         <Card
+          size={'small'}
           tabProps={{
             size: 'small',
           }}
           className={classes.card}
-          title={
-            <Space>
-              <span>数据模型</span>
-              <Button
-                type="link"
-                icon={<PlusOutlined />}
-                onClick={onCreateEntity}
-              />
-            </Space>
-          }
+          title={<span>数据模型</span>}
           tabList={entityTabs}
+          tabBarExtraContent={
+            <Button
+              type="link"
+              // icon={<PlusOutlined />}
+              onClick={onCreateEntity}
+            >
+              添加模型
+            </Button>
+          }
           activeTabKey={urlState.activeTabKey}
           onTabChange={(key) =>
             setUrlState({
@@ -138,38 +124,38 @@ export const Entities: FC = () => {
 
 const classes = {
   wrapper: mcss`
-    padding: 16px;
+    //padding: 16px;
     height: 100%;
   `,
   card: mcss`
 		height: 100%;
     display: flex;
     flex-direction: column;
-    .ant-card-head{
-      position: relative;
-      display: flex;
-      align-items: center;
-			padding: 8px 24px;
-			&-title{
-        padding-top: 0;
-        min-height: auto!important;
-        display: inline;
-      }
-    }
+    //.ant-card-head{
+    //  position: relative;
+    //  display: flex;
+    //  align-items: center;
+		//	padding: 8px 24px;
+		//	&-title{
+    //    padding-top: 0;
+    //    min-height: auto!important;
+    //    display: inline;
+    //  }
+    //}
     .ant-card-body{
       flex: 1;
       padding: 0;
     }
-    .ant-card-head-tabs{
-      display: inline-block;
-      position: absolute;
-      right: 24px;
-      top: 0;
-			height: 100%;
-      .ant-tabs-nav{
-        margin-bottom: 0;
-        height: 100%;
-      }
-    }
+    //.ant-card-head-tabs{
+    //  display: inline-block;
+    //  position: absolute;
+    //  right: 24px;
+    //  top: 0;
+		//	height: 100%;
+    //  .ant-tabs-nav{
+    //    margin-bottom: 0;
+    //    height: 100%;
+    //  }
+    //}
   `,
 }

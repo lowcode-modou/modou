@@ -2,8 +2,9 @@ import { ROUTER_PATH } from '@/constants'
 import { EntityRouterParamsKey, PageRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
+import { useMount } from 'ahooks'
 import { Layout, Menu } from 'antd'
-import { ComponentProps, FC, useCallback, useEffect, useState } from 'react'
+import { ComponentProps, FC, useCallback, useState } from 'react'
 import {
   Outlet,
   matchPath,
@@ -38,18 +39,20 @@ export const App: FC = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
+  const isPageModule = matchPath(ROUTER_PATH.PAGE, pathname)
+  const isEntityModule =
+    matchPath(ROUTER_PATH.Entity, pathname) ??
+    matchPath(ROUTER_PATH.Entities, pathname)
   const updateModule = useCallback(() => {
-    if (params.pageId) {
+    if (isPageModule) {
       setModule(ModuleEnum.Page)
-    } else if (params.entityId) {
+    } else if (isEntityModule) {
       setModule(ModuleEnum.Entity)
     } else {
       setModule('')
     }
-  }, [params])
-  useEffect(() => {
-    updateModule()
-  }, [updateModule])
+  }, [isEntityModule, isPageModule])
+  useMount(updateModule)
 
   const [visibleModuleManger, setVisibleModuleManger] = useState(false)
 
@@ -67,6 +70,7 @@ export const App: FC = () => {
         break
       case ModuleEnum.Entity:
         setVisibleModuleManger(false)
+        setModule(key as ModuleEnum)
         navigate(
           generateRouterPath(ROUTER_PATH.Entities, {
             appId: params.appId,

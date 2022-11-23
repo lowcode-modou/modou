@@ -35,9 +35,9 @@ export const entityByIdSelector = selector<Record<string, Entity>>({
 export const entitySelector = selectorFamily<Entity, string>({
   key: generateRecoilKey('entitySelector'),
   get:
-    (widgetId) =>
+    (entityId) =>
     ({ get }) =>
-      get(entityByIdSelector)[widgetId],
+      get(entityByIdSelector)[entityId],
   set:
     (entityId) =>
     ({ set }, newValue) =>
