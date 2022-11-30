@@ -16,6 +16,7 @@ const MOCK_FIELDS: EntityField[] = [
     title: EntityFieldEnum.AutoNumber,
     description: getEntityFieldTypeLabel(EntityFieldEnum.AutoNumber),
     required: false,
+    config: {},
   },
   {
     id: generateId(),
@@ -24,6 +25,7 @@ const MOCK_FIELDS: EntityField[] = [
     title: EntityFieldEnum.Date,
     description: getEntityFieldTypeLabel(EntityFieldEnum.Date),
     required: false,
+    config: {},
   },
   {
     id: generateId(),
@@ -32,6 +34,7 @@ const MOCK_FIELDS: EntityField[] = [
     title: EntityFieldEnum.DateTime,
     description: getEntityFieldTypeLabel(EntityFieldEnum.DateTime),
     required: false,
+    config: {},
   },
   {
     id: generateId(),
@@ -40,6 +43,7 @@ const MOCK_FIELDS: EntityField[] = [
     title: EntityFieldEnum.Email,
     description: getEntityFieldTypeLabel(EntityFieldEnum.Email),
     required: false,
+    config: {},
   },
   {
     id: generateId(),
@@ -48,6 +52,7 @@ const MOCK_FIELDS: EntityField[] = [
     title: EntityFieldEnum.Image,
     description: getEntityFieldTypeLabel(EntityFieldEnum.Image),
     required: false,
+    config: {},
   },
   {
     id: generateId(),
@@ -74,6 +79,7 @@ const MOCK_FIELDS: EntityField[] = [
     title: EntityFieldEnum.PhoneNumber,
     description: getEntityFieldTypeLabel(EntityFieldEnum.PhoneNumber),
     required: false,
+    config: {},
   },
   {
     id: generateId(),
@@ -91,6 +97,7 @@ const MOCK_FIELDS: EntityField[] = [
     title: EntityFieldEnum.URL,
     description: getEntityFieldTypeLabel(EntityFieldEnum.URL),
     required: false,
+    config: {},
   },
   {
     id: generateId(),
@@ -99,6 +106,10 @@ const MOCK_FIELDS: EntityField[] = [
     title: EntityFieldEnum.Enum,
     description: getEntityFieldTypeLabel(EntityFieldEnum.Enum),
     required: false,
+    config: {
+      enumCode: '',
+      multiple: true,
+    },
   },
 ]
 
