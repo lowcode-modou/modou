@@ -1,10 +1,11 @@
-import { EntityModuleActionWrapper } from '@/features/entity/components/EntityModuleActions'
 import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { FC } from 'react'
 
 import { Entity, EntityField } from '@modou/core'
-import { mcss } from '@modou/css-in-js'
+
+import { EntityFieldCreator } from './EntityFieldCreator'
+import { EntityModuleActionWrapper } from './EntityModuleActions'
 
 export const EntityFields: FC<{
   entity: Entity
@@ -50,7 +51,10 @@ export const EntityFields: FC<{
   return (
     <>
       <EntityModuleActionWrapper>
-        <Button type={'link'}>添加字段</Button>
+        <EntityFieldCreator
+          entityId={entity.id}
+          trigger={<Button type={'link'}>添加字段</Button>}
+        />
       </EntityModuleActionWrapper>
       <div>
         <Table<EntityField>
@@ -64,9 +68,9 @@ export const EntityFields: FC<{
     </>
   )
 }
-const classes = {
-  actions: mcss`
-    //display: flex;
-    text-align: right;
-  `,
-}
+// const classes = {
+//   actions: mcss`
+//     //display: flex;
+//     text-align: right;
+//   `,
+// }

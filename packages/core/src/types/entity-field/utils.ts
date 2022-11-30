@@ -1,4 +1,4 @@
-export enum FieldEnum {
+export enum EntityFieldEnum {
   Text = 'Text',
   LongText = 'LongText',
   Date = 'Date',
@@ -12,11 +12,15 @@ export enum FieldEnum {
   Image = 'Image',
 }
 
-export interface BaseEntityField<T extends FieldEnum> {
+export interface BaseEntityField<
+  T extends EntityFieldEnum,
+  Config extends object,
+> {
   id: string
   name: string
   title: string
   description: string
   type: T
   required: boolean
+  config: Config
 }

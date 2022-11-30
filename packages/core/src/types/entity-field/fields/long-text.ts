@@ -1,8 +1,9 @@
-import { BaseEntityField, FieldEnum } from '../utils'
+import { BaseEntityField, EntityFieldEnum } from '../utils'
 
-export interface LongTextField extends BaseEntityField<FieldEnum.LongText> {
-  config: {
+export type LongTextField = BaseEntityField<
+  EntityFieldEnum.LongText,
+  {
     max?: number
     min?: number
   }
-}
+>

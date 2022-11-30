@@ -1,3 +1,3 @@
-import { BaseEntityField, FieldEnum } from '../utils'
+import { BaseEntityField, EntityFieldEnum } from '../utils'
 
-export interface EmailField extends BaseEntityField<FieldEnum.Email> {}
+export type EmailField = BaseEntityField<EntityFieldEnum.Email, {}>

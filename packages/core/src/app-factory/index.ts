@@ -4,7 +4,7 @@ import { FC } from 'react'
 import { BaseSetterProps } from '@modou/setters/src/types'
 import { rowWidgetMetadata } from '@modou/widgets'
 
-import { Entity, Page, WidgetGroupEnum } from '../types'
+import { Entity, EntityFieldEnum, Page, WidgetGroupEnum } from '../types'
 import { generateId } from '../utils'
 import { WidgetMetadata } from '../widget'
 

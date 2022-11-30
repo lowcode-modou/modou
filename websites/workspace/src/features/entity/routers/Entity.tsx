@@ -4,7 +4,7 @@ import useUrlState from '@ahooksjs/use-url-state'
 import { Card } from 'antd'
 import { FC } from 'react'
 import { useParams } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { Metadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
@@ -86,7 +86,6 @@ export const Entity: FC = () => {
           mode={'edit'}
           form={form}
         />
-        <EntityFieldCreator />
       </>
       <div className={classes.wrapper}>
         <Card

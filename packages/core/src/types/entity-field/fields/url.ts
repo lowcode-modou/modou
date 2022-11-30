@@ -1,3 +1,3 @@
-import { BaseEntityField, FieldEnum } from '../utils'
+import { BaseEntityField, EntityFieldEnum } from '../utils'
 
-export interface UrlField extends BaseEntityField<FieldEnum.URL> {}
+export type UrlField = BaseEntityField<EntityFieldEnum.URL, {}>

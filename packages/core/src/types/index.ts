@@ -14,7 +14,7 @@ export {
   EntityRelationMasterDetailRelationTypeEnum,
 } from './entity-relation'
 
-export { FieldEnum } from './entity-field'
+export { EntityFieldEnum } from './entity-field'
 
 export interface App {
   id: string

@@ -1,8 +1,9 @@
-import { BaseEntityField, FieldEnum } from '../utils'
+import { BaseEntityField, EntityFieldEnum } from '../utils'
 
-export interface NumberField extends BaseEntityField<FieldEnum.Number> {
-  config: {
+export type NumberField = BaseEntityField<
+  EntityFieldEnum.Number,
+  {
     max?: number
     min?: number
   }
-}
+>

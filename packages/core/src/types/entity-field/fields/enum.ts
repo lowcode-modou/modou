@@ -1,3 +1,9 @@
-import { BaseEntityField, FieldEnum } from '../utils'
+import { BaseEntityField, EntityFieldEnum } from '../utils'
 
-export interface EnumField extends BaseEntityField<FieldEnum.Enum> {}
+export type EnumField = BaseEntityField<
+  EntityFieldEnum.Enum,
+  {
+    enumCode: string
+    multiple: boolean
+  }
+>

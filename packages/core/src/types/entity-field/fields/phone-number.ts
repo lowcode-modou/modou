@@ -1,4 +1,3 @@
-import { BaseEntityField, FieldEnum } from '../utils'
+import { BaseEntityField, EntityFieldEnum } from '../utils'
 
-export interface PhoneNumberField
-  extends BaseEntityField<FieldEnum.PhoneNumber> {}
+export type PhoneNumberField = BaseEntityField<EntityFieldEnum.PhoneNumber, {}>

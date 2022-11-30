@@ -1,28 +1,28 @@
-import { FieldEnum } from '../types'
+import { EntityFieldEnum } from '../types'
 
-export const getEntityTypeLabel = (fieldType: FieldEnum) => {
+export const getEntityFieldTypeLabel = (fieldType: EntityFieldEnum) => {
   switch (fieldType) {
-    case FieldEnum.AutoNumber:
+    case EntityFieldEnum.AutoNumber:
       return '自动编号'
-    case FieldEnum.Date:
+    case EntityFieldEnum.Date:
       return '日期'
-    case FieldEnum.DateTime:
+    case EntityFieldEnum.DateTime:
       return '日期时间'
-    case FieldEnum.Number:
+    case EntityFieldEnum.Number:
       return '数字'
-    case FieldEnum.Email:
+    case EntityFieldEnum.Email:
       return '邮箱'
-    case FieldEnum.Enum:
+    case EntityFieldEnum.Enum:
       return '枚举'
-    case FieldEnum.LongText:
+    case EntityFieldEnum.LongText:
       return '长文本'
-    case FieldEnum.Text:
+    case EntityFieldEnum.Text:
       return '单行文本'
-    case FieldEnum.PhoneNumber:
+    case EntityFieldEnum.PhoneNumber:
       return '手机号'
-    case FieldEnum.URL:
+    case EntityFieldEnum.URL:
       return '网址'
-    case FieldEnum.Image:
+    case EntityFieldEnum.Image:
       return '图片'
     default:
       return '未知'

@@ -131,31 +131,9 @@ const classes = {
 		height: 100%;
     display: flex;
     flex-direction: column;
-    //.ant-card-head{
-    //  position: relative;
-    //  display: flex;
-    //  align-items: center;
-		//	padding: 8px 24px;
-		//	&-title{
-    //    padding-top: 0;
-    //    min-height: auto!important;
-    //    display: inline;
-    //  }
-    //}
     .ant-card-body{
       flex: 1;
       padding: 0;
     }
-    //.ant-card-head-tabs{
-    //  display: inline-block;
-    //  position: absolute;
-    //  right: 24px;
-    //  top: 0;
-		//	height: 100%;
-    //  .ant-tabs-nav{
-    //    margin-bottom: 0;
-    //    height: 100%;
-    //  }
-    //}
   `,
 }

@@ -1,3 +1,3 @@
-import { BaseEntityField, FieldEnum } from '../utils'
+import { BaseEntityField, EntityFieldEnum } from '../utils'
 
-export interface DateTimeField extends BaseEntityField<FieldEnum.DateTime> {}
+export type DateTimeField = BaseEntityField<EntityFieldEnum.DateTime, {}>

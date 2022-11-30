@@ -1,4 +1,3 @@
-import { BaseEntityField, FieldEnum } from '../utils'
+import { BaseEntityField, EntityFieldEnum } from '../utils'
 
-export interface AutoNumberField
-  extends BaseEntityField<FieldEnum.AutoNumber> {}
+export type AutoNumberField = BaseEntityField<EntityFieldEnum.AutoNumber, {}>
