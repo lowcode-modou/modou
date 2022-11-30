@@ -1,10 +1,9 @@
-import { useEntityCreator } from '@/features/entity/hooks'
 import { EntityRouterParamsKey } from '@/types'
 import useUrlState from '@ahooksjs/use-url-state'
 import { Card } from 'antd'
 import { FC } from 'react'
 import { useParams } from 'react-router-dom'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
 import { Metadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
@@ -12,10 +11,10 @@ import { mcss } from '@modou/css-in-js'
 import {
   EntityBaseInfo,
   EntityCreator,
-  EntityFieldCreator,
   EntityFields,
   EntityModuleActionPortal,
 } from '../components'
+import { useEntityCreator } from '../hooks'
 
 enum EntityModuleTabKeyEnum {
   Base = 'Base',
@@ -66,11 +65,11 @@ export const Entity: FC = () => {
           />
         )
       case EntityModuleTabKeyEnum.Field:
-        return <EntityFields entity={entity} />
+        return <EntityFields entityId={entity.id} />
       case EntityModuleTabKeyEnum.Method:
-        return <EntityFields entity={entity} />
+        return <EntityFields entityId={entity.id} />
       case EntityModuleTabKeyEnum.View:
-        return <EntityFields entity={entity} />
+        return <EntityFields entityId={entity.id} />
       default:
         return <div>未知模块</div>
     }

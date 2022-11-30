@@ -1,15 +1,21 @@
 import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
-import { FC } from 'react'
+import produce from 'immer'
+import { ComponentProps, FC, useRef } from 'react'
+import { useRecoilState, useSetRecoilState } from 'recoil'
 
-import { Entity, EntityField } from '@modou/core'
+import { Entity, EntityField, Metadata } from '@modou/core'
 
 import { EntityFieldCreator } from './EntityFieldCreator'
 import { EntityModuleActionWrapper } from './EntityModuleActions'
 
 export const EntityFields: FC<{
-  entity: Entity
-}> = ({ entity }) => {
+  entityId: string
+}> = ({ entityId }) => {
+  const fieldCreatorRef: ComponentProps<typeof EntityFieldCreator>['ref'] =
+    useRef(null)
+  const [entity, setEntity] = useRecoilState(Metadata.entitySelector(entityId))
+
   const columns: ColumnsType<EntityField> = [
     {
       title: '名称',
@@ -35,26 +41,63 @@ export const EntityFields: FC<{
       fixed: 'right',
       render: (_, record) => (
         <Space size="small">
-          <Button size={'small'} type={'link'}>
+          <Button
+            size={'small'}
+            type={'link'}
+            onClick={() => {
+              fieldCreatorRef.current?.edit({
+                entityId: entity.id,
+                fieldId: record.id,
+              })
+            }}
+          >
             编辑
           </Button>
-          <Button size={'small'} type={'link'}>
+          <Button
+            size={'small'}
+            type={'link'}
+            onClick={() => {
+              fieldCreatorRef.current?.showDetail({
+                entityId: entity.id,
+                fieldId: record.id,
+              })
+            }}
+          >
             详情
           </Button>
-          <Button size={'small'} danger type={'text'}>
+          <Button
+            size={'small'}
+            danger
+            type={'text'}
+            onClick={() => {
+              setEntity(
+                produce((draft) => {
+                  draft.fields = draft.fields.filter(
+                    (field) => field.id !== record.id,
+                  )
+                }),
+              )
+            }}
+          >
             删除
           </Button>
         </Space>
       ),
     },
   ]
+
   return (
     <>
+      <EntityFieldCreator ref={fieldCreatorRef} />
       <EntityModuleActionWrapper>
-        <EntityFieldCreator
-          entityId={entity.id}
-          trigger={<Button type={'link'}>添加字段</Button>}
-        />
+        <Button
+          type={'link'}
+          onClick={() => {
+            fieldCreatorRef.current?.create({ entityId: entity.id })
+          }}
+        >
+          添加字段
+        </Button>
       </EntityModuleActionWrapper>
       <div>
         <Table<EntityField>

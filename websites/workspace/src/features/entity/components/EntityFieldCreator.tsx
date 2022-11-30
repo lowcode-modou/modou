@@ -6,10 +6,16 @@ import {
   ProFormSwitch,
   ProFormText,
 } from '@ant-design/pro-components'
-import { Button, SelectProps } from 'antd'
+import { SelectProps } from 'antd'
 import produce from 'immer'
-import { ComponentProps, FC, ReactNode } from 'react'
-import { useSetRecoilState } from 'recoil'
+import {
+  ForwardRefRenderFunction,
+  ReactNode,
+  forwardRef,
+  useImperativeHandle,
+  useState,
+} from 'react'
+import { useRecoilCallback, useSetRecoilState } from 'recoil'
 
 import {
   EntityField, // 不要直接使用  需要注册后使用
@@ -115,17 +121,69 @@ const EntityFieldRadioOptions: SelectProps['options'] = Object.values(
   label: getEntityFieldTypeLabel(fieldType),
   value: fieldType,
 }))
-export const EntityFieldCreator: FC<{
-  trigger: ComponentProps<typeof DrawerForm>['trigger']
-  entityId: string
-}> = ({ trigger, entityId }) => {
+
+interface EntityFieldCreatorInstance {
+  create: (params: { entityId: string }) => void
+  edit: (params: { entityId: string; fieldId: string }) => void
+  showDetail: (params: { entityId: string; fieldId: string }) => void
+}
+
+const _EntityFieldCreator: ForwardRefRenderFunction<
+  EntityFieldCreatorInstance,
+  {}
+> = (_, ref) => {
   const [form] = ProForm.useForm<EntityField>()
   const fieldType = ProForm.useWatch<EntityFieldEnum>('type', form)
 
+  const [entityId, setEntityId] = useState('')
+  const [entityFieldId, setEntityFieldId] = useState('')
+  const [mode, setMode] = useState<'detail' | 'create' | 'edit'>('detail')
+
   const setEntity = useSetRecoilState(Metadata.entitySelector(entityId))
+
+  const [open, setOpen] = useState(false)
+
+  const getEntityField = useRecoilCallback(
+    ({ snapshot }) =>
+      ({ entityId, fieldId }: { entityId: string; fieldId: string }) => {
+        return snapshot
+          .getLoadable(Metadata.entitySelector(entityId))
+          .getValue()
+          .fields.find((field) => field.id === fieldId) as EntityField
+      },
+    [],
+  )
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      create: ({ entityId }) => {
+        setEntityId(entityId)
+        setEntityFieldId('')
+        setMode('create')
+        setOpen(true)
+      },
+      edit: ({ entityId, fieldId }) => {
+        setEntityId(entityId)
+        setEntityFieldId(fieldId)
+        setMode('edit')
+        form.setFieldsValue(getEntityField({ entityId, fieldId }))
+        setOpen(true)
+      },
+      showDetail: ({ entityId, fieldId }) => {
+        setEntityId(entityId)
+        setEntityFieldId(fieldId)
+        setMode('detail')
+        form.setFieldsValue(getEntityField({ entityId, fieldId }))
+        setOpen(true)
+      },
+    }),
+    [form, getEntityField],
+  )
 
   return (
     <DrawerForm<EntityField>
+      readonly={mode === 'detail'}
       title="新建字段"
       width={500}
       form={form}
@@ -139,19 +197,39 @@ export const EntityFieldCreator: FC<{
       drawerProps={{
         destroyOnClose: true,
       }}
+      open={open}
+      onOpenChange={setOpen}
       onFinish={async (formData) => {
-        setEntity(
-          produce((draft) => {
-            draft.fields.push({
-              ...formData,
-              id: generateId(),
-            })
-          }),
-        )
+        switch (mode) {
+          case 'create':
+            setEntity(
+              produce((draft) => {
+                draft.fields.push({
+                  ...formData,
+                  id: generateId(),
+                })
+              }),
+            )
+            break
+          case 'edit':
+            setEntity(
+              produce((draft) => {
+                draft.fields = draft.fields.map((field) => {
+                  if (field.id === entityFieldId) {
+                    return { ...formData }
+                  }
+                  return field
+                })
+              }),
+            )
+            break
+          case 'detail':
+          default:
+        }
         return true
       }}
-      trigger={trigger}
     >
+      <ProFormText hidden name="id" label="字段id" />
       <ProFormSelect
         name="type"
         label="字段类型"
@@ -199,3 +277,6 @@ export const EntityFieldCreator: FC<{
     </DrawerForm>
   )
 }
+
+export const EntityFieldCreator =
+  forwardRef<EntityFieldCreatorInstance>(_EntityFieldCreator)
