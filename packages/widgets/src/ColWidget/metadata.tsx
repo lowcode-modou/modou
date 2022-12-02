@@ -4,10 +4,6 @@ import { SetterTypeEnum } from '@modou/setters'
 
 import { WidgetIcon } from '../_'
 
-enum SlotEnum {
-  Children = 'children',
-}
-
 export const MRSchemeColWidgetProps = WidgetMetadata.createMRWidgetProps({
   widgetType: 'ColWidget',
   widgetName: '栅格列',
@@ -22,7 +18,7 @@ export const MRSchemeColWidgetProps = WidgetMetadata.createMRWidgetProps({
     },
   },
   slots: {
-    [SlotEnum.Children]: mr.array(mr.string()).default([]),
+    children: mr.array(mr.string()).default([]),
   },
 })
 
@@ -33,8 +29,7 @@ export const MRSchemeColWidgetState = WidgetMetadata.createMRWidgetState(
 
 export const colWidgetMetadata = WidgetMetadata.createMetadata<
   typeof MRSchemeColWidgetProps,
-  typeof MRSchemeColWidgetState,
-  SlotEnum
+  typeof MRSchemeColWidgetState
 >({
   version: '0.0.1',
   widgetType: 'ColWidget',

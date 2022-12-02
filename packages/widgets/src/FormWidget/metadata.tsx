@@ -4,9 +4,6 @@ import { SetterTypeEnum } from '@modou/setters'
 
 import { WidgetIcon } from '../_'
 
-enum SlotEnum {
-  Children = 'children',
-}
 export const MRSchemeFormWidgetProps = WidgetMetadata.createMRWidgetProps({
   widgetType: 'FormWidget',
   widgetName: '表单',
@@ -30,7 +27,8 @@ export const MRSchemeFormWidgetProps = WidgetMetadata.createMRWidgetProps({
     },
   },
   slots: {
-    [SlotEnum.Children]: mr.array(mr.string()).default([]),
+    children: mr.array(mr.string()).default([]),
+    title: mr.array(mr.string()).default([]),
   },
 })
 
@@ -41,8 +39,7 @@ export const MRSchemeFormWidgetState = WidgetMetadata.createMRWidgetState(
 
 export const formWidgetMetadata = WidgetMetadata.createMetadata<
   typeof MRSchemeFormWidgetProps,
-  typeof MRSchemeFormWidgetState,
-  SlotEnum
+  typeof MRSchemeFormWidgetState
 >({
   version: '0.0.1',
   widgetType: 'FormWidget',
@@ -50,6 +47,7 @@ export const formWidgetMetadata = WidgetMetadata.createMetadata<
   icon: <WidgetIcon type="col" />,
   slots: {
     children: {},
+    title: {},
   },
   mrPropsScheme: MRSchemeFormWidgetProps,
   mrStateScheme: MRSchemeFormWidgetState,

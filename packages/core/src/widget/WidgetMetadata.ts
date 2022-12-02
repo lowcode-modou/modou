@@ -17,6 +17,7 @@ import {
   MRStringSetterType,
   SETTER_KEY,
 } from '@modou/setters'
+import { MRSchemeFormWidgetProps } from '@modou/widgets'
 import { InferWidgetState } from '@modou/widgets/src/_'
 
 import { WidgetBaseProps } from './types'
@@ -109,8 +110,14 @@ export class WidgetMetadata<
   static createMetadata<
     PropsMRScheme extends MRScheme,
     StateMRScheme extends MRScheme,
-    S extends string = '',
-  >(metadata: BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>) {
+  >(
+    metadata: BaseWidgetMetadata<
+      PropsMRScheme,
+      StateMRScheme,
+      // @ts-expect-error
+      keyof mr.infer<PropsMRScheme>['slots']
+    >,
+  ) {
     return new WidgetMetadata(metadata)
   }
 

@@ -3,16 +3,12 @@ import { mr } from '@modou/refine'
 
 import { WidgetIcon } from '../_'
 
-enum SlotEnum {
-  Children = 'children',
-}
-
 export const MRSchemeTableWidgetProps = WidgetMetadata.createMRWidgetProps({
   widgetType: 'TableWidget',
   widgetName: '表格',
   props: {},
   slots: {
-    [SlotEnum.Children]: mr.array(mr.string()).default([]),
+    children: mr.array(mr.string()).default([]),
   },
 })
 
@@ -23,8 +19,7 @@ export const MRSchemeTableWidgetState = WidgetMetadata.createMRWidgetState(
 
 export const tableWidgetMetadata = WidgetMetadata.createMetadata<
   typeof MRSchemeTableWidgetProps,
-  typeof MRSchemeTableWidgetState,
-  SlotEnum
+  typeof MRSchemeTableWidgetState
 >({
   version: '0.0.1',
   widgetType: 'TableWidget',

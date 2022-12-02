@@ -2,6 +2,8 @@ import { ProForm } from '@ant-design/pro-components'
 import { Col } from 'antd'
 import { FC, useEffect } from 'react'
 
+import { mcss } from '@modou/css-in-js'
+
 import { InferWidgetState } from '../_'
 import { MRSchemeFormWidgetState } from './metadata'
 
@@ -16,11 +18,10 @@ export const FormWidget: FC<
   return (
     <ProForm
       data-widget-id={instance.widgetId}
-      data-widget-slot-name={renderSlotNames.children}
+      className={classes.wrapper}
       layout="horizontal"
       readonly={readonly}
       submitter={false}
-      grid
       initialValues={{
         name: '小明',
         address: '山东省',
@@ -28,14 +29,25 @@ export const FormWidget: FC<
         age: 12,
       }}
     >
-      {renderSlots.children?.map((child) => (
-        <Col
-          key={`col_${(child as unknown as { key: string })?.key}`}
-          span={12}
-        >
-          {child}
-        </Col>
-      ))}
+      <div data-widget-slot-name={renderSlotNames.title}>
+        {renderSlots.title}
+      </div>
+      <div data-widget-slot-name={renderSlotNames.children}>
+        {renderSlots.children?.map((child) => (
+          <Col
+            key={`col_${(child as unknown as { key: string })?.key}`}
+            span={12}
+          >
+            {child}
+          </Col>
+        ))}
+      </div>
     </ProForm>
   )
+}
+
+const classes = {
+  wrapper: mcss`
+    width: 100%;
+  `,
 }

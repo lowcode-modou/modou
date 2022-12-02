@@ -10,10 +10,6 @@ import {
   RowWidgetJustifyOptions,
 } from './constants'
 
-enum SlotEnum {
-  Children = 'children',
-}
-
 export const MRSchemeRowWidgetProps = WidgetMetadata.createMRWidgetProps({
   widgetType: 'RowWidget',
   widgetName: '栅格行',
@@ -49,7 +45,7 @@ export const MRSchemeRowWidgetProps = WidgetMetadata.createMRWidgetProps({
     },
   },
   slots: {
-    [SlotEnum.Children]: mr.array(mr.string()).default([]),
+    children: mr.array(mr.string()).default([]),
   },
 })
 
@@ -60,8 +56,7 @@ export const MRSchemeRowWidgetState = WidgetMetadata.createMRWidgetState(
 
 export const rowWidgetMetadata = WidgetMetadata.createMetadata<
   typeof MRSchemeRowWidgetProps,
-  typeof MRSchemeRowWidgetState,
-  SlotEnum
+  typeof MRSchemeRowWidgetState
 >({
   version: '0.0.1',
   widgetType: 'RowWidget',
