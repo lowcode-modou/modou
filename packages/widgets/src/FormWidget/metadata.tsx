@@ -28,7 +28,7 @@ export const MRSchemeFormWidgetProps = WidgetMetadata.createMRWidgetProps({
   },
   slots: {
     children: mr.array(mr.string()).default([]),
-    title: mr.array(mr.string()).default([]),
+    header: mr.array(mr.string()).default([]),
   },
 })
 
@@ -46,8 +46,12 @@ export const formWidgetMetadata = WidgetMetadata.createMetadata<
   widgetName: '表单',
   icon: <WidgetIcon type="col" />,
   slots: {
-    children: {},
-    title: {},
+    children: {
+      name: '默认插槽',
+    },
+    header: {
+      name: '表头',
+    },
   },
   mrPropsScheme: MRSchemeFormWidgetProps,
   mrStateScheme: MRSchemeFormWidgetState,

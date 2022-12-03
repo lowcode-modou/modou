@@ -17,18 +17,17 @@ import {
   MRStringSetterType,
   SETTER_KEY,
 } from '@modou/setters'
-import { MRSchemeFormWidgetProps } from '@modou/widgets'
 import { InferWidgetState } from '@modou/widgets/src/_'
 
 import { WidgetBaseProps } from './types'
 
 type WidgetType = `${string}Widget`
-type Slots<S extends string> = Record<
-  S,
-  {
-    accept?: WidgetType[]
-  }
->
+
+export interface WidgetSlot {
+  name: string
+  accept?: WidgetType[]
+}
+export type WidgetSlots<S extends string> = Record<S, WidgetSlot>
 
 interface BaseWidgetMetadata<
   PropsMRScheme extends MRScheme,
@@ -39,7 +38,7 @@ interface BaseWidgetMetadata<
   icon: ReactNode
   widgetType: WidgetType
   widgetName: string
-  slots: Slots<S>
+  slots: WidgetSlots<S>
   mrPropsScheme: PropsMRScheme
   mrStateScheme: StateMRScheme
   initState: (
@@ -105,7 +104,7 @@ export class WidgetMetadata<
   jsonPropsSchema: JsonSchema7ObjectType
   jsonStateSchema: JsonSchema7ObjectType
   initState
-  slots: Slots<S>
+  slots: WidgetSlots<S>
 
   static createMetadata<
     PropsMRScheme extends MRScheme,

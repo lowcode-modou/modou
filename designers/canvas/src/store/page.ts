@@ -6,7 +6,7 @@ import { head, isEmpty, keyBy } from 'lodash'
 import { DefaultValue, atom, selector, selectorFamily } from 'recoil'
 import { syncEffect } from 'recoil-sync'
 
-import { Page, WidgetBaseProps } from '@modou/core'
+import { AppFactory, Page, WidgetBaseProps, WidgetSlot } from '@modou/core'
 
 import { generateRecoilKey } from '../utils'
 
@@ -141,55 +141,6 @@ export const widgetRelationByWidgetIdSelector =
     },
     cachePolicy_UNSTABLE: { eviction: 'most-recent' },
   })
-
-export type WidgetTreeNode = DataNode & {
-  widget?: WidgetBaseProps
-  page?: Page
-  nodeType: 'page' | 'slot' | 'widget'
-  children: WidgetTreeNode[]
-}
-
-export const pageOutlineTreeSelector = selector<WidgetTreeNode>({
-  key: generateRecoilKey('pageOutlineTreeSelector'),
-  get: ({ get }) => {
-    const page = get(pageSelector)
-    const widgetById = get(widgetByIdSelector)
-    const rootWidget = widgetById[page.rootWidgetId]
-
-    const parentTreeNodes: WidgetTreeNode[] = [
-      {
-        key: page.id,
-        title: page.name,
-        page,
-        nodeType: 'page',
-        children: [],
-      },
-    ]
-    const rootTreeNode = head(parentTreeNodes)
-    const widgetStack: WidgetBaseProps[] = [rootWidget]
-    while (widgetStack.length !== 0) {
-      const curWidget = widgetStack.pop()
-      const curTreeNode: WidgetTreeNode = {
-        key: curWidget?.id ?? '',
-        title: curWidget?.widgetName ?? '',
-        nodeType: 'widget',
-        widget: curWidget,
-        children: [],
-      }
-      // treeNodeMap.set(curWidget?.widgetId ?? '', curTreeNode)
-      const parentTreeNode = parentTreeNodes.pop()
-      parentTreeNode?.children.unshift(curTreeNode)
-      if (!isEmpty(curWidget?.slots?.children)) {
-        curWidget?.slots?.children.forEach((widgetId: string) => {
-          widgetStack.push(widgetById[widgetId])
-          parentTreeNodes.push(curTreeNode)
-        })
-      }
-    }
-    return rootTreeNode as WidgetTreeNode
-  },
-  cachePolicy_UNSTABLE: { eviction: 'most-recent' },
-})
 
 export const isRootWidgetSelector = selectorFamily<boolean, string>({
   key: generateRecoilKey('isRootWidgetSelector'),

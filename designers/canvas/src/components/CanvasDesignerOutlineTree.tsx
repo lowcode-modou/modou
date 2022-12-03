@@ -9,8 +9,11 @@ import { mcss } from '@modou/css-in-js'
 
 import { useMoveWidget } from '../hooks'
 import {
-  WidgetTreeNode,
-  pageOutlineTreeSelector,
+  OutlineTreeNode,
+  OutlineTreeNodeWidget,
+  usePageOutlineTree,
+} from '../hooks/usePageOutlineTree'
+import {
   selectedWidgetIdAtom,
   widgetRelationByWidgetIdSelector,
 } from '../store'
@@ -22,7 +25,7 @@ enum DropPositionEnum {
 }
 
 export const CanvasDesignerOutlineTree: FC = () => {
-  const pageOutlineTree = useRecoilValue(pageOutlineTreeSelector)
+  const { treeData: pageOutlineTree } = usePageOutlineTree()
   const [selectedWidgetId, setSelectedWidgetId] =
     useRecoilState(selectedWidgetIdAtom)
   const selectedKeys = [selectedWidgetId || pageOutlineTree.key]
@@ -38,24 +41,15 @@ export const CanvasDesignerOutlineTree: FC = () => {
     setSelectedWidgetId(widgetId as string)
   }
 
-  const allowDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['allowDrop'] = ({
-    dropNode,
-    dropPosition,
-    dragNode,
-  }) => {
+  const allowDrop: ComponentProps<
+    typeof Tree<OutlineTreeNode>
+  >['allowDrop'] = ({ dropNode, dropPosition, dragNode }) => {
     // console.log('dropNode', dropNode, dropPosition)
-    const { widget } = dropNode
+    const { widget } = dropNode as unknown as OutlineTreeNodeWidget
     if (!widget) {
       return false
     }
     const widgetMetadata = appFactory.widgetByType[widget.widgetType].metadata
-
-    // console.log(
-    //   'dropPosition',
-    //   dropPosition,
-    //   widget.id,
-    //   widget.widgetName,
-    // )
 
     if (dropPosition === DropPositionEnum.Before) {
       return !!widgetRelationByWidgetId[widget.id].parent
@@ -67,15 +61,16 @@ export const CanvasDesignerOutlineTree: FC = () => {
     return false
   }
 
-  const onDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['onDrop'] = (
+  const onDrop: ComponentProps<typeof Tree<OutlineTreeNode>>['onDrop'] = (
     info,
   ) => {
     const dropPos = info.node.pos.split('-')
     const dropPosition: DropPositionEnum =
       info.dropPosition - Number(dropPos[dropPos.length - 1])
 
-    const dragWidget = info.dragNode.widget
-    const dropWidget = info.node.widget
+    const dragWidget = (info.dragNode as unknown as OutlineTreeNodeWidget)
+      .widget
+    const dropWidget = (info.node as unknown as OutlineTreeNodeWidget).widget
     if (!dragWidget || !dropWidget) {
       return
     }
@@ -120,11 +115,10 @@ export const CanvasDesignerOutlineTree: FC = () => {
         break
       default:
     }
-    console.log('dropPosition', dropPosition, info)
   }
 
   // TODO 支持大纲树和其画布及面板组件互相拖拽 IMPORTANT
-  const ref = useRef<RcTree<WidgetTreeNode>>()
+  const ref = useRef<RcTree<OutlineTreeNode>>()
   // useEffect(() => {
   //   console.log('tree.ref', ref.current?.state.flattenNodes)
   // })
@@ -132,9 +126,9 @@ export const CanvasDesignerOutlineTree: FC = () => {
   // FIXME 跨层架拖拽
   return (
     <div className={classes.treeWrapper}>
-      <Tree<WidgetTreeNode>
+      <Tree<OutlineTreeNode>
         ref={ref as unknown as any}
-        showLine
+        // showLine
         allowDrop={allowDrop}
         switcherIcon={<DownOutlined />}
         selectedKeys={selectedKeys}
@@ -156,5 +150,14 @@ export const CanvasDesignerOutlineTree: FC = () => {
 const classes = {
   treeWrapper: mcss`
     padding: 16px 8px;
+    .ant-tree-indent-unit{
+      width: 5px;
+    }
+    .outline-node-slot{
+      color: grey;
+      .ant-tree-title{
+        cursor: not-allowed;
+      }
+    }
   `,
 }

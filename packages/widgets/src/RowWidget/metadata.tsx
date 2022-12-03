@@ -65,7 +65,9 @@ export const rowWidgetMetadata = WidgetMetadata.createMetadata<
   mrPropsScheme: MRSchemeRowWidgetProps,
   mrStateScheme: MRSchemeRowWidgetState,
   slots: {
-    children: {},
+    children: {
+      name: '默认插槽',
+    },
   },
   initState: ({ id }) => {
     return {

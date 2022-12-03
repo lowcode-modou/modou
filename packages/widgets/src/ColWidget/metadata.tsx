@@ -36,7 +36,9 @@ export const colWidgetMetadata = WidgetMetadata.createMetadata<
   widgetName: '栅格列',
   icon: <WidgetIcon type="col" />,
   slots: {
-    children: {},
+    children: {
+      name: '默认插槽',
+    },
   },
   mrPropsScheme: MRSchemeColWidgetProps,
   mrStateScheme: MRSchemeColWidgetState,

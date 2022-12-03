@@ -1,5 +1,4 @@
-import { Spin } from 'antd'
-import { ConfigProvider } from 'antd'
+import { ConfigProvider, Spin } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { FC, memo, useContext, useEffect, useMemo, useState } from 'react'
 import { RecoilRoot, useRecoilValue, useSetRecoilState } from 'recoil'

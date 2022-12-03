@@ -29,8 +29,8 @@ export const FormWidget: FC<
         age: 12,
       }}
     >
-      <div data-widget-slot-name={renderSlotNames.title}>
-        {renderSlots.title}
+      <div data-widget-slot-name={renderSlotNames.header}>
+        {renderSlots.header}
       </div>
       <div data-widget-slot-name={renderSlotNames.children}>
         {renderSlots.children?.map((child) => (
