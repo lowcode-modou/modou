@@ -1,20 +1,24 @@
 import { DownOutlined } from '@ant-design/icons'
 import { Tree } from 'antd'
+import { head } from 'lodash'
 import type RcTree from 'rc-tree'
-import React, { ComponentProps, FC, useContext, useRef } from 'react'
+import React, { ComponentProps, FC, useRef } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
+import { match } from 'ts-pattern'
 
-import { AppFactoryContext } from '@modou/core'
+import { WidgetBaseProps } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
 import { useMoveWidget } from '../hooks'
 import {
   OutlineTreeNode,
+  OutlineTreeNodeSlot,
   OutlineTreeNodeWidget,
   usePageOutlineTree,
 } from '../hooks/usePageOutlineTree'
 import {
   selectedWidgetIdAtom,
+  widgetByIdSelector,
   widgetRelationByWidgetIdSelector,
 } from '../store'
 
@@ -32,9 +36,10 @@ export const CanvasDesignerOutlineTree: FC = () => {
   const widgetRelationByWidgetId = useRecoilValue(
     widgetRelationByWidgetIdSelector,
   )
+  const widgetById = useRecoilValue(widgetByIdSelector)
   const { moveWidget } = useMoveWidget()
 
-  const appFactory = useContext(AppFactoryContext)
+  // const appFactory = useContext(AppFactoryContext)
 
   const onSelect: ComponentProps<typeof Tree>['onSelect'] = ([key]) => {
     const widgetId = key === pageOutlineTree.key ? '' : key
@@ -44,72 +49,87 @@ export const CanvasDesignerOutlineTree: FC = () => {
   const allowDrop: ComponentProps<
     typeof Tree<OutlineTreeNode>
   >['allowDrop'] = ({ dropNode, dropPosition, dragNode }) => {
-    // console.log('dropNode', dropNode, dropPosition)
-    const { widget } = dropNode as unknown as OutlineTreeNodeWidget
-    if (!widget) {
+    if (dragNode.nodeType === 'slot' || dragNode.nodeType === 'page') {
       return false
     }
-    const widgetMetadata = appFactory.widgetByType[widget.widgetType].metadata
-
-    if (dropPosition === DropPositionEnum.Before) {
-      return !!widgetRelationByWidgetId[widget.id].parent
-    } else if (dropPosition === DropPositionEnum.Inner) {
-      return !!widgetMetadata.slots?.children
-    } else if (dropPosition === DropPositionEnum.After) {
-      return !!widgetRelationByWidgetId[widget.id].parent
+    if (dropNode.nodeType === 'page') {
+      return false
     }
+
+    if (dropNode.nodeType === 'slot') {
+      return dropPosition === DropPositionEnum.Inner
+    }
+    if (dropNode.nodeType === 'widget') {
+      return dropPosition !== DropPositionEnum.Inner
+    }
+
     return false
   }
 
-  const onDrop: ComponentProps<typeof Tree<OutlineTreeNode>>['onDrop'] = (
-    info,
-  ) => {
-    const dropPos = info.node.pos.split('-')
+  const onDrop: ComponentProps<typeof Tree<OutlineTreeNode>>['onDrop'] = ({
+    dragNode,
+    node: dropNode,
+    node: { pos },
+    dropPosition: _dropPosition,
+  }) => {
+    const dropPos = pos.split('-')
     const dropPosition: DropPositionEnum =
-      info.dropPosition - Number(dropPos[dropPos.length - 1])
+      _dropPosition - Number(dropPos[dropPos.length - 1])
 
-    const dragWidget = (info.dragNode as unknown as OutlineTreeNodeWidget)
-      .widget
-    const dropWidget = (info.node as unknown as OutlineTreeNodeWidget).widget
-    if (!dragWidget || !dropWidget) {
+    const dragWidget = (dragNode as unknown as OutlineTreeNodeWidget).widget
+    if (dropNode.nodeType !== 'slot' && dropNode.nodeType !== 'widget') {
       return
     }
+    const [parentWidget, parentSlotPath] = match<
+      typeof dropNode.nodeType,
+      [WidgetBaseProps, string]
+    >(dropNode.nodeType)
+      .with('slot', () => [
+        widgetById[(dropNode as unknown as OutlineTreeNodeSlot).slot.widgetId],
+        (dropNode as unknown as OutlineTreeNodeSlot).slot.path,
+      ])
+      .with('widget', () => [
+        widgetRelationByWidgetId[
+          (dropNode as unknown as OutlineTreeNodeWidget).widget.id
+        ].parent!.props,
+        widgetRelationByWidgetId[
+          (dropNode as unknown as OutlineTreeNodeWidget).widget.id
+        ].slotPath,
+      ])
+      .exhaustive()
 
-    const parent = widgetRelationByWidgetId[dropWidget.id].parent
-
-    // TODO 替换真实的 SLOT NAME
-    const parentSlotName = 'children'
     switch (dropPosition) {
       case DropPositionEnum.Before:
-        if (parent && parentSlotName) {
+        if (parentWidget && parentSlotPath) {
           moveWidget({
             sourceWidgetId: dragWidget.id,
-            targetWidgetId: parent.props.id,
-            targetSlotName: parentSlotName,
-            targetPosition: parent.props.slots[parentSlotName].findIndex(
-              (widgetId) => dropWidget.id === widgetId,
+            targetWidgetId: parentWidget.id,
+            targetSlotName: parentSlotPath,
+            targetPosition: parentWidget.slots[parentSlotPath].findIndex(
+              (widgetId) =>
+                (dropNode as OutlineTreeNodeWidget).widget.id === widgetId,
             ),
           })
         }
         break
       case DropPositionEnum.After:
-        if (parent && parentSlotName) {
+        if (parent && parentSlotPath) {
           moveWidget({
             sourceWidgetId: dragWidget.id,
-            targetWidgetId: parent.props.id,
-            targetSlotName: parentSlotName,
-            targetPosition:
-              parent.props.slots[parentSlotName].findIndex(
-                (widgetId) => dropWidget.id === widgetId,
-              ) + 1,
+            targetWidgetId: parentWidget.id,
+            targetSlotName: parentSlotPath,
+            targetPosition: parentWidget.slots[parentSlotPath].findIndex(
+              (widgetId) =>
+                (dropNode as OutlineTreeNodeWidget).widget.id === widgetId,
+            ),
           })
         }
         break
       case DropPositionEnum.Inner:
         moveWidget({
           sourceWidgetId: dragWidget.id,
-          targetWidgetId: dropWidget.id,
-          targetSlotName: parentSlotName,
+          targetWidgetId: parentWidget.id,
+          targetSlotName: parentSlotPath,
           targetPosition: 0,
         })
         break
@@ -126,7 +146,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
   // FIXME 跨层架拖拽
   return (
     <div className={classes.treeWrapper}>
-      <Tree.DirectoryTree<OutlineTreeNode>
+      <Tree<OutlineTreeNode>
         ref={ref as unknown as any}
         multiple={false}
         icon={false}
@@ -139,6 +159,14 @@ export const CanvasDesignerOutlineTree: FC = () => {
         defaultExpandAll
         draggable={{
           icon: false,
+          nodeDraggable: (node) =>
+            (node as unknown as OutlineTreeNode).nodeType === 'widget' &&
+            (node as unknown as OutlineTreeNodeWidget).widget.id !==
+              (
+                head(
+                  pageOutlineTree.children || [],
+                ) as unknown as OutlineTreeNodeWidget
+              )?.widget?.id,
         }}
         blockNode
         // onDragEnter={onDragEnter}
@@ -151,9 +179,24 @@ export const CanvasDesignerOutlineTree: FC = () => {
 
 const classes = {
   treeWrapper: mcss`
-    padding: 16px 8px;
-    .ant-tree-indent-unit{
-      width: 5px;
+    padding: 8px 4px;
+    .ant-tree{
+      line-height: 20px!important;
+      &-indent-unit{
+				width: 5px;
+			}
+      &-node-content-wrapper{
+				line-height: 20px!important;
+				min-height: 20px!important;
+			}
+      &-title{
+				cursor: not-allowed;
+				font-size: 12px!important;
+			}
+      &-switcher{
+				height: 20px;
+        width: 20px;
+			}
     }
     .outline-node-slot{
       color: grey;

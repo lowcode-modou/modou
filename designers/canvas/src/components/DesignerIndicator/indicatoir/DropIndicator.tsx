@@ -12,6 +12,7 @@ import {
 } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { AppFactoryContext } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
 
 import { SimulatorInstanceContext } from '../../../contexts'
@@ -37,6 +38,7 @@ interface DropElement {
 
 const WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
   const widgets = useRecoilValue(widgetsSelector)
+  const appFactory = useContext(AppFactoryContext)
   // FIXME element 有可能会重复
   const elementSelector = `[data-widget-id=${widgetId}]${
     slotPath ? `[data-widget-slot-path=${slotPath}]` : ''
@@ -108,6 +110,8 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
 
   const theme = useTheme()
 
+  const widgetMetadata = appFactory.widgetByType[widget.widgetType].metadata
+
   return (
     <>
       {isEmptySlot ? (
@@ -119,7 +123,7 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
         >
           <Col>
             <Typography.Text type={'secondary'} strong>
-              {widget.widgetType}-{slotPath}
+              {widgetMetadata.widgetName}-{widgetMetadata.slots[slotPath].name}
             </Typography.Text>
           </Col>
         </Row>
@@ -173,9 +177,8 @@ export const DropIndicator: FC = () => {
 
   const initDrop = useCallback(() => {
     const elements = [
-      ...(simulatorInstance?.document?.querySelectorAll(
-        '[data-widget-slot-path]',
-      ) ?? []),
+      ...(simulatorInstance?.document?.querySelectorAll('[data-widget-id]') ??
+        []),
     ] as HTMLElement[]
     setDropElements(
       elements

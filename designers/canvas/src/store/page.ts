@@ -96,9 +96,9 @@ export const widgetSelector = selectorFamily<WidgetBaseProps, string>({
   cachePolicy_UNSTABLE: { eviction: 'most-recent' },
 })
 
-interface RelationWidget {
+export interface RelationWidget {
   props: WidgetBaseProps
-  slotPath?: string
+  slotPath: string
   parent?: RelationWidget
 }
 
@@ -114,6 +114,7 @@ export const widgetRelationByWidgetIdSelector =
           if (!Reflect.has(pre, widgetId)) {
             pre[widgetId] = {
               props: cur,
+              slotPath: '',
             }
           }
           const parent = pre[widgetId]

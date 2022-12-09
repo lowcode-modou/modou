@@ -139,6 +139,7 @@ export const TableWidget: FC<
 
   return (
     <ProTable
+      data-widget-root
       data-widget-id={instance.widgetId}
       data-widget-slot-path={renderSlotPaths.children}
       columns={columns}

@@ -14,15 +14,15 @@ import {
 import { pageSelector, widgetByIdSelector } from '../store'
 
 export interface OutlineTreeNodeWidget {
-  widget?: WidgetBaseProps
+  widget: WidgetBaseProps
   nodeType: 'widget'
 }
 export interface OutlineTreeNodeSlot {
-  slot?: WidgetSlot & { path: string }
+  slot: WidgetSlot & { path: string; widgetId: string }
   nodeType: 'slot'
 }
 export interface OutlineTreeNodePage {
-  page?: Page
+  page: Page
   nodeType: 'page'
 }
 

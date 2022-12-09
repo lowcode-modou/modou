@@ -91,9 +91,9 @@ export const CanvasDesignerCanvas: FC<{
 
 const classes = {
   wrapper: mcss`
-    height: 100vh;
     position: relative;
     padding: 16px;
+    height: 100%;
   `,
   spinWrapper: mcss`
     height: 100%;

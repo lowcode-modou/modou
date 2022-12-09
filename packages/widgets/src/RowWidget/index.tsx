@@ -17,6 +17,7 @@ export const RowWidget: FC<InferWidgetState<typeof MRSchemeRowWidgetState>> = ({
   })
   return (
     <Row
+      data-widget-root
       data-widget-id={instance.id}
       data-widget-slot-path={renderSlotPaths.children}
       align={align}

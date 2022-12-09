@@ -72,6 +72,9 @@ const WidgetPropsPanel: FC = () => {
       labelWrap
       size={'small'}
     >
+      <Form.Item label="组件ID">
+        <Typography.Text type="danger">{selectedWidgetId}</Typography.Text>
+      </Form.Item>
       <Form.Item label="组件类型">
         <Typography.Text>{widgetMetadata.widgetName}</Typography.Text>
       </Form.Item>

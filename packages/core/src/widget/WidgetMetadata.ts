@@ -46,7 +46,7 @@ interface BaseWidgetMetadata<
   ) => Omit<
     InferWidgetState<StateMRScheme>,
     | keyof mr.infer<PropsMRScheme>['props']
-    | 'renderSlotNames'
+    | 'renderSlotPaths'
     | 'renderSlots'
     | 'updateState'
   >

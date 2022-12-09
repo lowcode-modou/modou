@@ -62,7 +62,7 @@ export const ModuleManager: FC<{
         }}
         className={classes.drawer}
         placement="left"
-        width={288}
+        width={220}
         maskClosable
         closable={false}
         getContainer={false}

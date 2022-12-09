@@ -100,6 +100,11 @@ const useWidgetMinHeight = ({
 //   return { style }
 // }
 
+enum DropType {
+  Slot,
+  Widget,
+}
+
 export const useWidgetDrop = ({
   widgetId,
   slotPath,
@@ -109,6 +114,10 @@ export const useWidgetDrop = ({
   slotPath: string
   element: HTMLElement
 }) => {
+  // 如果有slotPath 则是插槽，没有是普通组件
+  // 插槽只能放置内部
+  // 普通组件只能放置兄弟节点
+  const dropType: DropType = slotPath ? DropType.Slot : DropType.Widget
   const widgetFactory = useContext(AppFactoryContext)
   const widget = useRecoilValue(widgetSelector(widgetId))
 
@@ -170,7 +179,7 @@ export const useWidgetDrop = ({
         if (item.type === WidgetDragType.Move) {
           switch (dropIndicator.insertPosition) {
             case DropIndicatorInsertPositionEnum.Before:
-              if (parent && parentSlotPath) {
+              if (dropType === DropType.Widget && parent && parentSlotPath) {
                 moveWidget({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
@@ -182,7 +191,7 @@ export const useWidgetDrop = ({
               }
               break
             case DropIndicatorInsertPositionEnum.After:
-              if (parent && parentSlotPath) {
+              if (dropType === DropType.Widget && parent && parentSlotPath) {
                 moveWidget({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
@@ -207,7 +216,7 @@ export const useWidgetDrop = ({
         } else {
           switch (dropIndicator.insertPosition) {
             case DropIndicatorInsertPositionEnum.Before:
-              if (parent && parentSlotPath) {
+              if (dropType === DropType.Widget && parent && parentSlotPath) {
                 addWidget({
                   sourceWidget: item.widget,
                   targetWidgetId: parent.props.id,
@@ -219,7 +228,7 @@ export const useWidgetDrop = ({
               }
               break
             case DropIndicatorInsertPositionEnum.After:
-              if (parent && parentSlotPath) {
+              if (dropType === DropType.Widget && parent && parentSlotPath) {
                 addWidget({
                   sourceWidget: item.widget,
                   targetWidgetId: parent.props.id,
@@ -261,13 +270,13 @@ export const useWidgetDrop = ({
         const isBlockWidget =
           element.offsetWidth === element.parentElement?.clientWidth
 
-        const inVerticalLimit =
-          relativeOffset.y <= DROP_CONTAINER_LIMIT ||
-          dropElementRect.height - relativeOffset.y < DROP_CONTAINER_LIMIT
-
-        const inHorizontalLimit =
-          relativeOffset.x <= DROP_CONTAINER_LIMIT ||
-          dropElementRect.width - relativeOffset.x < DROP_CONTAINER_LIMIT
+        // const inVerticalLimit =
+        //   relativeOffset.y <= DROP_CONTAINER_LIMIT ||
+        //   dropElementRect.height - relativeOffset.y < DROP_CONTAINER_LIMIT
+        //
+        // const inHorizontalLimit =
+        //   relativeOffset.x <= DROP_CONTAINER_LIMIT ||
+        //   dropElementRect.width - relativeOffset.x < DROP_CONTAINER_LIMIT
 
         const afterVertical = relativeOffset.y * 2 > dropElementRect.height
         const afterHorizontal = relativeOffset.x * 2 > dropElementRect.width
@@ -277,17 +286,17 @@ export const useWidgetDrop = ({
             : DropIndicatorInsertPositionEnum.Before
 
         const insertPosition: DropIndicatorInsertPositionEnum = match<
-          boolean,
+          DropType,
           DropIndicatorInsertPositionEnum
-        >(!!slotPath)
-          .with(true, () => {
-            if (inHorizontalLimit || inVerticalLimit) {
-              return dropPosition
-            }
+        >(dropType)
+          .with(DropType.Slot, () => {
+            // if (inHorizontalLimit || inVerticalLimit) {
+            //   return dropPosition
+            // }
             return DropIndicatorInsertPositionEnum.Inner
           })
-          .with(false, () => dropPosition)
-          .exhaustive()
+          .with(DropType.Widget, () => dropPosition)
+          .run()
 
         const dropIndicator = match<boolean, DropIndicator>(isBlockWidget)
           .with(true, () => {
@@ -295,7 +304,8 @@ export const useWidgetDrop = ({
               position: afterVertical
                 ? DropIndicatorPositionEnum.Bottom
                 : DropIndicatorPositionEnum.Top,
-              show: slotPath ? inVerticalLimit : true,
+              // show: slotPath ? inVerticalLimit : true,
+              show: dropType === DropType.Widget,
               insertPosition,
             }
           })
@@ -304,7 +314,8 @@ export const useWidgetDrop = ({
               position: afterHorizontal
                 ? DropIndicatorPositionEnum.Right
                 : DropIndicatorPositionEnum.Left,
-              show: slotPath ? inHorizontalLimit : true,
+              // show: slotPath ? inHorizontalLimit : true,
+              show: dropType === DropType.Widget,
               insertPosition,
             }
           })
@@ -319,6 +330,7 @@ export const useWidgetDrop = ({
     }),
     [
       addWidget,
+      dropType,
       element,
       getDropIndicator,
       getWidgetRelationByWidgetId,

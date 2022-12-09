@@ -15,6 +15,7 @@ export const ColWidget: FC<InferWidgetState<typeof MRSchemeColWidgetState>> = ({
   })
   return (
     <Col
+      data-widget-root
       data-widget-id={instance.widgetId}
       data-widget-slot-path={renderSlotPaths.children}
       span={span}
