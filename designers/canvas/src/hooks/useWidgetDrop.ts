@@ -183,7 +183,7 @@ export const useWidgetDrop = ({
                 moveWidget({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
-                  targetSlotName: parentSlotPath,
+                  targetSlotPath: parentSlotPath,
                   targetPosition: parent.props.slots[parentSlotPath].findIndex(
                     (widgetId) => widget.id === widgetId,
                   ),
@@ -195,7 +195,7 @@ export const useWidgetDrop = ({
                 moveWidget({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
-                  targetSlotName: parentSlotPath,
+                  targetSlotPath: parentSlotPath,
                   targetPosition:
                     parent.props.slots[parentSlotPath].findIndex(
                       (widgetId) => widget.id === widgetId,
@@ -207,7 +207,7 @@ export const useWidgetDrop = ({
               moveWidget({
                 sourceWidgetId: item.widget.id,
                 targetWidgetId: widget.id,
-                targetSlotName: slotPath,
+                targetSlotPath: slotPath,
                 targetPosition: widget.slots[slotPath].length,
               })
               break
@@ -220,7 +220,7 @@ export const useWidgetDrop = ({
                 addWidget({
                   sourceWidget: item.widget,
                   targetWidgetId: parent.props.id,
-                  targetSlotName: parentSlotPath,
+                  targetSlotPath: parentSlotPath,
                   targetPosition: parent.props.slots[parentSlotPath].findIndex(
                     (widgetId) => widget.id === widgetId,
                   ),
@@ -232,7 +232,7 @@ export const useWidgetDrop = ({
                 addWidget({
                   sourceWidget: item.widget,
                   targetWidgetId: parent.props.id,
-                  targetSlotName: parentSlotPath,
+                  targetSlotPath: parentSlotPath,
                   targetPosition:
                     parent.props.slots[parentSlotPath].findIndex(
                       (widgetId) => widget.id === widgetId,
@@ -244,7 +244,7 @@ export const useWidgetDrop = ({
               addWidget({
                 sourceWidget: item.widget,
                 targetWidgetId: widget.id,
-                targetSlotName: slotPath,
+                targetSlotPath: slotPath,
                 targetPosition: widget.slots[slotPath].length,
               })
               break

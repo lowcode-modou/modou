@@ -104,7 +104,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
           moveWidget({
             sourceWidgetId: dragWidget.id,
             targetWidgetId: parentWidget.id,
-            targetSlotName: parentSlotPath,
+            targetSlotPath: parentSlotPath,
             targetPosition: parentWidget.slots[parentSlotPath].findIndex(
               (widgetId) =>
                 (dropNode as OutlineTreeNodeWidget).widget.id === widgetId,
@@ -117,7 +117,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
           moveWidget({
             sourceWidgetId: dragWidget.id,
             targetWidgetId: parentWidget.id,
-            targetSlotName: parentSlotPath,
+            targetSlotPath: parentSlotPath,
             targetPosition: parentWidget.slots[parentSlotPath].findIndex(
               (widgetId) =>
                 (dropNode as OutlineTreeNodeWidget).widget.id === widgetId,
@@ -129,7 +129,7 @@ export const CanvasDesignerOutlineTree: FC = () => {
         moveWidget({
           sourceWidgetId: dragWidget.id,
           targetWidgetId: parentWidget.id,
-          targetSlotName: parentSlotPath,
+          targetSlotPath: parentSlotPath,
           targetPosition: 0,
         })
         break

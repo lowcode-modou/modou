@@ -15,12 +15,12 @@ export const useRemoveWidget = () => {
         produce((draft) => {
           draft.forEach((widget) => {
             if (isObject(widget.slots)) {
-              Object.keys(widget.slots).forEach((slotName) => {
-                const deletedIndex = widget.slots[slotName].findIndex(
+              Object.keys(widget.slots).forEach((slotPath) => {
+                const deletedIndex = widget.slots[slotPath].findIndex(
                   (slotWidgetId) => slotWidgetId === widgetId,
                 )
                 if (deletedIndex !== -1) {
-                  widget.slots[slotName].splice(deletedIndex, 1)
+                  widget.slots[slotPath].splice(deletedIndex, 1)
                 }
               })
             }
