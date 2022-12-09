@@ -102,11 +102,11 @@ const useWidgetMinHeight = ({
 
 export const useWidgetDrop = ({
   widgetId,
-  slotName,
+  slotPath,
   element,
 }: {
   widgetId: string
-  slotName: string
+  slotPath: string
   element: HTMLElement
 }) => {
   const widgetFactory = useContext(AppFactoryContext)
@@ -115,7 +115,7 @@ export const useWidgetDrop = ({
   const { addWidget } = useAddWidget()
   const { moveWidget } = useMoveWidget()
 
-  const isEmptySlot = !!slotName && isEmpty(widget.slots[slotName])
+  const isEmptySlot = !!slotPath && isEmpty(widget.slots[slotPath])
   const setDropIndicator = useSetRecoilState(dropIndicatorAtom)
 
   const getDropIndicator = useRecoilCallback<readonly unknown[], DropIndicator>(
@@ -165,30 +165,30 @@ export const useWidgetDrop = ({
 
         const dropIndicator = getDropIndicator()
         const widgetRelationByWidgetId = getWidgetRelationByWidgetId()
-        const { parent, slotName: parentSlotName } =
+        const { parent, slotPath: parentSlotPath } =
           widgetRelationByWidgetId[widget.id]
         if (item.type === WidgetDragType.Move) {
           switch (dropIndicator.insertPosition) {
             case DropIndicatorInsertPositionEnum.Before:
-              if (parent && parentSlotName) {
+              if (parent && parentSlotPath) {
                 moveWidget({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
-                  targetSlotName: parentSlotName,
-                  targetPosition: parent.props.slots[parentSlotName].findIndex(
+                  targetSlotName: parentSlotPath,
+                  targetPosition: parent.props.slots[parentSlotPath].findIndex(
                     (widgetId) => widget.id === widgetId,
                   ),
                 })
               }
               break
             case DropIndicatorInsertPositionEnum.After:
-              if (parent && parentSlotName) {
+              if (parent && parentSlotPath) {
                 moveWidget({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
-                  targetSlotName: parentSlotName,
+                  targetSlotName: parentSlotPath,
                   targetPosition:
-                    parent.props.slots[parentSlotName].findIndex(
+                    parent.props.slots[parentSlotPath].findIndex(
                       (widgetId) => widget.id === widgetId,
                     ) + 1,
                 })
@@ -198,8 +198,8 @@ export const useWidgetDrop = ({
               moveWidget({
                 sourceWidgetId: item.widget.id,
                 targetWidgetId: widget.id,
-                targetSlotName: slotName,
-                targetPosition: widget.slots[slotName].length,
+                targetSlotName: slotPath,
+                targetPosition: widget.slots[slotPath].length,
               })
               break
             default:
@@ -207,25 +207,25 @@ export const useWidgetDrop = ({
         } else {
           switch (dropIndicator.insertPosition) {
             case DropIndicatorInsertPositionEnum.Before:
-              if (parent && parentSlotName) {
+              if (parent && parentSlotPath) {
                 addWidget({
                   sourceWidget: item.widget,
                   targetWidgetId: parent.props.id,
-                  targetSlotName: parentSlotName,
-                  targetPosition: parent.props.slots[parentSlotName].findIndex(
+                  targetSlotName: parentSlotPath,
+                  targetPosition: parent.props.slots[parentSlotPath].findIndex(
                     (widgetId) => widget.id === widgetId,
                   ),
                 })
               }
               break
             case DropIndicatorInsertPositionEnum.After:
-              if (parent && parentSlotName) {
+              if (parent && parentSlotPath) {
                 addWidget({
                   sourceWidget: item.widget,
                   targetWidgetId: parent.props.id,
-                  targetSlotName: parentSlotName,
+                  targetSlotName: parentSlotPath,
                   targetPosition:
-                    parent.props.slots[parentSlotName].findIndex(
+                    parent.props.slots[parentSlotPath].findIndex(
                       (widgetId) => widget.id === widgetId,
                     ) + 1,
                 })
@@ -235,8 +235,8 @@ export const useWidgetDrop = ({
               addWidget({
                 sourceWidget: item.widget,
                 targetWidgetId: widget.id,
-                targetSlotName: slotName,
-                targetPosition: widget.slots[slotName].length,
+                targetSlotName: slotPath,
+                targetPosition: widget.slots[slotPath].length,
               })
               break
             default:
@@ -279,7 +279,7 @@ export const useWidgetDrop = ({
         const insertPosition: DropIndicatorInsertPositionEnum = match<
           boolean,
           DropIndicatorInsertPositionEnum
-        >(!!slotName)
+        >(!!slotPath)
           .with(true, () => {
             if (inHorizontalLimit || inVerticalLimit) {
               return dropPosition
@@ -295,7 +295,7 @@ export const useWidgetDrop = ({
               position: afterVertical
                 ? DropIndicatorPositionEnum.Bottom
                 : DropIndicatorPositionEnum.Top,
-              show: slotName ? inVerticalLimit : true,
+              show: slotPath ? inVerticalLimit : true,
               insertPosition,
             }
           })
@@ -304,7 +304,7 @@ export const useWidgetDrop = ({
               position: afterHorizontal
                 ? DropIndicatorPositionEnum.Right
                 : DropIndicatorPositionEnum.Left,
-              show: slotName ? inHorizontalLimit : true,
+              show: slotPath ? inHorizontalLimit : true,
               insertPosition,
             }
           })
@@ -324,7 +324,7 @@ export const useWidgetDrop = ({
       getWidgetRelationByWidgetId,
       moveWidget,
       setDropIndicator,
-      slotName,
+      slotPath,
       widget,
       widgetFactory.widgetByType,
     ],
@@ -337,7 +337,7 @@ export const useWidgetDrop = ({
   useWidgetBgColor({
     isActive,
     element,
-    isContainer: !!slotName,
+    isContainer: !!slotPath,
   })
   useWidgetMinHeight({
     canSetMinHeight: isEmptySlot,

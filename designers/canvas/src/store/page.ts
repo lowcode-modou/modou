@@ -1,12 +1,11 @@
 // TODO START 完善后移动到 core
 import { custom } from '@recoiljs/refine'
-import { DataNode } from 'antd/es/tree'
 import produce from 'immer'
-import { head, isEmpty, keyBy } from 'lodash'
+import { isEmpty, keyBy } from 'lodash'
 import { DefaultValue, atom, selector, selectorFamily } from 'recoil'
 import { syncEffect } from 'recoil-sync'
 
-import { AppFactory, Page, WidgetBaseProps, WidgetSlot } from '@modou/core'
+import { Page, WidgetBaseProps } from '@modou/core'
 
 import { generateRecoilKey } from '../utils'
 
@@ -99,7 +98,7 @@ export const widgetSelector = selectorFamily<WidgetBaseProps, string>({
 
 interface RelationWidget {
   props: WidgetBaseProps
-  slotName?: string
+  slotPath?: string
   parent?: RelationWidget
 }
 
@@ -119,17 +118,17 @@ export const widgetRelationByWidgetIdSelector =
           }
           const parent = pre[widgetId]
           if (!isEmpty(cur.slots)) {
-            Object.entries(cur.slots).forEach(([slotName, slotChildren]) => {
+            Object.entries(cur.slots).forEach(([slotPath, slotChildren]) => {
               slotChildren.forEach((widgetId) => {
                 if (!Reflect.has(pre, widgetId)) {
                   pre[widgetId] = {
                     props: widgetById[widgetId],
                     parent,
-                    slotName,
+                    slotPath,
                   }
                 } else {
                   pre[widgetId].parent = parent
-                  pre[widgetId].slotName = slotName
+                  pre[widgetId].slotPath = slotPath
                 }
               })
             })

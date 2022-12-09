@@ -23,11 +23,11 @@ const WidgetWrapper: FC<{
   const WidgetComponent = widgetDef.component
 
   const renderSlots = useMemo(() => {
-    return Object.entries(widget.slots || {})
-      .map(([key, widgetIds]) => {
+    return Object.entries(widgetDef.metadata.slots || {})
+      .map(([slotPath, slot]) => {
         return {
-          key,
-          elements: widgetIds.map((widgetId) => (
+          key: slotPath,
+          elements: widget.slots[slotPath]?.map((widgetId) => (
             <WidgetWrapper key={widgetId} widgetId={widgetId} />
           )),
         }
@@ -38,9 +38,9 @@ const WidgetWrapper: FC<{
         Reflect.set(pre, key, elements)
         return pre
       }, {})
-  }, [widget.slots])
+  }, [widget.slots, widgetDef.metadata.slots])
 
-  const renderSlotNames = useMemo(() => {
+  const renderSlotPaths = useMemo(() => {
     return Object.keys(renderSlots).reduce<Record<string, string>>(
       (pre, cur) => {
         pre[cur] = cur
@@ -71,7 +71,7 @@ const WidgetWrapper: FC<{
       {...widgetState}
       updateState={updateWidgetState}
       renderSlots={renderSlots}
-      renderSlotNames={renderSlotNames}
+      renderSlotPaths={renderSlotPaths}
     />
   )
 }

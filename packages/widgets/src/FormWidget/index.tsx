@@ -9,7 +9,7 @@ import { MRSchemeFormWidgetState } from './metadata'
 
 export const FormWidget: FC<
   InferWidgetState<typeof MRSchemeFormWidgetState>
-> = ({ readonly, instance, renderSlots, renderSlotNames }) => {
+> = ({ readonly, instance, renderSlots, renderSlotPaths }) => {
   useEffect(() => {
     console.log('我是FormWidget 我重新渲染了', instance.widgetId)
     console.log(renderSlots.children)
@@ -17,7 +17,9 @@ export const FormWidget: FC<
   // TODO COPY SPAN TO FORM ITEM
   return (
     <ProForm
+      data-widget-root
       data-widget-id={instance.widgetId}
+      data-w
       className={classes.wrapper}
       layout="horizontal"
       readonly={readonly}
@@ -29,10 +31,16 @@ export const FormWidget: FC<
         age: 12,
       }}
     >
-      <div data-widget-slot-name={renderSlotNames.header}>
+      <div
+        data-widget-id={instance.widgetId}
+        data-widget-slot-path={renderSlotPaths.header}
+      >
         {renderSlots.header}
       </div>
-      <div data-widget-slot-name={renderSlotNames.children}>
+      <div
+        data-widget-id={instance.widgetId}
+        data-widget-slot-path={renderSlotPaths.children}
+      >
         {renderSlots.children?.map((child) => (
           <Col
             key={`col_${(child as unknown as { key: string })?.key}`}

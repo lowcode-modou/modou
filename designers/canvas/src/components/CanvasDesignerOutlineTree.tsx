@@ -126,8 +126,10 @@ export const CanvasDesignerOutlineTree: FC = () => {
   // FIXME 跨层架拖拽
   return (
     <div className={classes.treeWrapper}>
-      <Tree<OutlineTreeNode>
+      <Tree.DirectoryTree<OutlineTreeNode>
         ref={ref as unknown as any}
+        multiple={false}
+        icon={false}
         // showLine
         allowDrop={allowDrop}
         switcherIcon={<DownOutlined />}

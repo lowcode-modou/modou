@@ -7,18 +7,46 @@ export const generateRecoilKey = (key: string): string => {
 export const getWidgetIdFromElement = (element: HTMLElement): string => {
   return element?.dataset?.widgetId ?? ''
 }
-export const getWidgetSlotNameFromElement = (element: HTMLElement): string => {
-  return element?.dataset?.widgetSlotName ?? ''
+export const getWidgetSlotPathFromElement = (element: HTMLElement): string => {
+  return element?.dataset?.widgetSlotPath ?? ''
 }
 
-export const getElementFromWidgetId = (
+const isRootRawElement = (element: HTMLElement): string => {
+  return JSON.parse(element?.dataset?.widgetRoot ?? 'false')
+}
+
+export const getElementsFromWidgetId = (
+  widgetId: string,
+  document: Document,
+): Element[] | null => {
+  return [...document.querySelectorAll(`[data-widget-id=${widgetId}]`)]
+}
+
+export const getRootElementFromWidgetId = (
   widgetId: string,
   document: Document,
 ): HTMLElement | null => {
-  return document.querySelector(`[data-widget-id=${widgetId}]`)
+  return (
+    document.querySelector(
+      `[data-widget-id=${widgetId}][data-widget-root=true]`,
+    ) ??
+    document.querySelector(
+      `[data-widget-id=${widgetId}]:not([data-widget-slot-path])`,
+    )
+  )
 }
 
-export const getRawElement = (
+export const getSlotElementFromWidgetId = (
+  widgetId: string,
+  slotPath: string,
+  document: Document,
+): HTMLElement | null => {
+  return document.querySelector(
+    `[data-widget-id=${widgetId}][data-widget-path=${slotPath}]`,
+  )
+}
+
+export const getSlotRawElement = (
   target: HTMLElement | null,
   root: HTMLElement | null,
 ): HTMLElement | null => {
@@ -29,5 +57,19 @@ export const getRawElement = (
   if (widgetId) {
     return target
   }
-  return getRawElement(target.parentElement, root)
+  return getSlotRawElement(target.parentElement, root)
+}
+
+export const getRootRawElement = (
+  target: HTMLElement | null,
+  root: HTMLElement | null,
+): HTMLElement | null => {
+  if (!target || target === root) {
+    return null
+  }
+  const widgetId = getWidgetIdFromElement(target)
+  if (widgetId && isRootRawElement(target)) {
+    return target
+  }
+  return getRootRawElement(target.parentElement, root)
 }

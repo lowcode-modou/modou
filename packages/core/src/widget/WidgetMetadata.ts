@@ -170,7 +170,7 @@ export class WidgetMetadata<
               [K in keyof mr.infer<T>['slots']]: typeof HACK_TYPE_REACT_NODE
             },
           ),
-          renderSlotNames: mr.object(
+          renderSlotPaths: mr.object(
             mapValues(mrWidgetProps.shape.slots, (slot) => mr.string()) as {
               [K in keyof mr.infer<T>['slots']]: typeof RENDER_SLOT_NAMES_VALUE
             },

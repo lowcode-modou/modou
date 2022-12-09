@@ -132,7 +132,7 @@ const columns: Array<ProColumns<GithubIssueItem>> = [
 
 export const TableWidget: FC<
   InferWidgetState<typeof MRSchemeTableWidgetState>
-> = ({ instance, renderSlots, renderSlotNames }) => {
+> = ({ instance, renderSlots, renderSlotPaths }) => {
   useEffect(() => {
     console.log('我是Table 我重新渲染了', instance.widgetId)
   })
@@ -140,7 +140,7 @@ export const TableWidget: FC<
   return (
     <ProTable
       data-widget-id={instance.widgetId}
-      data-widget-slot-name={renderSlotNames.children}
+      data-widget-slot-path={renderSlotPaths.children}
       columns={columns}
       dataSource={MOCK_TABLE_DATA.data as any}
       search={false}

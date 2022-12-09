@@ -8,7 +8,7 @@ export const ColWidget: FC<InferWidgetState<typeof MRSchemeColWidgetState>> = ({
   span,
   instance,
   renderSlots,
-  renderSlotNames,
+  renderSlotPaths,
 }) => {
   useEffect(() => {
     console.log('我是Col 我重新渲染了', instance.widgetId)
@@ -16,7 +16,7 @@ export const ColWidget: FC<InferWidgetState<typeof MRSchemeColWidgetState>> = ({
   return (
     <Col
       data-widget-id={instance.widgetId}
-      data-widget-slot-name={renderSlotNames.children}
+      data-widget-slot-path={renderSlotPaths.children}
       span={span}
     >
       {renderSlots.children}
