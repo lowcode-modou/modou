@@ -43,7 +43,7 @@
     "@modou/render": "workspace:^1.0.0",
     "@modou/setters": "workspace:^1.0.0",
     "@modou/simulator": "workspace:^1.0.0",
-    "@modou/widgets": "workspace:^1.0.0",
+    "@modou/widgets-antd": "workspace:^1.0.0",
     "@recoiljs/refine": "^0.1.1",
     "ahooks": "^3.7.0",
     "antd": "^5.0.5",
@@ -72,5 +72,3 @@
     }
   }
 }
-
-

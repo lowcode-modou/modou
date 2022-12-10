@@ -2,7 +2,7 @@ import {
   buttonWidgetMetadata,
   colWidgetMetadata,
   rowWidgetMetadata,
-} from '@modou/widgets'
+} from '@modou/widgets-antd'
 
 import { WidgetBaseProps, WidgetMetadata } from '../../'
 import { generateId } from '../../utils'

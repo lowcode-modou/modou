@@ -20,7 +20,7 @@ import {
   inputWidgetMetadata,
   rowWidgetMetadata,
   tableWidgetMetadata,
-} from '@modou/widgets'
+} from '@modou/widgets-antd'
 
 import { AppFactory } from '../app-factory'
 import { WidgetGroupEnum } from '../types'

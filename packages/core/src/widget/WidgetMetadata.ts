@@ -17,7 +17,7 @@ import {
   MRStringSetterType,
   SETTER_KEY,
 } from '@modou/setters'
-import { InferWidgetState } from '@modou/widgets/src/_'
+import { InferWidgetState } from '@modou/widgets-antd'
 
 import { WidgetBaseProps } from './types'
 

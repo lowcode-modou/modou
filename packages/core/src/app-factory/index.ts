@@ -2,7 +2,7 @@ import { isEqual, pick, unionWith } from 'lodash'
 import { FC } from 'react'
 
 import { BaseSetterProps } from '@modou/setters/src/types'
-import { rowWidgetMetadata } from '@modou/widgets'
+import { rowWidgetMetadata } from '@modou/widgets-antd'
 
 import { Entity, EntityFieldEnum, Page, WidgetGroupEnum } from '../types'
 import { generateId } from '../utils'

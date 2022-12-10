@@ -4,7 +4,7 @@ declare module 'react' {
   interface Attributes {
     ['data-widget-id']?: string
     ['data-widget-slot-path']?: string
-    ['data-widget-root']?: bo
+    ['data-widget-root']?: boolean
   }
 }
 
