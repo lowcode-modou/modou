@@ -1,6 +1,7 @@
 import { createContext, memo } from 'react'
 
 import {
+  ArraySetter,
   BooleanSetter,
   NumberSetter,
   SelectSetter,
@@ -66,6 +67,7 @@ export const defaultAppFactory = AppFactory.create({
     [SetterTypeEnum.String]: StringSetter,
     [SetterTypeEnum.Boolean]: BooleanSetter,
     [SetterTypeEnum.Number]: NumberSetter,
+    [SetterTypeEnum.Array]: ArraySetter,
   },
 })
 

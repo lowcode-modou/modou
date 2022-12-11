@@ -32,34 +32,48 @@ const WidgetPropsPanel: FC = () => {
 
   const { removeWidget } = useRemoveWidget()
 
-  const render = Object.entries(
-    (
-      widgetMetadata.jsonPropsSchema.properties
-        .props as unknown as typeof widgetMetadata.jsonPropsSchema
-    ).properties,
-  )
+  const propsDef = (
+    widgetMetadata.jsonPropsSchema.properties
+      .props as unknown as typeof widgetMetadata.jsonPropsSchema
+  ).properties
+
+  const render = Object.entries(propsDef)
     .filter(([, value]) => Reflect.has(value, SETTER_KEY))
     .map(([key, value]) => {
       const setterOptions: BaseMRSetterOptions & { type: SetterTypeEnum } =
         Reflect.get(value, SETTER_KEY)
       const Setter = widgetFactory.setterByType[setterOptions.type]
+      const NativeSetter = widgetMetadata.setters?.[setterOptions.native ?? '']
       return (
         <Form.Item
           tooltip={setterOptions.description}
           key={key}
           label={setterOptions.label}
         >
-          <Setter
-            options={setterOptions}
-            value={selectWidget.props[key]}
-            onChange={(value: any) => {
-              setWidget(
-                produce((draft) => {
-                  draft.props[key] = value
-                }),
-              )
-            }}
-          />
+          {NativeSetter ? (
+            <NativeSetter
+              value={selectWidget.props[key]}
+              onChange={(value: any) => {
+                setWidget(
+                  produce((draft) => {
+                    draft.props[key] = value
+                  }),
+                )
+              }}
+            />
+          ) : (
+            <Setter
+              options={setterOptions}
+              value={selectWidget.props[key]}
+              onChange={(value: any) => {
+                setWidget(
+                  produce((draft) => {
+                    draft.props[key] = value
+                  }),
+                )
+              }}
+            />
+          )}
         </Form.Item>
       )
     })
@@ -71,6 +85,7 @@ const WidgetPropsPanel: FC = () => {
       className={classes.panel}
       labelWrap
       size={'small'}
+      layout={'vertical'}
     >
       <Form.Item label="组件ID">
         <Typography.Text type="danger">{selectedWidgetId}</Typography.Text>
@@ -150,6 +165,15 @@ const classes = {
 					flex: 1 !important;
 				}
 			}
+      
 		}
+		.ant-row{
+      &.ant-form-item-row{
+        .ant-form-item-label{
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+    }
   `,
 }

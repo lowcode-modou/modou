@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
     "strict": true,
     "declaration": true,
     "skipLibCheck": true,
@@ -7,9 +10,7 @@
     "jsx": "react-jsx",
     "baseUrl": "./",
     "paths": {
-      "@@/*": [".dumi/tmp/*"],
-      "@modou/widgets-modou": ["src"],
-      "@modou/widgets-modou/*": ["src/*", "*"]
+      "@@/*": [".dumi/tmp/*"]
     }
   }
 }

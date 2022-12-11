@@ -53,6 +53,7 @@ export const formWidgetMetadata = WidgetMetadata.createMetadata<
       name: '表头',
     },
   },
+  setters: {},
   mrPropsScheme: MRSchemeFormWidgetProps,
   mrStateScheme: MRSchemeFormWidgetState,
   initState: ({ id }) => {

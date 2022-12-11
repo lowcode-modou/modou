@@ -40,6 +40,7 @@ export const colWidgetMetadata = WidgetMetadata.createMetadata<
       name: '默认插槽',
     },
   },
+  setters: {},
   mrPropsScheme: MRSchemeColWidgetProps,
   mrStateScheme: MRSchemeColWidgetState,
   initState: ({ id }) => {

@@ -69,6 +69,7 @@ export const rowWidgetMetadata = WidgetMetadata.createMetadata<
       name: '默认插槽',
     },
   },
+  setters: {},
   initState: ({ id }) => {
     return {
       instance: {

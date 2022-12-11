@@ -6,6 +6,9 @@ declare module 'react' {
     ['data-widget-slot-path']?: string
     ['data-widget-root']?: boolean
   }
+  interface CSSProperties {
+    [key: `--${string}`]: string | number
+  }
 }
 
 // TODO 扩展 dataset 类型定义

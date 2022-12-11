@@ -42,6 +42,7 @@ export const inputWidgetMetadata = WidgetMetadata.createMetadata({
   mrPropsScheme: MRSchemeInputWidgetProps,
   mrStateScheme: MRSchemeInputWidgetState,
   slots: {},
+  setters: {},
   initState: ({ id, props }) => {
     return {
       value: props.defaultValue,

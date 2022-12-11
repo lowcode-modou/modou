@@ -1,6 +1,6 @@
 // import { SelectSetter } from '@modou/setters'
 // export type MRSelectOptions = Parameters<typeof SelectSetter>[0]['options']
-import { ReactNode } from 'react'
+import { FC, ReactNode } from 'react'
 
 import { MRTypeAny, mr } from '@modou/refine'
 
@@ -22,3 +22,5 @@ export type InferWidgetState<T extends MRTypeAny> = {
       | ((state: mr.infer<T>) => Partial<mr.infer<T>>),
   ) => void
 }
+
+export type InterWidgetProps<T extends MRTypeAny> = mr.infer<T>

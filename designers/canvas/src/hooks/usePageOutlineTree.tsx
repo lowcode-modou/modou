@@ -78,7 +78,7 @@ export const usePageOutlineTree = () => {
         children: [],
         selectable: false,
         className: 'outline-node-slot',
-        switcherIcon: <ClusterOutlined />,
+        // switcherIcon: <ClusterOutlined />,
       }
       const parentTreeNode = parentTreeNodes.pop()
       parentTreeNode?.children.unshift(curTreeNode)

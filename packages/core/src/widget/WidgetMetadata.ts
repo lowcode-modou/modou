@@ -1,5 +1,5 @@
 import { mapValues } from 'lodash'
-import { ReactNode } from 'react'
+import { FC, ReactNode } from 'react'
 
 import {
   JsonSchema7ObjectType,
@@ -11,6 +11,8 @@ import {
   schemeToJsonDefault,
 } from '@modou/refine'
 import {
+  BaseSetterProps,
+  MRArraySetterType,
   MRBooleanSetterType,
   MRNumberSetterType,
   MRSelectSetterType,
@@ -39,6 +41,8 @@ interface BaseWidgetMetadata<
   widgetType: WidgetType
   widgetName: string
   slots: WidgetSlots<S>
+  // TODO FIX TYPE
+  setters: Record<string, FC<BaseSetterProps<any>>>
   mrPropsScheme: PropsMRScheme
   mrStateScheme: StateMRScheme
   initState: (
@@ -59,6 +63,7 @@ export interface MRWidgetProps {
       | MRStringSetterType
       | MRBooleanSetterType
       | MRSelectSetterType
+      | MRArraySetterType
     def: MRTypeAny
   }
 }
@@ -76,6 +81,7 @@ export class WidgetMetadata<
     mrPropsScheme,
     mrStateScheme,
     slots,
+    setters,
     icon,
     initState,
   }: BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>) {
@@ -91,6 +97,8 @@ export class WidgetMetadata<
       mrStateScheme,
     ) as unknown as JsonSchema7ObjectType
     this.slots = slots
+    // TODO FIX TYPE
+    this.setters = setters
     this.icon = icon
     this.initState = initState
   }
@@ -105,6 +113,7 @@ export class WidgetMetadata<
   jsonStateSchema: JsonSchema7ObjectType
   initState
   slots: WidgetSlots<S>
+  setters: Record<string, FC<BaseSetterProps<any>>>
 
   static createMetadata<
     PropsMRScheme extends MRScheme,
