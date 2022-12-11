@@ -102,6 +102,7 @@ const classes = {
     border-bottom: 0;
   `,
   designerPanelTabs: mcss`
+    height: 100%;
 		& > .ant-tabs-nav {
 			margin-bottom: 0;
 		}
@@ -119,5 +120,9 @@ const classes = {
 				}
 			}
 		}
+    & .ant-tabs-content-holder{
+      height: 100%;
+      overflow-y: auto;
+    }
   `,
 }

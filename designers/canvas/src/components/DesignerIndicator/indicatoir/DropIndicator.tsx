@@ -12,6 +12,7 @@ import {
 } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { AppFactoryContext } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
 
 import { SimulatorInstanceContext } from '../../../contexts'
@@ -24,7 +25,7 @@ import {
 } from '../../../store'
 import {
   getWidgetIdFromElement,
-  getWidgetSlotNameFromElement,
+  getWidgetSlotPathFromElement,
 } from '../../../utils'
 
 const DROP_INDICATOR_PX = '3px'
@@ -32,23 +33,25 @@ const DROP_INDICATOR_OFFSET_PX = '-2px'
 
 interface DropElement {
   widgetId: string
-  slotName: string
+  slotPath: string
 }
 
-const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
+const WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
   const widgets = useRecoilValue(widgetsSelector)
+  const appFactory = useContext(AppFactoryContext)
   // FIXME element 有可能会重复
   const elementSelector = `[data-widget-id=${widgetId}]${
-    slotName ? `[data-widget-slot-name=${slotName}]` : ''
+    slotPath ? `[data-widget-slot-path=${slotPath}]` : ''
   }`
   const simulatorInstance = useContext(SimulatorInstanceContext)
 
   const element = simulatorInstance.document!.querySelector(
     elementSelector,
   ) as HTMLElement
+
   const { isEmptySlot, widget, isActive } = useWidgetDrop({
     widgetId,
-    slotName,
+    slotPath,
     element,
   })
   const dropIndicator = useRecoilValue(dropIndicatorAtom)
@@ -107,6 +110,8 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
 
   const theme = useTheme()
 
+  const widgetMetadata = appFactory.widgetByType[widget.widgetType].metadata
+
   return (
     <>
       {isEmptySlot ? (
@@ -118,7 +123,7 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
         >
           <Col>
             <Typography.Text type={'secondary'} strong>
-              {widget.widgetType}
+              {widgetMetadata.widgetName}-{widgetMetadata.slots[slotPath].name}
             </Typography.Text>
           </Col>
         </Row>
@@ -140,7 +145,8 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotName }) => {
 
 const widgetDropClasses = {
   emptyWrapper: mcss`
-		border: 1px dashed rgba(0,0,0,.6);
+		border: 1px solid rgba(0,0,0,.1);
+    background-color: rgba(0,0,0,.05);
 		position: absolute;
 		pointer-events: none;
   `,
@@ -164,7 +170,7 @@ export const DropIndicator: FC = () => {
   const [dropElements, setDropElements] = useState<
     Array<{
       widgetId: string
-      slotName: string
+      slotPath: string
     }>
   >([])
   const simulatorInstance = useContext(SimulatorInstanceContext)
@@ -178,7 +184,7 @@ export const DropIndicator: FC = () => {
       elements
         .map((element) => ({
           widgetId: getWidgetIdFromElement(element),
-          slotName: getWidgetSlotNameFromElement(element),
+          slotPath: getWidgetSlotPathFromElement(element),
         }))
         .filter((widget) => !!widget),
     )
@@ -195,11 +201,11 @@ export const DropIndicator: FC = () => {
   }, [dropElements, widgetById])
   return (
     <>
-      {dropElementsRendered.map(({ widgetId, slotName }) => (
+      {dropElementsRendered.map(({ widgetId, slotPath }) => (
         <MemoWidgetDrop
-          key={widgetId}
+          key={widgetId + slotPath}
           widgetId={widgetId}
-          slotName={slotName}
+          slotPath={slotPath}
         />
       ))}
     </>

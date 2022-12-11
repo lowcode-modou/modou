@@ -1,19 +1,23 @@
+import { ROUTER_PATH } from '@/constants'
 import { EntityRouterParamsKey, PageRouterParamsKey } from '@/types'
+import { generateRouterPath } from '@/utils/router'
 import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
-import { Avatar, Button, Layout, Menu } from 'antd'
-import produce from 'immer'
-import { isEmpty } from 'lodash'
-import { ComponentProps, FC, useCallback, useEffect, useState } from 'react'
-import { Outlet, useParams } from 'react-router-dom'
-import { useSetRecoilState } from 'recoil'
+import { useMount } from 'ahooks'
+import { Layout, Menu } from 'antd'
+import { ComponentProps, FC, useCallback, useState } from 'react'
+import {
+  Outlet,
+  matchPath,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
 
-import { Metadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
-// import classes from './app.css'
 import { ModuleManager } from '../components'
+import { AppHeader } from '../components/AppHeader'
 import { AppHome } from '../components/AppHome'
-import { MOCK_PAGE_ID, MOCK_ROOT_WIDGET_ID, MOCK_WIDGETS } from '../mock'
 import { ModuleEnum } from '../types'
 
 const menuItems: ComponentProps<typeof Menu>['items'] = [
@@ -32,83 +36,57 @@ const menuItems: ComponentProps<typeof Menu>['items'] = [
 export const App: FC = () => {
   const params = useParams<PageRouterParamsKey | EntityRouterParamsKey>()
   const [module, setModule] = useState<ModuleEnum | ''>('')
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
 
+  const isPageModule = matchPath(ROUTER_PATH.PAGE, pathname)
+  const isEntityModule =
+    matchPath(ROUTER_PATH.Entity, pathname) ??
+    matchPath(ROUTER_PATH.Entities, pathname)
   const updateModule = useCallback(() => {
-    if (params.pageId) {
+    if (isPageModule) {
       setModule(ModuleEnum.Page)
-    } else if (params.entityId) {
+    } else if (isEntityModule) {
       setModule(ModuleEnum.Entity)
     } else {
       setModule('')
     }
-  }, [params])
-  useEffect(() => {
-    updateModule()
-  }, [updateModule])
+  }, [isEntityModule, isPageModule])
+  useMount(updateModule)
 
   const [visibleModuleManger, setVisibleModuleManger] = useState(false)
 
   const handleClickMenuItem: ComponentProps<typeof Menu>['onClick'] = ({
     key,
-    keyPath,
   }) => {
-    if (key === module) {
-      setVisibleModuleManger((prevState) => !prevState)
-    } else {
-      setModule(key as ModuleEnum)
-      setVisibleModuleManger(true)
+    switch (key) {
+      case ModuleEnum.Page:
+        if (key === module) {
+          setVisibleModuleManger((prevState) => !prevState)
+        } else {
+          setModule(key as ModuleEnum)
+          setVisibleModuleManger(true)
+        }
+        break
+      case ModuleEnum.Entity:
+        setVisibleModuleManger(false)
+        setModule(key as ModuleEnum)
+        navigate(
+          generateRouterPath(ROUTER_PATH.Entities, {
+            appId: params.appId,
+          }),
+        )
+        break
+      default:
     }
   }
 
-  // MOCK
-  const setApp = useSetRecoilState(Metadata.appAtom)
-  useEffect(() => {
-    const MOCK_PAGES = [
-      {
-        name: '大漠孤烟直',
-        id: MOCK_PAGE_ID,
-        widgets: MOCK_WIDGETS,
-        rootWidgetId: MOCK_ROOT_WIDGET_ID,
-      },
-      {
-        name: '测试',
-        id: MOCK_PAGE_ID + '___',
-        widgets: MOCK_WIDGETS,
-        rootWidgetId: MOCK_ROOT_WIDGET_ID,
-      },
-      {
-        name: '长河落日圆',
-        id: MOCK_PAGE_ID + '________',
-        widgets: MOCK_WIDGETS,
-        rootWidgetId: MOCK_ROOT_WIDGET_ID,
-      },
-    ]
-    setApp(
-      produce((draft) => {
-        if (isEmpty(draft.pages)) {
-          draft.pages = MOCK_PAGES
-        } else {
-          return draft
-        }
-      }),
-    )
-  }, [setApp])
-
-  return Object.keys(params).length === 1 ? (
+  const isAppHome = matchPath(ROUTER_PATH.APP, pathname)
+  return isAppHome ? (
     <AppHome />
   ) : (
     <Layout className={classes.layout}>
-      <Layout.Header className={classes.header}>
-        <div className={classes.headerLogoWrapper}>
-          <img src="/modou.svg" alt="" />
-        </div>
-        <div className={classes.headerRight}>
-          <Button type="link" href="https://runtime.modou.ink" target="_blank">
-            预览
-          </Button>
-          <Avatar src="https://joeschmoe.io/api/v1/random" />
-        </div>
-      </Layout.Header>
+      <AppHeader />
       <Layout>
         <Layout.Sider
           className={classes.sider}
@@ -147,33 +125,6 @@ const classes = {
   layout: mcss`
     height: 100%;
   `,
-  header: mcss`
-    height: 48px !important;
-    line-height: 48px !important;
-    padding: 0 !important;
-    z-index: 999999 !important;
-    background-color: white !important;
-    box-shadow: rgba(0, 0, 0, 0) 0 0 0 0, rgba(0, 0, 0, 0) 0 0 0 0,
-      rgba(0, 0, 0, 0.1) 0 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  `,
-  headerLogoWrapper: mcss`
-    width: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    img {
-      height: 32px;
-    }
-  `,
-  headerRight: mcss`
-    padding-right: 16px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  `,
   menu: mcss`
     height: 100%;
   `,
@@ -181,7 +132,7 @@ const classes = {
     position: relative;
   `,
   sider: mcss`
-    z-index: 2000 !important;
+    z-index: 9 !important;
     position: relative !important;
     padding: 0 !important;
     font-size: 16px !important;
@@ -189,7 +140,9 @@ const classes = {
       display: none;
     }
     .ant-menu-item {
-      padding: 0 calc(50% - 16px / 2) !important;
+      //padding: 0 calc(50% - 16px / 2) !important;
+      padding-left: 16px!important;
+      padding-inline: 16px;
       border: 1px solid transparent !important;
       &::after {
         display: none !important;

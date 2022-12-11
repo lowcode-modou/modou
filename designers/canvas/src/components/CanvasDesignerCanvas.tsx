@@ -1,24 +1,19 @@
-import { useBoolean } from 'ahooks'
-import { Spin, Tooltip } from 'antd'
+import { Spin } from 'antd'
 import {
   FC,
   ReactElement,
   RefObject,
   cloneElement,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
 } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { AppFactoryContext } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
-import { ReactRender } from '@modou/render'
 
 import { SimulatorInstanceContext } from '../contexts'
-// import { SimulatorPC } from '@modou/simulator'
 import { pageSelector } from '../store'
 import { CanvasDesignerKeyPress } from './CanvasDesignerKeyPress'
 import { DesignerIndicator } from './DesignerIndicator'
@@ -96,9 +91,9 @@ export const CanvasDesignerCanvas: FC<{
 
 const classes = {
   wrapper: mcss`
-    height: 100vh;
     position: relative;
     padding: 16px;
+    height: 100%;
   `,
   spinWrapper: mcss`
     height: 100%;

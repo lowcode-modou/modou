@@ -14,12 +14,12 @@ export const useMoveWidget = () => {
     ({
       sourceWidgetId,
       targetPosition,
-      targetSlotName,
+      targetSlotPath,
       targetWidgetId,
     }: {
       sourceWidgetId: string
       targetWidgetId: string
-      targetSlotName: string
+      targetSlotPath: string
       targetPosition: number
     }) => {
       setWidgets(
@@ -28,28 +28,28 @@ export const useMoveWidget = () => {
           draft.forEach((widget) => {
             // 删除
             if (isObject(widget.slots)) {
-              Object.keys(widget.slots).forEach((slotName) => {
+              Object.keys(widget.slots).forEach((slotPath) => {
                 if (sourceIndex !== -1) {
                   return
                 }
-                sourceIndex = widget.slots[slotName].findIndex(
+                sourceIndex = widget.slots[slotPath].findIndex(
                   (slotWidgetId) => slotWidgetId === sourceWidgetId,
                 )
                 if (sourceIndex !== -1) {
-                  widget.slots[slotName].splice(sourceIndex, 1)
+                  widget.slots[slotPath].splice(sourceIndex, 1)
                 }
               })
             }
             // 添加
-            if (widget.widgetId === targetWidgetId) {
+            if (widget.id === targetWidgetId) {
               // 如果是同一个parent的同一个slot内移动
               const isSameParentSlot =
-                widgetRelationByWidgetId[sourceWidgetId]?.parent?.props
-                  .widgetId === targetWidgetId &&
-                widgetRelationByWidgetId[sourceWidgetId].slotName ===
-                  targetSlotName
+                widgetRelationByWidgetId[sourceWidgetId]?.parent?.props.id ===
+                  targetWidgetId &&
+                widgetRelationByWidgetId[sourceWidgetId].slotPath ===
+                  targetSlotPath
               if (isSameParentSlot) {
-                widget.slots[targetSlotName].splice(
+                widget.slots[targetSlotPath].splice(
                   sourceIndex < targetPosition
                     ? targetPosition - 1
                     : targetPosition,
@@ -57,7 +57,7 @@ export const useMoveWidget = () => {
                   sourceWidgetId,
                 )
               } else {
-                widget.slots[targetSlotName].splice(
+                widget.slots[targetSlotPath].splice(
                   targetPosition,
                   0,
                   sourceWidgetId,

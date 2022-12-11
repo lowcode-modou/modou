@@ -21,6 +21,7 @@ export interface BaseSetterProps<T, O = any> {
 export interface BaseMRSetterOptions {
   label: string
   description?: string
+  native?: string
 }
 
 // export type MRSetter<T extends BaseMRSetterOptions> =

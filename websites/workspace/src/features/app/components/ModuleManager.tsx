@@ -1,3 +1,4 @@
+import { useMount } from 'ahooks'
 import { Drawer, Input } from 'antd'
 import { ComponentProps, FC, useEffect, useRef, useState } from 'react'
 import { match } from 'ts-pattern'
@@ -27,9 +28,18 @@ export const ModuleManager: FC<{
 
   const moduleItemAddElementRef = useRef<HTMLElement>(null)
 
+  const [initialized, setInitialize] = useState(false)
+
+  useEffect(() => {
+    if (visible) {
+      setInitialize(true)
+    }
+  }, [visible])
+
   return (
     <div className={classes.drawerWrapper}>
       <Drawer
+        zIndex={8}
         title={
           <div>
             <div className={classes.drawerTitleWrapper}>
@@ -52,24 +62,28 @@ export const ModuleManager: FC<{
         }}
         className={classes.drawer}
         placement="left"
-        width={288}
+        width={220}
         maskClosable
         closable={false}
         getContainer={false}
         onClose={onClose}
         open={visible}
       >
-        {module === ModuleEnum.Page && (
-          <ModuleManagerPage
-            itemAddRef={moduleItemAddElementRef.current}
-            searchVal={searchVal}
-          />
-        )}
-        {module === ModuleEnum.Entity && (
-          <ModuleManagerEntity
-            itemAddRef={moduleItemAddElementRef.current}
-            searchVal={searchVal}
-          />
+        {initialized && (
+          <>
+            {module === ModuleEnum.Page && (
+              <ModuleManagerPage
+                itemAddRef={moduleItemAddElementRef.current}
+                searchVal={searchVal}
+              />
+            )}
+            {module === ModuleEnum.Entity && (
+              <ModuleManagerEntity
+                itemAddRef={moduleItemAddElementRef.current}
+                searchVal={searchVal}
+              />
+            )}
+          </>
         )}
       </Drawer>
     </div>

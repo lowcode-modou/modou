@@ -13,28 +13,28 @@ export const useAddWidget = () => {
       sourceWidget,
       targetWidgetId,
       targetPosition,
-      targetSlotName,
+      targetSlotPath,
     }: {
       sourceWidget: WidgetBaseProps
       targetWidgetId: string
       targetPosition: number
-      targetSlotName: string
+      targetSlotPath: string
     }) => {
       setWidgets(
         produce((draft) => {
           const targetWidget = draft.find(
-            (widget) => widget.widgetId === targetWidgetId,
+            (widget) => widget.id === targetWidgetId,
           )
           if (!targetWidget) {
             return
           }
           draft.push(sourceWidget)
-          targetWidget.slots[targetSlotName].splice(
+          targetWidget.slots[targetSlotPath].splice(
             targetPosition,
             0,
-            sourceWidget.widgetId,
+            sourceWidget.id,
           )
-          // targetWidget.slots[targetSlotName].splice(0, 1)
+          // targetWidget.slots[targetSlotPath].splice(0, 1)
         }),
       )
     },

@@ -1,17 +1,24 @@
 import { DownOutlined } from '@ant-design/icons'
 import { Tree } from 'antd'
+import { head } from 'lodash'
 import type RcTree from 'rc-tree'
-import React, { ComponentProps, FC, useContext, useRef } from 'react'
+import React, { ComponentProps, FC, useRef } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
+import { match } from 'ts-pattern'
 
-import { AppFactoryContext } from '@modou/core'
+import { WidgetBaseProps } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
 import { useMoveWidget } from '../hooks'
 import {
-  WidgetTreeNode,
-  pageOutlineTreeSelector,
+  OutlineTreeNode,
+  OutlineTreeNodeSlot,
+  OutlineTreeNodeWidget,
+  usePageOutlineTree,
+} from '../hooks/usePageOutlineTree'
+import {
   selectedWidgetIdAtom,
+  widgetByIdSelector,
   widgetRelationByWidgetIdSelector,
 } from '../store'
 
@@ -22,109 +29,116 @@ enum DropPositionEnum {
 }
 
 export const CanvasDesignerOutlineTree: FC = () => {
-  const pageOutlineTree = useRecoilValue(pageOutlineTreeSelector)
+  const { treeData: pageOutlineTree } = usePageOutlineTree()
   const [selectedWidgetId, setSelectedWidgetId] =
     useRecoilState(selectedWidgetIdAtom)
   const selectedKeys = [selectedWidgetId || pageOutlineTree.key]
   const widgetRelationByWidgetId = useRecoilValue(
     widgetRelationByWidgetIdSelector,
   )
+  const widgetById = useRecoilValue(widgetByIdSelector)
   const { moveWidget } = useMoveWidget()
 
-  const appFactory = useContext(AppFactoryContext)
+  // const appFactory = useContext(AppFactoryContext)
 
   const onSelect: ComponentProps<typeof Tree>['onSelect'] = ([key]) => {
     const widgetId = key === pageOutlineTree.key ? '' : key
     setSelectedWidgetId(widgetId as string)
   }
 
-  const allowDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['allowDrop'] = ({
-    dropNode,
-    dropPosition,
-    dragNode,
-  }) => {
-    // console.log('dropNode', dropNode, dropPosition)
-    const { widget } = dropNode
-    if (!widget) {
+  const allowDrop: ComponentProps<
+    typeof Tree<OutlineTreeNode>
+  >['allowDrop'] = ({ dropNode, dropPosition, dragNode }) => {
+    if (dragNode.nodeType === 'slot' || dragNode.nodeType === 'page') {
       return false
     }
-    const widgetMetadata = appFactory.widgetByType[widget.widgetType].metadata
-
-    // console.log(
-    //   'dropPosition',
-    //   dropPosition,
-    //   widget.widgetId,
-    //   widget.widgetName,
-    // )
-
-    if (dropPosition === DropPositionEnum.Before) {
-      return !!widgetRelationByWidgetId[widget.widgetId].parent
-    } else if (dropPosition === DropPositionEnum.Inner) {
-      return !!widgetMetadata.slots?.children
-    } else if (dropPosition === DropPositionEnum.After) {
-      return !!widgetRelationByWidgetId[widget.widgetId].parent
+    if (dropNode.nodeType === 'page') {
+      return false
     }
+
+    if (dropNode.nodeType === 'slot') {
+      return dropPosition === DropPositionEnum.Inner
+    }
+    if (dropNode.nodeType === 'widget') {
+      return dropPosition !== DropPositionEnum.Inner
+    }
+
     return false
   }
 
-  const onDrop: ComponentProps<typeof Tree<WidgetTreeNode>>['onDrop'] = (
-    info,
-  ) => {
-    const dropPos = info.node.pos.split('-')
+  const onDrop: ComponentProps<typeof Tree<OutlineTreeNode>>['onDrop'] = ({
+    dragNode,
+    node: dropNode,
+    node: { pos },
+    dropPosition: _dropPosition,
+  }) => {
+    const dropPos = pos.split('-')
     const dropPosition: DropPositionEnum =
-      info.dropPosition - Number(dropPos[dropPos.length - 1])
+      _dropPosition - Number(dropPos[dropPos.length - 1])
 
-    const dragWidget = info.dragNode.widget
-    const dropWidget = info.node.widget
-    if (!dragWidget || !dropWidget) {
+    const dragWidget = (dragNode as unknown as OutlineTreeNodeWidget).widget
+    if (dropNode.nodeType !== 'slot' && dropNode.nodeType !== 'widget') {
       return
     }
+    const [parentWidget, parentSlotPath] = match<
+      typeof dropNode.nodeType,
+      [WidgetBaseProps, string]
+    >(dropNode.nodeType)
+      .with('slot', () => [
+        widgetById[(dropNode as unknown as OutlineTreeNodeSlot).slot.widgetId],
+        (dropNode as unknown as OutlineTreeNodeSlot).slot.path,
+      ])
+      .with('widget', () => [
+        widgetRelationByWidgetId[
+          (dropNode as unknown as OutlineTreeNodeWidget).widget.id
+        ].parent!.props,
+        widgetRelationByWidgetId[
+          (dropNode as unknown as OutlineTreeNodeWidget).widget.id
+        ].slotPath,
+      ])
+      .exhaustive()
 
-    const parent = widgetRelationByWidgetId[dropWidget.widgetId].parent
-
-    // TODO 替换真实的 SLOT NAME
-    const parentSlotName = 'children'
     switch (dropPosition) {
       case DropPositionEnum.Before:
-        if (parent && parentSlotName) {
+        if (parentWidget && parentSlotPath) {
           moveWidget({
-            sourceWidgetId: dragWidget.widgetId,
-            targetWidgetId: parent.props.widgetId,
-            targetSlotName: parentSlotName,
-            targetPosition: parent.props.slots[parentSlotName].findIndex(
-              (widgetId) => dropWidget.widgetId === widgetId,
+            sourceWidgetId: dragWidget.id,
+            targetWidgetId: parentWidget.id,
+            targetSlotPath: parentSlotPath,
+            targetPosition: parentWidget.slots[parentSlotPath].findIndex(
+              (widgetId) =>
+                (dropNode as OutlineTreeNodeWidget).widget.id === widgetId,
             ),
           })
         }
         break
       case DropPositionEnum.After:
-        if (parent && parentSlotName) {
+        if (parent && parentSlotPath) {
           moveWidget({
-            sourceWidgetId: dragWidget.widgetId,
-            targetWidgetId: parent.props.widgetId,
-            targetSlotName: parentSlotName,
-            targetPosition:
-              parent.props.slots[parentSlotName].findIndex(
-                (widgetId) => dropWidget.widgetId === widgetId,
-              ) + 1,
+            sourceWidgetId: dragWidget.id,
+            targetWidgetId: parentWidget.id,
+            targetSlotPath: parentSlotPath,
+            targetPosition: parentWidget.slots[parentSlotPath].findIndex(
+              (widgetId) =>
+                (dropNode as OutlineTreeNodeWidget).widget.id === widgetId,
+            ),
           })
         }
         break
       case DropPositionEnum.Inner:
         moveWidget({
-          sourceWidgetId: dragWidget.widgetId,
-          targetWidgetId: dropWidget.widgetId,
-          targetSlotName: parentSlotName,
+          sourceWidgetId: dragWidget.id,
+          targetWidgetId: parentWidget.id,
+          targetSlotPath: parentSlotPath,
           targetPosition: 0,
         })
         break
       default:
     }
-    console.log('dropPosition', dropPosition, info)
   }
 
   // TODO 支持大纲树和其画布及面板组件互相拖拽 IMPORTANT
-  const ref = useRef<RcTree<WidgetTreeNode>>()
+  const ref = useRef<RcTree<OutlineTreeNode>>()
   // useEffect(() => {
   //   console.log('tree.ref', ref.current?.state.flattenNodes)
   // })
@@ -132,9 +146,11 @@ export const CanvasDesignerOutlineTree: FC = () => {
   // FIXME 跨层架拖拽
   return (
     <div className={classes.treeWrapper}>
-      <Tree<WidgetTreeNode>
+      <Tree<OutlineTreeNode>
         ref={ref as unknown as any}
-        showLine
+        multiple={false}
+        icon={false}
+        // showLine
         allowDrop={allowDrop}
         switcherIcon={<DownOutlined />}
         selectedKeys={selectedKeys}
@@ -143,6 +159,14 @@ export const CanvasDesignerOutlineTree: FC = () => {
         defaultExpandAll
         draggable={{
           icon: false,
+          nodeDraggable: (node) =>
+            (node as unknown as OutlineTreeNode).nodeType === 'widget' &&
+            (node as unknown as OutlineTreeNodeWidget).widget.id !==
+              (
+                head(
+                  pageOutlineTree.children || [],
+                ) as unknown as OutlineTreeNodeWidget
+              )?.widget?.id,
         }}
         blockNode
         // onDragEnter={onDragEnter}
@@ -155,6 +179,30 @@ export const CanvasDesignerOutlineTree: FC = () => {
 
 const classes = {
   treeWrapper: mcss`
-    padding: 16px 8px;
+    padding: 8px 4px;
+    .ant-tree{
+      line-height: 20px!important;
+      &-indent-unit{
+				width: 5px;
+			}
+      &-node-content-wrapper{
+				line-height: 20px!important;
+				min-height: 20px!important;
+			}
+      &-title{
+				cursor: not-allowed;
+				font-size: 12px!important;
+			}
+      &-switcher{
+				height: 20px;
+        width: 20px;
+			}
+    }
+    .outline-node-slot{
+      color: grey;
+      .ant-tree-title{
+        cursor: not-allowed;
+      }
+    }
   `,
 }

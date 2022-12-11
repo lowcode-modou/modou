@@ -1,7 +1,7 @@
 import { useEventListener } from 'ahooks'
 import { CSSProperties, RefObject, useState } from 'react'
 
-import { getRawElement } from '../utils'
+import { getRootRawElement, getSlotRawElement } from '../utils'
 
 export const useWidgetHovering = (canvasRef: RefObject<HTMLElement>) => {
   const [hoveringElementRect, setHoveringElementRect] = useState<{
@@ -33,7 +33,7 @@ export const useWidgetHovering = (canvasRef: RefObject<HTMLElement>) => {
     'mousemove',
     (event) => {
       // TODO 看是否需要防抖
-      const rawElement = getRawElement(
+      const rawElement = getRootRawElement(
         event.target as unknown as HTMLElement,
         canvasRef.current,
       )

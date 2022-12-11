@@ -1,5 +1,5 @@
 import { mapValues } from 'lodash'
-import { ReactNode } from 'react'
+import { FC, ReactNode } from 'react'
 
 import {
   JsonSchema7ObjectType,
@@ -11,23 +11,25 @@ import {
   schemeToJsonDefault,
 } from '@modou/refine'
 import {
+  BaseSetterProps,
+  MRArraySetterType,
   MRBooleanSetterType,
   MRNumberSetterType,
   MRSelectSetterType,
   MRStringSetterType,
   SETTER_KEY,
 } from '@modou/setters'
-import { InferWidgetState } from '@modou/widgets/src/_'
+import { InferWidgetState } from '@modou/widgets-antd'
 
 import { WidgetBaseProps } from './types'
 
 type WidgetType = `${string}Widget`
-type Slots<S extends string> = Record<
-  S,
-  {
-    accept?: WidgetType[]
-  }
->
+
+export interface WidgetSlot {
+  name: string
+  accept?: WidgetType[]
+}
+export type WidgetSlots<S extends string> = Record<S, WidgetSlot>
 
 interface BaseWidgetMetadata<
   PropsMRScheme extends MRScheme,
@@ -38,7 +40,9 @@ interface BaseWidgetMetadata<
   icon: ReactNode
   widgetType: WidgetType
   widgetName: string
-  slots: Slots<S>
+  slots: WidgetSlots<S>
+  // TODO FIX TYPE
+  setters: Record<string, FC<BaseSetterProps<any>>>
   mrPropsScheme: PropsMRScheme
   mrStateScheme: StateMRScheme
   initState: (
@@ -46,7 +50,7 @@ interface BaseWidgetMetadata<
   ) => Omit<
     InferWidgetState<StateMRScheme>,
     | keyof mr.infer<PropsMRScheme>['props']
-    | 'renderSlotNames'
+    | 'renderSlotPaths'
     | 'renderSlots'
     | 'updateState'
   >
@@ -59,6 +63,7 @@ export interface MRWidgetProps {
       | MRStringSetterType
       | MRBooleanSetterType
       | MRSelectSetterType
+      | MRArraySetterType
     def: MRTypeAny
   }
 }
@@ -76,6 +81,7 @@ export class WidgetMetadata<
     mrPropsScheme,
     mrStateScheme,
     slots,
+    setters,
     icon,
     initState,
   }: BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>) {
@@ -91,6 +97,8 @@ export class WidgetMetadata<
       mrStateScheme,
     ) as unknown as JsonSchema7ObjectType
     this.slots = slots
+    // TODO FIX TYPE
+    this.setters = setters
     this.icon = icon
     this.initState = initState
   }
@@ -104,13 +112,20 @@ export class WidgetMetadata<
   jsonPropsSchema: JsonSchema7ObjectType
   jsonStateSchema: JsonSchema7ObjectType
   initState
-  slots: Slots<S>
+  slots: WidgetSlots<S>
+  setters: Record<string, FC<BaseSetterProps<any>>>
 
   static createMetadata<
     PropsMRScheme extends MRScheme,
     StateMRScheme extends MRScheme,
-    S extends string = '',
-  >(metadata: BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>) {
+  >(
+    metadata: BaseWidgetMetadata<
+      PropsMRScheme,
+      StateMRScheme,
+      // @ts-expect-error
+      keyof mr.infer<PropsMRScheme>['slots']
+    >,
+  ) {
     return new WidgetMetadata(metadata)
   }
 
@@ -139,7 +154,7 @@ export class WidgetMetadata<
     })
 
     return mr.object({
-      widgetId: mr.string(),
+      id: mr.string(),
       widgetType: mr.literal(widgetType),
       widgetName: mr.literal(widgetName),
       props: mr.object(propsRawShape),
@@ -164,7 +179,7 @@ export class WidgetMetadata<
               [K in keyof mr.infer<T>['slots']]: typeof HACK_TYPE_REACT_NODE
             },
           ),
-          renderSlotNames: mr.object(
+          renderSlotPaths: mr.object(
             mapValues(mrWidgetProps.shape.slots, (slot) => mr.string()) as {
               [K in keyof mr.infer<T>['slots']]: typeof RENDER_SLOT_NAMES_VALUE
             },
@@ -177,7 +192,7 @@ export class WidgetMetadata<
             ...state,
             instance: mr.object({
               id: mr.string(),
-              widgetId: mrWidgetProps.shape.widgetId as T['shape']['widgetId'],
+              widgetId: mrWidgetProps.shape.id as T['shape']['id'],
               initialized: mr.boolean(),
             }),
           }),
@@ -197,7 +212,7 @@ export class WidgetMetadata<
   //   // slots: Record<SlotName, MRArray<MRString> | MRDefault<MRArray<MRString>>>
   // }) {
   //   return mr.object({
-  //     widgetId: mr.string(),
+  //     id: mr.string(),
   //     widgetType: mr.literal(widgetType),
   //     widgetName: mr.literal(widgetName),
   //     // props: mr.object(props),
@@ -211,7 +226,7 @@ export class WidgetMetadata<
   //   return mrSchemeProps.shape.props.extend({
   //     instance: mr.object({
   //       id: mr.string(),
-  //       widgetId: mrSchemeProps.shape.widgetId
+  //       id: mrSchemeProps.shape.id
   //     }),
   //     widgetName: mrSchemeProps.shape.widgetName
   //   })

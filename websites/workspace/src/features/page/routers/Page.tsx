@@ -2,31 +2,44 @@ import { ROUTER_PATH } from '@/constants'
 import { PageRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { Col, Row } from 'antd'
+import { head } from 'lodash'
 import { FC, useLayoutEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useRecoilState } from 'recoil'
+import { useRecoilCallback, useRecoilState } from 'recoil'
 
 import { CanvasDesigner } from '@modou/canvas-designer'
 import { AppFactoryContext, Metadata, defaultAppFactory } from '@modou/core'
+import type { Page as IPage } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { SimulatorPC } from '@modou/simulator'
 
 export const Page: FC = () => {
   const { pageId, appId } = useParams<PageRouterParamsKey>()
   const [page, setPage] = useRecoilState(Metadata.pageSelector(pageId!))
+  const getFirstPage = useRecoilCallback(
+    ({ snapshot }) =>
+      () => {
+        return head<IPage>(
+          snapshot.getLoadable(Metadata.pagesSelector).contents,
+        )
+      },
+    [],
+  )
   const navigate = useNavigate()
   useLayoutEffect(() => {
-    if (!page) {
+    const firstPage = getFirstPage()
+    if (!page && firstPage) {
       navigate(
-        generateRouterPath(ROUTER_PATH.APP, {
+        generateRouterPath(ROUTER_PATH.PAGE, {
           appId,
+          pageId: firstPage.id,
         }),
         {
           replace: true,
         },
       )
     }
-  }, [appId, navigate, page])
+  }, [appId, getFirstPage, navigate, page])
 
   return (
     <Row justify="center" align="middle" className={classes.page}>

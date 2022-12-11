@@ -1,8 +1,7 @@
 // TODO START 完善后移动到 core
 import { custom } from '@recoiljs/refine'
-import { DataNode } from 'antd/es/tree'
 import produce from 'immer'
-import { head, isEmpty, keyBy } from 'lodash'
+import { isEmpty, keyBy } from 'lodash'
 import { DefaultValue, atom, selector, selectorFamily } from 'recoil'
 import { syncEffect } from 'recoil-sync'
 
@@ -67,7 +66,7 @@ export const widgetsSelector = selector<WidgetBaseProps[]>({
 export const widgetByIdSelector = selector<Record<string, WidgetBaseProps>>({
   key: generateRecoilKey('widgetByIdSelector'),
   get: ({ get }) => {
-    return keyBy(get(widgetsSelector), 'widgetId')
+    return keyBy(get(widgetsSelector), 'id')
   },
   cachePolicy_UNSTABLE: { eviction: 'most-recent' },
 })
@@ -97,9 +96,9 @@ export const widgetSelector = selectorFamily<WidgetBaseProps, string>({
   cachePolicy_UNSTABLE: { eviction: 'most-recent' },
 })
 
-interface RelationWidget {
+export interface RelationWidget {
   props: WidgetBaseProps
-  slotName?: string
+  slotPath: string
   parent?: RelationWidget
 }
 
@@ -111,25 +110,26 @@ export const widgetRelationByWidgetIdSelector =
       const widgetById = get(widgetByIdSelector)
       return get(widgetsSelector).reduce<WidgetRelationByWidgetId>(
         (pre, cur) => {
-          const widgetId = cur.widgetId
+          const widgetId = cur.id
           if (!Reflect.has(pre, widgetId)) {
             pre[widgetId] = {
               props: cur,
+              slotPath: '',
             }
           }
           const parent = pre[widgetId]
           if (!isEmpty(cur.slots)) {
-            Object.entries(cur.slots).forEach(([slotName, slotChildren]) => {
+            Object.entries(cur.slots).forEach(([slotPath, slotChildren]) => {
               slotChildren.forEach((widgetId) => {
                 if (!Reflect.has(pre, widgetId)) {
                   pre[widgetId] = {
                     props: widgetById[widgetId],
                     parent,
-                    slotName,
+                    slotPath,
                   }
                 } else {
                   pre[widgetId].parent = parent
-                  pre[widgetId].slotName = slotName
+                  pre[widgetId].slotPath = slotPath
                 }
               })
             })
@@ -141,55 +141,6 @@ export const widgetRelationByWidgetIdSelector =
     },
     cachePolicy_UNSTABLE: { eviction: 'most-recent' },
   })
-
-export type WidgetTreeNode = DataNode & {
-  widget?: WidgetBaseProps
-  page?: Page
-  nodeType: 'page' | 'slot' | 'widget'
-  children: WidgetTreeNode[]
-}
-
-export const pageOutlineTreeSelector = selector<WidgetTreeNode>({
-  key: generateRecoilKey('pageOutlineTreeSelector'),
-  get: ({ get }) => {
-    const page = get(pageSelector)
-    const widgetById = get(widgetByIdSelector)
-    const rootWidget = widgetById[page.rootWidgetId]
-
-    const parentTreeNodes: WidgetTreeNode[] = [
-      {
-        key: page.id,
-        title: page.name,
-        page,
-        nodeType: 'page',
-        children: [],
-      },
-    ]
-    const rootTreeNode = head(parentTreeNodes)
-    const widgetStack: WidgetBaseProps[] = [rootWidget]
-    while (widgetStack.length !== 0) {
-      const curWidget = widgetStack.pop()
-      const curTreeNode: WidgetTreeNode = {
-        key: curWidget?.widgetId ?? '',
-        title: curWidget?.widgetName ?? '',
-        nodeType: 'widget',
-        widget: curWidget,
-        children: [],
-      }
-      // treeNodeMap.set(curWidget?.widgetId ?? '', curTreeNode)
-      const parentTreeNode = parentTreeNodes.pop()
-      parentTreeNode?.children.unshift(curTreeNode)
-      if (!isEmpty(curWidget?.slots?.children)) {
-        curWidget?.slots?.children.forEach((widgetId: string) => {
-          widgetStack.push(widgetById[widgetId])
-          parentTreeNodes.push(curTreeNode)
-        })
-      }
-    }
-    return rootTreeNode as WidgetTreeNode
-  },
-  cachePolicy_UNSTABLE: { eviction: 'most-recent' },
-})
 
 export const isRootWidgetSelector = selectorFamily<boolean, string>({
   key: generateRecoilKey('isRootWidgetSelector'),

@@ -1,4 +1,20 @@
 import { WidgetBaseProps } from '../widget'
+import { EntityField } from './entity-field'
+import { EntityRelation } from './entity-relation'
+
+export type { EntityField } from './entity-field'
+export type {
+  EntityRelation,
+  MasterDetailEntityRelation,
+  LookupEntityRelation,
+} from './entity-relation'
+
+export {
+  EntityRelationLookupRelationTypeEnum,
+  EntityRelationMasterDetailRelationTypeEnum,
+} from './entity-relation'
+
+export { EntityFieldEnum } from './entity-field'
 
 export interface App {
   id: string
@@ -14,15 +30,17 @@ export interface Page {
   rootWidgetId: string
 }
 
-export interface EntityField {
-  id: string
-  name: string
-}
-
 export interface Entity {
   id: string
   name: string
+  title: string
+  description: string
   fields: EntityField[]
+  relations: EntityRelation[]
+  position: {
+    x: number
+    y: number
+  }
 }
 
 export enum WidgetGroupEnum {

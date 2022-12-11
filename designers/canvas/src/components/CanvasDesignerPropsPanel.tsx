@@ -32,34 +32,48 @@ const WidgetPropsPanel: FC = () => {
 
   const { removeWidget } = useRemoveWidget()
 
-  const render = Object.entries(
-    (
-      widgetMetadata.jsonPropsSchema.properties
-        .props as unknown as typeof widgetMetadata.jsonPropsSchema
-    ).properties,
-  )
+  const propsDef = (
+    widgetMetadata.jsonPropsSchema.properties
+      .props as unknown as typeof widgetMetadata.jsonPropsSchema
+  ).properties
+
+  const render = Object.entries(propsDef)
     .filter(([, value]) => Reflect.has(value, SETTER_KEY))
     .map(([key, value]) => {
       const setterOptions: BaseMRSetterOptions & { type: SetterTypeEnum } =
         Reflect.get(value, SETTER_KEY)
       const Setter = widgetFactory.setterByType[setterOptions.type]
+      const NativeSetter = widgetMetadata.setters?.[setterOptions.native ?? '']
       return (
         <Form.Item
           tooltip={setterOptions.description}
           key={key}
           label={setterOptions.label}
         >
-          <Setter
-            options={setterOptions}
-            value={selectWidget.props[key]}
-            onChange={(value: any) => {
-              setWidget(
-                produce((draft) => {
-                  draft.props[key] = value
-                }),
-              )
-            }}
-          />
+          {NativeSetter ? (
+            <NativeSetter
+              value={selectWidget.props[key]}
+              onChange={(value: any) => {
+                setWidget(
+                  produce((draft) => {
+                    draft.props[key] = value
+                  }),
+                )
+              }}
+            />
+          ) : (
+            <Setter
+              options={setterOptions}
+              value={selectWidget.props[key]}
+              onChange={(value: any) => {
+                setWidget(
+                  produce((draft) => {
+                    draft.props[key] = value
+                  }),
+                )
+              }}
+            />
+          )}
         </Form.Item>
       )
     })
@@ -68,10 +82,14 @@ const WidgetPropsPanel: FC = () => {
     <Form
       // labelCol={{ span: 10 }}
       // wrapperCol={{ span: 14 }}
-      className={classes.panel}
+      className={classes.form}
       labelWrap
       size={'small'}
+      layout={'vertical'}
     >
+      <Form.Item label="组件ID">
+        <Typography.Text type="danger">{selectedWidgetId}</Typography.Text>
+      </Form.Item>
       <Form.Item label="组件类型">
         <Typography.Text>{widgetMetadata.widgetName}</Typography.Text>
       </Form.Item>
@@ -111,7 +129,7 @@ const WidgetPropsPanel: FC = () => {
 const PagePropsPanel: FC = () => {
   const [page, setPage] = useRecoilState(pageSelector)
   return (
-    <Form className={classes.panel} labelWrap size={'small'}>
+    <Form className={classes.form} labelWrap size={'small'}>
       <Form.Item label="页面名称">
         <Input
           onChange={(e) => {
@@ -131,14 +149,17 @@ const PagePropsPanel: FC = () => {
 export const CanvasDesignerPropsPanel: FC = () => {
   const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
   return (
-    <div style={{ padding: '16px' }}>
+    <div className={classes.wrapper}>
       {selectedWidgetId ? <WidgetPropsPanel /> : <PagePropsPanel />}
     </div>
   )
 }
 
 const classes = {
-  panel: mcss`
+  wrapper: mcss`
+    padding: 16px;
+  `,
+  form: mcss`
 		& .ant-form-item {
 			margin-bottom: 12px !important;
 			&-control-input-content {
@@ -147,6 +168,15 @@ const classes = {
 					flex: 1 !important;
 				}
 			}
+      
 		}
+		.ant-row{
+      &.ant-form-item-row{
+        .ant-form-item-label{
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+    }
   `,
 }

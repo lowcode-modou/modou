@@ -1,6 +1,7 @@
 import { createContext, memo } from 'react'
 
 import {
+  ArraySetter,
   BooleanSetter,
   NumberSetter,
   SelectSetter,
@@ -20,7 +21,7 @@ import {
   inputWidgetMetadata,
   rowWidgetMetadata,
   tableWidgetMetadata,
-} from '@modou/widgets'
+} from '@modou/widgets-antd'
 
 import { AppFactory } from '../app-factory'
 import { WidgetGroupEnum } from '../types'
@@ -66,6 +67,7 @@ export const defaultAppFactory = AppFactory.create({
     [SetterTypeEnum.String]: StringSetter,
     [SetterTypeEnum.Boolean]: BooleanSetter,
     [SetterTypeEnum.Number]: NumberSetter,
+    [SetterTypeEnum.Array]: ArraySetter,
   },
 })
 

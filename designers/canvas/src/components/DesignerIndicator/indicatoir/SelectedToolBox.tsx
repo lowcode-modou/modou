@@ -1,6 +1,6 @@
 import { FullscreenOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useContext, useEffect, useRef } from 'react'
 import { useDrag } from 'react-dnd'
 import { useRecoilValue } from 'recoil'
 
@@ -13,11 +13,12 @@ import {
   widgetSelector,
 } from '../../../store'
 import { WidgetDragType } from '../../../types'
-import { getElementFromWidgetId } from '../../../utils'
+import { getRootElementFromWidgetId } from '../../../utils'
 
 export const SelectedToolBox: FC = () => {
   const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
 
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const widget = useRecoilValue(widgetSelector(selectedWidgetId))
   const widgetRelationByWidgetId = useRecoilValue(
     widgetRelationByWidgetIdSelector,
@@ -47,20 +48,40 @@ export const SelectedToolBox: FC = () => {
   const simulatorInstance = useContext(SimulatorInstanceContext)
 
   useEffect(() => {
-    const element = getElementFromWidgetId(
+    const element = getRootElementFromWidgetId(
       selectedWidgetId,
       simulatorInstance.document!,
     )
+    // const previewWrapperEl = document.createElement('div')
+    // previewWrapperEl.style.position = 'absolute'
+    // previewWrapperEl.style.top = '-1px'
+    // previewWrapperEl.style.right = '20px'
+    // previewWrapperEl.style.bottom = '20px'
+    // previewWrapperEl.style.left = '-1px'
     if (element) {
-      element.style.opacity = opacity
+      // const previewEl = element.cloneNode(true) as unknown as HTMLElement
+      // previewWrapperEl.style.opacity = opacity
+      // previewWrapperEl.appendChild(previewEl)
+      // wrapperRef.current?.parentElement?.appendChild(previewWrapperEl)
       preview(element)
+      // preview(previewEl)
     }
-  }, [opacity, preview, selectedWidgetId, simulatorInstance.document])
+    // return () => {
+    //   wrapperRef.current?.parentElement?.removeChild(previewWrapperEl)
+    // }
+  }, [
+    opacity,
+    preview,
+    selectedWidgetId,
+    simulatorInstance.document,
+    isDragging,
+  ])
   const theme = useTheme()
 
   return isDragging ||
     !widgetRelationByWidgetId[selectedWidgetId].parent ? null : (
     <div
+      ref={wrapperRef}
       style={{
         '--border-color': theme.colorPrimary,
       }}

@@ -19,7 +19,7 @@ import {
   widgetsSelector,
 } from '../../../store'
 import { WidgetDragType } from '../../../types'
-import { getElementFromWidgetId } from '../../../utils'
+import { getRootElementFromWidgetId } from '../../../utils'
 import { SelectedToolBox } from './SelectedToolBox'
 
 const SelectIndicatorContent: FC = () => {
@@ -52,7 +52,7 @@ const SelectIndicatorContent: FC = () => {
       setDisplay(false)
       return
     }
-    const rawElement = getElementFromWidgetId(
+    const rawElement = getRootElementFromWidgetId(
       selectedWidgetId,
       simulatorInstance.document!,
     )
@@ -107,7 +107,7 @@ const SelectIndicatorContent: FC = () => {
   const opacity = isDragging ? '0.4' : '1'
 
   useEffect(() => {
-    const element = getElementFromWidgetId(
+    const element = getRootElementFromWidgetId(
       selectedWidgetId,
       simulatorInstance.document!,
     )
