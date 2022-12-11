@@ -82,7 +82,7 @@ const WidgetPropsPanel: FC = () => {
     <Form
       // labelCol={{ span: 10 }}
       // wrapperCol={{ span: 14 }}
-      className={classes.panel}
+      className={classes.form}
       labelWrap
       size={'small'}
       layout={'vertical'}
@@ -129,7 +129,7 @@ const WidgetPropsPanel: FC = () => {
 const PagePropsPanel: FC = () => {
   const [page, setPage] = useRecoilState(pageSelector)
   return (
-    <Form className={classes.panel} labelWrap size={'small'}>
+    <Form className={classes.form} labelWrap size={'small'}>
       <Form.Item label="页面名称">
         <Input
           onChange={(e) => {
@@ -149,14 +149,17 @@ const PagePropsPanel: FC = () => {
 export const CanvasDesignerPropsPanel: FC = () => {
   const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
   return (
-    <div style={{ padding: '16px' }}>
+    <div className={classes.wrapper}>
       {selectedWidgetId ? <WidgetPropsPanel /> : <PagePropsPanel />}
     </div>
   )
 }
 
 const classes = {
-  panel: mcss`
+  wrapper: mcss`
+    padding: 16px;
+  `,
+  form: mcss`
 		& .ant-form-item {
 			margin-bottom: 12px !important;
 			&-control-input-content {
