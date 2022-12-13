@@ -28,9 +28,9 @@ export const RecoilWidgetsSync: FC<
       storeKey={PAGE_ATOM_KEY_STORE_KEY}
       listen={({ updateItem }) => {
         if (page.id !== tempPageId) {
-          setSelectWidgetId('')
+          // setSelectWidgetId('')
           // TODO remove me and reset top line
-          // setSelectWidgetId('ukvrxqwmddkr')
+          setSelectWidgetId('ukvrxqwmddkr')
           setTempPageId(page.id)
         }
         if (PAGE_ATOM_STATUS.canUpdate) {

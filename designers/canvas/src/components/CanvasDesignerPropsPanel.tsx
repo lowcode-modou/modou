@@ -17,7 +17,7 @@ import {
   widgetByIdSelector,
   widgetSelector,
 } from '../store'
-import { CodeMirror } from './Demo/CodeMirror'
+import { CodeMirrorEditor } from './Demo/CodeMirrorEditor'
 
 const WidgetPropsPanel: FC = () => {
   const widgetById = useRecoilValue(widgetByIdSelector)
@@ -89,7 +89,7 @@ const WidgetPropsPanel: FC = () => {
       layout={'vertical'}
     >
       <Form.Item label="JsExpression" tooltip={'{{}}输入表达式'}>
-        <CodeMirror />
+        <CodeMirrorEditor />
       </Form.Item>
       <Form.Item label="组件ID">
         <Typography.Text type="danger">{selectedWidgetId}</Typography.Text>
