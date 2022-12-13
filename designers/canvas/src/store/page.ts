@@ -147,6 +147,6 @@ export const isRootWidgetSelector = selectorFamily<boolean, string>({
   get:
     (widgetId) =>
     ({ get }) =>
-      !get(widgetRelationByWidgetIdSelector)[widgetId].parent,
+      !get(widgetRelationByWidgetIdSelector)[widgetId]?.parent,
   cachePolicy_UNSTABLE: { eviction: 'most-recent' },
 })

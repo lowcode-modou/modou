@@ -17,6 +17,7 @@ import {
   widgetByIdSelector,
   widgetSelector,
 } from '../store'
+import { CodeMirror } from './Demo/CodeMirror'
 
 const WidgetPropsPanel: FC = () => {
   const widgetById = useRecoilValue(widgetByIdSelector)
@@ -87,6 +88,9 @@ const WidgetPropsPanel: FC = () => {
       size={'small'}
       layout={'vertical'}
     >
+      <Form.Item label="JsExpression" tooltip={'{{}}输入表达式'}>
+        <CodeMirror />
+      </Form.Item>
       <Form.Item label="组件ID">
         <Typography.Text type="danger">{selectedWidgetId}</Typography.Text>
       </Form.Item>
@@ -168,7 +172,6 @@ const classes = {
 					flex: 1 !important;
 				}
 			}
-      
 		}
 		.ant-row{
       &.ant-form-item-row{

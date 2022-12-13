@@ -20,7 +20,7 @@ import { useAddWidget } from './useAddWidget'
 import { useMoveWidget } from './useMoveWidget'
 
 const EMPTY_WIDGET_MIN_HEIGHT = '36px'
-const DROP_CONTAINER_LIMIT = 6
+// const DROP_CONTAINER_LIMIT = 6
 const DROP_ELEMENT_ACTIVE_BG_COLOR = 'rgba(0,0,0,.1)'
 
 const useWidgetBgColor = ({

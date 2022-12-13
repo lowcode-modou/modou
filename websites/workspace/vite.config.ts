@@ -59,6 +59,7 @@ export default defineConfig({
       cert: fs.readFileSync(path.join(__dirname, '../../keys/cert.crt')),
       key: fs.readFileSync(path.join(__dirname, '../../keys/cert.key')),
     },
+    host: '0.0.0.0',
   },
   build: {
     rollupOptions: {

@@ -239,3 +239,66 @@ export class WidgetMetadata<
     return schemeToJsonDefault(scheme) as unknown as WidgetBaseProps
   }
 }
+
+// TODO 新的 props 结构
+const demo = {
+  size: 'small',
+  block: true,
+  columns: [
+    {
+      title: '姓名',
+      dataIndex: '123',
+    },
+  ],
+  map: {
+    name: '小明',
+    age: 20,
+  },
+}
+
+const mDemo = {
+  size: {
+    $t: 'n',
+    $s: 'small',
+    $e: `'small'`,
+  },
+  block: {
+    $t: 'n',
+    $s: 'true',
+    $e: `true`,
+  },
+  columns: {
+    $t: 'n',
+    $s: [
+      {
+        title: {
+          $t: 'e',
+          $n: '小明',
+          $e: `'小明'`,
+        },
+        dataIndex: {
+          $t: 'n',
+          $n: '123',
+          $e: `'123'`,
+        },
+      },
+    ],
+    $e: `query.data`,
+  },
+  map: {
+    $t: 'n',
+    $s: {
+      name: {
+        $t: 'e',
+        $n: '小明',
+        $e: `'小明'`,
+      },
+      age: {
+        $t: 'n',
+        $n: 20,
+        $e: `20`,
+      },
+    },
+    $e: `map.value`,
+  },
+}
