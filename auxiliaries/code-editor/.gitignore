@@ -1,0 +1,6 @@
+node_modules
+/dist
+.dumi/tmp
+code-editor/.dumi/tmp-test
+code-editor/.dumi/tmp-production
+.DS_Store
