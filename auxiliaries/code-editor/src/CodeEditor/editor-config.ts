@@ -1,6 +1,3 @@
-import { object } from '@recoiljs/refine'
-import CodeMirror from 'codemirror'
-
 export enum CodeEditorModeEnum {
   Text = 'text/plain',
   SQL = 'sql',
@@ -51,40 +48,4 @@ export enum AutocompleteCloseKeyEnum {
   OSLeft,
   '(',
   ')',
-}
-
-// TODO
-type DataTree = object
-// TODO
-type AdditionalDynamicDataTree = object
-// TODO
-export interface FieldEntityInformation {
-  entityName?: string
-}
-export type HintHelper = (
-  editor: CodeMirror.Editor,
-  data: DataTree,
-  customDataTree?: AdditionalDynamicDataTree,
-) => Hinter
-
-export interface Hinter {
-  showHint: (
-    editor: CodeMirror.Editor,
-    entityInformation: FieldEntityInformation,
-    additionalData?: any,
-  ) => boolean
-  update?: (data: DataTree) => void
-  fireOnFocus?: boolean
-}
-
-export type MarkHelper = (editor: CodeMirror.Editor) => void
-
-export interface CodeEditorConfig {
-  theme: CodeEditorThemeEnum
-  mode: CodeEditorModeEnum
-  tabBehaviour: CodeEditorTabBehaviourEnum
-  size: CodeEditorSizeEnum
-  hinting: HintHelper[]
-  marking: MarkHelper[]
-  folding?: boolean
 }
