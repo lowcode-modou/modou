@@ -1,0 +1,13 @@
+diff --git a/index.d.ts b/index.d.ts
+index eb0747b486592d6d461c968268b6fb0571eeef25..78c8808e3e05732bc9ca13c847f6cdc7cd19a10b 100755
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -124,6 +124,8 @@ declare namespace CodeMirror {
+         update: (instance: Editor) => void;
+         renderLine: (instance: Editor, lineHandle: LineHandle, element: HTMLElement) => void;
+         overwriteToggle: (instance: Editor, overwrite: boolean) => void;
++        // custom type shim
++        keyup: (instance: Editor, event: KeyboardEvent) => void;
+     }
+ 
+     interface DocEventMap {

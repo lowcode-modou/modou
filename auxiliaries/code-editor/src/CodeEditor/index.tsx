@@ -4,32 +4,44 @@ import {
   useLatest,
   useMemoizedFn,
   useMount,
+  useUnmount,
 } from 'ahooks'
 import CodeMirror, { EditorConfiguration, EditorEventMap } from 'codemirror'
 import { UpdateLintingCallback } from 'codemirror/addon/lint/lint'
-import React, { type FC, useCallback, useRef } from 'react'
+import React, { type FC, useRef } from 'react'
 
+import { CodeEditorContextProps } from '@modou/code-editor/CodeEditor/contexts/CodeEditorContext'
 import {
   CodeEditorConfig,
-  CodeEditorModeEnum,
   CodeEditorSizeEnum,
   CodeEditorTabBehaviourEnum,
   CodeEditorThemes,
+  FieldEntityInformation,
   MarkHelper,
+  isCloseKey,
+  isModifierKey,
 } from '@modou/code-editor/CodeEditor/editor-config'
 import {
   autoIndentCode,
   getAutoIndentShortcutKey,
 } from '@modou/code-editor/CodeEditor/utils/autoIndent'
+import { AutocompleteDataTypeEnum } from '@modou/code-editor/CodeEditor/utils/autocomplete/codemirror-tern-service'
 import {
   getInputValue,
   removeNewLineChars,
 } from '@modou/code-editor/CodeEditor/utils/code-editor'
 import { getMoveCursorLeftKey } from '@modou/code-editor/CodeEditor/utils/cursor-left-movement'
+import { ExpectedValueExample } from '@modou/code-editor/CodeEditor/utils/validation/common'
 import { mcss } from '@modou/css-in-js'
 
 import './code-mirror-libs'
 import './modes'
+
+export interface CodeEditorExpected {
+  type: string
+  example: ExpectedValueExample
+  autocompleteDataType: AutocompleteDataTypeEnum
+}
 
 interface WrappedFieldInputProps {
   value?: any
@@ -37,8 +49,11 @@ interface WrappedFieldInputProps {
 }
 
 interface EditorStyleProps {
+  placeholder?: string
   disabled?: boolean
   height?: string | number
+  dataTreePath?: string
+  expected?: CodeEditorExpected
 }
 
 interface GutterConfig {
@@ -55,7 +70,8 @@ interface CodeEditorGutter {
 }
 
 type CodeEditorProps = EditorStyleProps &
-  CodeEditorConfig & {
+  CodeEditorConfig &
+  CodeEditorContextProps & {
     input: WrappedFieldInputProps
   } & {
     isReadOnly?: boolean
@@ -95,14 +111,8 @@ export const CodeEditor: FC<CodeEditorProps> = (props) => {
   )
 
   const { run: handleChange } = useDebounceFn<EditorEventMap['change']>(
-    (instance, changeObj) => {
+    useMemoizedFn<EditorEventMap['change']>((instance, changeObj) => {
       const value = codeEditorInstance.current?.getValue() ?? ''
-      // TODO Log
-      // if (changeObj && changeObj.origin === 'complete') {
-      //   AnalyticsUtil.logEvent('AUTO_COMPLETE_SELECT', {
-      //     searchString: changeObj.text[0],
-      //   })
-      // }
       const inputValue = latestProps.current.input.value || ''
       if (
         latestProps.current.input.onChange &&
@@ -114,7 +124,7 @@ export const CodeEditor: FC<CodeEditorProps> = (props) => {
       if (codeEditorInstance.current) {
         updateMarkings(codeEditorInstance.current, latestProps.current.marking)
       }
-    },
+    }),
     {
       wait: 600,
     },
@@ -124,6 +134,8 @@ export const CodeEditor: FC<CodeEditorProps> = (props) => {
     (instance, changeObj) => {
       /* This action updates the status of the savingEntity to true so that any
       shortcut commands do not execute before updating the entity in the store */
+
+      console.log('__startChange')
       const value = codeEditorInstance.current!.getValue() || ''
       const inputValue = latestProps.current.input.value || ''
       if (
@@ -140,12 +152,102 @@ export const CodeEditor: FC<CodeEditorProps> = (props) => {
     },
   )
 
-  // TODO KeyboardEvent 待完善
-  const handleAutocompleteKeyup = useCallback<EditorEventMap['keyHandled']>(
-    (instance, name, event) => {
-      console.log('handleAutocompleteKeyup', name, event)
+  const getEntityInformation = useMemoizedFn<() => FieldEntityInformation>(
+    () => {
+      const { dataTreePath, dynamicData, expected } = props
+      const entityInformation: FieldEntityInformation = {
+        expectedType: expected?.autocompleteDataType,
+      }
+
+      if (dataTreePath) {
+        const { entityName, propertyPath } =
+          getEntityNameAndPropertyPath(dataTreePath)
+        entityInformation.entityName = entityName
+        const entity = dynamicData[entityName]
+
+        if (entity) {
+          if ('ENTITY_TYPE' in entity) {
+            const entityType = entity.ENTITY_TYPE
+            if (
+              entityType === ENTITY_TYPE.WIDGET ||
+              entityType === ENTITY_TYPE.ACTION ||
+              entityType === ENTITY_TYPE.JSACTION
+            ) {
+              entityInformation.entityType = entityType
+            }
+          }
+          if (isActionEntity(entity))
+            entityInformation.entityId = entity.actionId
+          if (isWidgetEntity(entity)) {
+            const isTriggerPath = entity.triggerPaths[propertyPath]
+            entityInformation.entityId = entity.widgetId
+            if (isTriggerPath)
+              entityInformation.expectedType = AutocompleteDataType.FUNCTION
+          }
+        }
+        entityInformation.propertyPath = propertyPath
+      }
+      return entityInformation
     },
-    [],
+  )
+
+  const handleAutocompleteVisibility = useMemoizedFn(
+    (instance: CodeMirror.Editor) => {
+      if (!getIsFocused()) return
+      const entityInformation = this.getEntityInformation()
+      const { blockCompletions } = this.props
+      let hinterOpen = false
+      for (let i = 0; i < this.hinters.length; i++) {
+        hinterOpen = this.hinters[i].showHint(instance, entityInformation, {
+          blockCompletions,
+          datasources: this.props.datasources.list,
+          pluginIdToImageLocation: this.props.pluginIdToImageLocation,
+          recentEntities: this.props.recentEntities,
+          update: this.props.input.onChange?.bind(this),
+          executeCommand: (payload: any) => {
+            this.props.executeCommand({
+              ...payload,
+              callback: (binding: string) => {
+                const value = this.editor.getValue() + binding
+                this.updatePropertyValue(value, value.length)
+              },
+            })
+          },
+        })
+        if (hinterOpen) break
+      }
+      this.setState({ hinterOpen })
+    },
+  )
+
+  const handleAutocompleteKeyup = useMemoizedFn<EditorEventMap['keyup']>(
+    (instance, event) => {
+      const key = event.key
+      if (isModifierKey(key)) return
+      const code = `${event.ctrlKey ? 'Ctrl+' : ''}${event.code}`
+      if (isCloseKey(code) || isCloseKey(key)) {
+        instance.closeHint()
+        return
+      }
+      const cursor = instance.getCursor()
+      const line = instance.getLine(cursor.line)
+      let showAutocomplete = false
+      /* Check if the character before cursor is completable to show autocomplete which backspacing */
+      if (key === '/') {
+        showAutocomplete = true
+      } else if (event.code === 'Backspace') {
+        const prevChar = line[cursor.ch - 1]
+        showAutocomplete = !!prevChar && /[a-zA-Z_0-9.]/.test(prevChar)
+      } else if (key === '{') {
+        /* Autocomplete for { should show up only when a user attempts to write {{}} and not a code block. */
+        const prevChar = line[cursor.ch - 2]
+        showAutocomplete = prevChar === '{'
+      } else if (key.length === 1) {
+        showAutocomplete = /[a-zA-Z_0-9.]/.test(key)
+        /* Autocomplete should be triggered only for characters that make up valid variable names */
+      }
+      showAutocomplete && this.handleAutocompleteVisibility(instance)
+    },
   )
 
   // const handleEditorFocus = useCallback<EditorEventMap['focus']>(
@@ -190,7 +292,7 @@ export const CodeEditor: FC<CodeEditorProps> = (props) => {
   useMount(() => {
     const options: EditorConfiguration = {
       autoRefresh: true,
-      mode: CodeEditorModeEnum.Javascript,
+      mode: latestProps.current.mode,
       theme: CodeEditorThemes.LIGHT,
       viewportMargin: 10,
       tabSize: 2,
@@ -200,7 +302,6 @@ export const CodeEditor: FC<CodeEditorProps> = (props) => {
       lineNumbers: false,
       addModeClass: true,
       matchBrackets: false,
-      // TODO dny
       scrollbarStyle:
         latestProps.current.size !== CodeEditorSizeEnum.Compact
           ? 'native'
@@ -278,7 +379,8 @@ export const CodeEditor: FC<CodeEditorProps> = (props) => {
 
       editor.on('beforeChange', handleBeforeChange)
       editor.on('change', startChange)
-      editor.on('keyHandled', handleAutocompleteKeyup)
+      editor.on('keyup', handleAutocompleteKeyup)
+      editor.on('keyup', handleAutocompleteKeyup)
       // editor.on('focus', handleEditorFocus)
     }
 
@@ -287,10 +389,19 @@ export const CodeEditor: FC<CodeEditorProps> = (props) => {
     //   mode: {
     //     name: CodeEditorModeEnum.Javascript,
     //   },
-    // })
+    // })22111212212112122112
     codeEditorInstance.current = CodeMirror(editorTarget.current!, options)
+  })
 
-    return () => {}
+  useUnmount(() => {
+    // TODO 确认是否彻底销毁
+    const editorWrapperElement = codeEditorInstance.current?.getWrapperElement()
+    codeEditorInstance.current?.off('beforeChange', handleBeforeChange)
+    codeEditorInstance.current?.off('change', startChange)
+    codeEditorInstance.current?.off('keyHandled', handleAutocompleteKeyup)
+    if (editorWrapperElement) {
+      editorTarget.current?.removeChild(editorWrapperElement)
+    }
   })
 
   return (

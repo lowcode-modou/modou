@@ -4,6 +4,9 @@ patchedDependencies:
   react-dnd-html5-backend@16.0.1:
     hash: kfajotxmcqjtgrepibrwmj5zwu
     path: patches/react-dnd-html5-backend@16.0.1.patch
+  '@types/codemirror@5.60.5':
+    hash: yviz44df6yyszvjqqa57gcwrk4
+    path: patches/@types__codemirror@5.60.5.patch
 
 importers:
 
@@ -123,15 +126,17 @@ importers:
       father: ^4.1.0
       husky: ^8.0.1
       lint-staged: ^13.0.3
+      loglevel: ^1.8.1
       react: ^18.2.0
       react-dom: ^18.2.0
       tern: ^0.24.3
     dependencies:
       codemirror: 5.65.10
       fast-deep-equal: 3.1.3
+      loglevel: 1.8.1
       tern: 0.24.3
     devDependencies:
-      '@types/codemirror': 5.60.5
+      '@types/codemirror': 5.60.5_yviz44df6yyszvjqqa57gcwrk4
       '@types/tern': 0.23.4
       '@umijs/lint': 4.0.36
       dumi: 2.0.13_biqbaboplfbrettd7655fr4n2y
@@ -1105,6 +1110,7 @@ packages:
   /@commitlint/load/17.3.0:
     resolution: {integrity: sha512-u/pV6rCAJrCUN+HylBHLzZ4qj1Ew3+eN9GBPhNi9otGxtOfA8b+8nJSxaNbcC23Ins/kcpjGf9zPSVW7628Umw==}
     engines: {node: '>=v14'}
+    requiresBuild: true
     dependencies:
       '@commitlint/config-validator': 17.1.0
       '@commitlint/execute-rule': 17.0.0
@@ -2675,11 +2681,12 @@ packages:
       '@babel/types': 7.19.4
     dev: true
 
-  /@types/codemirror/5.60.5:
+  /@types/codemirror/5.60.5_yviz44df6yyszvjqqa57gcwrk4:
     resolution: {integrity: sha512-TiECZmm8St5YxjFUp64LK0c8WU5bxMDt9YaAek1UqUb9swrSCoJhh92fWu1p3mTEqlHjhB5sY7OFBhWroJXZVg==}
     dependencies:
       '@types/tern': 0.23.4
     dev: true
+    patched: true
 
   /@types/d3-array/3.0.3:
     resolution: {integrity: sha512-Reoy+pKnvsksN0lQUlcH6dOGjRZ/3WRwXR//m+/8lt1BXeI4xyaUZoqULNjyXXRuh0Mj4LNpkCvhUpQlY3X5xQ==}
@@ -8959,6 +8966,11 @@ packages:
       slice-ansi: 4.0.0
       wrap-ansi: 6.2.0
     dev: true
+
+  /loglevel/1.8.1:
+    resolution: {integrity: sha512-tCRIJM51SHjAayKwC+QAg8hT8vg6z7GSgLJKGvzuPb1Wc+hLzqtuVLxp6/HzSPOozuK+8ErAhy7U/sVzw8Dgfg==}
+    engines: {node: '>= 0.6.0'}
+    dev: false
 
   /longest-streak/3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}

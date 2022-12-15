@@ -12,6 +12,7 @@ import tern, { Def, Server } from 'tern'
 //   GLOBAL_FUNCTIONS,
 // } from 'utils/autocomplete/EntityDefinitions'
 import { FieldEntityInformation } from '@modou/code-editor/CodeEditor/editor-config'
+import { ENTITY_TYPE } from '@modou/code-editor/CodeEditor/entities/data-tree/data-tree-factory'
 
 import base64 from '../../constants/defs/base64-js.json'
 import browser from '../../constants/defs/browser.json'
@@ -24,15 +25,6 @@ import xmlJs from '../../constants/defs/xmlParser.json'
 import TernWorkerServer from './tern-worker-service'
 
 // import { getCompletionsForKeyword } from './keywordCompletion'
-
-// FIXME MOCK start
-export enum ENTITY_TYPE {
-  ACTION = 'ACTION',
-  WIDGET = 'WIDGET',
-  APPSMITH = 'APPSMITH',
-  JSACTION = 'JSACTION',
-}
-// FIXME MOCK end
 
 const DEFS: Def[] = [
   // @ts-expect-error
@@ -53,7 +45,7 @@ const hintDelay = 1700
 
 export type Completion = Hint & {
   origin: string
-  type: AutocompleteDataType | string
+  type: AutocompleteDataTypeEnum | string
   data: {
     doc: string
   }
@@ -75,7 +67,7 @@ interface TernDoc {
   changed: { to: number; from: number } | null
 }
 
-export enum AutocompleteDataType {
+export enum AutocompleteDataTypeEnum {
   OBJECT = 'OBJECT',
   NUMBER = 'NUMBER',
   ARRAY = 'ARRAY',
@@ -118,15 +110,15 @@ export interface DataTreeDefEntityInformation {
   subType: string
 }
 
-export function getDataType(type: string): AutocompleteDataType {
-  if (type === '?') return AutocompleteDataType.UNKNOWN
-  else if (type === 'number') return AutocompleteDataType.NUMBER
-  else if (type === 'string') return AutocompleteDataType.STRING
-  else if (type === 'bool') return AutocompleteDataType.BOOLEAN
-  else if (type === 'array') return AutocompleteDataType.ARRAY
-  else if (/^fn\(/.test(type)) return AutocompleteDataType.FUNCTION
-  else if (/^\[/.test(type)) return AutocompleteDataType.ARRAY
-  else return AutocompleteDataType.OBJECT
+export function getDataType(type: string): AutocompleteDataTypeEnum {
+  if (type === '?') return AutocompleteDataTypeEnum.UNKNOWN
+  else if (type === 'number') return AutocompleteDataTypeEnum.NUMBER
+  else if (type === 'string') return AutocompleteDataTypeEnum.STRING
+  else if (type === 'bool') return AutocompleteDataTypeEnum.BOOLEAN
+  else if (type === 'array') return AutocompleteDataTypeEnum.ARRAY
+  else if (/^fn\(/.test(type)) return AutocompleteDataTypeEnum.FUNCTION
+  else if (/^\[/.test(type)) return AutocompleteDataTypeEnum.ARRAY
+  else return AutocompleteDataTypeEnum.OBJECT
 }
 
 export function typeToIcon(type: string, isKeyword: boolean) {
@@ -867,7 +859,7 @@ export const createCompletionHeader = (name: string): Completion => ({
   className: 'CodeMirror-hint-header',
   data: { doc: '' },
   origin: '',
-  type: AutocompleteDataType.UNKNOWN,
+  type: AutocompleteDataTypeEnum.UNKNOWN,
   isHeader: true,
 })
 

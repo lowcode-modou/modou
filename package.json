@@ -70,7 +70,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "react-dnd-html5-backend@16.0.1": "patches/react-dnd-html5-backend@16.0.1.patch"
+      "react-dnd-html5-backend@16.0.1": "patches/react-dnd-html5-backend@16.0.1.patch",
+      "@types/codemirror@5.60.5": "patches/@types__codemirror@5.60.5.patch"
     }
   }
 }

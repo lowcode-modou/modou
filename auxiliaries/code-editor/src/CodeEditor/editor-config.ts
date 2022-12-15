@@ -1,5 +1,35 @@
-import { object } from '@recoiljs/refine'
 import CodeMirror from 'codemirror'
+
+import { ENTITY_TYPE } from '@modou/code-editor/CodeEditor/entities/data-tree/data-tree-factory'
+import { AutocompleteDataTypeEnum } from '@modou/code-editor/CodeEditor/utils/autocomplete/codemirror-tern-service'
+
+export enum AUTOCOMPLETE_CLOSE_KEY {
+  Enter,
+  Tab,
+  Escape,
+  Comma,
+  Semicolon,
+  Space,
+  Delete,
+  'Ctrl+Backspace',
+  OSLeft,
+  '(',
+  ')',
+}
+export const isCloseKey = (key: any): key is AUTOCOMPLETE_CLOSE_KEY => {
+  return Reflect.has(AUTOCOMPLETE_CLOSE_KEY, key)
+}
+
+export enum MODIFIER {
+  Control,
+  Meta,
+  Alt,
+  Shift,
+}
+
+export const isModifierKey = (key: any): key is MODIFIER => {
+  return Reflect.has(MODIFIER, key)
+}
 
 export enum CodeEditorModeEnum {
   Text = 'text/plain',
@@ -57,9 +87,13 @@ export enum AutocompleteCloseKeyEnum {
 type DataTree = object
 // TODO
 type AdditionalDynamicDataTree = object
-// TODO
 export interface FieldEntityInformation {
   entityName?: string
+  expectedType?: AutocompleteDataTypeEnum
+  entityType?: ENTITY_TYPE
+  entityId?: string
+  propertyPath?: string
+  blockCompletions?: Array<{ parentPath: string; subPath: string }>
 }
 export type HintHelper = (
   editor: CodeMirror.Editor,
