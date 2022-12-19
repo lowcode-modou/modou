@@ -4,13 +4,13 @@
   "description": "",
   "main": "src",
   "scripts": {
-    "start": "npm run dev",
+    "start": "pnpm run dev",
     "dev": "dumi dev",
     "build": "father build",
     "build:watch": "father dev",
     "docs:build": "dumi build",
     "doctor": "father doctor",
-    "lint": "npm run lint:es && npm run lint:css",
+    "lint": "pnpm run lint:es && npm run lint:css",
     "lint:css": "stylelint \"{src,test}/**/*.{css,less}\"",
     "lint:es": "eslint \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
     "prepublishOnly": "father doctor && npm run build"

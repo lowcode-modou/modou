@@ -1,13 +1,18 @@
+import { useMemoizedFn } from 'ahooks'
 import CodeMirror from 'codemirror'
 import React, { type FC, useEffect, useRef } from 'react'
 import tern, { Server } from 'tern'
 
-import { CodeEditorModeEnum } from '@modou/code-editor/CodeEditor/editor-config'
+import {
+  CodeEditorModeEnum,
+  MarkHelper,
+} from '@modou/code-editor/CodeEditor/common/editor-config'
+import { bindingMarker } from '@modou/code-editor/CodeEditor/common/mark-helpers'
 import { DEFS } from '@modou/code-editor/CodeEditor/tern/defs'
 import { injectGlobal, mcss } from '@modou/css-in-js'
 
-import './code-mirror-libs'
-import './modes' // TODO: tern uses global variable, maybe there is some workaround
+import './common/code-mirror-libs'
+import './common/modes' // TODO: tern uses global variable, maybe there is some workaround
 
 ;(window as unknown as { tern: typeof tern }).tern = tern
 export const EXPRESSION = {
@@ -149,6 +154,10 @@ const installTern = (cm: CodeMirror.Editor) => {
   return t
 }
 
+const updateMarkings = (editor: CodeMirror.Editor, marking: MarkHelper[]) => {
+  marking.forEach((helper) => helper(editor))
+}
+
 export const CodeEditor: FC<{}> = (props) => {
   const cmWrapperRef = useRef<HTMLDivElement>(null)
   const cmRef = useRef<CodeMirror.Editor | null>(null)
@@ -159,7 +168,7 @@ export const CodeEditor: FC<{}> = (props) => {
     }
     if (!cmRef.current) {
       cmRef.current = CodeMirror(cmWrapperRef.current, {
-        value: `{{}}`,
+        value: `{{const a = 123}}`,
         mode: CodeEditorModeEnum.TextWithJs,
         tabindex: 1,
         tabSize: 2,
@@ -175,10 +184,35 @@ export const CodeEditor: FC<{}> = (props) => {
           delay: 50,
         },
       })
+
+      updateMarkings(cmRef.current as unknown as CodeMirror.Editor, [
+        bindingMarker,
+      ])
+
       const t = installTern(cmRef.current)
       tServerRef.current = t.server
     }
   }, [])
+  useEffect(() => {
+    if (cmRef.current) {
+      updateMarkings(cmRef.current, [bindingMarker])
+    }
+  })
+
+  const handleChange = useMemoizedFn(() => {
+    if (!cmRef.current) {
+      return
+    }
+    updateMarkings(cmRef.current, [bindingMarker])
+  })
+
+  useEffect(() => {
+    cmRef.current?.on('change', handleChange)
+    return () => {
+      cmRef.current?.off('change', handleChange)
+    }
+  }, [handleChange])
+
   return (
     <div className={classes.wrapper}>
       <div className={classes.cmWrapper} tabIndex={0} ref={cmWrapperRef} />
@@ -193,25 +227,35 @@ const classes = {
     position: relative;
   `,
   cmWrapper: mcss`
-    height: 100%;
+		height: 100%;
 		width: 100%;
-    overflow: hidden;
-    .CodeMirror {
-       width: 100%;
-       height: 100%;
-       padding: 0;
-       border-radius: 4px;
-       background: #EDF2F7;
-       color: #1A202C;
-       transition-property: background-color,color,opacity;
-       transition-duration: 0.2s;
-       &:hover {
-         background: #E2E8F0;
-       }
-    }
-    .CodeMirror .CodeMirror-scroll {
-          //max-height: 125px
-      // };
+		overflow: hidden;
+
+		.CodeMirror {
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			border-radius: 4px;
+			background: #EDF2F7;
+			color: #1A202C;
+			transition-property: background-color, color, opacity;
+			transition-duration: 0.2s;
+			line-height: 20px;
+
+			&:hover {
+				background: #E2E8F0;
+			}
+
+			.binding-brackets {
+				font-weight: bold;
+				color: #f26a02;
+			}
+		}
+	}
+
+	.CodeMirror .CodeMirror-scroll {
+		//max-height: 125px
+		// };
   `,
 }
 

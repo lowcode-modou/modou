@@ -6,7 +6,7 @@ import {
   CodeEditorSizeEnum,
   CodeEditorTabBehaviourEnum,
   CodeEditorThemeEnum,
-} from '@modou/code-editor/CodeEditor/editor-config'
+} from '@modou/code-editor/CodeEditor/common/editor-config'
 
 const Demo: FC = () => {
   return (

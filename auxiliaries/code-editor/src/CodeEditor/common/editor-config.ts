@@ -49,3 +49,5 @@ export enum AutocompleteCloseKeyEnum {
   '(',
   ')',
 }
+
+export type MarkHelper = (editor: CodeMirror.Editor) => void
