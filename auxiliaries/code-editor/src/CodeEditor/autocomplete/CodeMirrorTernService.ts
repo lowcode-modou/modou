@@ -1,5 +1,11 @@
-import CodeMirror, { Hint, Pos, ShowHintOptions, cmpPos } from 'codemirror'
-import tern, { Def, Server } from 'tern'
+import CodeMirror, {
+  Hint,
+  Hints,
+  Pos,
+  ShowHintOptions,
+  cmpPos,
+} from 'codemirror'
+import tern, { Def, Document, Server } from 'tern'
 
 import { AutocompleteSorter } from '@modou/code-editor/CodeEditor/autocomplete/AutocompleteSortRules'
 import { TernWorkerServer } from '@modou/code-editor/CodeEditor/autocomplete/TernWorkerServer'
@@ -126,7 +132,6 @@ class CodeMirrorTernService {
 
   complete(cm: CodeMirror.Editor) {
     cm.showHint({
-      // @ts-expect-error
       hint: this.getHint.bind(this),
       completeSingle: false,
       extraKeys: {
@@ -148,15 +153,18 @@ class CodeMirrorTernService {
   }
 
   showType(cm: CodeMirror.Editor) {
-    this.showContextInfo(cm, 'type')
+    void this.showContextInfo(cm, 'type')
   }
 
-  showDocs(cm: CodeMirror.Editor) {
-    this.showContextInfo(cm, 'documentation', (data: any) => {
+  async showDocs(cm: CodeMirror.Editor) {
+    try {
+      const data = await this.showContextInfo(cm, 'documentation')
       if (data.url) {
         window.open(data.url, '_blank')
       }
-    })
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   updateDef(
@@ -181,11 +189,8 @@ class CodeMirrorTernService {
     this.server.deleteDefs(name)
   }
 
-  requestCallback(error: any, data: any, cm: CodeMirror.Editor, resolve: any) {
-    if (error) return this.showError(cm, error)
-    if (data.completions.length === 0) {
-      return this.showError(cm, 'No suggestions')
-    }
+  // TODO 完善 types 定义
+  async requestCallback(data: any, cm: CodeMirror.Editor): Promise<Hints> {
     const doc = this.findDoc(cm.getDoc())
     const lineValue = this.lineValue(doc)
     const cursor = cm.getCursor()
@@ -317,43 +322,46 @@ class CodeMirrorTernService {
     CodeMirror.on(obj, 'close', () => this.remove(tooltip))
     CodeMirror.on(obj, 'update', () => this.remove(tooltip))
     CodeMirror.on(obj, 'select', handleSelect as any)
-    resolve(obj)
-
     return obj
   }
 
-  async getHint(cm: CodeMirror.Editor): Promise<ShowHintOptions['hint']> {
-    return new Promise((resolve) => {
-      this.request(
-        cm,
-        {
-          type: 'completions',
-          types: true,
-          docs: true,
-          urls: true,
-          origins: true,
-          caseInsensitive: true,
-          guess: false,
-          inLiteral: false,
-        },
-        (error, data) => {
-          this.requestCallback(error, data, cm, (res: any) => {
-            resolve(res)
-          })
-        },
-      )
-    })
+  async getHint(cm: CodeMirror.Editor): Promise<Hints | undefined> {
+    try {
+      const data = await this.request(cm, {
+        type: 'completions',
+        types: true,
+        docs: true,
+        urls: true,
+        origins: true,
+        caseInsensitive: true,
+        guess: false,
+        inLiteral: false,
+      })
+      if (data.completions?.length === 0) {
+        this.showError(cm, 'No suggestions')
+        return undefined
+      }
+      // TODO 优化 Callback => Promise
+      return this.requestCallback(data, cm)
+    } catch (error) {
+      this.showError(cm, String(error))
+    }
   }
 
-  showContextInfo(cm: CodeMirror.Editor, queryName: string, callbackFn?: any) {
-    this.request(cm, { type: queryName }, (error, data) => {
-      if (error) return this.showError(cm, error)
+  async showContextInfo(
+    cm: CodeMirror.Editor,
+    queryName: string,
+  ): Promise<ReturnType<typeof this.request>> {
+    try {
+      const data = await this.request(cm, { type: queryName })
       const tip = this.elt(
         'span',
         null,
-        this.elt('strong', null, data.type || 'not found'),
+        this.elt('strong', null, data.type ?? 'not found'),
       )
-      if (data.doc) tip.appendChild(document.createTextNode(' — ' + data.doc))
+      if (data.doc) {
+        tip.appendChild(document.createTextNode(' — ' + data.doc))
+      }
       if (data.url) {
         tip.appendChild(document.createTextNode(' '))
         const child = tip.appendChild(this.elt('a', null, '[docs]'))
@@ -364,21 +372,37 @@ class CodeMirrorTernService {
         child.target = '_blank'
       }
       this.tempTooltip(cm, tip)
-      if (callbackFn) callbackFn(data)
-    })
+      return data
+    } catch (error) {
+      this.showError(cm, String(error))
+      throw error
+    }
   }
 
-  request(
+  async request(
     cm: CodeMirror.Editor,
     query: RequestQuery | string,
-    callbackFn: (error: any, data: any) => void,
     pos?: CodeMirror.Position,
-  ) {
-    const doc = this.findDoc(cm.getDoc())
-    const request = this.buildRequest(doc, query, pos)
+  ): Promise<{
+    doc?: string
+    url?: string
+    type?: string
+    // TODO 完善；类型
+    completions?: any[]
+  }> {
+    return new Promise((resolve, reject) => {
+      const doc = this.findDoc(cm.getDoc())
+      const request: Document = this.buildRequest(doc, query, pos)
 
-    // @ts-expect-error: Types are not available
-    this.server.request(request, callbackFn)
+      this.server.request(request, (error, response) => {
+        if (error) {
+          reject(error)
+        } else {
+          // TODO 完善类型
+          resolve(response as any)
+        }
+      })
+    })
   }
 
   findDoc(doc: CodeMirror.Doc, name?: string): TernDoc {
@@ -410,12 +434,16 @@ class CodeMirrorTernService {
     doc: TernDoc,
     query: Partial<RequestQuery> | string,
     pos?: CodeMirror.Position,
-  ) {
+  ): Document {
     const files = []
     let offsetLines = 0
-    if (typeof query === 'string') query = { type: query }
+    if (typeof query === 'string') {
+      query = { type: query }
+    }
     const allowFragments = !query.fullDocs
-    if (!allowFragments) delete query.fullDocs
+    if (!allowFragments) {
+      delete query.fullDocs
+    }
     query.lineCharPositions = true
     query.includeKeywords = true
     query.depth = 0
@@ -478,7 +506,10 @@ class CodeMirrorTernService {
       }
     }
 
-    return { query, files }
+    return {
+      query: query as unknown as Document['query'],
+      files: files as unknown as Document['files'],
+    }
   }
 
   trackChange(

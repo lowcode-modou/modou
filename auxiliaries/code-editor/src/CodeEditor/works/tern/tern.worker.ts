@@ -18,7 +18,7 @@ const startServer = (defs: Def[], plugins = {}, scripts?: string[]) => {
   })
 }
 
-self.onmessage = function (e) {
+self.onmessage = (e) => {
   const data = e.data
   switch (data.type) {
     case TernWorkerAction.INIT:
@@ -45,14 +45,14 @@ self.onmessage = function (e) {
   }
 }
 
-function getFile(file: string, c: CallbackFn) {
+const getFile = (file: string, c: CallbackFn) => {
   postMessage({ type: TernWorkerAction.GET_FILE, name: file, id: ++nextId })
   pending[nextId] = c
 }
 
 self.console = {
   ...self.console,
-  log: function (v) {
+  log(v) {
     postMessage({ type: TernWorkerAction.DEBUG, message: v })
   },
 }

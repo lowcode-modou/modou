@@ -13,11 +13,17 @@ const ternWorker = new Worker(
   },
 )
 
-const getFile = (ts: any, name: string, c: CallbackFn) => {
-  const buf = ts.docs[name]
-  if (buf) c(ts.docValue(ts, buf))
-  else if (ts.options.getFile) ts.options.getFile(name, c)
-  else c(null)
+const getFile = async (ts: any, name: string): Promise<any> => {
+  return new Promise((resolve) => {
+    const buf = ts.docs[name]
+    if (buf) {
+      resolve(ts.docValue(ts, buf))
+    } else if (ts.options.getFile) {
+      ts.options.getFile(name, resolve)
+    } else {
+      resolve(null)
+    }
+  })
 }
 export class TernWorkerServer implements Partial<Server> {
   // FIXME 修复类型
@@ -29,17 +35,23 @@ export class TernWorkerServer implements Partial<Server> {
       plugins: ts.options.plugins,
       scripts: ts.options.workerDeps,
     })
-    this.worker.onmessage = (e) => {
+    this.worker.onmessage = async (e) => {
       const data = e.data
       if (data.type === TernWorkerAction.GET_FILE) {
-        getFile(ts, data.name, (err, text) => {
+        try {
+          const text = await getFile(ts, data.name)
           this.send({
             type: TernWorkerAction.GET_FILE,
-            err: String(err),
             text,
             id: data.id,
           })
-        })
+        } catch (err) {
+          this.send({
+            type: TernWorkerAction.GET_FILE,
+            err: String(err),
+            id: data.id,
+          })
+        }
       } else if (data.type === TernWorkerAction.DEBUG) {
         window.console.log(data.message)
       } else if (data.id && this.pending[data.id]) {
@@ -48,7 +60,6 @@ export class TernWorkerServer implements Partial<Server> {
       }
     }
     this.worker.onerror = (e) => {
-      console.log('__CallbackFn__onerror')
       for (const id in this.pending) {
         this.pending[id](e)
       }
