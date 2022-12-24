@@ -1,200 +1,157 @@
-import { useMemoizedFn } from 'ahooks'
-import CodeMirror from 'codemirror'
-import React, { type FC, useEffect, useRef } from 'react'
-import tern, { Server } from 'tern'
+import { useMemoizedFn, useMount, useUnmount } from 'ahooks'
+import CodeMirror, { EditorEventMap } from 'codemirror'
+import React, { type FC, useEffect, useRef, useState } from 'react'
 
+import { AutocompleteDataType } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
 import {
   CodeEditorModeEnum,
+  DataTree,
+  ENTITY_TYPE,
+  FieldEntityInformation,
+  HintHelper,
+  Hinter,
   MarkHelper,
+  isCloseKey,
+  isModifierKey,
 } from '@modou/code-editor/CodeEditor/common/editor-config'
+import { bindingHint } from '@modou/code-editor/CodeEditor/common/hintHelpers'
 import { bindingMarker } from '@modou/code-editor/CodeEditor/common/mark-helpers'
-import { DEFS } from '@modou/code-editor/CodeEditor/tern/defs'
+import {
+  mock_datasources,
+  mock_dynamicData,
+} from '@modou/code-editor/CodeEditor/mock'
 import { injectGlobal, mcss } from '@modou/css-in-js'
 
 import './common/code-mirror-libs'
-import './common/modes' // TODO: tern uses global variable, maybe there is some workaround
+import './common/modes'
 
-;(window as unknown as { tern: typeof tern }).tern = tern
-export const EXPRESSION = {
-  START: '{{',
-  END: '}}',
-}
-export type ExpChunk = string | ExpChunk[]
-
-const parseExpression = (rawExp: string): ExpChunk[] => {
-  const exp = rawExp.trim()
-
-  function lexer(str: string): string[] {
-    let token = ''
-    let chars = ''
-    let charsNext = ''
-    let i = 0
-    const res = []
-    const collectToken = () => {
-      if (token) {
-        res.push(token)
-        token = ''
-      }
-    }
-    while ((chars = str.slice(i, i + EXPRESSION.START.length))) {
-      switch (chars) {
-        case EXPRESSION.START:
-          // move cursor
-          i += EXPRESSION.START.length
-          collectToken()
-          res.push(chars)
-          break
-        case EXPRESSION.END: {
-          let j = i + 1
-          // looking ahead
-          while ((charsNext = str.slice(j, j + EXPRESSION.END.length))) {
-            if (charsNext === EXPRESSION.END) {
-              token += str[i]
-              // move two cursors
-              j++
-              i++
-            } else {
-              // move cursor
-              i += EXPRESSION.END.length
-              collectToken()
-              res.push(chars)
-              break
-            }
-          }
-          break
-        }
-        default:
-          token += str[i]
-          // move cursor
-          i++
-      }
-    }
-    if (token) {
-      res.push(token)
-    }
-    return res
-  }
-
-  function build(tokens: string[]): ExpChunk[] {
-    const result: ExpChunk[] = []
-    let item
-
-    while ((item = tokens.shift())) {
-      if (item === EXPRESSION.END) return result
-      result.push(item === EXPRESSION.START ? build(tokens) : item)
-    }
-    return result
-  }
-
-  const tokens = lexer(exp)
-  const result = build(tokens)
-
-  return result
-}
-const getCursorIndex = (editor: CodeMirror.Editor) => {
-  const cursor = editor.getCursor()
-  let cursorIndex = cursor.ch
-  if (cursor.line > 0) {
-    for (let lineIndex = 0; lineIndex < cursor.line; lineIndex++) {
-      const line = editor.getLine(lineIndex)
-      cursorIndex = cursorIndex + line.length + 1
-    }
-  }
-  return cursorIndex
-}
-
-const checkIfCursorInsideBinding = (editor: CodeMirror.Editor): boolean => {
-  let cursorBetweenBinding = false
-  const value = editor.getValue()
-  const cursorIndex = getCursorIndex(editor)
-  const chunks = parseExpression(value)
-  // count of chars processed
-  let current = 0
-  chunks.forEach((chunk) => {
-    if (typeof chunk === 'string') {
-      current += chunk.length
-    } else {
-      const start = current + '{{'.length
-      const end = start + chunk.join('').length + '}}'.length
-      if (start <= cursorIndex && cursorIndex <= end) {
-        cursorBetweenBinding = true
-      }
-      current = end
-    }
-  })
-  return cursorBetweenBinding
-}
-
-const installTern = (cm: CodeMirror.Editor) => {
-  const t = new CodeMirror.TernServer({ defs: DEFS })
-  // 将在光标或选择移动时触发，或者对编辑器内容进行任何更改
-  cm.on('cursorActivity', (cm) => t.updateArgHints(cm))
-  cm.on('change', (_instance, change) => {
-    if (!checkIfCursorInsideBinding(_instance)) {
-      return
-    }
-    if (
-      change.text
-        .concat(change.removed ?? [])
-        .join('')
-        .trim() === ''
-    ) {
-      // do not auto complete when input newline/space
-      return
-    }
-    if (
-      // change happened
-      change.text.length + (change.removed?.length ?? 0) > 0 &&
-      // not changed by auto-complete
-      change.origin !== 'complete'
-    ) {
-      t.complete(cm)
-    }
-  })
-  return t
-}
-
+// TODO: tern uses global variable, maybe there is some workaround
 const updateMarkings = (editor: CodeMirror.Editor, marking: MarkHelper[]) => {
   marking.forEach((helper) => helper(editor))
 }
 
-export const CodeEditor: FC<{}> = (props) => {
+const startAutocomplete = (
+  editor: CodeMirror.Editor,
+  hinting: HintHelper[],
+  dynamicData: DataTree,
+) => {
+  console.log('startAutocompletestartAutocomplete', hinting)
+  return hinting.map((helper) => {
+    return helper(editor, dynamicData)
+  })
+}
+
+export const CodeEditor: FC<{
+  hinting?: HintHelper[]
+}> = (_props) => {
+  const props: typeof _props = {
+    ..._props,
+    hinting: _props.hinting ?? [bindingHint],
+  }
   const cmWrapperRef = useRef<HTMLDivElement>(null)
   const cmRef = useRef<CodeMirror.Editor | null>(null)
-  const tServerRef = useRef<Server | null>(null)
-  useEffect(() => {
+  const hintersRef = useRef<Hinter[] | null>(null)
+
+  const [isFocused, setaIsFocused] = useState(false)
+
+  const handleEditorFocus = useMemoizedFn((cm: CodeMirror.Editor) => {
+    setaIsFocused(true)
+  })
+  const handleEditorBlur = useMemoizedFn(() => {
+    setaIsFocused(false)
+  })
+
+  const handleAutocompleteVisibility = useMemoizedFn(
+    (cm: CodeMirror.Editor) => {
+      console.log(
+        'handleAutocompleteVisibilityhandleAutocompleteVisibility',
+        isFocused,
+      )
+      if (!isFocused || !hintersRef.current) {
+        return
+      }
+      const entityInformation: FieldEntityInformation = {
+        expectedType: AutocompleteDataType.STRING,
+        entityName: 'Button1',
+        entityType: ENTITY_TYPE.WIDGET,
+        entityId: 'g4ifgmw7bb',
+        propertyPath: 'text',
+      }
+      const blockCompletions = undefined
+      let hinterOpen = false
+      for (let i = 0; i < hintersRef.current.length; i++) {
+        hinterOpen = hintersRef.current[i].showHint(cm, entityInformation, {
+          blockCompletions,
+          datasources: mock_datasources.list,
+          pluginIdToImageLocation: {},
+          recentEntities: {},
+          update: () => {},
+          executeCommand: (payload: any) => {},
+        })
+        if (hinterOpen) break
+      }
+    },
+  )
+
+  const handleAutocompleteKeyup = useMemoizedFn(
+    (cm: CodeMirror.Editor, event: KeyboardEvent) => {
+      const key = event.key
+      if (isModifierKey(key)) return
+      const code = `${event.ctrlKey ? 'Ctrl+' : ''}${event.code}`
+      if (isCloseKey(code) || isCloseKey(key)) {
+        cm.closeHint()
+        return
+      }
+      const cursor = cm.getCursor()
+      const line = cm.getLine(cursor.line)
+      let showAutocomplete = false
+      /* Check if the character before cursor is completable to show autocomplete which backspacing */
+      if (key === '/') {
+        showAutocomplete = true
+      } else if (event.code === 'Backspace') {
+        const prevChar = line[cursor.ch - 1]
+        showAutocomplete = !!prevChar && /[a-zA-Z_0-9.]/.test(prevChar)
+      } else if (key === '{') {
+        /* Autocomplete for { should show up only when a user attempts to write {{}} and not a code block. */
+        const prevChar = line[cursor.ch - 2]
+        showAutocomplete = prevChar === '{'
+      } else if (key.length === 1) {
+        showAutocomplete = /[a-zA-Z_0-9.]/.test(key)
+        /* Autocomplete should be triggered only for characters that make up valid variable names */
+      }
+      showAutocomplete && handleAutocompleteVisibility(cm)
+    },
+  )
+
+  useMount(() => {
     if (!cmWrapperRef.current) {
       return
     }
     if (!cmRef.current) {
       cmRef.current = CodeMirror(cmWrapperRef.current, {
+        autoRefresh: true,
+        viewportMargin: 10,
         value: `{{const a = 123}}`,
         mode: CodeEditorModeEnum.TextWithJs,
-        tabindex: 1,
+        tabindex: -1,
         tabSize: 2,
         autoCloseBrackets: true,
         matchBrackets: false,
         lineWrapping: true,
         // theme: CodeEditorThemes[CodeEditorThemeEnum.Light],
-        viewportMargin: Infinity,
-        hintOptions: {
-          completeSingle: false,
-        },
-        autoRefresh: {
-          delay: 50,
-        },
+        addModeClass: true,
       })
 
       updateMarkings(cmRef.current as unknown as CodeMirror.Editor, [
         bindingMarker,
       ])
 
-      const t = installTern(cmRef.current)
-      tServerRef.current = t.server
-    }
-  }, [])
-  useEffect(() => {
-    if (cmRef.current) {
+      hintersRef.current = startAutocomplete(
+        cmRef.current,
+        props.hinting ?? [],
+        mock_dynamicData as any,
+      )
+    } else {
       updateMarkings(cmRef.current, [bindingMarker])
     }
   })
@@ -208,15 +165,28 @@ export const CodeEditor: FC<{}> = (props) => {
 
   useEffect(() => {
     cmRef.current?.on('change', handleChange)
+    cmRef.current?.on('keyup', handleAutocompleteKeyup)
+    cmRef.current?.on('focus', handleEditorFocus)
+    cmRef.current?.on('blur', handleEditorBlur)
     return () => {
       cmRef.current?.off('change', handleChange)
+      cmRef.current?.off('keyup', handleAutocompleteKeyup)
+      cmRef.current?.on('focus', handleEditorFocus)
+      cmRef.current?.on('blur', handleEditorBlur)
     }
-  }, [handleChange])
+  }, [
+    handleAutocompleteKeyup,
+    handleChange,
+    handleEditorBlur,
+    handleEditorFocus,
+  ])
 
   return (
-    <div className={classes.wrapper}>
-      <div className={classes.cmWrapper} tabIndex={0} ref={cmWrapperRef} />
-    </div>
+    <>
+      <div className={classes.wrapper}>
+        <div className={classes.cmWrapper} tabIndex={0} ref={cmWrapperRef} />
+      </div>
+    </>
   )
 }
 

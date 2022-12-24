@@ -1,3 +1,9 @@
+import CodeMirror from 'codemirror'
+
+import { AutocompleteDataType } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
+import { DataTreeEntity } from '@modou/code-editor/CodeEditor/common/data-tree'
+import { TruthyPrimitiveTypes } from '@modou/code-editor/CodeEditor/utils/TypeHelpers'
+
 export enum CodeEditorModeEnum {
   Text = 'text/plain',
   SQL = 'sql',
@@ -51,3 +57,70 @@ export enum AutocompleteCloseKeyEnum {
 }
 
 export type MarkHelper = (editor: CodeMirror.Editor) => void
+
+export enum ENTITY_TYPE {
+  ACTION = 'ACTION',
+  WIDGET = 'WIDGET',
+  APPSMITH = 'APPSMITH',
+  JSACTION = 'JSACTION',
+}
+
+export interface FieldEntityInformation {
+  entityName?: string
+  expectedType?: AutocompleteDataType
+  entityType?: ENTITY_TYPE
+  entityId?: string
+  propertyPath?: string
+  blockCompletions?: Array<{ parentPath: string; subPath: string }>
+}
+
+export interface DataTree {
+  [entityName: string]: DataTreeEntity
+}
+
+export interface Hinter {
+  showHint: (
+    editor: CodeMirror.Editor,
+    entityInformation: FieldEntityInformation,
+    additionalData?: any,
+  ) => boolean
+  update?: (data: DataTree) => void
+  fireOnFocus?: boolean
+}
+export type AdditionalDynamicDataTree = Record<
+  string,
+  Record<string, unknown> | TruthyPrimitiveTypes
+>
+export type HintHelper = (
+  editor: CodeMirror.Editor,
+  data: DataTree,
+  customDataTree?: AdditionalDynamicDataTree,
+) => Hinter
+
+export enum MODIFIER {
+  Control,
+  Meta,
+  Alt,
+  Shift,
+}
+export const isModifierKey = (key: any): key is MODIFIER => {
+  return Reflect.has(MODIFIER, key)
+}
+
+export enum AUTOCOMPLETE_CLOSE_KEY {
+  Enter,
+  Tab,
+  Escape,
+  Comma,
+  Semicolon,
+  Space,
+  Delete,
+  'Ctrl+Backspace',
+  OSLeft,
+  '(',
+  ')',
+}
+
+export const isCloseKey = (key: any): key is AUTOCOMPLETE_CLOSE_KEY => {
+  return Reflect.has(AUTOCOMPLETE_CLOSE_KEY, key)
+}
