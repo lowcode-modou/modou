@@ -25,7 +25,7 @@ export const getType = (value: unknown) => {
   return Types.UNKNOWN
 }
 
-export function isURL(str: string) {
+export const isURL = (str: string) => {
   const pattern = new RegExp(
     '^((blob:)?https?:\\/\\/)?' + // protocol
       '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name

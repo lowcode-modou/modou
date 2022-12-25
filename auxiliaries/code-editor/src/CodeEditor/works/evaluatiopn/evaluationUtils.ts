@@ -1,7 +1,9 @@
-export function getEntityNameAndPropertyPath(fullPath: string): {
+export const getEntityNameAndPropertyPath = (
+  fullPath: string,
+): {
   entityName: string
   propertyPath: string
-} {
+} => {
   const indexOfFirstDot = fullPath.indexOf('.')
   if (indexOfFirstDot === -1) {
     // No dot was found so path is the entity name itself

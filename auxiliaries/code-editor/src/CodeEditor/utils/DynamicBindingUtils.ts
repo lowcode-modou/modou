@@ -4,7 +4,7 @@ export const isDynamicValue = (value: string): boolean =>
   DATA_BIND_REGEX.test(value)
 
 // {{}}{{}}}
-export function getDynamicStringSegments(dynamicString: string): string[] {
+export const getDynamicStringSegments = (dynamicString: string): string[] => {
   let stringSegments = []
   const indexOfDoubleParanStart = dynamicString.indexOf('{{')
   if (indexOfDoubleParanStart === -1) {

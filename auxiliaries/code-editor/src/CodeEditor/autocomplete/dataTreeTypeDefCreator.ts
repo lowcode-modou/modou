@@ -5,11 +5,11 @@ import { Types, getType } from '@modou/code-editor/CodeEditor/utils/TypeHelpers'
 
 export type ExtraDef = Record<string, Def | string>
 
-export function generateTypeDef(
+export const generateTypeDef = (
   value: unknown,
   extraDefsToDefine?: ExtraDef,
   depth = 0,
-): Def | string {
+): Def | string => {
   switch (getType(value)) {
     case Types.ARRAY: {
       const array = value as [unknown]

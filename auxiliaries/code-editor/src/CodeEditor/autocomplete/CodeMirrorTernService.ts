@@ -1,5 +1,5 @@
 import CodeMirror, { Hint, Hints, Pos, cmpPos } from 'codemirror'
-import tern, { Def, Document } from 'tern'
+import { Def, Document } from 'tern'
 
 import { AutocompleteSorter } from '@modou/code-editor/CodeEditor/autocomplete/AutocompleteSortRules'
 import { TernWorkerServer } from '@modou/code-editor/CodeEditor/autocomplete/TernWorkerServer'
@@ -42,7 +42,7 @@ type TernDocs = Record<string, TernDoc>
 const bigDoc = 250
 const cls = 'CodeMirror-Tern-'
 const hintDelay = 1700
-export function typeToIcon(type: string, isKeyword: boolean) {
+export const typeToIcon = (type: string, isKeyword: boolean) => {
   let suffix
   if (isKeyword) suffix = 'keyword'
   else if (type === '?') suffix = 'unknown'
@@ -54,7 +54,7 @@ export function typeToIcon(type: string, isKeyword: boolean) {
   return cls + 'completion ' + cls + 'completion-' + suffix
 }
 
-export function getDataType(type: string): AutocompleteDataType {
+export const getDataType = (type: string): AutocompleteDataType => {
   if (type === '?') return AutocompleteDataType.UNKNOWN
   else if (type === 'number') return AutocompleteDataType.NUMBER
   else if (type === 'string') return AutocompleteDataType.STRING
@@ -117,10 +117,11 @@ class CodeMirrorTernService {
   >()
 
   resetServer() {
-    this.server = new tern.Server({
-      async: true,
-      defs: DEFS,
-    })
+    // this.server = new tern.Server({
+    //   async: true,
+    //   defs: DEFS,
+    // })
+    this.server = new TernWorkerServer(this)
     this.docs = Object.create(null)
   }
 
@@ -532,23 +533,21 @@ class CodeMirrorTernService {
       }, 200)
   }
 
-  sendDoc(doc: TernDoc) {
-    this.server.request(
-      {
+  async sendDoc(doc: TernDoc) {
+    try {
+      await this.server.request({
         files: [
-          // @ts-expect-error: Types are not available
           {
             type: 'full',
             name: doc.name,
             text: this.docValue(doc),
           },
         ],
-      },
-      function (error: Error) {
-        if (error) window.console.error(error)
-        else doc.changed = null
-      },
-    )
+      })
+      doc.changed = null
+    } catch (error) {
+      window.console.error(error)
+    }
   }
 
   lineValue(doc: TernDoc) {
