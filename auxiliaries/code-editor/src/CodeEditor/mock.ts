@@ -1,3 +1,9 @@
+import { AutocompleteDataType } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
+import {
+  ENTITY_TYPE,
+  FieldEntityInformation,
+} from '@modou/code-editor/CodeEditor/common/editor-config'
+
 export const mock_datasources = {
   list: [],
   loading: false,
@@ -1117,3 +1123,154 @@ export const mock_dynamicData = {
     },
   },
 }
+
+export const mock_editorLastCursorPosition = {
+  ch: 0,
+  line: 0,
+}
+
+export const mock_additionalDynamicData = undefined
+
+export const mock_entityInformation: FieldEntityInformation = {
+  expectedType: AutocompleteDataType.STRING,
+  entityName: 'Button1',
+  entityType: ENTITY_TYPE.WIDGET,
+  entityId: 'g4ifgmw7bb',
+  propertyPath: 'text',
+}
+
+export const mock_blockCompletions = undefined
+
+export const mock_dyn_def = {
+  '!name': 'DATA_TREE',
+  Button1: {
+    '!doc':
+      'Buttons are used to capture user intent and trigger actions based on that intent',
+    '!url': 'https://docs.appsmith.com/widget-reference/button',
+    isVisible: {
+      '!type': 'bool',
+      '!doc': 'Boolean value indicating if the widget is in visible state',
+    },
+    text: 'string',
+    isDisabled: 'bool',
+    recaptchaToken: 'string',
+  },
+  'Button1.isVisible': {
+    '!type': 'bool',
+    '!doc': 'Boolean value indicating if the widget is in visible state',
+  },
+  'Button1.text': 'string',
+  'Button1.isDisabled': 'bool',
+  'Button1.recaptchaToken': 'string',
+  Input1: {
+    '!doc':
+      'An input text field is used to capture a users textual input such as their names, numbers, emails etc. Inputs are used in forms and can have custom validations.',
+    '!url': 'https://docs.appsmith.com/widget-reference/input',
+    text: {
+      '!type': 'string',
+      '!doc': 'The text value of the input',
+      '!url': 'https://docs.appsmith.com/widget-reference/input',
+    },
+    inputText: {
+      '!type': 'string',
+      '!doc': 'The unformatted text value of the input',
+      '!url': 'https://docs.appsmith.com/widget-reference/input',
+    },
+    isValid: 'bool',
+    isVisible: {
+      '!type': 'bool',
+      '!doc': 'Boolean value indicating if the widget is in visible state',
+    },
+    isDisabled: 'bool',
+  },
+  'Input1.text': {
+    '!type': 'string',
+    '!doc': 'The text value of the input',
+    '!url': 'https://docs.appsmith.com/widget-reference/input',
+  },
+  'Input1.inputText': {
+    '!type': 'string',
+    '!doc': 'The unformatted text value of the input',
+    '!url': 'https://docs.appsmith.com/widget-reference/input',
+  },
+  'Input1.isValid': 'bool',
+  'Input1.isVisible': {
+    '!type': 'bool',
+    '!doc': 'Boolean value indicating if the widget is in visible state',
+  },
+  'Input1.isDisabled': 'bool',
+  appsmith: {
+    user: {
+      email: 'string',
+      workspaceIds: '[string]',
+      username: 'string',
+      name: 'string',
+      role: 'string',
+      useCase: 'string',
+      enableTelemetry: 'bool',
+      idToken: {},
+      emptyInstance: 'bool',
+      accountNonExpired: 'bool',
+      accountNonLocked: 'bool',
+      credentialsNonExpired: 'bool',
+      isAnonymous: 'bool',
+      isEnabled: 'bool',
+      isSuperUser: 'bool',
+      isConfigurable: 'bool',
+    },
+    URL: {
+      fullPath: 'string',
+      host: 'string',
+      hostname: 'string',
+      queryParams: {},
+      protocol: 'string',
+      pathname: 'string',
+      port: 'string',
+      hash: 'string',
+    },
+    store: {},
+    geolocation: {
+      canBeRequested: 'bool',
+      currentPosition: {},
+      '!doc':
+        "The user's geo location information. Only available when requested",
+      '!url':
+        'https://docs.appsmith.com/v/v1.2.1/framework-reference/geolocation',
+      getCurrentPosition:
+        'fn(onSuccess: fn() -> void, onError: fn() -> void, options: object) -> void',
+      watchPosition: 'fn(options: object) -> void',
+      clearWatch: 'fn() -> void',
+    },
+    mode: 'string',
+    theme: {
+      colors: {
+        primaryColor: 'string',
+        backgroundColor: 'string',
+      },
+      borderRadius: {
+        appBorderRadius: 'string',
+      },
+      boxShadow: {
+        appBoxShadow: 'string',
+      },
+      fontFamily: {
+        appFont: 'string',
+      },
+    },
+  },
+  '!define': {},
+}
+
+export const mock_entityInfo = new Map()
+mock_entityInfo.set('Button1', {
+  type: 'WIDGET',
+  subType: 'BUTTON_WIDGET',
+})
+mock_entityInfo.set('Button1', {
+  type: 'WIDGET',
+  subType: 'BUTTON_WIDGET',
+})
+mock_entityInfo.set('appsmith', {
+  type: 'APPSMITH',
+  subType: 'APPSMITH',
+})

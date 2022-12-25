@@ -45,7 +45,8 @@ class CustomDef {
  *
  * if customData is not defined then check if lastCustomDataDef was present and remove it.
  *
- * if customData is defined then generate new customDataDef and compare with lastCustomDataDef if different then run updateDef
+ * if customData is defined then generate new customDataDef and compare with lastCustomDataDef
+ * if different then run updateDef
  * @param customData
  */
 export const updateCustomDef = new CustomDef().update

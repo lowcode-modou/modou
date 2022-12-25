@@ -1,13 +1,12 @@
-import { useMemoizedFn, useMount, useUnmount } from 'ahooks'
-import CodeMirror, { EditorEventMap } from 'codemirror'
+import { useMemoizedFn, useMount } from 'ahooks'
+import CodeMirror from 'codemirror'
 import React, { type FC, useEffect, useRef, useState } from 'react'
 
-import { AutocompleteDataType } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
+import { CodeMirrorTernServiceInstance } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
+import { updateCustomDef } from '@modou/code-editor/CodeEditor/autocomplete/customDefUtils'
 import {
   CodeEditorModeEnum,
   DataTree,
-  ENTITY_TYPE,
-  FieldEntityInformation,
   HintHelper,
   Hinter,
   MarkHelper,
@@ -17,8 +16,14 @@ import {
 import { bindingHint } from '@modou/code-editor/CodeEditor/common/hintHelpers'
 import { bindingMarker } from '@modou/code-editor/CodeEditor/common/mark-helpers'
 import {
+  mock_additionalDynamicData,
+  mock_blockCompletions,
   mock_datasources,
+  mock_dyn_def,
   mock_dynamicData,
+  mock_editorLastCursorPosition,
+  mock_entityInfo,
+  mock_entityInformation,
 } from '@modou/code-editor/CodeEditor/mock'
 import { injectGlobal, mcss } from '@modou/css-in-js'
 
@@ -35,7 +40,6 @@ const startAutocomplete = (
   hinting: HintHelper[],
   dynamicData: DataTree,
 ) => {
-  console.log('startAutocompletestartAutocomplete', hinting)
   return hinting.map((helper) => {
     return helper(editor, dynamicData)
   })
@@ -56,6 +60,35 @@ export const CodeEditor: FC<{
 
   const handleEditorFocus = useMemoizedFn((cm: CodeMirror.Editor) => {
     setaIsFocused(true)
+    const { ch, line, sticky } = cm.getCursor()
+    // Check if it is a user focus
+    if (
+      ch === 0 &&
+      line === 0 &&
+      sticky === null &&
+      mock_editorLastCursorPosition
+    ) {
+      cm.setCursor(mock_editorLastCursorPosition)
+    }
+
+    if (!cm.state.completionActive) {
+      updateCustomDef(mock_additionalDynamicData)
+
+      const entityInformation = mock_entityInformation
+      const blockCompletions = mock_blockCompletions
+      hintersRef.current
+        ?.filter((hinter) => hinter.fireOnFocus)
+        .forEach(
+          (hinter) =>
+            hinter?.showHint &&
+            hinter.showHint(cm, entityInformation, blockCompletions),
+        )
+    }
+
+    // TODO 补充
+    // if (this.props.onEditorFocus) {
+    //   this.props.onEditorFocus()
+    // }
   })
   const handleEditorBlur = useMemoizedFn(() => {
     setaIsFocused(false)
@@ -63,21 +96,11 @@ export const CodeEditor: FC<{
 
   const handleAutocompleteVisibility = useMemoizedFn(
     (cm: CodeMirror.Editor) => {
-      console.log(
-        'handleAutocompleteVisibilityhandleAutocompleteVisibility',
-        isFocused,
-      )
       if (!isFocused || !hintersRef.current) {
         return
       }
-      const entityInformation: FieldEntityInformation = {
-        expectedType: AutocompleteDataType.STRING,
-        entityName: 'Button1',
-        entityType: ENTITY_TYPE.WIDGET,
-        entityId: 'g4ifgmw7bb',
-        propertyPath: 'text',
-      }
-      const blockCompletions = undefined
+      const entityInformation = mock_entityInformation
+      const blockCompletions = mock_blockCompletions
       let hinterOpen = false
       for (let i = 0; i < hintersRef.current.length; i++) {
         hinterOpen = hintersRef.current[i].showHint(cm, entityInformation, {
@@ -181,6 +204,20 @@ export const CodeEditor: FC<{
     handleEditorFocus,
   ])
 
+  // mock start
+  useMount(() => {
+    // We update the data tree definition after every eval so that autocomplete
+    // is accurate
+    setTimeout(() => {
+      CodeMirrorTernServiceInstance.updateDef(
+        'DATA_TREE',
+        mock_dyn_def,
+        mock_entityInfo,
+      )
+    })
+  })
+  // mock end
+
   return (
     <>
       <div className={classes.wrapper}>
@@ -197,92 +234,124 @@ const classes = {
     position: relative;
   `,
   cmWrapper: mcss`
-		height: 100%;
-		width: 100%;
-		overflow: hidden;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
 
-		.CodeMirror {
-			width: 100%;
-			height: 100%;
-			padding: 0;
-			border-radius: 4px;
-			background: #EDF2F7;
-			color: #1A202C;
-			transition-property: background-color, color, opacity;
-			transition-duration: 0.2s;
-			line-height: 20px;
+    .CodeMirror {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border-radius: 4px;
+      background: #EDF2F7;
+      color: #1A202C;
+      transition-property: background-color, color, opacity;
+      transition-duration: 0.2s;
+      line-height: 20px;
 
-			&:hover {
-				background: #E2E8F0;
-			}
+      &:hover {
+        background: #E2E8F0;
+      }
 
-			.binding-brackets {
-				font-weight: bold;
-				color: #f26a02;
-			}
-		}
-	}
+      .binding-brackets {
+        font-weight: bold;
+        color: #f26a02;
+      }
 
-	.CodeMirror .CodeMirror-scroll {
-		//max-height: 125px
-		// };
+      .binding-highlight{}
+      .cm {
+        &-variable {
+          color: #dfb967;
+        }
+      }
+    }
+  }
+
+  .CodeMirror .CodeMirror-scroll {
+    //max-height: 125px
+    // };
   `,
 }
 
 injectGlobal`
   .CodeMirror-hints {
-		position: absolute;
-		z-index: 20;
-		overflow: hidden;
-		list-style: none;
-		padding: 0 0;
-		font-family: monospace;
-		max-height: 20em;
-		overflow-y: auto;
-		box-shadow: 0px 0px 2px 2px #ebebeb;
-		border-radius: 1px;
+    position: absolute;
+    z-index: 20;
+    overflow: hidden;
+    list-style: none;
+    padding: 0 0;
+    font-family: monospace;
+    max-height: 20em;
+    overflow-y: auto;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 3%), 0 1px 6px -1px rgb(0 0 0 / 2%), 0 2px 4px 0 rgb(0 0 0 / 2%);
+    border-radius: 2px;
   }
-	.CodeMirror-hint {
-		height: 24px;
-		color: #090707;
-		cursor: pointer;
-		display: flex;
-		min-width: 220px;
-		width: auto;
-		align-items: center;
-		font-size: 12px;
-		line-height: 15px;
-		letter-spacing: -0.24px;
-		&:hover {
-			background: #E8E8E8;
-			border-radius: 0;
-			color: #090707;
-			&:after {
-				color: #090707;
-			}
-		}
-	}
-	li.CodeMirror-hint-active {
-		background: #6A86CE;
-		border-radius: 0px;
-		color: #fff;
-		&:after {
-			color: #fff;
-		}
-		&:hover {
-			background: #6A86CE;
-			color: #fff;
-			&:after {
-				color: #fff;
-			}
-		}
-	}
+
+  .CodeMirror-hint {
+    height: 24px;
+    background-color: #fff;
+    color: #090707;
+    cursor: pointer;
+    display: flex;
+    min-width: 220px;
+    width: auto;
+    align-items: center;
+    font-size: 12px;
+    line-height: 24px;
+    padding: 0 8px;
+    &-header{
+      padding-left: 8px;
+      color: rgba(0,0,0,.45);
+      pointer-events: none !important;
+      font-weight: bold;
+    }
+
+    &::before {
+      position: static;
+      margin-right: 4px;
+      border-radius: 100%;
+    }
+
+    &:hover {
+      background: #E8E8E8;
+      border-radius: 0;
+      color: #090707;
+
+      &:after {
+        color: #090707;
+      }
+    }
+  }
+
+  .CodeMirror-Tern-completion-keyword:before {
+    content: "K";
+    background-color: #ce8080;
+  }
+
+  li.CodeMirror-hint-active {
+    background: #6A86CE;
+    border-radius: 0;
+    color: #fff;
+
+    &:after {
+      color: #fff;
+    }
+
+    &:hover {
+      background: #6A86CE;
+      color: #fff;
+
+      &:after {
+        color: #fff;
+      }
+    }
+  }
 `
 
 // 优化滚动条样式
 injectGlobal`
 	::-webkit-scrollbar {
-		width: 4px;
+		width: 2px;
 	}
 
 	/* 设置滚动条的背景颜色 */

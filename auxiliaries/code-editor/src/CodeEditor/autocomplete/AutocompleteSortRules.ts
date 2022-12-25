@@ -279,9 +279,9 @@ export class AutocompleteSorter {
     if (!shouldComputeBestMatch) return sortedCompletions
     return bestMatchEndIndex > 0
       ? [
-          createCompletionHeader('Best Match'),
+          createCompletionHeader('推荐'),
           ...sortedCompletions.slice(0, bestMatchEndIndex),
-          createCompletionHeader('Search Results'),
+          createCompletionHeader('全部'),
           ...sortedCompletions.slice(bestMatchEndIndex),
         ]
       : sortedCompletions

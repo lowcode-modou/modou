@@ -19,6 +19,7 @@ const startServer = (defs: Def[], plugins = {}, scripts?: string[]) => {
 }
 
 self.onmessage = (e) => {
+  console.warn('self.onmessage=>', e.data)
   const data = e.data
   switch (data.type) {
     case TernWorkerAction.INIT:
@@ -28,7 +29,7 @@ self.onmessage = (e) => {
     case TernWorkerAction.DELETE_FILE:
       return server.delFile(data.name)
     case TernWorkerAction.REQUEST:
-      return server.request(data.body, function (err, reqData) {
+      return server.request(data.body, (err, reqData) => {
         postMessage({ id: data.id, body: reqData, err: err && String(err) })
       })
     case TernWorkerAction.GET_FILE: {

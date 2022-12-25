@@ -1,10 +1,4 @@
-import CodeMirror, {
-  Hint,
-  Hints,
-  Pos,
-  ShowHintOptions,
-  cmpPos,
-} from 'codemirror'
+import CodeMirror, { Hint, Hints, Pos, cmpPos } from 'codemirror'
 import tern, { Def, Document, Server } from 'tern'
 
 import { AutocompleteSorter } from '@modou/code-editor/CodeEditor/autocomplete/AutocompleteSortRules'
@@ -148,7 +142,8 @@ class CodeMirrorTernService {
           }
         },
       },
-      closeOnPick: false,
+      // closeOnPick: false,
+      closeOnUnfocus: false,
     })
   }
 
@@ -221,7 +216,9 @@ class CodeMirrorTernService {
       const completion = data.completions[i]
       let className = typeToIcon(completion.type, completion.isKeyword)
       const dataType = getDataType(completion.type)
-      if (data.guess) className += ' ' + cls + 'guess'
+      if (data.guess) {
+        className += ' ' + cls + 'guess'
+      }
       let completionText = completion.name + after
       if (dataType === 'FUNCTION') {
         completionText = completionText + '()'
@@ -270,7 +267,6 @@ class CodeMirrorTernService {
 
     const shouldComputeBestMatch =
       this.fieldEntityInformation.entityType !== ENTITY_TYPE.JSACTION
-
     completions = AutocompleteSorter.sort(
       completions,
       this.fieldEntityInformation,
