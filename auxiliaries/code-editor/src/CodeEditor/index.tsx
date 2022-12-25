@@ -1,8 +1,12 @@
 import { useMemoizedFn, useMount } from 'ahooks'
+import { Typography } from 'antd'
 import CodeMirror from 'codemirror'
 import React, { type FC, useEffect, useRef, useState } from 'react'
 
-import { CodeMirrorTernServiceInstance } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
+import {
+  AutocompleteDataType,
+  CodeMirrorTernServiceInstance,
+} from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
 import { updateCustomDef } from '@modou/code-editor/CodeEditor/autocomplete/customDefUtils'
 import {
   CodeEditorModeEnum,
@@ -16,19 +20,21 @@ import {
 import { bindingHint } from '@modou/code-editor/CodeEditor/common/hintHelpers'
 import { bindingMarker } from '@modou/code-editor/CodeEditor/common/mark-helpers'
 import {
-  mock_additionalDynamicData,
-  mock_blockCompletions,
-  mock_datasources,
+  mock_code_editor_props,
   mock_dyn_def,
-  mock_dynamicData,
-  mock_editorLastCursorPosition,
   mock_entityInfo,
-  mock_entityInformation,
 } from '@modou/code-editor/CodeEditor/mock'
+import { ExpectedValueExample } from '@modou/code-editor/CodeEditor/utils/validation/common'
 import { injectGlobal, mcss } from '@modou/css-in-js'
 
 import './common/code-mirror-libs'
 import './common/modes'
+
+export type CodeEditorExpected = {
+  type: string
+  example: ExpectedValueExample
+  autocompleteDataType: AutocompleteDataType
+}
 
 // TODO: tern uses global variable, maybe there is some workaround
 const updateMarkings = (editor: CodeMirror.Editor, marking: MarkHelper[]) => {
@@ -45,12 +51,15 @@ const startAutocomplete = (
   })
 }
 
-export const CodeEditor: FC<{
-  hinting?: HintHelper[]
-}> = (_props) => {
+export const CodeEditor: FC<
+  {
+    hinting?: HintHelper[]
+  } & typeof mock_code_editor_props
+> = (_props) => {
   const props: typeof _props = {
     ..._props,
     hinting: _props.hinting ?? [bindingHint],
+    ...mock_code_editor_props,
   }
   const cmWrapperRef = useRef<HTMLDivElement>(null)
   const cmRef = useRef<CodeMirror.Editor | null>(null)
@@ -66,16 +75,16 @@ export const CodeEditor: FC<{
       ch === 0 &&
       line === 0 &&
       sticky === null &&
-      mock_editorLastCursorPosition
+      props.editorLastCursorPosition
     ) {
-      cm.setCursor(mock_editorLastCursorPosition)
+      cm.setCursor(props.editorLastCursorPosition)
     }
 
     if (!cm.state.completionActive) {
-      updateCustomDef(mock_additionalDynamicData)
+      updateCustomDef(props.additionalDynamicData)
 
-      const entityInformation = mock_entityInformation
-      const blockCompletions = mock_blockCompletions
+      const entityInformation = props.entityInformation
+      const blockCompletions = props.blockCompletions
       hintersRef.current
         ?.filter((hinter) => hinter.fireOnFocus)
         .forEach(
@@ -99,13 +108,13 @@ export const CodeEditor: FC<{
       if (!isFocused || !hintersRef.current) {
         return
       }
-      const entityInformation = mock_entityInformation
-      const blockCompletions = mock_blockCompletions
+      const entityInformation = props.entityInformation
+      const blockCompletions = props.blockCompletions
       let hinterOpen = false
       for (let i = 0; i < hintersRef.current.length; i++) {
         hinterOpen = hintersRef.current[i].showHint(cm, entityInformation, {
           blockCompletions,
-          datasources: mock_datasources.list,
+          datasources: props.datasources.list,
           pluginIdToImageLocation: {},
           recentEntities: {},
           update: () => {},
@@ -173,7 +182,7 @@ export const CodeEditor: FC<{
       hintersRef.current = startAutocomplete(
         cmRef.current,
         props.hinting ?? [],
-        mock_dynamicData as any,
+        props.dynamicData as unknown as any,
       )
     } else {
       updateMarkings(cmRef.current, [bindingMarker])
@@ -206,6 +215,7 @@ export const CodeEditor: FC<{
   ])
 
   // mock start
+  // TODO 移除mock 等待元数据变化时候执行更新
   useMount(() => {
     // We update the data tree definition after every eval so that autocomplete
     // is accurate
@@ -223,6 +233,22 @@ export const CodeEditor: FC<{
     <>
       <div className={classes.wrapper}>
         <div className={classes.cmWrapper} tabIndex={0} ref={cmWrapperRef} />
+      </div>
+      <div className={evaluatedClasses.wrapper}>
+        <div>
+          <Typography.Title level={5}>预期结构</Typography.Title>
+          <Typography.Text type="success">{}</Typography.Text>
+        </div>
+        <div>
+          <Typography.Title level={5}>预期结构 - 示例</Typography.Title>
+          <Typography.Text type="success">
+            EXPECTED STRUCTURE - EXAMPLE
+          </Typography.Text>
+        </div>
+        <div>
+          <Typography.Title level={5}>计算值</Typography.Title>
+          <Typography.Text type="success">EVALUATED VALUE</Typography.Text>
+        </div>
       </div>
     </>
   )
@@ -276,6 +302,12 @@ const classes = {
   .CodeMirror .CodeMirror-scroll {
     //max-height: 125px
     // };
+  `,
+}
+
+const evaluatedClasses = {
+  wrapper: mcss`
+    border: 1px solid green;
   `,
 }
 
