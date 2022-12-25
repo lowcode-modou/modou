@@ -1,4 +1,4 @@
-import { Def, Server } from 'tern'
+import { Def } from 'tern'
 
 import {
   CallbackFn,
@@ -25,7 +25,7 @@ const getFile = async (ts: any, name: string): Promise<any> => {
     }
   })
 }
-export class TernWorkerServer implements Partial<Server> {
+export class TernWorkerServer {
   // FIXME 修复类型
   constructor(ts: any) {
     // ts.worker = ternWorker
@@ -87,8 +87,16 @@ export class TernWorkerServer implements Partial<Server> {
     this.send({ type: TernWorkerAction.DELETE_FILE, name })
   }
 
-  request(body: any, c: CallbackFn) {
-    this.send({ type: TernWorkerAction.REQUEST, body }, c)
+  async request(body: any) {
+    return new Promise((resolve, reject) => {
+      this.send({ type: TernWorkerAction.REQUEST, body }, (err, res) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(res)
+        }
+      })
+    })
   }
 
   addDefs(defs: Def[]) {

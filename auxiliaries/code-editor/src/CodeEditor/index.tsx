@@ -162,6 +162,7 @@ export const CodeEditor: FC<{
         matchBrackets: false,
         lineWrapping: true,
         // theme: CodeEditorThemes[CodeEditorThemeEnum.Light],
+        theme: 'duotone-light',
         addModeClass: true,
       })
 
@@ -253,16 +254,21 @@ const classes = {
         background: #E2E8F0;
       }
 
+      &-cursor {
+        border-right: none;
+        border-left-width: 2px;
+        border-left-color: #153c15;
+      }
+
       .binding-brackets {
         font-weight: bold;
         color: #f26a02;
       }
 
-      .binding-highlight{}
+      .binding-highlight {
+      }
+
       .cm {
-        &-variable {
-          color: #dfb967;
-        }
       }
     }
   }
@@ -274,75 +280,74 @@ const classes = {
 }
 
 injectGlobal`
-  .CodeMirror-hints {
-    position: absolute;
-    z-index: 20;
-    overflow: hidden;
-    list-style: none;
-    padding: 0 0;
-    font-family: monospace;
-    max-height: 20em;
-    overflow-y: auto;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 3%), 0 1px 6px -1px rgb(0 0 0 / 2%), 0 2px 4px 0 rgb(0 0 0 / 2%);
-    border-radius: 2px;
-  }
-
-  .CodeMirror-hint {
-    height: 24px;
-    background-color: #fff;
-    color: #090707;
-    cursor: pointer;
-    display: flex;
-    min-width: 220px;
-    width: auto;
-    align-items: center;
-    font-size: 12px;
-    line-height: 24px;
-    padding: 0 8px;
-    &-header{
-      padding-left: 8px;
-      color: rgba(0,0,0,.45);
-      pointer-events: none !important;
-      font-weight: bold;
+  .CodeMirror{
+    &-hints {
+      position: absolute;
+      z-index: 20;
+      overflow: hidden;
+      list-style: none;
+      padding: 0 0;
+      font-family: monospace;
+      max-height: 20em;
+      overflow-y: auto;
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 3%), 0 1px 6px -1px rgb(0 0 0 / 2%), 0 2px 4px 0 rgb(0 0 0 / 2%);
+      border-radius: 2px;
     }
-
-    &::before {
-      position: static;
-      margin-right: 4px;
-      border-radius: 100%;
-    }
-
-    &:hover {
-      background: #E8E8E8;
-      border-radius: 0;
+    &-hint {
+      height: 24px;
+      background-color: #fff;
       color: #090707;
+      cursor: pointer;
+      display: flex;
+      min-width: 220px;
+      width: auto;
+      align-items: center;
+      font-size: 12px;
+      line-height: 24px;
+      padding: 0 8px;
+      &-header{
+        padding-left: 8px;
+        color: rgba(0,0,0,.45);
+        pointer-events: none !important;
+        font-weight: bold;
+      }
 
-      &:after {
+      &::before {
+        position: static;
+        margin-right: 4px;
+        border-radius: 100%;
+      }
+
+      &:hover {
+        background: #E8E8E8;
+        border-radius: 0;
         color: #090707;
+
+        &:after {
+          color: #090707;
+        }
       }
     }
-  }
-
-  .CodeMirror-Tern-completion-keyword:before {
-    content: "K";
-    background-color: #ce8080;
-  }
-
-  li.CodeMirror-hint-active {
-    background: #6A86CE;
-    border-radius: 0;
-    color: #fff;
-
-    &:after {
-      color: #fff;
+    &-Tern-completion-keyword:before {
+      content: "K";
+      background-color: #ce8080;
     }
-
-    &:hover {
+    &-hint-active {
       background: #6A86CE;
+      border-radius: 0;
       color: #fff;
 
       &:after {
         color: #fff;
+      }
+
+      &:hover {
+        background: #6A86CE;
+        color: #fff;
+
+        &:after {
+          color: #fff;
+        }
       }
     }
   }

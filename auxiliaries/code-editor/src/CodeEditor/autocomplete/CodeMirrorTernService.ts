@@ -1,5 +1,5 @@
 import CodeMirror, { Hint, Hints, Pos, cmpPos } from 'codemirror'
-import tern, { Def, Document, Server } from 'tern'
+import tern, { Def, Document } from 'tern'
 
 import { AutocompleteSorter } from '@modou/code-editor/CodeEditor/autocomplete/AutocompleteSortRules'
 import { TernWorkerServer } from '@modou/code-editor/CodeEditor/autocomplete/TernWorkerServer'
@@ -100,10 +100,10 @@ export interface DataTreeDefEntityInformation {
 class CodeMirrorTernService {
   constructor(options: { async: boolean; defs: Def[] }) {
     this.options = options
-    this.server = new TernWorkerServer(this) as unknown as Server
+    this.server = new TernWorkerServer(this)
   }
 
-  server: Server
+  server: TernWorkerServer
   options: { async: boolean; defs: Def[] }
 
   docs: TernDocs = Object.create(null)
@@ -386,19 +386,9 @@ class CodeMirrorTernService {
     // TODO 完善；类型
     completions?: any[]
   }> {
-    return new Promise((resolve, reject) => {
-      const doc = this.findDoc(cm.getDoc())
-      const request: Document = this.buildRequest(doc, query, pos)
-
-      this.server.request(request, (error, response) => {
-        if (error) {
-          reject(error)
-        } else {
-          // TODO 完善类型
-          resolve(response as any)
-        }
-      })
-    })
+    const doc = this.findDoc(cm.getDoc())
+    const request: Document = this.buildRequest(doc, query, pos)
+    return (await this.server.request(request)) as any
   }
 
   findDoc(doc: CodeMirror.Doc, name?: string): TernDoc {
