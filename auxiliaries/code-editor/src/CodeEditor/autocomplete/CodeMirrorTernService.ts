@@ -4,10 +4,8 @@ import { Def, Document } from 'tern'
 import { AutocompleteSorter } from '@modou/code-editor/CodeEditor/autocomplete/AutocompleteSortRules'
 import { TernWorkerServer } from '@modou/code-editor/CodeEditor/autocomplete/TernWorkerServer'
 import { getCompletionsForKeyword } from '@modou/code-editor/CodeEditor/autocomplete/keywordCompletion'
-import {
-  ENTITY_TYPE,
-  FieldEntityInformation,
-} from '@modou/code-editor/CodeEditor/common/editor-config'
+import { FieldEntityInformation } from '@modou/code-editor/CodeEditor/common/editor-config'
+import { ENTITY_TYPE } from '@modou/code-editor/CodeEditor/entities/DataTree/types'
 import { DEFS } from '@modou/code-editor/CodeEditor/tern/defs'
 import {
   getDynamicStringSegments,
@@ -117,7 +115,7 @@ class CodeMirrorTernService {
   >()
 
   resetServer() {
-    // this.server = new tern.Server({
+    // this.server = new Tern.Server({
     //   async: true,
     //   defs: DEFS,
     // })
@@ -472,7 +470,7 @@ class CodeMirrorTernService {
       }
     } else {
       query.file = doc.name
-      // this code is different from tern.js code
+      // this code is different from Tern.js code
       // we noticed error `TernError: file doesn't contain line x`
       // which was due to file not being present for the case when a codeEditor is opened and 1st character is typed
       files.push({
@@ -529,7 +527,7 @@ class CodeMirrorTernService {
     if (doc.lineCount() > bigDoc && changed.to - changed.from > 100)
       setTimeout(() => {
         if (data.changed && data.changed.to - data.changed.from > 100)
-          this.sendDoc(data)
+          void this.sendDoc(data)
       }, 200)
   }
 

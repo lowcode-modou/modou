@@ -36,7 +36,7 @@ export type CodeEditorExpected = {
   autocompleteDataType: AutocompleteDataType
 }
 
-// TODO: tern uses global variable, maybe there is some workaround
+// TODO: Tern uses global variable, maybe there is some workaround
 const updateMarkings = (editor: CodeMirror.Editor, marking: MarkHelper[]) => {
   marking.forEach((helper) => helper(editor))
 }
@@ -229,6 +229,10 @@ export const CodeEditor: FC<
   })
   // mock end
 
+  // evaluated start
+  let content = <div>undefined</div>
+  // evaluated end
+
   return (
     <>
       <div className={classes.wrapper}>
@@ -237,17 +241,19 @@ export const CodeEditor: FC<
       <div className={evaluatedClasses.wrapper}>
         <div>
           <Typography.Title level={5}>预期结构</Typography.Title>
-          <Typography.Text type="success">{}</Typography.Text>
+          <Typography.Text type="success">
+            {props.expected.type}
+          </Typography.Text>
         </div>
         <div>
           <Typography.Title level={5}>预期结构 - 示例</Typography.Title>
           <Typography.Text type="success">
-            EXPECTED STRUCTURE - EXAMPLE
+            {props.expected.example}
           </Typography.Text>
         </div>
         <div>
           <Typography.Title level={5}>计算值</Typography.Title>
-          <Typography.Text type="success">EVALUATED VALUE</Typography.Text>
+          <Typography.Text type="success">{content}</Typography.Text>
         </div>
       </div>
     </>

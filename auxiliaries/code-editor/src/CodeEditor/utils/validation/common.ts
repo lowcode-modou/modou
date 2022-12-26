@@ -3,4 +3,4 @@ export type ExpectedValueExample =
   | number
   | boolean
   | Record<string, unknown>
-  | Array<unknown>
+  | unknown[]

@@ -6,7 +6,7 @@ import {
 } from '@modou/code-editor/CodeEditor/autocomplete/types'
 
 const ternWorker = new Worker(
-  new URL('../works/tern/tern.worker.ts', import.meta.url),
+  new URL('../works/Tern/tern.worker.ts', import.meta.url),
   {
     name: 'tern.worker',
     type: 'module',

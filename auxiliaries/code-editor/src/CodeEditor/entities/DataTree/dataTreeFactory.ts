@@ -1,6 +1,10 @@
+import {
+  ENTITY_TYPE,
+  JSActionEntityConfig,
+  JSActionEvalTree,
+  WidgetConfig,
+} from '@modou/code-editor/CodeEditor/entities/DataTree/types'
 import { WidgetBaseProps } from '@modou/core'
-
-import { ENTITY_TYPE } from './editor-config'
 
 interface Page {
   pageName: string
@@ -26,8 +30,15 @@ export interface WidgetEvalTree extends WidgetBaseProps {
   ENTITY_TYPE: ENTITY_TYPE.WIDGET
 }
 
-interface DataTreeWidget extends WidgetEvalTree {}
+export interface DataTreeWidget extends WidgetEvalTree, WidgetConfig {}
+export type DataTreeJSAction = JSActionEvalTree & JSActionEntityConfig
 
-export type DataTreeObjectEntity = DataTreeWidget | DataTreeAppsmith
+export type DataTreeObjectEntity =
+  | DataTreeWidget
+  | DataTreeAppsmith
+  | DataTreeJSAction
+// TODO 添加 DataTreeAction
+// | DataTreeAction
 
+// TODO 补全 ActionDispatcher
 export type DataTreeEntity = DataTreeObjectEntity | Page[]

@@ -1,7 +1,8 @@
 import CodeMirror from 'codemirror'
 
 import { AutocompleteDataType } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
-import { DataTreeEntity } from '@modou/code-editor/CodeEditor/common/data-tree'
+import { DataTreeEntity } from '@modou/code-editor/CodeEditor/entities/DataTree/dataTreeFactory'
+import { ENTITY_TYPE } from '@modou/code-editor/CodeEditor/entities/DataTree/types'
 import { TruthyPrimitiveTypes } from '@modou/code-editor/CodeEditor/utils/TypeHelpers'
 
 export enum CodeEditorModeEnum {
@@ -57,13 +58,6 @@ export enum AutocompleteCloseKeyEnum {
 }
 
 export type MarkHelper = (editor: CodeMirror.Editor) => void
-
-export enum ENTITY_TYPE {
-  ACTION = 'ACTION',
-  WIDGET = 'WIDGET',
-  APPSMITH = 'APPSMITH',
-  JSACTION = 'JSACTION',
-}
 
 export interface FieldEntityInformation {
   entityName?: string
