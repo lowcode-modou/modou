@@ -30,7 +30,7 @@ import { injectGlobal, mcss } from '@modou/css-in-js'
 import './common/code-mirror-libs'
 import './common/modes'
 
-export type CodeEditorExpected = {
+export interface CodeEditorExpected {
   type: string
   example: ExpectedValueExample
   autocompleteDataType: AutocompleteDataType

@@ -1,10 +1,20 @@
 import { ActionResponse } from '@modou/code-editor/CodeEditor/api/ActionAPI'
-import { ActionConfig } from '@modou/code-editor/CodeEditor/entities/Action'
+import { PluginId } from '@modou/code-editor/CodeEditor/api/PluginApi'
+import { ValidationConfig } from '@modou/code-editor/CodeEditor/constants/PropertyControlConstants'
+import {
+  ActionConfig,
+  PluginType,
+} from '@modou/code-editor/CodeEditor/entities/Action'
 import {
   ActionDescription,
   ClearPluginActionDescription,
   RunPluginActionDescription,
 } from '@modou/code-editor/CodeEditor/entities/DataTree/actionTriggers'
+import { Variable } from '@modou/code-editor/CodeEditor/entities/JSCollection'
+import {
+  DependencyMap,
+  DynamicPath,
+} from '@modou/code-editor/CodeEditor/utils/DynamicBindingUtils'
 
 export type ActionDispatcher = (
   ...args: any[]
@@ -70,7 +80,7 @@ export interface JSActionEntityConfig {
   dynamicBindingPathList: DynamicPath[]
   bindingPaths: Record<string, EvaluationSubstitutionType>
   reactivePaths: Record<string, EvaluationSubstitutionType>
-  variables: Array<string>
+  variables: string[]
   dependencyMap: DependencyMap
   pluginType: PluginType.JS
   name: string
@@ -112,7 +122,7 @@ export type PropertyOverrideDependency = Record<
   }
 >
 
-export type WidgetConfig = {
+export interface WidgetConfig {
   bindingPaths: Record<string, EvaluationSubstitutionType>
   reactivePaths: Record<string, EvaluationSubstitutionType>
   triggerPaths: Record<string, boolean>

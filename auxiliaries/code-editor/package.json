@@ -70,6 +70,7 @@
     "webpack": "^5.75.0"
   },
   "dependencies": {
+    "@modou/ast": "workspace:^1.0.0",
     "codemirror": "^5.65.10",
     "deep-diff": "^1.0.2",
     "fast-deep-equal": "^3.1.3",

@@ -3,7 +3,9 @@ import _, { get, isString, VERSION as lodashVersion } from 'lodash'
 import moment from 'moment-timezone'
 import forge from 'node-forge'
 
+import { ViewTypes } from '@modou/code-editor/CodeEditor/components/formControls/utils'
 import { DATA_BIND_REGEX } from '@modou/code-editor/CodeEditor/constants/bindings'
+import { Action } from '@modou/code-editor/CodeEditor/entities/Action'
 import { Severity } from '@modou/code-editor/CodeEditor/entities/AppsmithConsole'
 import { DataTreeEntity } from '@modou/code-editor/CodeEditor/entities/DataTree/dataTreeFactory'
 import { WidgetProps } from '@modou/code-editor/CodeEditor/widgets/BaseWidget'
@@ -536,6 +538,7 @@ export function getDynamicBindingsChangesSaga(
         const childPropertyValue = _.get(value, dynamicPath.key)
         return isDynamicValue(childPropertyValue)
       }
+      return false
     })
   } else if (typeof value === 'string') {
     const fieldExists = _.some(dynamicBindings, { key: bindingField })
@@ -550,15 +553,20 @@ export function getDynamicBindingsChangesSaga(
     }
   }
 
-  // the reason this is done is to change the dynamicBindingsPathlist of a component when a user toggles the form control
+  // the reason this is done is to change the dynamicBindingsPathlist of a
+  // component when a user toggles the form control
   // from component mode to json mode and vice versa.
 
-  // when in json mode, we want to get rid of all the existing componentData paths and replace it with a single path for the json mode
-  // for example: [{key: 'formData.sortBy.data[0].column'}, {key: 'formData.sortBy.data[1].column'}] will be replaced with just this [{key: 'formData.sortBy.data'}]
+  // when in json mode, we want to get rid of all the existing componentData paths
+  // and replace it with a single path for the json mode
+  // for example: [{key: 'formData.sortBy.data[0].column'},
+  // {key: 'formData.sortBy.data[1].column'}] will be replaced with just this [{key: 'formData.sortBy.data'}]
 
   // when in component mode, we want to first remove all the paths for json mode and
-  //  get back all the paths in the componentData that have dynamic bindings and add them to the the dynamic bindings pathlist.
-  // for example: [{key: 'formData.sortBy.data'}] will be replaced with this [{key: 'formData.sortBy.data[0].column'}, {key: 'formData.sortBy.data[1].column'}]
+  //  get back all the paths in the componentData that have dynamic bindings and add them to
+  //  the the dynamic bindings pathlist.
+  // for example: [{key: 'formData.sortBy.data'}] will be replaced with this
+  // [{key: 'formData.sortBy.data[0].column'}, {key: 'formData.sortBy.data[1].column'}]
 
   // if the currently changing field is a component's view type
   if (viewType) {

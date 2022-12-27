@@ -14,7 +14,49 @@ import {
 import { error as logError } from 'loglevel'
 import toposort from 'toposort'
 
+import { DataTree } from '@modou/code-editor/CodeEditor/common/editor-config'
+import { EXECUTION_PARAM_KEY } from '@modou/code-editor/CodeEditor/constants/AppsmithActionConstants/ActionConstants'
+import {
+  ActionValidationConfigMap,
+  ValidationConfig,
+} from '@modou/code-editor/CodeEditor/constants/PropertyControlConstants'
+import { DATA_BIND_REGEX } from '@modou/code-editor/CodeEditor/constants/bindings'
+import { APP_MODE } from '@modou/code-editor/CodeEditor/entities/App'
+import {
+  Severity,
+  UserLogObject,
+} from '@modou/code-editor/CodeEditor/entities/AppsmithConsole'
+import {
+  DataTreeEntity,
+  DataTreeJSAction,
+  DataTreeWidget,
+} from '@modou/code-editor/CodeEditor/entities/DataTree/dataTreeFactory'
+import {
+  EvaluationSubstitutionType,
+  PrivateWidgets,
+} from '@modou/code-editor/CodeEditor/entities/DataTree/types'
+import {
+  DataTreeEvaluationProps,
+  DependencyMap,
+  EvalErrorTypes,
+  EvaluationError,
+  PropertyEvaluationErrorType,
+  getDynamicBindings,
+  getEntityDynamicBindingPathList,
+  getEvalErrorPath,
+  getEvalValuePath,
+  isChildPropertyPath,
+  isPathADynamicBinding,
+  isPathDynamicTrigger,
+} from '@modou/code-editor/CodeEditor/utils/DynamicBindingUtils'
+import { WidgetTypeConfigMap } from '@modou/code-editor/CodeEditor/utils/WidgetFactory'
+import {
+  getEntityNameAndPropertyPath,
+  isJSAction,
+} from '@modou/code-editor/CodeEditor/works/Evaluation/evaluationUtils'
+
 type SortedDependencies = string[]
+
 export interface EvalProps {
   [entityName: string]: DataTreeEvaluationProps
 }
@@ -44,6 +86,7 @@ export default class DataTreeEvaluator {
   allActionValidationConfig?: {
     [actionId: string]: ActionValidationConfigMap
   }
+
   triggerFieldDependencyMap: DependencyMap = {}
   /**  Keeps track of all invalid references in bindings throughout the Application
    * Eg. For binding {{unknownEntity.name + Api1.name}} in Button1.text, where Api1 is present in dataTree but unknownEntity is not,
@@ -69,6 +112,7 @@ export default class DataTreeEvaluator {
     [APP_MODE.EDIT]: parseJSActions,
     [APP_MODE.PUBLISHED]: parseJSActionsForViewMode,
   }
+
   constructor(
     widgetConfigMap: WidgetTypeConfigMap,
     allActionValidationConfig?: {
@@ -112,10 +156,10 @@ export default class DataTreeEvaluator {
     const firstCloneEndTime = performance.now()
 
     let jsUpdates: Record<string, JSUpdate> = {}
-    //parse js collection to get functions
-    //save current state of js collection action and variables to be added to uneval tree
-    //save functions in resolveFunctions (as functions) to be executed as functions are not allowed in evalTree
-    //and functions are saved in dataTree as strings
+    // parse js collection to get functions
+    // save current state of js collection action and variables to be added to uneval tree
+    // save functions in resolveFunctions (as functions) to be executed as functions are not allowed in evalTree
+    // and functions are saved in dataTree as strings
     const currentAppMode: APP_MODE = getAppMode(localUnEvalTree)
     jsUpdates =
       this.parseJsActionsConfig[currentAppMode](this, localUnEvalTree) || {}
@@ -250,10 +294,10 @@ export default class DataTreeEvaluator {
   }
 
   updateLocalUnEvalTree(dataTree: DataTree) {
-    //add functions and variables to unevalTree
+    // add functions and variables to unevalTree
     Object.keys(this.currentJSCollectionState).forEach((update) => {
       const updates = this.currentJSCollectionState[update]
-      if (!!dataTree[update]) {
+      if (dataTree[update]) {
         Object.keys(updates).forEach((key) => {
           const data = get(dataTree, `${update}.${key}.data`, undefined)
           if (isJSObjectFunction(dataTree, update, key)) {
@@ -284,15 +328,14 @@ export default class DataTreeEvaluator {
     let localUnEvalTree = Object.assign({}, unEvalTree)
     let jsUpdates: Record<string, JSUpdate> = {}
     const diffCheckTimeStartTime = performance.now()
-    //update uneval tree from previously saved current state of collection
+    // update uneval tree from previously saved current state of collection
     this.updateLocalUnEvalTree(localUnEvalTree)
-    //get difference in js collection body to be parsed
+    // get difference in js collection body to be parsed
     const oldUnEvalTreeJSCollections = getJSEntities(this.oldUnEvalTree)
     const localUnEvalTreeJSCollection = getJSEntities(localUnEvalTree)
-    const jsDifferences: Diff<
-      Record<string, DataTreeJSAction>,
-      Record<string, DataTreeJSAction>
-    >[] = diff(oldUnEvalTreeJSCollections, localUnEvalTreeJSCollection) || []
+    const jsDifferences: Array<
+      Diff<Record<string, DataTreeJSAction>, Record<string, DataTreeJSAction>>
+    > = diff(oldUnEvalTreeJSCollections, localUnEvalTreeJSCollection) || []
     const jsTranslatedDiffs = flatten(
       jsDifferences.map((diff) =>
         translateDiffEventToDataTreeDiffEvent(diff, localUnEvalTree),
@@ -313,7 +356,7 @@ export default class DataTreeEvaluator {
       localUnEvalTree,
     )
 
-    const differences: Diff<DataTree, DataTree>[] =
+    const differences: Array<Diff<DataTree, DataTree>> =
       diff(this.oldUnEvalTree, localUnEvalTree) || []
     // Since eval tree is listening to possible events that don't cause differences
     // We want to check if no diffs are present and bail out early
@@ -326,7 +369,7 @@ export default class DataTreeEvaluator {
         nonDynamicFieldValidationOrder: [],
       }
     }
-    //find all differences which can lead to updating of dependency map
+    // find all differences which can lead to updating of dependency map
     const translatedDiffs = flatten(
       differences.map((diff) =>
         translateDiffEventToDataTreeDiffEvent(diff, localUnEvalTree),
@@ -389,7 +432,7 @@ export default class DataTreeEvaluator {
       sortedDependencies: this.sortedDependencies,
       inverse: this.inverseDependencyMap,
       updatedDependencyMap: this.dependencyMap,
-      evaluationOrder: evaluationOrder,
+      evaluationOrder,
     })
 
     // Remove any deleted paths from the eval tree
@@ -472,15 +515,12 @@ export default class DataTreeEvaluator {
     }
   }
 
-  getCompleteSortOrder(
-    changes: Array<string>,
-    inverseMap: DependencyMap,
-  ): Array<string> {
-    let finalSortOrder: Array<string> = []
+  getCompleteSortOrder(changes: string[], inverseMap: DependencyMap): string[] {
+    let finalSortOrder: string[] = []
     let computeSortOrder = true
     // Initialize parents with the current sent of property paths that need to be evaluated
     let parents = changes
-    let subSortOrderArray: Array<string>
+    let subSortOrderArray: string[]
     while (computeSortOrder) {
       // Get all the nodes that would be impacted by the evaluation of the nodes in parents array in sorted order
       subSortOrderArray = this.getEvaluationSortOrder(parents, inverseMap)
@@ -514,8 +554,8 @@ export default class DataTreeEvaluator {
       ...sortOrderPropertyPaths,
     ]
 
-    //Trim this list to now remove the property paths which are simply entity names
-    const finalSortOrderArray: Array<string> = []
+    // Trim this list to now remove the property paths which are simply entity names
+    const finalSortOrderArray: string[] = []
     completeSortOrder.forEach((propertyPath) => {
       const lastIndexOfDot = propertyPath.lastIndexOf('.')
       // Only do this for property paths and not the entity themselves
@@ -528,10 +568,10 @@ export default class DataTreeEvaluator {
   }
 
   getEvaluationSortOrder(
-    changes: Array<string>,
+    changes: string[],
     inverseMap: DependencyMap,
-  ): Array<string> {
-    const sortOrder: Array<string> = [...changes]
+  ): string[] {
+    const sortOrder: string[] = [...changes]
     let iterator = 0
     while (iterator < sortOrder.length) {
       // Find all the nodes who are to be evaluated when sortOrder[iterator] changes
@@ -571,7 +611,7 @@ export default class DataTreeEvaluator {
   evaluateTree(
     oldUnevalTree: DataTree,
     resolvedFunctions: Record<string, any>,
-    sortedDependencies: Array<string>,
+    sortedDependencies: string[],
     option = { skipRevalidation: true },
   ): {
     evaluatedTree: DataTree
@@ -700,8 +740,8 @@ export default class DataTreeEvaluator {
             set(currentTree, fullPropertyPath, evalPropertyValue)
             return currentTree
           } else if (isJSAction(entity)) {
-            const variableList: Array<string> = get(entity, 'variables') || []
-            if (variableList.indexOf(propertyPath) > -1) {
+            const variableList: string[] = get(entity, 'variables') || []
+            if (variableList.includes(propertyPath)) {
               const currentEvaluatedValue = get(
                 this.evalProps,
                 getEvalValuePath(fullPropertyPath, {
@@ -748,8 +788,8 @@ export default class DataTreeEvaluator {
 
   sortDependencies(
     dependencyMap: DependencyMap,
-    diffs?: (DataTreeDiff | DataTreeDiff[])[],
-  ): Array<string> {
+    diffs?: Array<DataTreeDiff | DataTreeDiff[]>,
+  ): string[] {
     /**
      * dependencyTree : Array<[Node, dependentNode]>
      */
@@ -807,11 +847,11 @@ export default class DataTreeEvaluator {
     resolvedFunctions: Record<string, any>,
     evaluationSubstitutionType: EvaluationSubstitutionType,
     contextData?: EvaluateContext,
-    callBackData?: Array<any>,
+    callBackData?: any[],
     fullPropertyPath?: string,
   ) {
     // Get the {{binding}} bound values
-    let entity: DataTreeEntity | undefined = undefined
+    let entity: DataTreeEntity | undefined
     let propertyPath: string
     if (fullPropertyPath) {
       const entityName = fullPropertyPath.split('.')[0]
@@ -936,7 +976,7 @@ export default class DataTreeEvaluator {
     dataTree: DataTree,
     requestId: string,
     resolvedFunctions: Record<string, any>,
-    callbackData: Array<unknown>,
+    callbackData: unknown[],
     context?: EvaluateContext,
   ) {
     const { jsSnippets } = getDynamicBindings(userScript)
@@ -958,7 +998,7 @@ export default class DataTreeEvaluator {
     resolvedFunctions: Record<string, any>,
     createGlobalData: boolean,
     contextData?: EvaluateContext,
-    callbackData?: Array<any>,
+    callbackData?: any[],
     skipUserLogsOperations = false,
   ): EvalResult {
     try {
@@ -1125,7 +1165,7 @@ export default class DataTreeEvaluator {
     differences,
     localUnEvalTree,
   }: {
-    differences: Diff<any, any>[]
+    differences: Array<Diff<any, any>>
     localUnEvalTree: DataTree
   }) {
     for (const d of differences) {
@@ -1138,9 +1178,9 @@ export default class DataTreeEvaluator {
   }
 
   calculateSubTreeSortOrder(
-    differences: Diff<any, any>[],
-    dependenciesOfRemovedPaths: Array<string>,
-    removedPaths: Array<string>,
+    differences: Array<Diff<any, any>>,
+    dependenciesOfRemovedPaths: string[],
+    removedPaths: string[],
     unEvalTree: DataTree,
   ) {
     const changePaths: Set<string> = new Set(dependenciesOfRemovedPaths)
@@ -1228,7 +1268,7 @@ export default class DataTreeEvaluator {
     const { dependencyMap, sortedDependencies } = params
     const inverseDependencyMap: DependencyMap = {}
     sortedDependencies.forEach((propertyPath) => {
-      const incomingEdges: Array<string> = dependencyMap[propertyPath]
+      const incomingEdges: string[] = dependencyMap[propertyPath]
       if (incomingEdges) {
         incomingEdges.forEach((edge) => {
           const node = inverseDependencyMap[edge]
@@ -1290,6 +1330,7 @@ export default class DataTreeEvaluator {
   clearErrors() {
     this.errors = []
   }
+
   clearLogs() {
     this.logs = []
     this.userLogs = []
