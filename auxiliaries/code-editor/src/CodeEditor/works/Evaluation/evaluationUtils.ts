@@ -1,4 +1,6 @@
 import {
+  DataTreeAction,
+  DataTreeAppsmith,
   DataTreeEntity,
   DataTreeJSAction,
 } from '@modou/code-editor/CodeEditor/entities/DataTree/dataTreeFactory'
@@ -36,5 +38,25 @@ export function isJSAction(entity: DataTreeEntity): entity is DataTreeJSAction {
     typeof entity === 'object' &&
     'ENTITY_TYPE' in entity &&
     entity.ENTITY_TYPE === ENTITY_TYPE.JSACTION
+  )
+}
+
+export function isAction(
+  entity: Partial<DataTreeEntity>,
+): entity is DataTreeAction {
+  return (
+    typeof entity === 'object' &&
+    'ENTITY_TYPE' in entity &&
+    entity.ENTITY_TYPE === ENTITY_TYPE.ACTION
+  )
+}
+
+export function isAppsmithEntity(
+  entity: DataTreeEntity,
+): entity is DataTreeAppsmith {
+  return (
+    typeof entity === 'object' &&
+    'ENTITY_TYPE' in entity &&
+    entity.ENTITY_TYPE === ENTITY_TYPE.APPSMITH
   )
 }

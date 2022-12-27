@@ -1,17 +1,28 @@
+import { isEmpty } from 'lodash'
+import unescapeJS from 'unescape-js'
+
 import { DataTree } from '@modou/code-editor/CodeEditor/common/editor-config'
+import { EventType } from '@modou/code-editor/CodeEditor/constants/AppsmithActionConstants/ActionConstants'
 import {
   LogObject,
   Severity,
 } from '@modou/code-editor/CodeEditor/entities/AppsmithConsole'
 import { ActionDescription } from '@modou/code-editor/CodeEditor/entities/DataTree/actionTriggers'
+import { TriggerMeta } from '@modou/code-editor/CodeEditor/sagas/ActionExecution/ActionExecutionSagas'
 import {
   EvaluationError,
   PropertyEvaluationErrorType,
   extraLibraries,
   unsafeFunctionForEval,
 } from '@modou/code-editor/CodeEditor/utils/DynamicBindingUtils'
+import { enhanceDataTreeWithFunctions } from '@modou/code-editor/CodeEditor/works/Evaluation/Actions'
+import { interceptAndOverrideHttpRequest } from '@modou/code-editor/CodeEditor/works/Evaluation/HTTPRequestOverride'
+import { completePromise } from '@modou/code-editor/CodeEditor/works/Evaluation/PromisifyAction'
+import { overrideTimeout } from '@modou/code-editor/CodeEditor/works/Evaluation/TimeoutOverride'
+import { userLogs } from '@modou/code-editor/CodeEditor/works/Evaluation/UserLog'
+import { indirectEval } from '@modou/code-editor/CodeEditor/works/Evaluation/indirectEval'
 
-export type EvalResult = {
+export interface EvalResult {
   result: any
   errors: EvaluationError[]
   triggers?: ActionDescription[]
@@ -60,18 +71,19 @@ export const EvaluationScripts: Record<EvaluationScriptType, string> = {
   `,
 }
 
-const topLevelWorkerAPIs = Object.keys(self).reduce((acc, key: string) => {
+const topLevelWorkerAPIs = Object.keys(self).reduce<any>((acc, key: string) => {
   acc[key] = true
   return acc
-}, {} as any)
+}, {})
 
 function resetWorkerGlobalScope() {
   for (const key of Object.keys(self)) {
     if (topLevelWorkerAPIs[key]) continue
     if (key === 'evaluationVersion') continue
-    if (extraLibraries.find((lib) => lib.accessor === key)) continue
-    // @ts-expect-error: Types are not available
-    delete self[key]
+    if (extraLibraries.find((lib) => lib.accessor === key)) {
+      continue
+    }
+    Reflect.deleteProperty(self, key)
   }
 }
 
@@ -100,13 +112,13 @@ export const getScriptToEval = (
 }
 
 export function setupEvaluationEnvironment() {
-  ///// Adding extra libraries separately
+  /// // Adding extra libraries separately
   extraLibraries.forEach((library) => {
     // @ts-expect-error: Types are not available
     self[library.accessor] = library.lib
   })
 
-  ///// Remove all unsafe functions
+  /// // Remove all unsafe functions
   unsafeFunctionForEval.forEach((func) => {
     // @ts-expect-error: Types are not available
     self[func] = undefined
@@ -122,7 +134,7 @@ export interface createGlobalDataArgs {
   dataTree: DataTree
   resolvedFunctions: Record<string, any>
   context?: EvaluateContext
-  evalArguments?: Array<unknown>
+  evalArguments?: unknown[]
   isTriggerBased: boolean
   // Whether not to add functions like "run", "clear" to entity in global data
   skipEntityFunctions?: boolean
@@ -139,9 +151,9 @@ export const createGlobalData = (args: createGlobalDataArgs) => {
   } = args
 
   const GLOBAL_DATA: Record<string, any> = {}
-  ///// Adding callback data
+  /// // Adding callback data
   GLOBAL_DATA.ARGUMENTS = evalArguments
-  //// Adding contextual data not part of data tree
+  /// / Adding contextual data not part of data tree
   GLOBAL_DATA.THIS_CONTEXT = {}
   if (context) {
     if (context.thisContext) {
@@ -154,14 +166,14 @@ export const createGlobalData = (args: createGlobalDataArgs) => {
     }
   }
   if (isTriggerBased) {
-    //// Add internal functions to dataTree;
+    /// / Add internal functions to dataTree;
     const dataTreeWithFunctions = enhanceDataTreeWithFunctions(
       dataTree,
       context?.requestId,
       skipEntityFunctions,
       context?.eventType,
     )
-    ///// Adding Data tree with functions
+    /// // Adding Data tree with functions
     Object.assign(GLOBAL_DATA, dataTreeWithFunctions)
   } else {
     // Object.assign removes prototypes of the entity object making sure configs are not shown to user.
@@ -174,9 +186,9 @@ export const createGlobalData = (args: createGlobalDataArgs) => {
         const dataTreeKey = GLOBAL_DATA[datum]
         if (dataTreeKey) {
           const data = dataTreeKey[key]?.data
-          //do not remove we will be investigating this
-          //const isAsync = dataTreeKey?.meta[key]?.isAsync || false;
-          //const confirmBeforeExecute = dataTreeKey?.meta[key]?.confirmBeforeExecute || false;
+          // do not remove we will be investigating this
+          // const isAsync = dataTreeKey?.meta[key]?.isAsync || false;
+          // const confirmBeforeExecute = dataTreeKey?.meta[key]?.confirmBeforeExecute || false;
           dataTreeKey[key] = resolvedObject[key]
           // if (isAsync && confirmBeforeExecute) {
           //   dataTreeKey[key] = confirmationPromise.bind(
@@ -188,8 +200,8 @@ export const createGlobalData = (args: createGlobalDataArgs) => {
           // } else {
           //   dataTreeKey[key] = resolvedObject[key];
           // }
-          if (!!data) {
-            dataTreeKey[key]['data'] = data
+          if (data) {
+            dataTreeKey[key].data = data
           }
         }
       })
@@ -211,7 +223,7 @@ export function sanitizeScript(js: string) {
  * globalContext will define it globally
  * requestId is used for completing promises
  */
-export type EvaluateContext = {
+export interface EvaluateContext {
   thisContext?: Record<string, any>
   globalContext?: Record<string, any>
   requestId?: string
@@ -222,7 +234,7 @@ export type EvaluateContext = {
 export const getUserScriptToEvaluate = (
   userScript: string,
   isTriggerBased: boolean,
-  evalArguments?: Array<any>,
+  evalArguments?: any[],
 ) => {
   const unescapedJS = sanitizeScript(userScript)
   // If nothing is present to evaluate, return
@@ -242,7 +254,7 @@ export default function evaluateSync(
   resolvedFunctions: Record<string, any>,
   isJSCollection: boolean,
   context?: EvaluateContext,
-  evalArguments?: Array<any>,
+  evalArguments?: any[],
   skipLogsOperations = false,
 ): EvalResult {
   return (function () {
@@ -255,7 +267,7 @@ export default function evaluateSync(
     if (!skipLogsOperations) {
       userLogs.resetLogs()
     }
-    /**** Setting the eval context ****/
+    /** ** Setting the eval context ****/
     const GLOBAL_DATA: Record<string, any> = createGlobalData({
       dataTree,
       resolvedFunctions,
@@ -290,7 +302,7 @@ export default function evaluateSync(
         (error as Error).message
       }`
       errors.push({
-        errorMessage: errorMessage,
+        errorMessage,
         severity: Severity.ERROR,
         raw: script,
         errorType: PropertyEvaluationErrorType.PARSE,
@@ -299,8 +311,7 @@ export default function evaluateSync(
     } finally {
       if (!skipLogsOperations) logs = userLogs.flushLogs()
       for (const entity in GLOBAL_DATA) {
-        // @ts-expect-error: Types are not available
-        delete self[entity]
+        Reflect.deleteProperty(self, entity)
       }
     }
 
@@ -314,14 +325,14 @@ export async function evaluateAsync(
   requestId: string,
   resolvedFunctions: Record<string, any>,
   context?: EvaluateContext,
-  evalArguments?: Array<any>,
+  evalArguments?: any[],
 ) {
   return (async function () {
     resetWorkerGlobalScope()
     const errors: EvaluationError[] = []
     let result
     let logs
-    /**** Setting the eval context ****/
+    /** ** Setting the eval context ****/
     userLogs.resetLogs()
     userLogs.setCurrentRequestInfo({
       requestId,
@@ -353,7 +364,7 @@ export async function evaluateAsync(
         (error as Error).message
       }`
       errors.push({
-        errorMessage: errorMessage,
+        errorMessage,
         severity: Severity.ERROR,
         raw: script,
         errorType: PropertyEvaluationErrorType.PARSE,
@@ -390,14 +401,14 @@ export function isFunctionAsync(
   logs: unknown[] = [],
 ) {
   return (function () {
-    /**** Setting the eval context ****/
+    /** ** Setting the eval context ****/
     const GLOBAL_DATA: Record<string, any> = {
       ALLOW_ASYNC: false,
       IS_ASYNC: false,
     }
-    //// Add internal functions to dataTree;
+    /// / Add internal functions to dataTree;
     const dataTreeWithFunctions = enhanceDataTreeWithFunctions(dataTree)
-    ///// Adding Data tree with functions
+    /// // Adding Data tree with functions
     Object.keys(dataTreeWithFunctions).forEach((datum) => {
       GLOBAL_DATA[datum] = dataTreeWithFunctions[datum]
     })
@@ -408,7 +419,7 @@ export function isFunctionAsync(
           const dataTreeKey = GLOBAL_DATA[datum]
           if (dataTreeKey) {
             const data = dataTreeKey[key]?.data
-            //do not remove, we will be investigating this
+            // do not remove, we will be investigating this
             // const isAsync = dataTreeKey.meta[key]?.isAsync || false;
             // const confirmBeforeExecute =
             //   dataTreeKey.meta[key]?.confirmBeforeExecute || false;
@@ -423,7 +434,7 @@ export function isFunctionAsync(
             // } else {
             //   dataTreeKey[key] = resolvedObject[key];
             // }
-            if (!!data) {
+            if (data) {
               dataTreeKey[key].data = data
             }
           }
@@ -459,8 +470,7 @@ export function isFunctionAsync(
     }
     const isAsync = !!self.IS_ASYNC
     for (const entity in GLOBAL_DATA) {
-      // @ts-expect-error: Types are not available
-      delete self[entity]
+      Reflect.deleteProperty(self, entity)
     }
     return isAsync
   })()

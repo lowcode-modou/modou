@@ -1,9 +1,13 @@
+import { AppTheme } from '@modou/code-editor/CodeEditor/entities/AppTheming'
 import {
+  ActionEntityConfig,
+  ActionEntityEvalTree,
   ENTITY_TYPE,
   JSActionEntityConfig,
   JSActionEvalTree,
   WidgetConfig,
 } from '@modou/code-editor/CodeEditor/entities/DataTree/types'
+import { AppDataState } from '@modou/code-editor/CodeEditor/reducers/entityReducers/appReducer'
 import { WidgetBaseProps } from '@modou/core'
 
 interface Page {
@@ -17,12 +21,10 @@ interface Page {
   userPermissions?: string[]
 }
 
-interface DataTreeAppsmith {
+export interface DataTreeAppsmith extends Omit<AppDataState, 'store'> {
   ENTITY_TYPE: ENTITY_TYPE.APPSMITH
-  user: {
-    name: string
-    age: number
-  }
+  store: Record<string, unknown>
+  theme: AppTheme['properties']
 }
 
 export interface WidgetEvalTree extends WidgetBaseProps {
@@ -33,12 +35,15 @@ export interface WidgetEvalTree extends WidgetBaseProps {
 export interface DataTreeWidget extends WidgetEvalTree, WidgetConfig {}
 export type DataTreeJSAction = JSActionEvalTree & JSActionEntityConfig
 
+export interface DataTreeAction
+  extends ActionEntityEvalTree,
+    ActionEntityConfig {}
+
 export type DataTreeObjectEntity =
   | DataTreeWidget
   | DataTreeAppsmith
   | DataTreeJSAction
-// TODO 添加 DataTreeAction
-// | DataTreeAction
+  | DataTreeAction
 
 // TODO 补全 ActionDispatcher
 export type DataTreeEntity = DataTreeObjectEntity | Page[]
