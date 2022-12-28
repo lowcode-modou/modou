@@ -1,6 +1,10 @@
 // Workers do not have access to log.error
 import { isEmpty } from 'lodash'
 
+import { ReplayEntity } from '@modou/code-editor/CodeEditor/entities/Replay'
+
+import DataTreeEvaluator from '../common/DataTreeEvaluator'
+
 const CANVAS = 'canvas'
 
 export let dataTreeEvaluator: DataTreeEvaluator | undefined

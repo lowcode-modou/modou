@@ -50,10 +50,13 @@ import {
   isPathDynamicTrigger,
 } from '@modou/code-editor/CodeEditor/utils/DynamicBindingUtils'
 import { WidgetTypeConfigMap } from '@modou/code-editor/CodeEditor/utils/WidgetFactory'
+import { parseJSActions } from '@modou/code-editor/CodeEditor/works/Evaluation/JSObject'
 import {
   getEntityNameAndPropertyPath,
   isJSAction,
 } from '@modou/code-editor/CodeEditor/works/Evaluation/evaluationUtils'
+
+import { EvalResult } from '../../Evaluation/evaluate'
 
 type SortedDependencies = string[]
 
