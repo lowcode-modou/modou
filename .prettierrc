@@ -5,5 +5,7 @@
   "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "importOrder": ["^@modou/(.*)$", "^[./]"],
   "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
+  "importOrderSortSpecifiers": true,
+  "spaced-comment": 2
+
 }

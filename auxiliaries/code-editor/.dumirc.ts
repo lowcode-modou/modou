@@ -1,5 +1,4 @@
 import { defineConfig } from 'dumi'
-import path from 'path'
 
 export default defineConfig({
   outputPath: 'docs-dist',
@@ -10,6 +9,10 @@ export default defineConfig({
   mock: {
     include: ['src/**/_mock.ts'],
   },
+  mfsu: false,
+  // mfsu: {
+  //   // exclude: ['vant'],
+  // },
   // TODO 支持 css in js sourceMap
   // extraBabelPresets: [
   //   [

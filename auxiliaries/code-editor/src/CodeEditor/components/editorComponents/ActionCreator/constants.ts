@@ -1,0 +1,15 @@
+export const APPSMITH_GLOBAL_FUNCTIONS = {
+  navigateTo: 'navigateTo',
+  showAlert: 'showAlert',
+  showModal: 'showModal',
+  closeModal: 'closeModal',
+  storeValue: 'storeValue',
+  removeValue: 'removeValue',
+  clearStore: 'clearStore',
+  download: 'download',
+  copyToClipboard: 'copyToClipboard',
+  resetWidget: 'resetWidget',
+  setInterval: 'setInterval',
+  clearInterval: 'clearInterval',
+  postMessage: 'postWindowMessage',
+}
