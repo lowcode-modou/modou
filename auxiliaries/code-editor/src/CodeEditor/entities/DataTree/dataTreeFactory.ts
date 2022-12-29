@@ -10,7 +10,6 @@ import {
 import { AppDataState } from '@modou/code-editor/CodeEditor/reducers/entityReducers/appReducer'
 import { WidgetConfigProps } from '@modou/code-editor/CodeEditor/reducers/entityReducers/widgetConfigReducer'
 import { WidgetProps } from '@modou/code-editor/CodeEditor/widgets/BaseWidget'
-import { WidgetBaseProps } from '@modou/core'
 
 interface Page {
   pageName: string
@@ -29,7 +28,7 @@ export interface DataTreeAppsmith extends Omit<AppDataState, 'store'> {
   theme: AppTheme['properties']
 }
 
-export interface WidgetEvalTree extends WidgetBaseProps {
+export interface WidgetEvalTree extends WidgetProps {
   meta: Record<string, unknown>
   ENTITY_TYPE: ENTITY_TYPE.WIDGET
 }
@@ -75,6 +74,6 @@ export type UnEvalTreeEntity =
   | DataTreeAppsmith
   | Page[]
 
-export type UnEvalTree = {
+export interface UnEvalTree {
   [entityName: string]: UnEvalTreeEntity
 }

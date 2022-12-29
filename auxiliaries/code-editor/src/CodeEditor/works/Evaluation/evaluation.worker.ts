@@ -1,9 +1,45 @@
 // Workers do not have access to log.error
 import { isEmpty } from 'lodash'
 
+import { DataTree } from '@modou/code-editor/CodeEditor/common/editor-config'
+import { UserLogObject } from '@modou/code-editor/CodeEditor/entities/AppsmithConsole'
 import { ReplayEntity } from '@modou/code-editor/CodeEditor/entities/Replay'
+import ReplayCanvas from '@modou/code-editor/CodeEditor/entities/Replay/ReplayEntity/ReplayCanvas'
+import { ReplayEditor } from '@modou/code-editor/CodeEditor/entities/Replay/ReplayEntity/ReplayEditor'
+import {
+  DependencyMap,
+  EVAL_WORKER_ACTIONS,
+  EvalError,
+  EvalErrorTypes,
+} from '@modou/code-editor/CodeEditor/utils/DynamicBindingUtils'
+import { JSUpdate } from '@modou/code-editor/CodeEditor/utils/JSPaneUtils'
+import {
+  createUnEvalTreeForEval,
+  makeEntityConfigsAsObjProperties,
+} from '@modou/code-editor/CodeEditor/works/Evaluation/dataTreeUtils'
+import evaluate, {
+  evaluateAsync,
+  setupEvaluationEnvironment,
+} from '@modou/code-editor/CodeEditor/works/Evaluation/evaluate'
+import {
+  getSafeToRenderDataTree,
+  removeFunctions,
+} from '@modou/code-editor/CodeEditor/works/Evaluation/evaluationUtils'
+import { setFormEvaluationSaga } from '@modou/code-editor/CodeEditor/works/Evaluation/formEval'
+import {
+  EvalTreeRequestData,
+  EvalTreeResponseData,
+  EvalWorkerRequest,
+  EvalWorkerResponse,
+} from '@modou/code-editor/CodeEditor/works/Evaluation/types'
+import { EvalMetaUpdates } from '@modou/code-editor/CodeEditor/works/common/DataTreeEvaluator/types'
+import {
+  DataTreeDiff,
+  validateWidgetProperty,
+} from '@modou/code-editor/CodeEditor/works/common/DataTreeEvaluator/validationUtils'
+import { WorkerErrorTypes } from '@modou/code-editor/CodeEditor/works/common/types'
 
-import DataTreeEvaluator from '../common/DataTreeEvaluator'
+import DataTreeEvaluator, { CrashingError } from '../common/DataTreeEvaluator'
 
 const CANVAS = 'canvas'
 
@@ -103,7 +139,7 @@ function eventRequestHandler({
       const evalTree = dataTreeEvaluator.evalTree
       const resolvedFunctions = dataTreeEvaluator.resolvedFunctions
 
-      dataTreeEvaluator.evaluateTriggers(
+      void dataTreeEvaluator.evaluateTriggers(
         dynamicTrigger,
         evalTree,
         requestId,
@@ -166,7 +202,7 @@ function eventRequestHandler({
       )
       return { errors, logs, result }
     }
-    case EVAL_WORKER_ACTIONS.EVAL_EXPRESSION:
+    case EVAL_WORKER_ACTIONS.EVAL_EXPRESSION: {
       const { expression, isTrigger } = requestData
       const evalTree = dataTreeEvaluator?.evalTree
       if (!evalTree) return {}
@@ -174,7 +210,8 @@ function eventRequestHandler({
       return isTrigger
         ? evaluateAsync(expression, evalTree, 'SNIPPET', {})
         : evaluate(expression, evalTree, {}, false)
-    case EVAL_WORKER_ACTIONS.UPDATE_REPLAY_OBJECT:
+    }
+    case EVAL_WORKER_ACTIONS.UPDATE_REPLAY_OBJECT: {
       const { entity, entityId, entityType } = requestData
       const replayObject = replayMap[entityId]
       if (replayObject) {
@@ -183,14 +220,17 @@ function eventRequestHandler({
         replayMap[entityId] = new ReplayEditor(entity, entityType)
       }
       break
-    case EVAL_WORKER_ACTIONS.SET_EVALUATION_VERSION:
+    }
+    case EVAL_WORKER_ACTIONS.SET_EVALUATION_VERSION: {
       const { version } = requestData
       self.evaluationVersion = version || 1
       break
-    case EVAL_WORKER_ACTIONS.INIT_FORM_EVAL:
+    }
+    case EVAL_WORKER_ACTIONS.INIT_FORM_EVAL: {
       const { currentEvalState, payload, type } = requestData
       const response = setFormEvaluationSaga(type, payload, currentEvalState)
       return response
+    }
     case EVAL_WORKER_ACTIONS.EVAL_TREE: {
       let evalOrder: string[] = []
       let lintOrder: string[] = []
@@ -207,7 +247,7 @@ function eventRequestHandler({
 
       const {
         allActionValidationConfig,
-        requiresLinting,
+        // requiresLinting,
         shouldReplay,
         theme,
         // FIXME TYPE __unEvalTree__
@@ -241,13 +281,14 @@ function eventRequestHandler({
           lintOrder = setupFirstTreeResponse.lintOrder
           jsUpdates = setupFirstTreeResponse.jsUpdates
 
-          initiateLinting(
-            lintOrder,
-            makeEntityConfigsAsObjProperties(dataTreeEvaluator.oldUnEvalTree, {
-              sanitizeDataTree: false,
-            }),
-            requiresLinting,
-          )
+          // TODO:(LiuLei) initiateLinting
+          // initiateLinting(
+          //   lintOrder,
+          //   makeEntityConfigsAsObjProperties(dataTreeEvaluator.oldUnEvalTree, {
+          //     sanitizeDataTree: false,
+          //   }),
+          //   requiresLinting,
+          // )
 
           const dataTreeResponse = dataTreeEvaluator.evalAndValidateFirstTree()
           dataTree = makeEntityConfigsAsObjProperties(
@@ -283,13 +324,14 @@ function eventRequestHandler({
           lintOrder = setupFirstTreeResponse.lintOrder
           jsUpdates = setupFirstTreeResponse.jsUpdates
 
-          initiateLinting(
-            lintOrder,
-            makeEntityConfigsAsObjProperties(dataTreeEvaluator.oldUnEvalTree, {
-              sanitizeDataTree: false,
-            }),
-            requiresLinting,
-          )
+          // TODO:(LiuLei) initiateLinting
+          // initiateLinting(
+          //   lintOrder,
+          //   makeEntityConfigsAsObjProperties(dataTreeEvaluator.oldUnEvalTree, {
+          //     sanitizeDataTree: false,
+          //   }),
+          //   requiresLinting,
+          // )
 
           const dataTreeResponse = dataTreeEvaluator.evalAndValidateFirstTree()
           dataTree = makeEntityConfigsAsObjProperties(
@@ -311,17 +353,18 @@ function eventRequestHandler({
           const setupUpdateTreeResponse =
             dataTreeEvaluator.setupUpdateTree(unevalTree)
           evalOrder = setupUpdateTreeResponse.evalOrder
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           lintOrder = setupUpdateTreeResponse.lintOrder
           jsUpdates = setupUpdateTreeResponse.jsUpdates
           unEvalUpdates = setupUpdateTreeResponse.unEvalUpdates
-
-          initiateLinting(
-            lintOrder,
-            makeEntityConfigsAsObjProperties(dataTreeEvaluator.oldUnEvalTree, {
-              sanitizeDataTree: false,
-            }),
-            requiresLinting,
-          )
+          // TODO:(LiuLei) initiateLinting
+          // initiateLinting(
+          //   lintOrder,
+          //   makeEntityConfigsAsObjProperties(dataTreeEvaluator.oldUnEvalTree, {
+          //     sanitizeDataTree: false,
+          //   }),
+          //   requiresLinting,
+          // )
           nonDynamicFieldValidationOrder =
             setupUpdateTreeResponse.nonDynamicFieldValidationOrder
           const updateResponse = dataTreeEvaluator.evalAndValidateSubTree(
@@ -338,7 +381,8 @@ function eventRequestHandler({
             JSON.stringify(updateResponse.evalMetaUpdates),
           )
         }
-        dataTreeEvaluator = dataTreeEvaluator as DataTreeEvaluator
+        // eslint-disable-next-line no-self-assign
+        dataTreeEvaluator = dataTreeEvaluator
         dependencies = dataTreeEvaluator.inverseDependencyMap
         errors = dataTreeEvaluator.errors
         dataTreeEvaluator.clearErrors()

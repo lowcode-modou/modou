@@ -19,14 +19,12 @@ import {
 export type ActionDispatcher = (
   ...args: any[]
 ) => Promise<unknown> | ActionDescription
-
 export enum ENTITY_TYPE {
   ACTION = 'ACTION',
   WIDGET = 'WIDGET',
   APPSMITH = 'APPSMITH',
   JSACTION = 'JSACTION',
 }
-
 export enum EvaluationSubstitutionType {
   TEMPLATE = 'TEMPLATE',
   PARAMETER = 'PARAMETER',

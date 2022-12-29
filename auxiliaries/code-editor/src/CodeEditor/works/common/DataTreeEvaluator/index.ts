@@ -15,7 +15,11 @@ import { error as logError } from 'loglevel'
 import toposort from 'toposort'
 
 import { DataTree } from '@modou/code-editor/CodeEditor/common/editor-config'
-import { EXECUTION_PARAM_KEY } from '@modou/code-editor/CodeEditor/constants/AppsmithActionConstants/ActionConstants'
+import {
+  EXECUTION_PARAM_KEY,
+  EXECUTION_PARAM_REFERENCE_REGEX,
+  THIS_DOT_PARAMS_KEY,
+} from '@modou/code-editor/CodeEditor/constants/AppsmithActionConstants/ActionConstants'
 import {
   ActionValidationConfigMap,
   ValidationConfig,
@@ -24,20 +28,24 @@ import { DATA_BIND_REGEX } from '@modou/code-editor/CodeEditor/constants/binding
 import { APP_MODE } from '@modou/code-editor/CodeEditor/entities/App'
 import {
   Severity,
+  SourceEntity,
   UserLogObject,
 } from '@modou/code-editor/CodeEditor/entities/AppsmithConsole'
 import {
+  DataTreeAction,
   DataTreeEntity,
   DataTreeJSAction,
   DataTreeWidget,
 } from '@modou/code-editor/CodeEditor/entities/DataTree/dataTreeFactory'
 import {
+  ENTITY_TYPE,
   EvaluationSubstitutionType,
   PrivateWidgets,
 } from '@modou/code-editor/CodeEditor/entities/DataTree/types'
 import {
   DataTreeEvaluationProps,
   DependencyMap,
+  EvalError,
   EvalErrorTypes,
   EvaluationError,
   PropertyEvaluationErrorType,
@@ -49,16 +57,56 @@ import {
   isPathADynamicBinding,
   isPathDynamicTrigger,
 } from '@modou/code-editor/CodeEditor/utils/DynamicBindingUtils'
+import { JSUpdate } from '@modou/code-editor/CodeEditor/utils/JSPaneUtils'
 import { WidgetTypeConfigMap } from '@modou/code-editor/CodeEditor/utils/WidgetFactory'
-import { parseJSActions } from '@modou/code-editor/CodeEditor/works/Evaluation/JSObject'
 import {
+  getAppMode,
+  getJSEntities,
+  getUpdatedLocalUnEvalTreeAfterJSUpdates,
+  parseJSActions,
+  parseJSActionsForViewMode,
+  parseJSActionsWithDifferences,
+} from '@modou/code-editor/CodeEditor/works/Evaluation/JSObject'
+import { isJSObjectFunction } from '@modou/code-editor/CodeEditor/works/Evaluation/JSObject/utils'
+// eslint-disable-next-line max-len
+import { substituteDynamicBindingWithValues } from '@modou/code-editor/CodeEditor/works/Evaluation/evaluationSubstitution'
+import {
+  addDependantsOfNestedPropertyPaths,
+  convertPathToString,
   getEntityNameAndPropertyPath,
+  getImmediateParentsOfPropertyPaths,
+  isAction,
+  isDynamicLeaf,
   isJSAction,
+  isValidEntity,
+  isWidget,
+  overrideWidgetProperties,
+  translateDiffEventToDataTreeDiffEvent,
+  trimDependantChangePaths,
 } from '@modou/code-editor/CodeEditor/works/Evaluation/evaluationUtils'
+import { EvalMetaUpdates } from '@modou/code-editor/CodeEditor/works/common/DataTreeEvaluator/types'
+import { getFixedTimeDifference } from '@modou/code-editor/CodeEditor/works/common/DataTreeEvaluator/utils'
+import {
+  DataTreeDiff,
+  addErrorToEntityProperty,
+  getAllPaths,
+  getValidatedTree,
+  validateActionProperty,
+  validateAndParseWidgetProperty,
+} from '@modou/code-editor/CodeEditor/works/common/DataTreeEvaluator/validationUtils'
+import {
+  createDependencyMap,
+  updateDependencyMap,
+} from '@modou/code-editor/CodeEditor/works/common/DependencyMap'
 
-import { EvalResult } from '../../Evaluation/evaluate'
+import evaluateSync, {
+  EvalResult,
+  EvaluateContext,
+  evaluateAsync,
+} from '../../Evaluation/evaluate'
 
 type SortedDependencies = string[]
+export class CrashingError extends Error {}
 
 export interface EvalProps {
   [entityName: string]: DataTreeEvaluationProps
@@ -92,7 +140,8 @@ export default class DataTreeEvaluator {
 
   triggerFieldDependencyMap: DependencyMap = {}
   /**  Keeps track of all invalid references in bindings throughout the Application
-   * Eg. For binding {{unknownEntity.name + Api1.name}} in Button1.text, where Api1 is present in dataTree but unknownEntity is not,
+   * E.g. For binding {{unknownEntity.name + Api1.name}} in Button1.text,
+   * where Api1 is present in dataTree but unknownEntity is not,
    * the map has a key-value pair of
    * {
    *  "Button1.text": [unknownEntity.name]
@@ -265,12 +314,6 @@ export default class DataTreeEvaluator {
 
     const validationStartTime = performance.now()
     // Validate Widgets
-    console.log(
-      'getValidatedTreegetValidatedTree',
-      getValidatedTree(evaluatedTree, {
-        evalProps: this.evalProps,
-      }),
-    )
     this.setEvalTree(
       getValidatedTree(evaluatedTree, {
         evalProps: this.evalProps,
@@ -304,7 +347,7 @@ export default class DataTreeEvaluator {
         Object.keys(updates).forEach((key) => {
           const data = get(dataTree, `${update}.${key}.data`, undefined)
           if (isJSObjectFunction(dataTree, update, key)) {
-            set(dataTree, `${update}.${key}`, new String(updates[key]))
+            set(dataTree, `${update}.${key}`, String(updates[key]))
             set(dataTree, `${update}.${key}.data`, data)
           } else {
             set(dataTree, `${update}.${key}`, updates[key])
@@ -338,7 +381,7 @@ export default class DataTreeEvaluator {
     const localUnEvalTreeJSCollection = getJSEntities(localUnEvalTree)
     const jsDifferences: Array<
       Diff<Record<string, DataTreeJSAction>, Record<string, DataTreeJSAction>>
-    > = diff(oldUnEvalTreeJSCollections, localUnEvalTreeJSCollection) || []
+    > = diff(oldUnEvalTreeJSCollections, localUnEvalTreeJSCollection) ?? []
     const jsTranslatedDiffs = flatten(
       jsDifferences.map((diff) =>
         translateDiffEventToDataTreeDiffEvent(diff, localUnEvalTree),
@@ -360,7 +403,7 @@ export default class DataTreeEvaluator {
     )
 
     const differences: Array<Diff<DataTree, DataTree>> =
-      diff(this.oldUnEvalTree, localUnEvalTree) || []
+      diff(this.oldUnEvalTree, localUnEvalTree) ?? []
     // Since eval tree is listening to possible events that don't cause differences
     // We want to check if no diffs are present and bail out early
     if (differences.length === 0) {
@@ -408,7 +451,7 @@ export default class DataTreeEvaluator {
     const evaluationOrder: string[] = []
     let nonDynamicFieldValidationOrderSet = new Set<string>()
 
-    subTreeSortOrder.filter((propertyPath) => {
+    subTreeSortOrder.forEach((propertyPath) => {
       // We are setting all values from our uneval tree to the old eval tree we have
       // So that the actual uneval value can be evaluated
       if (isDynamicLeaf(localUnEvalTree, propertyPath)) {
@@ -420,7 +463,8 @@ export default class DataTreeEvaluator {
         evaluationOrder.push(propertyPath)
       } else {
         /**
-         * if the non dynamic value changes that should trigger revalidation like tabs.tabsObj then we store it in nonDynamicFieldValidationOrderSet
+         * if the non dynamic value changes that should trigger revalidation like tabs.
+         * tabsObj then we store it in nonDynamicFieldValidationOrderSet
          */
         if (this.inverseValidationDependencyMap[propertyPath]) {
           nonDynamicFieldValidationOrderSet = new Set([
@@ -532,12 +576,14 @@ export default class DataTreeEvaluator {
       finalSortOrder = [...finalSortOrder, ...subSortOrderArray]
 
       parents = getImmediateParentsOfPropertyPaths(subSortOrderArray)
-      // If we find parents of the property paths in the sorted array, we should continue finding all the nodes dependent
+      // If we find parents of the property paths in the sorted array,
+      // we should continue finding all the nodes dependent
       // on the parents
       computeSortOrder = parents.length > 0
     }
 
-    // Remove duplicates from this list. Since we explicitly walk down the tree and implicitly (by fetching parents) walk
+    // Remove duplicates from this list. Since we explicitly walk down
+    // the tree and implicitly (by fetching parents) walk
     // up the tree, there are bound to be many duplicates.
     const uniqueKeysInSortOrder = new Set(finalSortOrder)
 
@@ -813,7 +859,7 @@ export default class DataTreeEvaluator {
     } catch (error) {
       // Cyclic dependency found. Extract all node and entity type
       const cyclicNodes = (error as Error).message.match(
-        new RegExp('Cyclic dependency, node was:"(.*)"'),
+        /Cyclic dependency, node was:"(.*)"/,
       )
 
       const node = cyclicNodes?.length ? cyclicNodes[1] : ''
@@ -886,7 +932,7 @@ export default class DataTreeEvaluator {
             !!entity && isJSAction(entity),
             contextData,
             callBackData,
-            fullPropertyPath?.includes('body') ||
+            fullPropertyPath?.includes('body') ??
               !toBeSentForEval.includes('console.'),
           )
           if (fullPropertyPath && result.errors.length) {
@@ -904,25 +950,25 @@ export default class DataTreeEvaluator {
             result.logs.length > 0 &&
             !propertyPath.includes('body')
           ) {
-            let type = CONSOLE_ENTITY_TYPE.WIDGET
+            let type = ENTITY_TYPE.WIDGET
             let id = ''
 
             // extracting the id and type of the entity from the entity for logs object
             if (isWidget(entity)) {
-              type = CONSOLE_ENTITY_TYPE.WIDGET
+              type = ENTITY_TYPE.WIDGET
               id = entity.widgetId
             } else if (isAction(entity)) {
-              type = CONSOLE_ENTITY_TYPE.ACTION
+              type = ENTITY_TYPE.ACTION
               id = entity.actionId
             } else if (isJSAction(entity)) {
-              type = CONSOLE_ENTITY_TYPE.JSACTION
+              type = ENTITY_TYPE.JSACTION
               id = entity.actionId
             }
 
             // This is the object that will help to associate the log with the origin entity
             const source: SourceEntity = {
               type,
-              name: fullPropertyPath?.split('.')[0] || 'Widget',
+              name: fullPropertyPath?.split('.')[0] ?? 'Widget',
               id,
             }
             this.userLogs.push({
@@ -1054,7 +1100,7 @@ export default class DataTreeEvaluator {
       evalMetaUpdates,
     })
 
-    if (overwriteObj && overwriteObj.overwriteParsedValue) {
+    if (overwriteObj?.overwriteParsedValue) {
       parsedValue = overwriteObj.newValue
     }
     // setting parseValue in dataTree
@@ -1148,9 +1194,11 @@ export default class DataTreeEvaluator {
   }
 
   /**
-   * Update the entity config set as prototype according to latest unEvalTree changes else code would consume stale configs.
+   * Update the entity config set as prototype according to
+   * latest unEvalTree changes else code would consume stale configs.
    *
-   * Example scenario: On addition of a JS binding to widget, it's dynamicBindingPathList changes and needs to be updated.
+   * Example scenario: On addition of a JS binding to widget,
+   * it's dynamicBindingPathList changes and needs to be updated.
    */
   updateConfigForModifiedEntity(unEvalTree: DataTree, entityName: string) {
     const unEvalEntity = unEvalTree[entityName]
@@ -1194,7 +1242,8 @@ export default class DataTreeEvaluator {
       if (!isDynamicLeaf(unEvalTree, convertPathToString(d.path))) {
         // A parent level property has been added or deleted
         /**
-         * We want to add all pre-existing dynamic and static bindings in dynamic paths of this entity to get evaluated and validated.
+         * We want to add all pre-existing dynamic and static bindings in dynamic paths
+         * of this entity to get evaluated and validated.
          * Example:
          * - Table1.tableData = {{Api1.data}}
          * - Api1 gets created.
@@ -1224,8 +1273,7 @@ export default class DataTreeEvaluator {
           const childPropertyPath = `${entityName}.${relativePath}`
           // Check if relative path has dynamic binding
           if (
-            entityDynamicBindingPaths &&
-            entityDynamicBindingPaths.length &&
+            entityDynamicBindingPaths?.length &&
             entityDynamicBindingPaths.includes(relativePath)
           ) {
             changePaths.add(childPropertyPath)
@@ -1240,7 +1288,8 @@ export default class DataTreeEvaluator {
     // If a nested property path has changed and someone (say x) is dependent on the parent of the said property,
     // x must also be evaluated. For example, the following relationship exists in dependency map:
     // <  "Input1.defaultText" : ["Table1.selectedRow.email"] >
-    // If Table1.selectedRow has changed, then Input1.defaultText must also be evaluated because Table1.selectedRow.email
+    // If Table1.selectedRow has changed, then Input1.defaultText must also be
+    // evaluated because Table1.selectedRow.email
     // is a nested property of Table1.selectedRow
     const changePathsWithNestedDependants = addDependantsOfNestedPropertyPaths(
       Array.from(changePaths),

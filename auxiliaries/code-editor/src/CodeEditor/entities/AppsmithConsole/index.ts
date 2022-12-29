@@ -29,7 +29,10 @@ export interface SourceEntity {
   // property path of the child
   propertyPath?: string
 }
-export type UserLogObject = { logObject: LogObject[]; source: SourceEntity }
+export interface UserLogObject {
+  logObject: LogObject[]
+  source: SourceEntity
+}
 
 export enum Severity {
   // Everything, irrespective of what the user should see or not

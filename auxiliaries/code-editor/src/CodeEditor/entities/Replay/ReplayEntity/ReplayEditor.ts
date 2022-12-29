@@ -7,7 +7,7 @@ import { isEmpty } from 'lodash'
 
 import { ENTITY_TYPE } from '@modou/code-editor/CodeEditor/entities/DataTree/types'
 import { JSActionConfig } from '@modou/code-editor/CodeEditor/entities/JSCollection'
-import ReplayEntity from '@modou/code-editor/CodeEditor/entities/Replay'
+import { ReplayEntity } from '@modou/code-editor/CodeEditor/entities/Replay'
 import { pathArrayToString } from '@modou/code-editor/CodeEditor/entities/Replay/replayUtils'
 
 import { Action } from '../../Action'

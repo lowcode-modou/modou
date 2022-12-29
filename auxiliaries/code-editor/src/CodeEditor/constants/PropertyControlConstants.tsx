@@ -4,6 +4,10 @@ import {
   ValidationTypes,
 } from '@modou/code-editor/CodeEditor/constants/WidgetValidation'
 
+const ControlTypes = getPropertyControlTypes()
+
+export type ControlType = typeof ControlTypes[keyof typeof ControlTypes]
+
 interface ValidationConfigParams {
   min?: number // min allowed for a number
   max?: number // max allowed for a number
@@ -40,4 +44,59 @@ export interface ValidationConfig {
 }
 export interface ActionValidationConfigMap {
   [configPropety: string]: ValidationConfig
+}
+
+export interface PropertyPaneControlConfig {
+  id?: string
+  label: string
+  propertyName: string
+  // Serves in the tooltip
+  helpText?: string
+  // Dynamic text serves below the property pane inputs
+  helperText?: ((props: any) => string) | string
+  isJSConvertible?: boolean
+  customJSControl?: string
+  controlType: ControlType
+  validationMessage?: string
+  dataTreePath?: string
+  children?: PropertyPaneConfig[]
+  panelConfig?: PanelConfig
+  updateRelatedWidgetProperties?: (
+    propertyName: string,
+    propertyValue: any,
+    props: any,
+  ) => UpdateWidgetPropertyPayload[]
+  updateHook?: (
+    props: any,
+    propertyName: string,
+    propertyValue: any,
+  ) => Array<PropertyHookUpdates> | undefined
+  hidden?: (props: any, propertyPath: string) => boolean
+  invisible?: boolean
+  isBindProperty: boolean
+  isTriggerProperty: boolean
+  validation?: ValidationConfig
+  useValidationMessage?: boolean
+  additionalAutoComplete?: (
+    props: any,
+  ) => Record<string, Record<string, unknown>>
+  evaluationSubstitutionType?: EvaluationSubstitutionType
+  dependencies?: string[]
+  evaluatedDependencies?: string[] // dependencies to be picked from the __evaluated__ object
+  expected?: CodeEditorExpected
+  getStylesheetValue?: (
+    props: any,
+    propertyPath: string,
+    stylesheet?: Stylesheet,
+  ) => Stylesheet[string]
+  // TODO(abhinav): To fix this, rename the options property of the controls which use this
+  // Alternatively, create a new structure
+  options?: any
+  // The following should ideally be used internally
+  postUpdateAction?: ReduxActionType
+  onBlur?: () => void
+  onFocus?: () => void
+  isPanelProperty?: boolean
+  // Numeric Input Control
+  min?: number
 }

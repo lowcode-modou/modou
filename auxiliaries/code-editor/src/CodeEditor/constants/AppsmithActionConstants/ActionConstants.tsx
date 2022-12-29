@@ -82,3 +82,6 @@ export interface TriggerSource {
   isJSAction?: boolean
   actionId?: string
 }
+
+export const THIS_DOT_PARAMS_KEY = 'params'
+export const EXECUTION_PARAM_REFERENCE_REGEX = /this.params|this\?.params/g
