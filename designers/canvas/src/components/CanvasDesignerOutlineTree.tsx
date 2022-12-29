@@ -1,5 +1,5 @@
 import { DownOutlined } from '@ant-design/icons'
-import { Tree } from 'antd'
+import { Input, Tree } from 'antd'
 import { head } from 'lodash'
 import type RcTree from 'rc-tree'
 import React, { ComponentProps, FC, useRef } from 'react'

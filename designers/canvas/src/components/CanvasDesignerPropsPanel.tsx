@@ -1,7 +1,9 @@
-import { Button, Divider, Form, Input, Typography } from 'antd'
+import { cx } from '@emotion/css'
+import { Button, Divider, Form, Input } from 'antd'
 import produce from 'immer'
-import { FC, useContext, useMemo } from 'react'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { omit } from 'lodash'
+import { ComponentProps, FC, useContext, useMemo, useState } from 'react'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { AppFactoryContext } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
@@ -14,30 +16,21 @@ import {
   isRootWidgetSelector,
   pageSelector,
   selectedWidgetIdAtom,
-  widgetByIdSelector,
   widgetSelector,
 } from '../store'
 
-const WidgetPropsPanel: FC = () => {
-  const widgetById = useRecoilValue(widgetByIdSelector)
-  const [selectedWidgetId, setSelectedWidgetId] =
-    useRecoilState(selectedWidgetIdAtom)
-  const selectWidget = widgetById[selectedWidgetId]
-  const setWidget = useSetRecoilState(widgetSelector(selectedWidgetId))
-  const isRootWidget = useRecoilValue(isRootWidgetSelector(selectedWidgetId))
+const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
+  const [widget, setWidget] = useRecoilState(widgetSelector(widgetId))
   const widgetFactory = useContext(AppFactoryContext)
   const widgetMetadata = useMemo(() => {
-    return widgetFactory.widgetByType[selectWidget.widgetType].metadata
-  }, [widgetFactory.widgetByType, selectWidget.widgetType])
-
-  const { removeWidget } = useRemoveWidget()
-
+    return widgetFactory.widgetByType[widget.widgetType].metadata
+  }, [widgetFactory.widgetByType, widget.widgetType])
   const propsDef = (
     widgetMetadata.jsonPropsSchema.properties
       .props as unknown as typeof widgetMetadata.jsonPropsSchema
   ).properties
 
-  const render = Object.entries(propsDef)
+  const formRender = Object.entries(propsDef)
     .filter(([, value]) => Reflect.has(value, SETTER_KEY))
     .map(([key, value]) => {
       const setterOptions: BaseMRSetterOptions & { type: SetterTypeEnum } =
@@ -52,7 +45,7 @@ const WidgetPropsPanel: FC = () => {
         >
           {NativeSetter ? (
             <NativeSetter
-              value={selectWidget.props[key]}
+              value={widget.props[key]}
               onChange={(value: any) => {
                 setWidget(
                   produce((draft) => {
@@ -64,7 +57,7 @@ const WidgetPropsPanel: FC = () => {
           ) : (
             <Setter
               options={setterOptions}
-              value={selectWidget.props[key]}
+              value={widget.props[key]}
               onChange={(value: any) => {
                 setWidget(
                   produce((draft) => {
@@ -77,6 +70,28 @@ const WidgetPropsPanel: FC = () => {
         </Form.Item>
       )
     })
+  return {
+    formRender,
+    setWidget,
+    widgetMetadata,
+    widget,
+  }
+}
+
+const WidgetPropsPanel: FC = () => {
+  const [selectedWidgetId, setSelectedWidgetId] =
+    useRecoilState(selectedWidgetIdAtom)
+  const isRootWidget = useRecoilValue(isRootWidgetSelector(selectedWidgetId))
+
+  const { setWidget, widgetMetadata, formRender, widget } = useRenderFormItem({
+    widgetId: selectedWidgetId,
+  })
+
+  const { removeWidget } = useRemoveWidget()
+
+  const [tempWidgetName, setWidgetTempName] = useState(widget.widgetName)
+  const [widgetNameFocus, setWidgetNameFocus] = useState(false)
+  const widgetName = widgetNameFocus ? tempWidgetName : widget.widgetName
 
   return (
     <Form
@@ -88,18 +103,18 @@ const WidgetPropsPanel: FC = () => {
       layout={'vertical'}
     >
       <Form.Item label="组件ID">
-        <Typography.Text type="danger">{selectedWidgetId}</Typography.Text>
+        <Input readOnly value={selectedWidgetId} />
       </Form.Item>
       <Form.Item label="组件类型">
-        <Typography.Text>{widgetMetadata.widgetName}</Typography.Text>
+        <Input readOnly value={widgetMetadata.widgetName} />
       </Form.Item>
       <Form.Item label="组件名称">
-        <Input
-          value={selectWidget.widgetName}
-          onChange={(e) => {
+        <BlurInput
+          value={widgetName}
+          onChange={(value) => {
             setWidget(
               produce((draft) => {
-                draft.widgetName = e.target.value
+                draft.widgetName = value
               }),
             )
           }}
@@ -107,7 +122,7 @@ const WidgetPropsPanel: FC = () => {
         />
       </Form.Item>
       <Divider style={{ margin: '8px 0' }} />
-      {render}
+      {formRender}
       {!isRootWidget && (
         <Form.Item wrapperCol={{ span: 24 }}>
           <Button
@@ -131,11 +146,11 @@ const PagePropsPanel: FC = () => {
   return (
     <Form className={classes.form} labelWrap size={'small'}>
       <Form.Item label="页面名称">
-        <Input
-          onChange={(e) => {
+        <BlurInput
+          onChange={(value) => {
             setPage(
               produce((draft) => {
-                draft.name = e.target.value
+                draft.name = value
               }),
             )
           }}
@@ -160,22 +175,62 @@ const classes = {
     padding: 16px;
   `,
   form: mcss`
-		& .ant-form-item {
-			margin-bottom: 12px !important;
-			&-control-input-content {
-				justify-content: flex-end !important;
-				.ant-input-number {
-					flex: 1 !important;
-				}
-			}
-		}
-		.ant-row{
-      &.ant-form-item-row{
-        .ant-form-item-label{
+    & .ant-form-item {
+      margin-bottom: 12px !important;
+
+      &-control-input-content {
+        justify-content: flex-end !important;
+
+        .ant-input-number {
+          flex: 1 !important;
+        }
+      }
+    }
+
+    .ant-row {
+      &.ant-form-item-row {
+        .ant-form-item-label {
           display: flex;
           justify-content: space-between;
         }
       }
     }
+    *[readonly]{
+      border: none;
+    }
   `,
 }
+
+const BlurInput: FC<
+  Omit<ComponentProps<typeof Input>, 'onChange'> & {
+    onChange: (value: string) => void
+  }
+> = (props) => {
+  const [tempValue, setTempValue] = useState('')
+  const [focus, setFocus] = useState(false)
+  const widgetName = focus ? tempValue : props.value
+
+  return (
+    <Input
+      {...omit(props, 'onChange')}
+      className={cx(blurInputStyle, props.className)}
+      readOnly={!focus}
+      value={widgetName}
+      onBlur={() => {
+        setFocus(false)
+        props.onChange(tempValue)
+      }}
+      onClick={() => setFocus(true)}
+      onChange={(e) => {
+        setTempValue(e.target.value)
+      }}
+    />
+  )
+}
+
+const blurInputStyle = mcss`
+  &[readonly]{
+    cursor: pointer;
+    border: none;
+  }
+`

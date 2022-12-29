@@ -16,6 +16,14 @@ export const MRSchemeButtonWidgetProps = WidgetMetadata.createMRWidgetProps({
   widgetType: 'ButtonWidget',
   widgetName: '按钮',
   props: {
+    title: {
+      def: mr.string().default('按钮'),
+      setter: {
+        type: SetterTypeEnum.String,
+        label: '内容',
+        description: '按钮内容',
+      },
+    },
     block: {
       def: mr.boolean().default(false),
       setter: {
@@ -92,14 +100,6 @@ export const MRSchemeButtonWidgetProps = WidgetMetadata.createMRWidgetProps({
         label: '类型',
         description: '设置按钮类型',
         options: typeOptions,
-      },
-    },
-    title: {
-      def: mr.string().default('按钮'),
-      setter: {
-        type: SetterTypeEnum.String,
-        label: '内容',
-        description: '按钮内容',
       },
     },
   },
