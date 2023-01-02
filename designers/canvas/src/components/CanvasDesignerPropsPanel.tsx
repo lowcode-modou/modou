@@ -1,4 +1,3 @@
-import { cx } from '@emotion/css'
 import { Button, Divider, Form, Input } from 'antd'
 import produce from 'immer'
 import { omit } from 'lodash'
@@ -6,7 +5,7 @@ import { ComponentProps, FC, useContext, useMemo, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { AppFactoryContext } from '@modou/core'
-import { mcss } from '@modou/css-in-js'
+import { cx, mcss } from '@modou/css-in-js'
 import { SETTER_KEY } from '@modou/setters'
 import { SetterTypeEnum } from '@modou/setters/src/constants'
 import { BaseMRSetterOptions } from '@modou/setters/src/types'

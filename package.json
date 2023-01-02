@@ -38,6 +38,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.8.0",
     "@ant-design/pro-components": "^2.3.49",
+    "@modou/compile-core": "workspace:^0.0.1",
     "@modou/core": "workspace:^1.0.0",
     "@modou/css-in-js": "workspace:^1.0.0",
     "@modou/refine": "workspace:^1.0.0",
