@@ -7,7 +7,7 @@ import { ReactRender } from '@modou/render'
 export const CanvasDesignerReactRender: FC = () => {
   return (
     <DndProvider backend={HTML5Backend} context={window.parent}>
-      <ReactRender rootWidgetId={''} widgets={[]} />
+      <ReactRender rootWidgetId={''} widgets={[]} host="simulator" />
     </DndProvider>
   )
 }

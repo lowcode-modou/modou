@@ -1,13 +1,25 @@
+import { reactive } from '@vue/reactivity'
+import { watch } from '@vue/runtime-core'
+import { useMemoizedFn, useUpdate } from 'ahooks'
 import { ConfigProvider, Spin } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
-import { FC, memo, useContext, useEffect, useMemo, useState } from 'react'
-import { RecoilRoot, useRecoilValue, useSetRecoilState } from 'recoil'
+import { get, isFunction, set } from 'lodash'
+import { FC, memo, useContext, useEffect, useMemo } from 'react'
+import {
+  RecoilRoot,
+  atom,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil'
 
 import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
 import { useInitRender } from '../hooks'
 import { widgetSelector, widgetsAtom } from '../store'
+
+const store = reactive<{ state: Record<string, any> }>({ state: {} })
 
 // const ErrorWidget: FC = () => {
 //   return <div>Error</div>
@@ -50,25 +62,51 @@ const WidgetWrapper: FC<{
     )
   }, [renderSlots])
 
-  // TODO 全局存储状态
-  const [widgetState, updateWidgetState] = useState(() => ({
-    ...widget.props,
-    ...widgetDef.metadata.initState(widget),
-  }))
+  if (!get(store.state, widgetId)) {
+    set(store.state, widgetId, {
+      ...widget.props,
+      ...widgetDef.metadata.initState(widget),
+    })
+  }
+
+  // TODO 优化类型
+  const updateWidgetState = useMemoizedFn(
+    <S extends object = {}>(newState: S | ((prevState: S) => S)) => {
+      if (isFunction(newState)) {
+        set(store.state, widgetId, newState(get(store.state, widgetId)))
+      } else {
+        set(store.state, widgetId, newState)
+      }
+    },
+  )
 
   useEffect(() => {
     // FIXME 为什么会渲染两遍
-    updateWidgetState((prev) => ({
+    updateWidgetState<{}>((prev) => ({
       ...prev,
       ...widget.props,
     }))
-  }, [widget.props])
+  }, [updateWidgetState, widget.props])
+
+  const update = useUpdate()
+  useEffect(() => {
+    const stop = watch(
+      () => store.state[widgetId],
+      () => {
+        update()
+      },
+      { deep: true, immediate: true },
+    )
+    return () => {
+      stop()
+    }
+  }, [update, widgetId])
 
   // FIXME 会导致重新渲染
   // FIXME 完善组件类型
   return (
     <WidgetComponent
-      {...widgetState}
+      {...store.state[widgetId]}
       updateState={updateWidgetState}
       renderSlots={renderSlots}
       renderSlotPaths={renderSlotPaths}
@@ -79,23 +117,32 @@ const WidgetWrapper: FC<{
 interface MoDouRenderProps {
   rootWidgetId: string
   widgets: WidgetBaseProps[]
+  host?: 'simulator' | 'browser'
 }
 
 const MemoWidgetWrapper = memo(WidgetWrapper)
-
+const rootWidgetIdAtom = atom({
+  key: 'rootWidgetIdAtom@ReactRender',
+  default: '',
+})
 const _ReactRender: FC<MoDouRenderProps> = ({
   widgets,
   rootWidgetId: _rootWidgetId,
+  host = 'browser',
 }) => {
   // TODO 使用 recoil-async
   const setWidgets = useSetRecoilState(widgetsAtom)
-  const [rootWidgetId, setRootWidgetId] = useState(_rootWidgetId)
+  const [rootWidgetId, setRootWidgetId] = useRecoilState(rootWidgetIdAtom)
 
   useInitRender({ setWidgets, setRootWidgetId })
 
+  // FIXME 判断当前所在环境 是否从props更新widgets  可以加一个 host
   useEffect(() => {
-    setWidgets(widgets)
-  }, [setWidgets, widgets])
+    if (host === 'browser') {
+      setWidgets(widgets)
+      setRootWidgetId(_rootWidgetId)
+    }
+  }, [_rootWidgetId, host, setRootWidgetId, setWidgets, widgets])
 
   const rootWidget = useRecoilValue(widgetSelector(rootWidgetId))
   return rootWidget ? (

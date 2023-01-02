@@ -38,31 +38,23 @@ const props = reactive({
   },
 })
 
-const state = reactive({
-  Button1: {
-    title: '',
-    style: {
-      color: '',
-    },
-  },
-  Text1: {
-    value: '',
-  },
-  Input1: {
-    value: '',
-  },
+const store = reactive({
+  state: {},
 })
 
 // step 初始化 state
 
 effect(() => {
-  console.log('state.Button1.title', state.Button1.title)
+  console.log('state.Button1.title', get(store.state, 'Button1.title'))
 })
 effect(() => {
-  console.log('state.Button1.style.color', state.Button1.style.color)
+  console.log(
+    'state.Button1.style.color',
+    get(store.state, 'Button1.style.color'),
+  )
 })
 effect(() => {
-  console.log('state.Text1', state.Text1.value)
+  console.log('state.Text1', get(store.state, 'Text1.value'))
 })
 
 // step 1
@@ -77,37 +69,39 @@ const evalExpression = (expression: string) => {
     `with(state){
       return ${expression}
     }`,
-  ).call(null, state)
+  ).call(null, store.state)
 }
 
-const fState: Record<string, any> = flatten(state)
-// 初始化state和expression的关系
-// 增加和删除state的时候要做这一步
-Object.entries(fState).forEach(([path, value]) => {
-  effect(() => {
-    const rawPropVal = get(props, path)
-    if (isExpression(rawPropVal)) {
-      const ast = parse(rawPropVal)
-      const expression = `\`${ast.body
-        .map((item) => {
-          if (item.type === AST_NODE_TYPE.ContentStatement) {
-            return (item as unknown as hbs.AST.ContentStatement).value
-          } else if (item.type === AST_NODE_TYPE.MustacheStatement) {
-            return `\${${
-              (
-                (item as unknown as hbs.AST.MustacheStatement)
-                  .path as unknown as hbs.AST.PathExpression
-              ).original
-            }}`
-          }
-          // TODO 适配其他类型
-          return ''
-        })
-        .join('')}\``
-      set(state, path, evalExpression(expression))
-    } else {
-      set(state, path, rawPropVal)
-    }
+effect(() => {
+  const fState: Record<string, any> = flatten(store.state)
+  // 初始化state和expression的关系
+  // 增加和删除state的时候要做这一步
+  Object.entries(fState).forEach(([path, value]) => {
+    effect(() => {
+      const rawPropVal = get(props, path)
+      if (isExpression(rawPropVal)) {
+        const ast = parse(rawPropVal)
+        const expression = `\`${ast.body
+          .map((item) => {
+            if (item.type === AST_NODE_TYPE.ContentStatement) {
+              return (item as unknown as hbs.AST.ContentStatement).value
+            } else if (item.type === AST_NODE_TYPE.MustacheStatement) {
+              return `\${${
+                (
+                  (item as unknown as hbs.AST.MustacheStatement)
+                    .path as unknown as hbs.AST.PathExpression
+                ).original
+              }}`
+            }
+            // TODO 适配其他类型
+            return ''
+          })
+          .join('')}\``
+        set(store.state, path, evalExpression(expression))
+      } else {
+        set(store.state, path, rawPropVal)
+      }
+    })
   })
 })
 
@@ -115,8 +109,8 @@ export const Foo: FC<{
   title: string
 }> = ({ title }) => {
   const test = () => {
-    // state.Input1.value = 'Input1-value-' + Math.random()
-    console.log(state)
+    set(store.state, 'Input1.value', 'Input1-value-' + Math.random())
+    console.log(store.state)
   }
   return (
     <div>
