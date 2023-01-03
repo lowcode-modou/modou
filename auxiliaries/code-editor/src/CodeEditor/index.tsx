@@ -3,10 +3,7 @@ import { Typography } from 'antd'
 import CodeMirror from 'codemirror'
 import React, { type FC, useEffect, useRef, useState } from 'react'
 
-import {
-  AutocompleteDataType,
-  CodeMirrorTernServiceInstance,
-} from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
+import { CodeMirrorTernServiceInstance } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
 import { updateCustomDef } from '@modou/code-editor/CodeEditor/autocomplete/customDefUtils'
 import {
   CodeEditorModeEnum,
@@ -147,6 +144,9 @@ export const CodeEditor: FC<
         /* Autocomplete for { should show up only when a user attempts to write {{}} and not a code block. */
         const prevChar = line[cursor.ch - 2]
         showAutocomplete = prevChar === '{'
+      } else if (key.charCodeAt(0) === 32) {
+        // TODO 常量化 32 代表空格 code
+        showAutocomplete = true
       } else if (key.length === 1) {
         showAutocomplete = /[a-zA-Z_0-9.]/.test(key)
         /* Autocomplete should be triggered only for characters that make up valid variable names */

@@ -1,4 +1,4 @@
-import { head } from 'lodash'
+import { head, last } from 'lodash'
 import tern, { Def, Server } from 'tern'
 
 import { CallbackFn, TernWorkerAction } from '../../autocomplete/types'
@@ -31,14 +31,14 @@ self.onmessage = (e) => {
       return server.delFile(data.name)
     case TernWorkerAction.REQUEST:
       return server.request(data.body, (err, resData: any) => {
-        const searchVal =
-          (head(e.data.body.files) as { text: string }).text ?? ''
+        const searchVal = last(
+          ((head(e.data.body.files) as { text: string }).text ?? '').split('.'),
+        )
         if (resData) {
           resData.completions = resData.completions.filter((item: any) =>
             item.name.includes(searchVal),
           )
         }
-        console.log(resData)
         postMessage({ id: data.id, body: resData, err: err && String(err) })
       })
     case TernWorkerAction.GET_FILE: {

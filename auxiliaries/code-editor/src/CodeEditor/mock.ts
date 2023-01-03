@@ -6,9 +6,8 @@ import {
 
 export const mock_dyn_def = {
   '!name': 'DATA_TREE',
-  Button1: {
-    '!doc':
-      'Buttons are used to capture user intent and trigger actions based on that intent',
+  按钮1: {
+    '!doc': '我是一个按钮',
     '!url': 'https://docs.appsmith.com/widget-reference/button',
     isVisible: {
       '!type': 'bool',
@@ -18,13 +17,13 @@ export const mock_dyn_def = {
     isDisabled: 'bool',
     recaptchaToken: 'string',
   },
-  'Button1.isVisible': {
+  '按钮1.isVisible': {
     '!type': 'bool',
     '!doc': 'Boolean value indicating if the widget is in visible state',
   },
-  'Button1.text': 'string',
-  'Button1.isDisabled': 'bool',
-  'Button1.recaptchaToken': 'string',
+  '按钮1.text': 'string',
+  '按钮1.isDisabled': 'bool',
+  '按钮1.recaptchaToken': 'string',
   Input1: {
     '!doc':
       'An input text field is used to capture a users textual input such as their names, numbers, emails etc. Inputs are used in forms and can have custom validations.',

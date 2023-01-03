@@ -113,7 +113,7 @@ export enum AUTOCOMPLETE_CLOSE_KEY {
   Escape,
   Comma,
   Semicolon,
-  Space,
+  // Space,
   Delete,
   'Ctrl+Backspace',
   OSLeft,
