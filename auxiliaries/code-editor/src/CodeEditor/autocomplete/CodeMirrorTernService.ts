@@ -332,7 +332,7 @@ class CodeMirrorTernService {
         origins: true,
         caseInsensitive: true,
         guess: false,
-        inLiteral: false,
+        inLiteral: true,
       })
       if (data.completions?.length === 0) {
         this.showError(cm, 'No suggestions')
@@ -493,6 +493,8 @@ class CodeMirrorTernService {
       }
     }
 
+    // @ts-expect-error
+    query.filter = false
     return {
       query: query as unknown as Document['query'],
       files: files as unknown as Document['files'],
@@ -529,7 +531,7 @@ class CodeMirrorTernService {
     if (doc.lineCount() > bigDoc && changed.to - changed.from > 100)
       setTimeout(() => {
         if (data.changed && data.changed.to - data.changed.from > 100)
-          this.sendDoc(data)
+          void this.sendDoc(data)
       }, 200)
   }
 

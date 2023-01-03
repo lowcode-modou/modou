@@ -24,17 +24,17 @@ import {
   mock_dyn_def,
   mock_entityInfo,
 } from '@modou/code-editor/CodeEditor/mock'
-import { ExpectedValueExample } from '@modou/code-editor/CodeEditor/utils/validation/common'
+// import { ExpectedValueExample } from '@modou/code-editor/CodeEditor/utils/validation/common'
 import { injectGlobal, mcss } from '@modou/css-in-js'
 
 import './common/code-mirror-libs'
 import './common/modes'
 
-export type CodeEditorExpected = {
-  type: string
-  example: ExpectedValueExample
-  autocompleteDataType: AutocompleteDataType
-}
+// export type CodeEditorExpected = {
+//   type: string
+//   example: ExpectedValueExample
+//   autocompleteDataType: AutocompleteDataType
+// }
 
 // TODO: tern uses global variable, maybe there is some workaround
 const updateMarkings = (editor: CodeMirror.Editor, marking: MarkHelper[]) => {
@@ -275,6 +275,7 @@ const classes = {
       transition-property: background-color, color, opacity;
       transition-duration: 0.2s;
       line-height: 20px;
+      font-size: 14px;
 
       &:hover {
         background: #E2E8F0;
@@ -324,6 +325,24 @@ injectGlobal`
       overflow-y: auto;
       box-shadow: 0 1px 2px 0 rgb(0 0 0 / 3%), 0 1px 6px -1px rgb(0 0 0 / 2%), 0 2px 4px 0 rgb(0 0 0 / 2%);
       border-radius: 2px;
+      ::-webkit-scrollbar {
+        width: 2px;
+      }
+
+      /* 设置滚动条的背景颜色 */
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      /* 设置滚动条的滑块（滑轮）的颜色 */
+      ::-webkit-scrollbar-thumb {
+        background: #888;
+      }
+
+      /* 设置滑块（滑轮）在滚动时的颜色 */
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
     }
     &-hint {
       height: 24px;
@@ -383,26 +402,4 @@ injectGlobal`
       }
     }
   }
-`
-
-// 优化滚动条样式
-injectGlobal`
-	::-webkit-scrollbar {
-		width: 2px;
-	}
-
-	/* 设置滚动条的背景颜色 */
-	::-webkit-scrollbar-track {
-		background: #f1f1f1;
-	}
-
-	/* 设置滚动条的滑块（滑轮）的颜色 */
-	::-webkit-scrollbar-thumb {
-		background: #888;
-	}
-
-	/* 设置滑块（滑轮）在滚动时的颜色 */
-	::-webkit-scrollbar-thumb:hover {
-		background: #555;
-	}
 `
