@@ -45,9 +45,11 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
   }`
   const simulatorInstance = useContext(SimulatorInstanceContext)
 
-  const element = simulatorInstance.document!.querySelector(
-    elementSelector,
-  ) as HTMLElement
+  // FIXME 可能为空 删除document.body
+  const element =
+    (simulatorInstance.document!.querySelector(
+      elementSelector,
+    ) as HTMLElement) || document.body
 
   const { isEmptySlot, widget, isActive } = useWidgetDrop({
     widgetId,
