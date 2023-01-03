@@ -27,6 +27,7 @@ importers:
       '@types/react': ^18.0.17
       '@types/react-dom': ^18.0.6
       '@vitejs/plugin-react': ^2.1.0
+      '@vue/compiler-core': ^3.2.45
       '@vue/reactivity': ^3.2.45
       '@vue/runtime-core': ^3.2.45
       ahooks: ^3.7.0
@@ -76,6 +77,7 @@ importers:
       '@modou/simulator': link:packages/simulator
       '@modou/widgets-antd': link:widgets/antd
       '@recoiljs/refine': 0.1.1
+      '@vue/compiler-core': 3.2.45
       '@vue/reactivity': 3.2.45
       '@vue/runtime-core': 3.2.45
       ahooks: 3.7.1_react@18.2.0

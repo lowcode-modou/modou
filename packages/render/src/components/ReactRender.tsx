@@ -1,12 +1,17 @@
+import {
+  InterpolationNode,
+  SimpleExpressionNode,
+  TextNode,
+  baseParse,
+} from '@vue/compiler-core'
 import { ReactiveEffectRunner, effect, reactive } from '@vue/reactivity'
 import { WatchStopHandle, watch } from '@vue/runtime-core'
-import { useMemoizedFn, useUpdate } from 'ahooks'
+import { useMemoizedFn, useMount, useUnmount, useUpdate } from 'ahooks'
 import { ConfigProvider, Spin } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { flatten } from 'flat'
-import { parse } from 'handlebars'
 import { get, isFunction, keys, set } from 'lodash'
-import { FC, memo, useContext, useEffect, useMemo } from 'react'
+import { FC, memo, useContext, useEffect, useMemo, useRef } from 'react'
 import {
   RecoilRoot,
   atom,
@@ -21,12 +26,38 @@ import { mcss } from '@modou/css-in-js'
 import { useInitRender } from '../hooks'
 import { widgetSelector, widgetsAtom } from '../store'
 
-const EXPRESSION_REG = /[\s\S]*{{[\s\S]*}}[\s\S]*/m
-enum AST_NODE_TYPE {
-  ContentStatement = 'ContentStatement',
-  MustacheStatement = 'MustacheStatement',
+enum NodeTypes {
+  ROOT = 0,
+  ELEMENT = 1,
+  TEXT = 2,
+  COMMENT = 3,
+  SIMPLE_EXPRESSION = 4,
+  INTERPOLATION = 5,
+  ATTRIBUTE = 6,
+  DIRECTIVE = 7,
+  COMPOUND_EXPRESSION = 8,
+  IF = 9,
+  IF_BRANCH = 10,
+  FOR = 11,
+  TEXT_CALL = 12,
+  VNODE_CALL = 13,
+  JS_CALL_EXPRESSION = 14,
+  JS_OBJECT_EXPRESSION = 15,
+  JS_PROPERTY = 16,
+  JS_ARRAY_EXPRESSION = 17,
+  JS_FUNCTION_EXPRESSION = 18,
+  JS_CONDITIONAL_EXPRESSION = 19,
+  JS_CACHE_EXPRESSION = 20,
+  JS_BLOCK_STATEMENT = 21,
+  JS_TEMPLATE_LITERAL = 22,
+  JS_IF_STATEMENT = 23,
+  JS_ASSIGNMENT_EXPRESSION = 24,
+  JS_SEQUENCE_EXPRESSION = 25,
+  JS_RETURN_STATEMENT = 26,
 }
-const isExpression = (str: unknown) => {
+
+const EXPRESSION_REG = /[\s\S]*{{[\s\S]*}}[\s\S]*/m
+const isExpression = (str: unknown): str is string => {
   return typeof str === 'string' && EXPRESSION_REG.test(str)
 }
 const evalExpression = (expression: string) => {
@@ -39,7 +70,10 @@ const evalExpression = (expression: string) => {
   ).call(null, store.state)
 }
 
-const store = reactive<{ state: Record<string, any> }>({ state: {} })
+const store = reactive<{
+  state: Record<string, any>
+  props: Record<string, WidgetBaseProps>
+}>({ state: {}, props: {} })
 
 // const ErrorWidget: FC = () => {
 //   return <div>Error</div>
@@ -82,12 +116,23 @@ const WidgetWrapper: FC<{
     )
   }, [renderSlots])
 
+  // reactive state
   if (!get(store.state, widgetId)) {
     set(store.state, widgetId, {
       ...widget.props,
       ...widgetDef.metadata.initState(widget),
     })
   }
+
+  // reactive props
+  if (!get(store.props, widgetId)) {
+    set(store.props, widgetId, widget.props)
+  }
+
+  // update reactive props
+  useEffect(() => {
+    set(store.props, widgetId, widget.props)
+  }, [widget.props, widgetId])
 
   // TODO 优化类型
   const updateWidgetState = useMemoizedFn(
@@ -108,57 +153,52 @@ const WidgetWrapper: FC<{
     }))
   }, [updateWidgetState, widget.props])
 
-  useEffect(() => {
-    const stops: Array<ReactiveEffectRunner | WatchStopHandle> = []
-    const watchStop = watch(
-      () => store.state[widgetId],
-      (newVal) => {
-        const fStateKey: string[] = keys(flatten(newVal))
-        fStateKey.forEach((path) => {
-          stops.push(
-            effect(() => {
-              const rawPropVal = get(widget.props, path)
-              if (isExpression(rawPropVal)) {
-                const ast = parse(rawPropVal)
-                const expression = `\`${ast.body
-                  .map((item) => {
-                    if (item.type === AST_NODE_TYPE.ContentStatement) {
-                      return (item as unknown as hbs.AST.ContentStatement).value
-                    } else if (item.type === AST_NODE_TYPE.MustacheStatement) {
-                      return `\${${
-                        (
-                          (item as unknown as hbs.AST.MustacheStatement)
-                            .path as unknown as hbs.AST.PathExpression
-                        ).original
-                      }}`
-                    }
-                    // TODO 适配其他类型
-                    return ''
-                  })
-                  .join('')}\``
-                set(
-                  store.state,
-                  `${widgetId}.${path}`,
-                  evalExpression(expression),
-                )
-              } else {
-                set(store.state, `${widgetId}.${path}`, rawPropVal)
+  const watchStopsRef = useRef<
+    Record<string, ReactiveEffectRunner | WatchStopHandle>
+  >({})
+
+  useMount(() => {
+    const flattenStateKeys = keys(flatten(store.state[widgetId]))
+    flattenStateKeys.forEach((path) => {
+      if (Reflect.has(watchStopsRef.current, path)) {
+        return
+      }
+      watchStopsRef.current[path] = effect(() => {
+        const fullPath = `${widgetId}.${path}`
+        const rawPropVal = get(store.props, fullPath)
+        if (isExpression(rawPropVal)) {
+          const ast = baseParse(rawPropVal)
+          const expression = `\`${ast.children
+            .map((item) => {
+              // @ts-expect-error
+              if (item.type === NodeTypes.TEXT) {
+                return (item as unknown as TextNode).content
+                // @ts-expect-error
+              } else if (item.type === NodeTypes.INTERPOLATION) {
+                const content = (
+                  (item as unknown as InterpolationNode)
+                    .content as unknown as SimpleExpressionNode
+                ).content
+                if (content) {
+                  return `\${${content}}`
+                }
+                return ''
               }
-            }),
-          )
-        })
-      },
-      {
-        deep: true,
-        immediate: true,
-      },
-    )
-    stops.push(watchStop)
-    return () => {
-      console.log('stops', widget.widgetType, stops)
-      stops.forEach((stop) => stop())
-    }
-  }, [widget.props, widget.widgetType, widgetId])
+              // TODO 适配其他类型
+              return item.loc.source
+            })
+            .join('')}\``
+          set(store.state, fullPath, evalExpression(expression))
+        } else {
+          // set(store.state, `${widgetId}.${path}`, rawPropVal)
+        }
+      })
+    })
+  })
+
+  useUnmount(() => {
+    Object.values(watchStopsRef.current).forEach((stop) => stop())
+  })
 
   const update = useUpdate()
   // state 变化 重新render
