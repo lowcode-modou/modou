@@ -61,13 +61,17 @@ const isExpression = (str: unknown): str is string => {
   return typeof str === 'string' && EXPRESSION_REG.test(str)
 }
 const evalExpression = (expression: string) => {
-  // eslint-disable-next-line @typescript-eslint/no-implied-eval,no-new-func,no-useless-call
-  return new Function(
-    'state',
-    `with(state){
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval,no-new-func,no-useless-call
+    return new Function(
+      'state',
+      `with(state){
       return ${expression}
     }`,
-  ).call(null, store.state)
+    ).call(null, store.state)
+  } catch (e) {
+    return String((e as SyntaxError)?.message) ?? 'Error'
+  }
 }
 
 const store = reactive<{
