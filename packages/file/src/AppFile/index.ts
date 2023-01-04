@@ -46,10 +46,12 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta> {
       version: json.version,
     })
     const entities = json.entities.map((entity) =>
-      EntityFile.create(entity as unknown as ReturnType<EntityFile['toJSON']>),
+      EntityFile.formJSON(
+        entity as unknown as ReturnType<EntityFile['toJSON']>,
+      ),
     )
     const pages = json.pages.map((page) =>
-      PageFile.create(page as unknown as ReturnType<PageFile['toJSON']>),
+      PageFile.formJSON(page as unknown as ReturnType<PageFile['toJSON']>),
     )
     appFile.fileMap.entities.push(...entities)
     appFile.fileMap.pages.push(...pages)

@@ -32,6 +32,14 @@ export class EntityFile extends BaseFile<FileMap, EntityFileMeta> {
     entityRelations: [],
   }
 
+  get entityFields() {
+    return this.fileMap.entityFields
+  }
+
+  get entityRelations() {
+    return this.fileMap.entityRelations
+  }
+
   toJSON() {
     return {
       ...this.meta,

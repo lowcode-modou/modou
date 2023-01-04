@@ -18,6 +18,10 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta> {
     widgets: [],
   }
 
+  get widgets() {
+    return this.fileMap.widgets
+  }
+
   toJSON() {
     return {
       ...this.meta,
