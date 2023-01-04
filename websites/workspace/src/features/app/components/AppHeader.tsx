@@ -13,7 +13,7 @@ export const AppHeader: FC = () => {
         <Button type="link" href="https://runtime.modou.ink" target="_blank">
           预览
         </Button>
-        <Avatar src="https://joeschmoe.io/api/v1/random" />
+        <Avatar src="https://api.multiavatar.com/modou.png" />
       </div>
     </Layout.Header>
   )

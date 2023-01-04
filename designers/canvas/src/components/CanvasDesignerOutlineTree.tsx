@@ -1,5 +1,5 @@
 import { DownOutlined } from '@ant-design/icons'
-import { Input, Tree } from 'antd'
+import { Tree } from 'antd'
 import { head } from 'lodash'
 import type RcTree from 'rc-tree'
 import React, { ComponentProps, FC, useRef } from 'react'
@@ -97,7 +97,6 @@ export const CanvasDesignerOutlineTree: FC = () => {
         ].slotPath,
       ])
       .exhaustive()
-
     switch (dropPosition) {
       case DropPositionEnum.Before:
         if (parentWidget && parentSlotPath) {
@@ -113,15 +112,16 @@ export const CanvasDesignerOutlineTree: FC = () => {
         }
         break
       case DropPositionEnum.After:
-        if (parent && parentSlotPath) {
+        if (parentWidget && parentSlotPath) {
           moveWidget({
             sourceWidgetId: dragWidget.id,
             targetWidgetId: parentWidget.id,
             targetSlotPath: parentSlotPath,
-            targetPosition: parentWidget.slots[parentSlotPath].findIndex(
-              (widgetId) =>
-                (dropNode as OutlineTreeNodeWidget).widget.id === widgetId,
-            ),
+            targetPosition:
+              parentWidget.slots[parentSlotPath].findIndex(
+                (widgetId) =>
+                  (dropNode as OutlineTreeNodeWidget).widget.id === widgetId,
+              ) + 1,
           })
         }
         break
@@ -199,7 +199,7 @@ const classes = {
 			}
     }
     .outline-node-slot{
-      color: grey;
+      color: rgba(22,119,255,.7);
       .ant-tree-title{
         cursor: not-allowed;
       }

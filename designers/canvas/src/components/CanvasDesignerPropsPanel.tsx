@@ -1,7 +1,14 @@
 import { Button, Divider, Form, Input } from 'antd'
 import produce from 'immer'
 import { omit } from 'lodash'
-import { ComponentProps, FC, useContext, useMemo, useState } from 'react'
+import {
+  ComponentProps,
+  FC,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { AppFactoryContext } from '@modou/core'
@@ -88,10 +95,6 @@ const WidgetPropsPanel: FC = () => {
 
   const { removeWidget } = useRemoveWidget()
 
-  const [tempWidgetName, setWidgetTempName] = useState(widget.widgetName)
-  const [widgetNameFocus, setWidgetNameFocus] = useState(false)
-  const widgetName = widgetNameFocus ? tempWidgetName : widget.widgetName
-
   return (
     <Form
       // labelCol={{ span: 10 }}
@@ -109,7 +112,7 @@ const WidgetPropsPanel: FC = () => {
       </Form.Item>
       <Form.Item label="组件名称">
         <BlurInput
-          value={widgetName}
+          value={widget.widgetName}
           onChange={(value) => {
             setWidget(
               produce((draft) => {
@@ -201,13 +204,18 @@ const classes = {
 }
 
 const BlurInput: FC<
-  Omit<ComponentProps<typeof Input>, 'onChange'> & {
+  Omit<ComponentProps<typeof Input>, 'onChange' | 'value'> & {
     onChange: (value: string) => void
+    value: string
   }
 > = (props) => {
-  const [tempValue, setTempValue] = useState('')
+  const [tempValue, setTempValue] = useState(props.value)
   const [focus, setFocus] = useState(false)
   const widgetName = focus ? tempValue : props.value
+
+  useEffect(() => {
+    setTempValue(props.value)
+  }, [props.value])
 
   return (
     <Input
