@@ -21,6 +21,7 @@ import {
 } from '@modou/setters'
 import { InferWidgetState } from '@modou/widgets-antd'
 
+import { MDVersion } from '../types'
 import { WidgetBaseProps } from './types'
 
 type WidgetType = `${string}Widget`
@@ -36,7 +37,7 @@ interface BaseWidgetMetadata<
   StateMRScheme extends MRScheme,
   S extends string = '',
 > {
-  version: `${number}.${number}.${number}`
+  version: MDVersion
   icon: ReactNode
   widgetType: WidgetType
   widgetName: string

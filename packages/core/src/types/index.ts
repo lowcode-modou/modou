@@ -48,3 +48,5 @@ export enum WidgetGroupEnum {
   Input = 'Input',
   Container = 'Container',
 }
+
+export type MDVersion = `${number}.${number}${number}`

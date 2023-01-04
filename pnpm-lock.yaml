@@ -217,6 +217,38 @@ importers:
       '@emotion/css': 11.10.0
       '@emotion/react': 11.10.4
 
+  packages/file:
+    specifiers:
+      '@commitlint/cli': ^17.1.2
+      '@commitlint/config-conventional': ^17.1.0
+      '@umijs/lint': ^4.0.0
+      dumi: ^2.0.2
+      eslint: ^8.23.0
+      father: ^4.1.0
+      husky: ^8.0.1
+      lint-staged: ^13.0.3
+      prettier: ^2.7.1
+      prettier-plugin-organize-imports: ^3.0.0
+      prettier-plugin-packagejson: ^2.2.18
+      react: ^18.0.0
+      react-dom: ^18.0.0
+      stylelint: ^14.9.1
+    devDependencies:
+      '@commitlint/cli': 17.3.0
+      '@commitlint/config-conventional': 17.3.0
+      '@umijs/lint': 4.0.40_tj73zugfbqmkftfxkbg3ziygai
+      dumi: 2.0.18_j6ognzfrot7iwqpseop24xzp7y
+      eslint: 8.25.0
+      father: 4.1.1
+      husky: 8.0.2
+      lint-staged: 13.1.0
+      prettier: 2.8.1
+      prettier-plugin-organize-imports: 3.2.1_prettier@2.8.1
+      prettier-plugin-packagejson: 2.3.0_prettier@2.8.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      stylelint: 14.16.1
+
   packages/reactivity:
     specifiers:
       '@commitlint/cli': ^17.1.2
@@ -1587,17 +1619,6 @@ packages:
       postcss: ^8.2
       postcss-selector-parser: ^6.0.10
     dependencies:
-      postcss-selector-parser: 6.0.11
-    dev: true
-
-  /@csstools/selector-specificity/2.0.2_tbwh2mpcdwdeb2slx6bobindua:
-    resolution: {integrity: sha512-IkpVW/ehM1hWKln4fCA3NzJU8KwD+kIOvPZA4cqxoJHtE21CCzjyp+Kxbu0i5I4tBNOlXPL9mjwnWlL0VEG4Fg==}
-    engines: {node: ^12 || ^14 || >=16}
-    peerDependencies:
-      postcss: ^8.2
-      postcss-selector-parser: ^6.0.10
-    dependencies:
-      postcss: 8.4.19
       postcss-selector-parser: 6.0.11
     dev: true
 
@@ -12466,13 +12487,13 @@ packages:
     resolution: {integrity: sha512-HvExULSwLqHLgUy1rl3ANIqCsvMS0WHss2UOsXhXnQaZ9VCc2oBvIpXrl00IUFT5ZDITME0o6oiXeiHr2SAIfw==}
     dev: true
 
-  /postcss-safe-parser/6.0.0_postcss@8.4.19:
+  /postcss-safe-parser/6.0.0_postcss@8.4.20:
     resolution: {integrity: sha512-FARHN8pwH+WiS2OPCxJI8FuRJpTVnn6ZNFiqAM2aeW2LwTHWWmWgIyKC6cUo0L8aeKiF/14MNvnpls6R2PBeMQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
       postcss: ^8.3.3
     dependencies:
-      postcss: 8.4.19
+      postcss: 8.4.20
     dev: true
 
   /postcss-selector-not/5.0.0:
@@ -14890,7 +14911,7 @@ packages:
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     hasBin: true
     dependencies:
-      '@csstools/selector-specificity': 2.0.2_tbwh2mpcdwdeb2slx6bobindua
+      '@csstools/selector-specificity': 2.0.2_2xshye3abirqjlplmebvmaxyna
       balanced-match: 2.0.0
       colord: 2.9.3
       cosmiconfig: 7.1.0
@@ -14913,10 +14934,10 @@ packages:
       micromatch: 4.0.5
       normalize-path: 3.0.0
       picocolors: 1.0.0
-      postcss: 8.4.19
+      postcss: 8.4.20
       postcss-media-query-parser: 0.2.3
       postcss-resolve-nested-selector: 0.1.1
-      postcss-safe-parser: 6.0.0_postcss@8.4.19
+      postcss-safe-parser: 6.0.0_postcss@8.4.20
       postcss-selector-parser: 6.0.11
       postcss-value-parser: 4.2.0
       resolve-from: 5.0.0
