@@ -51,6 +51,7 @@ importers:
       immer: ^9.0.15
       immutability-helper: ^3.1.1
       lodash: ^4.17.21
+      mobx: ^6.7.0
       prettier: ^2.8.1
       rc-tree: ^5.7.2
       react: ^18.2.0
@@ -90,6 +91,7 @@ importers:
       immer: 9.0.15
       immutability-helper: 3.1.1
       lodash: 4.17.21
+      mobx: 6.7.0
       react: 18.2.0
       react-dnd: 16.0.1_iapumuv4e6jcjznwuxpf4tt22e
       react-dnd-html5-backend: 16.0.1_kfajotxmcqjtgrepibrwmj5zwu
@@ -11137,6 +11139,10 @@ packages:
     dependencies:
       minimist: 1.2.6
     dev: true
+
+  /mobx/6.7.0:
+    resolution: {integrity: sha512-1kBLBdSNG2bA522HQdbsTvwAwYf9hq9FWxmlhX7wTsJUAI54907J+ozfGW+LoYUo06vjit748g6QH1AAGLNebw==}
+    dev: false
 
   /moo/0.5.2:
     resolution: {integrity: sha512-iSAJLHYKnX41mKcJKjqvnAN9sf0LMDTXDEvFv+ffuRR9a1MIuXLjMNL6EsnDHSkKLTWNqQQ5uo61P4EbU4NU+Q==}

@@ -1,4 +1,5 @@
 import { omit } from 'lodash'
+import { computed, makeObservable, observable } from 'mobx'
 
 import { EntityField, EntityRelation } from '@modou/core'
 import { BaseFile, BaseFileMap, BaseFileMete } from '@modou/file/BaseFile'
@@ -25,6 +26,11 @@ interface FileMap extends BaseFileMap {
 export class EntityFile extends BaseFile<FileMap, EntityFileMeta> {
   protected constructor(meta: EntityFileMeta) {
     super({ fileType: FileTypeEnum.Widget, meta })
+    makeObservable(this, {
+      fileMap: observable,
+      entityFields: computed,
+      entityRelations: computed,
+    })
   }
 
   fileMap: FileMap = {

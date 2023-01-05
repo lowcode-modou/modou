@@ -1,3 +1,5 @@
+import { computed, makeObservable, observable } from 'mobx'
+
 import { BaseFile, BaseFileMap, BaseFileMete } from '@modou/file/BaseFile'
 import { EntityFile } from '@modou/file/EntityFile'
 import { PageFile } from '@modou/file/PageFile'
@@ -11,8 +13,15 @@ interface FileMap extends BaseFileMap {
 export class AppFile extends BaseFile<FileMap, AppFileMeta> {
   protected constructor(meta: AppFileMeta) {
     super({ fileType: FileTypeEnum.App, meta })
+    makeObservable(this, {
+      fileMap: observable,
+      test: observable,
+      entities: computed,
+      pages: computed,
+    })
   }
 
+  test: any[] = [1]
   static create(meta: AppFileMeta) {
     return new AppFile(meta)
   }

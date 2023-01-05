@@ -1,4 +1,5 @@
 import { omit } from 'lodash'
+import { computed, makeObservable, observable } from 'mobx'
 
 import { BaseFile, BaseFileMap, BaseFileMete } from '@modou/file/BaseFile'
 import { WidgetFile } from '@modou/file/WidgetFile'
@@ -12,6 +13,10 @@ interface FileMap extends BaseFileMap {
 export class PageFile extends BaseFile<FileMap, PageFileMeta> {
   protected constructor(meta: PageFileMeta) {
     super({ fileType: FileTypeEnum.App, meta })
+    makeObservable(this, {
+      fileMap: observable,
+      widgets: computed,
+    })
   }
 
   fileMap: FileMap = {

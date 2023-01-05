@@ -1,4 +1,5 @@
 import { omit } from 'lodash'
+import { computed, makeObservable, observable } from 'mobx'
 
 import { EntityField } from '@modou/core'
 import { BaseFile, BaseFileMete } from '@modou/file/BaseFile'
@@ -8,6 +9,9 @@ export type EntityFieldFileMeta = BaseFileMete<EntityField>
 export class EntityFieldFile extends BaseFile<{}, EntityFieldFileMeta> {
   protected constructor(meta: EntityFieldFileMeta) {
     super({ fileType: FileTypeEnum.Widget, meta })
+    makeObservable(this, {
+      fileMap: observable,
+    })
   }
 
   fileMap = {}

@@ -1,5 +1,6 @@
 import { UnwrapNestedRefs, reactive } from '@vue/reactivity'
 import { mapValues } from 'lodash'
+import { computed, makeObservable, observable, observe } from 'mobx'
 
 import { MDVersion } from '@modou/core'
 import { FileTypeEnum } from '@modou/file/types'
@@ -22,9 +23,12 @@ export abstract class BaseFile<F extends BaseFileMap, T extends BaseFileMete> {
     fileType: FileTypeEnum
     meta: T
   }) {
+    makeObservable(this, {
+      meta: observable,
+      fileType: observable,
+    })
     this.fileType = fileType
     this.meta = meta
-    return reactive(this) as UnwrapNestedRefs<any>
   }
 
   fileType: FileTypeEnum
