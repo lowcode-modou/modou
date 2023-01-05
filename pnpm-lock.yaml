@@ -15,7 +15,7 @@ importers:
       '@modou/compile-core': workspace:^0.0.1
       '@modou/core': workspace:^1.0.0
       '@modou/css-in-js': workspace:^1.0.0
-      '@modou/file': workspace:^0.0.1
+      '@modou/meta-vfs': workspace:^0.0.1
       '@modou/refine': workspace:^1.0.0
       '@modou/render': workspace:^1.0.0
       '@modou/setters': workspace:^1.0.0
@@ -74,7 +74,7 @@ importers:
       '@modou/compile-core': link:packages/compiler-core
       '@modou/core': link:packages/core
       '@modou/css-in-js': link:packages/css-in-js
-      '@modou/file': link:packages/file
+      '@modou/meta-vfs': link:packages/meta-vfs
       '@modou/refine': link:packages/refine
       '@modou/render': link:packages/render
       '@modou/setters': link:packages/setters
@@ -223,7 +223,7 @@ importers:
       '@emotion/css': 11.10.0
       '@emotion/react': 11.10.4
 
-  packages/file:
+  packages/meta-vfs:
     specifiers:
       '@commitlint/cli': ^17.1.2
       '@commitlint/config-conventional': ^17.1.0

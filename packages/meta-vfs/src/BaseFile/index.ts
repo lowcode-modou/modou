@@ -1,9 +1,8 @@
-import { UnwrapNestedRefs, reactive } from '@vue/reactivity'
 import { mapValues } from 'lodash'
-import { computed, makeObservable, observable, observe } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 
 import { MDVersion } from '@modou/core'
-import { FileTypeEnum } from '@modou/file/types'
+import { FileTypeEnum } from '@modou/file'
 
 export type BaseFileMete<T extends object = {}> = {
   readonly id: string

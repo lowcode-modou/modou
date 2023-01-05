@@ -2,10 +2,11 @@ import { omit } from 'lodash'
 import { computed, makeObservable, observable } from 'mobx'
 
 import { EntityField, EntityRelation } from '@modou/core'
-import { BaseFile, BaseFileMap, BaseFileMete } from '@modou/file/BaseFile'
-import { EntityFieldFile } from '@modou/file/EntityFieldFile'
-import { EntityRelationFile } from '@modou/file/EntityRelationFile'
-import { FileTypeEnum } from '@modou/file/types'
+
+import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
+import { EntityFieldFile } from '../EntityFieldFile'
+import { EntityRelationFile } from '../EntityRelationFile'
+import { FileTypeEnum } from '../types'
 
 export type EntityFileMeta = BaseFileMete<{
   readonly name: string

@@ -1,9 +1,10 @@
 import { omit } from 'lodash'
-import { computed, makeObservable, observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 
 import { WidgetBaseProps } from '@modou/core'
-import { BaseFile, BaseFileMete } from '@modou/file/BaseFile'
-import { FileTypeEnum } from '@modou/file/types'
+
+import { BaseFile, BaseFileMete } from '../BaseFile'
+import { FileTypeEnum } from '../types'
 
 export type WidgetFileMeta = BaseFileMete<WidgetBaseProps>
 export class WidgetFile extends BaseFile<{}, WidgetFileMeta> {

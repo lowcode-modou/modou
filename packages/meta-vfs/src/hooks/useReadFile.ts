@@ -1,6 +1,5 @@
 import { watch } from '@vue/runtime-core'
 import { useUpdate } from 'ahooks'
-import { isArray } from 'lodash'
 import { useEffect, useRef } from 'react'
 
 type WatchSource<T = any> = () => T

@@ -1,9 +1,9 @@
 import { omit } from 'lodash'
 import { computed, makeObservable, observable } from 'mobx'
 
-import { BaseFile, BaseFileMap, BaseFileMete } from '@modou/file/BaseFile'
-import { WidgetFile } from '@modou/file/WidgetFile'
-import { FileTypeEnum } from '@modou/file/types'
+import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
+import { WidgetFile } from '../WidgetFile'
+import { FileTypeEnum } from '../types'
 
 export type PageFileMeta = BaseFileMete
 

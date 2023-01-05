@@ -473,8 +473,8 @@ class CodeMirrorTernService {
     } else {
       query.file = doc.name
       // this code is different from tern.js code
-      // we noticed error `TernError: file doesn't contain line x`
-      // which was due to file not being present for the case when a codeEditor is opened and 1st character is typed
+      // we noticed error `TernError: meta-vfs doesn't contain line x`
+      // which was due to meta-vfs not being present for the case when a codeEditor is opened and 1st character is typed
       files.push({
         type: 'full',
         name: doc.name,

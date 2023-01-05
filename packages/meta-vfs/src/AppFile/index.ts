@@ -1,9 +1,9 @@
 import { computed, makeObservable, observable } from 'mobx'
 
-import { BaseFile, BaseFileMap, BaseFileMete } from '@modou/file/BaseFile'
-import { EntityFile } from '@modou/file/EntityFile'
-import { PageFile } from '@modou/file/PageFile'
-import { FileTypeEnum } from '@modou/file/types'
+import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
+import { EntityFile } from '../EntityFile'
+import { PageFile } from '../PageFile'
+import { FileTypeEnum } from '../types'
 
 export type AppFileMeta = BaseFileMete
 interface FileMap extends BaseFileMap {

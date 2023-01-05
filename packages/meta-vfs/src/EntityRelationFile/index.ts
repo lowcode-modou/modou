@@ -1,9 +1,10 @@
 import { omit } from 'lodash'
-import { computed, makeObservable, observable } from 'mobx'
+import { makeObservable, observable } from 'mobx'
 
 import { EntityRelation } from '@modou/core'
-import { BaseFile, BaseFileMete } from '@modou/file/BaseFile'
-import { FileTypeEnum } from '@modou/file/types'
+
+import { BaseFile, BaseFileMete } from '../BaseFile'
+import { FileTypeEnum } from '../types'
 
 export type EntityRelationFileMeta = BaseFileMete<EntityRelation>
 export class EntityRelationFile extends BaseFile<{}, EntityRelationFileMeta> {

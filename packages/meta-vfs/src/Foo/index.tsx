@@ -1,13 +1,12 @@
-import { effect } from '@vue/reactivity'
 import { autorun } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import React, { type FC } from 'react'
 
 import { generateId } from '@modou/core'
-import { AppFile } from '@modou/file/AppFile'
-import { PageFile } from '@modou/file/PageFile'
-import { WidgetFile } from '@modou/file/WidgetFile'
-import { mock_metadata } from '@modou/file/mock'
+
+import { AppFile } from '../AppFile'
+import { PageFile } from '../PageFile'
+import { WidgetFile } from '../WidgetFile'
 
 const appFile = AppFile.create({
   name: 'App_Demo',
@@ -38,6 +37,7 @@ const widget2 = WidgetFile.create({
   },
   widgetType: 'Input',
 })
+// @ts-ignore
 const page1 = PageFile.create({
   name: 'Page_Demo_1',
   version: '0.0.0',

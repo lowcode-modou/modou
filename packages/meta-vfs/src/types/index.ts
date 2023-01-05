@@ -5,4 +5,6 @@ export enum FileTypeEnum {
   View = 'View',
   Entity = 'Entity',
   Flow = 'Flow',
+  FlowNode = 'FlowNode',
+  FlowEdge = 'FlowEdge',
 }
