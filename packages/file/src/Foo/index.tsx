@@ -1,5 +1,6 @@
 import { effect } from '@vue/reactivity'
 import { autorun } from 'mobx'
+import { observer } from 'mobx-react-lite'
 import React, { type FC } from 'react'
 
 import { generateId } from '@modou/core'
@@ -53,12 +54,12 @@ appFile.pages.push(page1, page2)
 const test = () => {
   // console.log(JSON.stringify(appFile))
   // console.log(appFile)
-  appFile.test.push(Math.random())
+  appFile.pages[0].meta.name = '撒阿萨' + Math.random()
   // [0].meta.name = '撒阿萨' + Math.random()
 }
 
 autorun(() => {
-  console.log('autorun', appFile.test[0])
+  // console.log('autorun', appFile.test[0])
 })
 // autorun(() => {
 //   console.log('autorun', appFile.meta.name)
@@ -70,10 +71,10 @@ autorun(() => {
 //   console.log(appFile.pages[0])
 // })
 
-const Foo: FC<{ title: string }> = (props) => (
+const Foo: FC<{ title: string }> = observer((props) => (
   <div>
-    <button onClick={test}>测试</button>
+    <button onClick={test}>测试:{appFile.pages[0].meta.name}</button>
   </div>
-)
+))
 
 export default Foo

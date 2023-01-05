@@ -4,13 +4,19 @@ import {
   TextNode,
   baseParse,
 } from '@vue/compiler-core'
-import { ReactiveEffectRunner, effect, reactive } from '@vue/reactivity'
-import { WatchStopHandle, watch } from '@vue/runtime-core'
 import { useMemoizedFn, useMount, useUnmount, useUpdate } from 'ahooks'
 import { ConfigProvider, Spin } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { flatten } from 'flat'
 import { get, isFunction, keys, set } from 'lodash'
+import {
+  IReactionDisposer,
+  autorun,
+  comparer,
+  makeAutoObservable,
+  reaction,
+} from 'mobx'
+import { observer } from 'mobx-react-lite'
 import { FC, memo, useContext, useEffect, useMemo, useRef } from 'react'
 import {
   RecoilRoot,
@@ -74,10 +80,16 @@ const evalExpression = (expression: string) => {
   }
 }
 
-const store = reactive<{
-  state: Record<string, any>
-  props: Record<string, WidgetBaseProps>
-}>({ state: {}, props: {} })
+class Store {
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  state: Record<string, any> = {}
+  props: Record<string, WidgetBaseProps> = {}
+}
+
+const store = new Store()
 
 // const ErrorWidget: FC = () => {
 //   return <div>Error</div>
@@ -85,7 +97,7 @@ const store = reactive<{
 
 const WidgetWrapper: FC<{
   widgetId: string
-}> = ({ widgetId }) => {
+}> = observer(({ widgetId }) => {
   const widget = useRecoilValue(widgetSelector(widgetId))
   const appFactory = useContext(AppFactoryContext)
   const widgetDef = appFactory.widgetByType[widget.widgetType]
@@ -157,9 +169,7 @@ const WidgetWrapper: FC<{
     }))
   }, [updateWidgetState, widget.props])
 
-  const watchStopsRef = useRef<
-    Record<string, ReactiveEffectRunner | WatchStopHandle>
-  >({})
+  const watchStopsRef = useRef<Record<string, IReactionDisposer>>({})
 
   useMount(() => {
     const flattenStateKeys = keys(flatten(store.state[widgetId]))
@@ -167,7 +177,7 @@ const WidgetWrapper: FC<{
       if (Reflect.has(watchStopsRef.current, path)) {
         return
       }
-      watchStopsRef.current[path] = effect(() => {
+      watchStopsRef.current[path] = autorun(() => {
         const fullPath = `${widgetId}.${path}`
         const rawPropVal = get(store.props, fullPath)
         if (isExpression(rawPropVal)) {
@@ -201,23 +211,9 @@ const WidgetWrapper: FC<{
   })
 
   useUnmount(() => {
-    Object.values(watchStopsRef.current).forEach((stop) => stop())
+    //  FIXME
+    // Object.values(watchStopsRef.current).forEach((stop) => stop())
   })
-
-  const update = useUpdate()
-  // state 变化 重新render
-  useEffect(() => {
-    const stop = watch(
-      () => store.state[widgetId],
-      () => {
-        update()
-      },
-      { deep: true, immediate: true },
-    )
-    return () => {
-      stop()
-    }
-  }, [update, widgetId])
 
   // FIXME 会导致重新渲染
   // FIXME 完善组件类型
@@ -229,7 +225,7 @@ const WidgetWrapper: FC<{
       renderSlotPaths={renderSlotPaths}
     />
   )
-}
+})
 
 interface MoDouRenderProps {
   rootWidgetId: string

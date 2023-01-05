@@ -15,13 +15,11 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta> {
     super({ fileType: FileTypeEnum.App, meta })
     makeObservable(this, {
       fileMap: observable,
-      test: observable,
       entities: computed,
       pages: computed,
     })
   }
 
-  test: any[] = [1]
   static create(meta: AppFileMeta) {
     return new AppFile(meta)
   }

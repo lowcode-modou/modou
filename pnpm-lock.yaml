@@ -52,6 +52,7 @@ importers:
       immutability-helper: ^3.1.1
       lodash: ^4.17.21
       mobx: ^6.7.0
+      mobx-react-lite: ^3.4.0
       prettier: ^2.8.1
       rc-tree: ^5.7.2
       react: ^18.2.0
@@ -92,6 +93,7 @@ importers:
       immutability-helper: 3.1.1
       lodash: 4.17.21
       mobx: 6.7.0
+      mobx-react-lite: 3.4.0_jofyzmwkboewm6mjrhi25mngky
       react: 18.2.0
       react-dnd: 16.0.1_iapumuv4e6jcjznwuxpf4tt22e
       react-dnd-html5-backend: 16.0.1_kfajotxmcqjtgrepibrwmj5zwu
@@ -11139,6 +11141,24 @@ packages:
     dependencies:
       minimist: 1.2.6
     dev: true
+
+  /mobx-react-lite/3.4.0_jofyzmwkboewm6mjrhi25mngky:
+    resolution: {integrity: sha512-bRuZp3C0itgLKHu/VNxi66DN/XVkQG7xtoBVWxpvC5FhAqbOCP21+nPhULjnzEqd7xBMybp6KwytdUpZKEgpIQ==}
+    peerDependencies:
+      mobx: ^6.1.0
+      react: ^16.8.0 || ^17 || ^18
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      mobx: 6.7.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
 
   /mobx/6.7.0:
     resolution: {integrity: sha512-1kBLBdSNG2bA522HQdbsTvwAwYf9hq9FWxmlhX7wTsJUAI54907J+ozfGW+LoYUo06vjit748g6QH1AAGLNebw==}
