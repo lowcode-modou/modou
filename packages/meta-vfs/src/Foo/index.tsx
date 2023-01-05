@@ -1,4 +1,4 @@
-import { autorun } from 'mobx'
+import { autorun, runInAction } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import React, { type FC } from 'react'
 
@@ -37,20 +37,22 @@ const widget2 = WidgetFile.create({
   },
   widgetType: 'Input',
 })
-// @ts-ignore
-const page1 = PageFile.create({
-  name: 'Page_Demo_1',
-  version: '0.0.0',
-  id: generateId(),
+
+runInAction(() => {
+  const page1 = PageFile.create({
+    name: 'Page_Demo_1',
+    version: '0.0.0',
+    id: generateId(),
+  })
+  page1.widgets.push(widget1)
+  const page2 = PageFile.create({
+    name: 'Page_Demo_2',
+    version: '0.0.0',
+    id: generateId(),
+  })
+  page2.widgets.push(widget2)
+  appFile.pages.push(page1, page2)
 })
-page1.widgets.push(widget1)
-const page2 = PageFile.create({
-  name: 'Page_Demo_2',
-  version: '0.0.0',
-  id: generateId(),
-})
-page2.widgets.push(widget2)
-appFile.pages.push(page1, page2)
 const test = () => {
   // console.log(JSON.stringify(appFile))
   // console.log(appFile)

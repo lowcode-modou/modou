@@ -1,5 +1,14 @@
-export { default as Foo } from './Foo'
+import { configure } from 'mobx'
 
+configure({
+  useProxies: 'never',
+  enforceActions: 'always',
+  // computedRequiresReaction: true,
+  observableRequiresReaction: true,
+  reactionRequiresObservable: true,
+})
+
+export { default as Foo } from './Foo'
 export * from './AppFile'
 export * from './PageFile'
 export * from './EntityFile'
