@@ -5,6 +5,7 @@ import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
 import { useMount } from 'ahooks'
 import { Layout, Menu } from 'antd'
 import { runInAction } from 'mobx'
+import { observer } from 'mobx-react-lite'
 import { ComponentProps, FC, useCallback, useState } from 'react'
 import {
   Outlet,
@@ -14,7 +15,7 @@ import {
   useParams,
 } from 'react-router-dom'
 
-import { generateId } from '@modou/core'
+import { AppFileProvider, generateId } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { AppFile } from '@modou/meta-vfs'
 
@@ -44,9 +45,9 @@ const appFile = runInAction(() => {
   })
 })
 
-console.log(appFile)
+console.log(appFile.page('as'))
 
-export const App: FC = () => {
+const _App: FC = () => {
   const params = useParams<PageRouterParamsKey | EntityRouterParamsKey>()
   const [module, setModule] = useState<ModuleEnum | ''>('')
   const navigate = useNavigate()
@@ -95,44 +96,49 @@ export const App: FC = () => {
   }
 
   const isAppHome = matchPath(ROUTER_PATH.APP, pathname)
-  return isAppHome ? (
-    <AppHome />
-  ) : (
-    <Layout className={classes.layout}>
-      <AppHeader />
-      <Layout>
-        <Layout.Sider
-          className={classes.sider}
-          theme="light"
-          collapsedWidth={60}
-          width={60}
-          collapsible
-          collapsed={!visibleModuleManger}
-        >
-          <Menu
-            className={classes.menu}
-            style={{ width: '60px' }}
-            mode="inline"
-            selectedKeys={[module]}
-            onClick={handleClickMenuItem}
-            items={menuItems}
-          />
-        </Layout.Sider>
-        <Layout.Content className={classes.layoutContent}>
-          <ModuleManager
-            onClose={() => {
-              setVisibleModuleManger(false)
-              updateModule()
-            }}
-            module={module}
-            visible={visibleModuleManger}
-          />
-          <Outlet />
-        </Layout.Content>
-      </Layout>
-    </Layout>
+  return (
+    <AppFileProvider value={appFile}>
+      {isAppHome ? (
+        <AppHome />
+      ) : (
+        <Layout className={classes.layout}>
+          <AppHeader />
+          <Layout>
+            <Layout.Sider
+              className={classes.sider}
+              theme="light"
+              collapsedWidth={60}
+              width={60}
+              collapsible
+              collapsed={!visibleModuleManger}
+            >
+              <Menu
+                className={classes.menu}
+                style={{ width: '60px' }}
+                mode="inline"
+                selectedKeys={[module]}
+                onClick={handleClickMenuItem}
+                items={menuItems}
+              />
+            </Layout.Sider>
+            <Layout.Content className={classes.layoutContent}>
+              <ModuleManager
+                onClose={() => {
+                  setVisibleModuleManger(false)
+                  updateModule()
+                }}
+                module={module}
+                visible={visibleModuleManger}
+              />
+              <Outlet />
+            </Layout.Content>
+          </Layout>
+        </Layout>
+      )}
+    </AppFileProvider>
   )
 }
+export const App = observer(_App)
 
 const classes = {
   layout: mcss`
