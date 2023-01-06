@@ -11,16 +11,16 @@ export class EntityRelationFile extends BaseFile<{}, EntityRelationFileMeta> {
   protected constructor(meta: EntityRelationFileMeta) {
     super({ fileType: FileTypeEnum.Widget, meta })
     makeObservable(this, {
-      fileMap: observable,
+      subFileMapToJson: observable,
     })
   }
 
-  fileMap = {}
+  subFileMap = {}
 
   toJSON() {
     return {
       ...this.meta,
-      ...this.fileMapToJson(),
+      ...this.subFileMapToJson(),
       fileType: this.fileType,
     }
   }

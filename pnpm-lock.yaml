@@ -130,7 +130,10 @@ importers:
       typescript: 4.8.4
       vite: 4.0.3
 
-  auxiliaries/code-editor:
+  packages/canvas-designer:
+    specifiers: {}
+
+  packages/code-editor:
     specifiers:
       '@types/codemirror': ^5.60.5
       '@types/tern': ^0.23.4
@@ -155,16 +158,13 @@ importers:
       '@types/codemirror': 5.60.5
       '@types/tern': 0.23.4
       '@umijs/lint': 4.0.40
-      dumi: 2.0.16_sjkfibpvkg33iagsiij4zgoske
+      dumi: 2.0.18_sjkfibpvkg33iagsiij4zgoske
       father: 4.1.1_webpack@5.75.0
       husky: 8.0.2
       lint-staged: 13.1.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       webpack: 5.75.0
-
-  designers/canvas:
-    specifiers: {}
 
   packages/compiler-core:
     specifiers:
@@ -317,7 +317,7 @@ importers:
       reactflow: ^11.2.0
     dependencies:
       '@ahooksjs/use-url-state': 3.5.0
-      '@modou/canvas-designer': link:../../designers/canvas
+      '@modou/canvas-designer': link:../../packages/canvas-designer
       mitt: 3.0.0
       reactflow: 11.2.0
 
@@ -6768,98 +6768,6 @@ packages:
       - webpack-plugin-serve
     dev: true
 
-  /dumi/2.0.16_sjkfibpvkg33iagsiij4zgoske:
-    resolution: {integrity: sha512-GpHtv8bVmiOcrEQHuN5rb4TUuOOZESkC4Jzkb2nP+3T3+lbh1248+K+YxwAzeoFiA5gx0DiYWnKQ0+NOmapIsA==}
-    hasBin: true
-    peerDependencies:
-      react: '>=16.8'
-      react-dom: '>=16.8'
-    dependencies:
-      '@ant-design/icons-svg': 4.2.1
-      '@makotot/ghostui': 2.0.0_react@18.2.0
-      '@stackblitz/sdk': 1.8.1
-      '@swc/core': 1.3.22
-      '@types/hast': 2.3.4
-      '@types/mdast': 3.0.10
-      '@umijs/bundler-utils': 4.0.36
-      '@umijs/core': 4.0.36
-      animated-scroll-to: 2.3.0
-      classnames: 2.3.2
-      codesandbox: 2.2.3
-      deepmerge: 4.2.2
-      dumi-afx-deps: 1.0.0-alpha.6
-      dumi-assets-types: 2.0.0-alpha.0
-      enhanced-resolve: 5.12.0
-      estree-util-to-js: 1.1.0
-      estree-util-visit: 1.2.0
-      file-system-cache: 2.0.0
-      github-slugger: 1.4.0
-      hast-util-is-element: 2.1.2
-      hast-util-raw: 7.2.3
-      hast-util-to-estree: 2.1.0
-      hast-util-to-string: 2.0.0
-      heti: 0.9.2
-      html-to-text: 8.2.1
-      js-yaml: 4.1.0
-      lodash.throttle: 4.1.1
-      mdast-util-to-string: 3.1.0
-      pluralize: 8.0.0
-      prism-react-renderer: 1.3.5_react@18.2.0
-      prism-themes: 1.9.0
-      prismjs: 1.29.0
-      raw-loader: 4.0.2_webpack@5.75.0
-      rc-tabs: 12.1.0-alpha.1_biqbaboplfbrettd7655fr4n2y
-      react: 18.2.0
-      react-copy-to-clipboard: 5.1.0_react@18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      react-error-boundary: 3.1.4_react@18.2.0
-      react-intl: 6.2.5_react@18.2.0
-      rehype-autolink-headings: 6.1.1
-      rehype-remove-comments: 5.0.0
-      rehype-stringify: 9.0.3
-      remark-breaks: 3.0.2
-      remark-directive: 2.0.1
-      remark-frontmatter: 4.0.1
-      remark-gfm: 3.0.1
-      remark-parse: 10.0.1
-      remark-rehype: 10.1.0
-      sass: 1.55.0
-      sitemap: 7.1.1
-      umi: 4.0.36_sjkfibpvkg33iagsiij4zgoske
-      unified: 10.1.2
-      unist-util-visit: 4.1.1
-      unist-util-visit-parents: 5.1.1
-      url: 0.11.0
-      v8-compile-cache: 2.3.0
-      vfile: 5.3.6
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@types/react'
-      - '@types/webpack'
-      - encoding
-      - eslint
-      - jest
-      - postcss
-      - postcss-html
-      - postcss-jsx
-      - postcss-less
-      - postcss-markdown
-      - postcss-scss
-      - prettier
-      - rollup
-      - sockjs-client
-      - styled-components
-      - stylelint
-      - supports-color
-      - type-fest
-      - typescript
-      - vue-template-compiler
-      - webpack
-      - webpack-dev-server
-      - webpack-hot-middleware
-      - webpack-plugin-serve
-    dev: true
-
   /dumi/2.0.18_j6ognzfrot7iwqpseop24xzp7y:
     resolution: {integrity: sha512-b90imq+zVSFdG7+sPsE1NHWVEQhcFVyocqtyecXAXIQ89ns/QLoTk6JT1CmmRDtbFoaT3roAr76v0sfDyyKm9Q==}
     hasBin: true
@@ -6918,6 +6826,98 @@ packages:
       sass: 1.55.0
       sitemap: 7.1.1
       umi: 4.0.36_j6ognzfrot7iwqpseop24xzp7y
+      unified: 10.1.2
+      unist-util-visit: 4.1.1
+      unist-util-visit-parents: 5.1.1
+      url: 0.11.0
+      v8-compile-cache: 2.3.0
+      vfile: 5.3.6
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@types/react'
+      - '@types/webpack'
+      - encoding
+      - eslint
+      - jest
+      - postcss
+      - postcss-html
+      - postcss-jsx
+      - postcss-less
+      - postcss-markdown
+      - postcss-scss
+      - prettier
+      - rollup
+      - sockjs-client
+      - styled-components
+      - stylelint
+      - supports-color
+      - type-fest
+      - typescript
+      - vue-template-compiler
+      - webpack
+      - webpack-dev-server
+      - webpack-hot-middleware
+      - webpack-plugin-serve
+    dev: true
+
+  /dumi/2.0.18_sjkfibpvkg33iagsiij4zgoske:
+    resolution: {integrity: sha512-b90imq+zVSFdG7+sPsE1NHWVEQhcFVyocqtyecXAXIQ89ns/QLoTk6JT1CmmRDtbFoaT3roAr76v0sfDyyKm9Q==}
+    hasBin: true
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@ant-design/icons-svg': 4.2.1
+      '@makotot/ghostui': 2.0.0_react@18.2.0
+      '@stackblitz/sdk': 1.8.1
+      '@swc/core': 1.3.22
+      '@types/hast': 2.3.4
+      '@types/mdast': 3.0.10
+      '@umijs/bundler-utils': 4.0.40
+      '@umijs/core': 4.0.36
+      animated-scroll-to: 2.3.0
+      classnames: 2.3.2
+      codesandbox: 2.2.3
+      deepmerge: 4.2.2
+      dumi-afx-deps: 1.0.0-alpha.6
+      dumi-assets-types: 2.0.0-alpha.0
+      enhanced-resolve: 5.12.0
+      estree-util-to-js: 1.1.0
+      estree-util-visit: 1.2.0
+      file-system-cache: 2.0.0
+      github-slugger: 1.4.0
+      hast-util-is-element: 2.1.2
+      hast-util-raw: 7.2.3
+      hast-util-to-estree: 2.1.0
+      hast-util-to-string: 2.0.0
+      heti: 0.9.2
+      html-to-text: 8.2.1
+      js-yaml: 4.1.0
+      lodash.throttle: 4.1.1
+      mdast-util-to-string: 3.1.0
+      pluralize: 8.0.0
+      prism-react-renderer: 1.3.5_react@18.2.0
+      prism-themes: 1.9.0
+      prismjs: 1.29.0
+      raw-loader: 4.0.2_webpack@5.75.0
+      rc-tabs: 12.1.0-alpha.1_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-copy-to-clipboard: 5.1.0_react@18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-error-boundary: 3.1.4_react@18.2.0
+      react-intl: 6.2.5_react@18.2.0
+      rehype-autolink-headings: 6.1.1
+      rehype-remove-comments: 5.0.0
+      rehype-stringify: 9.0.3
+      remark-breaks: 3.0.2
+      remark-directive: 2.0.1
+      remark-frontmatter: 4.0.1
+      remark-gfm: 3.0.1
+      remark-parse: 10.0.1
+      remark-rehype: 10.1.0
+      sass: 1.55.0
+      sitemap: 7.1.1
+      umi: 4.0.36_sjkfibpvkg33iagsiij4zgoske
       unified: 10.1.2
       unist-util-visit: 4.1.1
       unist-util-visit-parents: 5.1.1

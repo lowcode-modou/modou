@@ -1,5 +1,5 @@
 import { omit } from 'lodash'
-import { computed, makeObservable, observable } from 'mobx'
+import { computed, makeObservable, observable, runInAction } from 'mobx'
 
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
 import { WidgetFile } from '../WidgetFile'
@@ -14,23 +14,23 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta> {
   protected constructor(meta: PageFileMeta) {
     super({ fileType: FileTypeEnum.App, meta })
     makeObservable(this, {
-      fileMap: observable,
+      subFileMap: observable,
       widgets: computed,
     })
   }
 
-  fileMap: FileMap = {
+  subFileMap: FileMap = {
     widgets: [],
   }
 
   get widgets() {
-    return this.fileMap.widgets
+    return this.subFileMap.widgets
   }
 
   toJSON() {
     return {
       ...this.meta,
-      ...this.fileMapToJson(),
+      ...this.subFileMapToJson(),
       fileType: this.fileType,
     }
   }
@@ -40,13 +40,15 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta> {
   }
 
   static formJSON(json: ReturnType<PageFile['toJSON']>): PageFile {
-    const pageFile = PageFile.create(omit(json, ['fileType', 'widgets']))
-    const widgets = json.widgets.map((widget) =>
-      WidgetFile.formJSON(
-        widget as unknown as ReturnType<WidgetFile['toJSON']>,
-      ),
-    )
-    pageFile.fileMap.widgets.push(...widgets)
-    return pageFile
+    return runInAction(() => {
+      const pageFile = PageFile.create(omit(json, ['fileType', 'widgets']))
+      const widgets = json.widgets.map((widget) =>
+        WidgetFile.formJSON(
+          widget as unknown as ReturnType<WidgetFile['toJSON']>,
+        ),
+      )
+      pageFile.subFileMap.widgets.push(...widgets)
+      return pageFile
+    })
   }
 }

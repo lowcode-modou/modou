@@ -15,6 +15,7 @@ import {
   comparer,
   makeAutoObservable,
   reaction,
+  runInAction,
 } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { FC, memo, useContext, useEffect, useMemo, useRef } from 'react'
@@ -95,9 +96,9 @@ const store = new Store()
 //   return <div>Error</div>
 // }
 
-const WidgetWrapper: FC<{
+const _WidgetWrapper: FC<{
   widgetId: string
-}> = observer(({ widgetId }) => {
+}> = ({ widgetId }) => {
   const widget = useRecoilValue(widgetSelector(widgetId))
   const appFactory = useContext(AppFactoryContext)
   const widgetDef = appFactory.widgetByType[widget.widgetType]
@@ -134,30 +135,38 @@ const WidgetWrapper: FC<{
 
   // reactive state
   if (!get(store.state, widgetId)) {
-    set(store.state, widgetId, {
-      ...widget.props,
-      ...widgetDef.metadata.initState(widget),
+    runInAction(() => {
+      set(store.state, widgetId, {
+        ...widget.props,
+        ...widgetDef.metadata.initState(widget),
+      })
     })
   }
 
   // reactive props
   if (!get(store.props, widgetId)) {
-    set(store.props, widgetId, widget.props)
+    runInAction(() => {
+      set(store.props, widgetId, widget.props)
+    })
   }
 
   // update reactive props
   useEffect(() => {
-    set(store.props, widgetId, widget.props)
+    runInAction(() => {
+      set(store.props, widgetId, widget.props)
+    })
   }, [widget.props, widgetId])
 
   // TODO 优化类型
   const updateWidgetState = useMemoizedFn(
     <S extends object = {}>(newState: S | ((prevState: S) => S)) => {
-      if (isFunction(newState)) {
-        set(store.state, widgetId, newState(get(store.state, widgetId)))
-      } else {
-        set(store.state, widgetId, newState)
-      }
+      runInAction(() => {
+        if (isFunction(newState)) {
+          set(store.state, widgetId, newState(get(store.state, widgetId)))
+        } else {
+          set(store.state, widgetId, newState)
+        }
+      })
     },
   )
 
@@ -202,7 +211,9 @@ const WidgetWrapper: FC<{
               return item.loc.source
             })
             .join('')}\``
-          set(store.state, fullPath, evalExpression(expression))
+          runInAction(() => {
+            set(store.state, fullPath, evalExpression(expression))
+          })
         } else {
           // set(store.state, `${widgetId}.${path}`, rawPropVal)
         }
@@ -225,7 +236,8 @@ const WidgetWrapper: FC<{
       renderSlotPaths={renderSlotPaths}
     />
   )
-})
+}
+const WidgetWrapper = observer(_WidgetWrapper)
 
 interface MoDouRenderProps {
   rootWidgetId: string

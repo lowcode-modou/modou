@@ -33,10 +33,10 @@ export abstract class BaseFile<F extends BaseFileMap, T extends BaseFileMete> {
   fileType: FileTypeEnum
   meta: T
 
-  fileMapToJson() {
-    return mapValues(this.fileMap, (files) =>
+  subFileMapToJson() {
+    return mapValues(this.subFileMap, (dir) =>
       // TODO 是否有些特殊的file需求sort
-      files.map((file) => file.toJSON()),
+      dir.map((file) => file.toJSON()),
     )
   }
 
@@ -45,7 +45,7 @@ export abstract class BaseFile<F extends BaseFileMap, T extends BaseFileMete> {
     fileType: FileTypeEnum
     [prop: string]: any
   }
-  abstract fileMap: F
+  abstract subFileMap: F
   static fromJSON() {
     throw new Error(`【${this.name}】未实现formJson方法`)
   }

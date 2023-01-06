@@ -11,16 +11,16 @@ export class EntityFieldFile extends BaseFile<{}, EntityFieldFileMeta> {
   protected constructor(meta: EntityFieldFileMeta) {
     super({ fileType: FileTypeEnum.Widget, meta })
     makeObservable(this, {
-      fileMap: observable,
+      subFileMap: observable,
     })
   }
 
-  fileMap = {}
+  subFileMap = {}
 
   toJSON() {
     return {
       ...this.meta,
-      ...this.fileMapToJson(),
+      ...this.subFileMapToJson(),
       fileType: this.fileType,
     }
   }

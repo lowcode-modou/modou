@@ -11,16 +11,16 @@ export class WidgetFile extends BaseFile<{}, WidgetFileMeta> {
   protected constructor(meta: WidgetFileMeta) {
     super({ fileType: FileTypeEnum.Widget, meta })
     makeObservable(this, {
-      fileMap: observable,
+      subFileMap: observable,
     })
   }
 
-  fileMap = {}
+  subFileMap = {}
 
   toJSON() {
     return {
       ...this.meta,
-      ...this.fileMapToJson(),
+      ...this.subFileMapToJson(),
       fileType: this.fileType,
     }
   }

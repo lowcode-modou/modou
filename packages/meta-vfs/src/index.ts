@@ -4,7 +4,7 @@ configure({
   useProxies: 'never',
   enforceActions: 'always',
   // computedRequiresReaction: true,
-  observableRequiresReaction: true,
+  // observableRequiresReaction: true,
   reactionRequiresObservable: true,
 })
 

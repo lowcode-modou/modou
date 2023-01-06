@@ -4,6 +4,7 @@ import { generateRouterPath } from '@/utils/router'
 import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
 import { useMount } from 'ahooks'
 import { Layout, Menu } from 'antd'
+import { runInAction } from 'mobx'
 import { ComponentProps, FC, useCallback, useState } from 'react'
 import {
   Outlet,
@@ -13,7 +14,9 @@ import {
   useParams,
 } from 'react-router-dom'
 
+import { generateId } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { AppFile } from '@modou/meta-vfs'
 
 import { ModuleManager } from '../components'
 import { AppHeader } from '../components/AppHeader'
@@ -32,6 +35,16 @@ const menuItems: ComponentProps<typeof Menu>['items'] = [
     key: ModuleEnum.Entity,
   },
 ]
+
+const appFile = runInAction(() => {
+  return AppFile.create({
+    name: 'Mobx_demo',
+    id: generateId(),
+    version: '0.0.0',
+  })
+})
+
+console.log(appFile)
 
 export const App: FC = () => {
   const params = useParams<PageRouterParamsKey | EntityRouterParamsKey>()
