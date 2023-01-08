@@ -13,8 +13,8 @@ import {
 } from './constants'
 
 export const MRSchemeButtonWidgetProps = WidgetMetadata.createMRWidgetProps({
-  widgetType: 'ButtonWidget',
-  widgetName: '按钮',
+  type: 'ButtonWidget',
+  name: '按钮',
   props: {
     title: {
       def: mr.string().default('按钮'),

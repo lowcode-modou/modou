@@ -10,9 +10,9 @@ interface FileMap extends BaseFileMap {
   readonly pages: PageFile[]
   readonly entities: EntityFile[]
 }
-export class AppFile extends BaseFile<FileMap, AppFileMeta> {
+export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
   protected constructor(meta: AppFileMeta) {
-    super({ fileType: FileTypeEnum.App, meta })
+    super({ fileType: FileTypeEnum.App, meta, parentFile: null })
     makeObservable(this, {
       subFileMap: observable,
       entities: computed,
@@ -70,10 +70,14 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta> {
       const entities = json.entities.map((entity) =>
         EntityFile.formJSON(
           entity as unknown as ReturnType<EntityFile['toJSON']>,
+          appFile,
         ),
       )
       const pages = json.pages.map((page) =>
-        PageFile.formJSON(page as unknown as ReturnType<PageFile['toJSON']>),
+        PageFile.formJSON(
+          page as unknown as ReturnType<PageFile['toJSON']>,
+          appFile,
+        ),
       )
       runInAction(() => {
         appFile.subFileMap.entities.push(...entities)

@@ -11,25 +11,34 @@ export type BaseFileMete<T extends object = {}> = {
 } & T
 
 export interface BaseFileMap {
-  readonly [prop: string]: Array<BaseFile<any, any>>
+  readonly [prop: string]: Array<BaseFile<any, any, any>>
 }
 
-export abstract class BaseFile<F extends BaseFileMap, T extends BaseFileMete> {
+export abstract class BaseFile<
+  F extends BaseFileMap,
+  T extends BaseFileMete,
+  P extends BaseFile<any, any, any> | null,
+> {
   protected constructor({
     fileType,
     meta,
+    parentFile,
   }: {
     fileType: FileTypeEnum
     meta: T
+    parentFile: P
   }) {
+    this.fileType = fileType
+    this.meta = meta
+    this.parentFile = parentFile
     makeObservable(this, {
       meta: observable,
       fileType: observable,
+      parentFile: observable,
     })
-    this.fileType = fileType
-    this.meta = meta
   }
 
+  parentFile: P
   fileType: FileTypeEnum
   meta: T
 
@@ -50,7 +59,10 @@ export abstract class BaseFile<F extends BaseFileMap, T extends BaseFileMete> {
     throw new Error(`【${this.name}】未实现formJson方法`)
   }
 
-  static create(meta: BaseFileMete): BaseFile<any, any> {
+  static create(
+    meta: BaseFileMete,
+    parentFile?: BaseFile<any, any, any>,
+  ): BaseFile<any, any, any> {
     throw new Error(`【${this.name}】未实现create方法`)
   }
   // TODO fromFile toFile

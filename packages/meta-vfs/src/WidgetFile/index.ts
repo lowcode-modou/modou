@@ -1,15 +1,16 @@
 import { omit } from 'lodash'
-import { makeObservable, observable } from 'mobx'
+import { makeObservable, observable, runInAction } from 'mobx'
 
 import { WidgetBaseProps } from '@modou/core'
 
 import { BaseFile, BaseFileMete } from '../BaseFile'
+import { PageFile } from '../PageFile'
 import { FileTypeEnum } from '../types'
 
 export type WidgetFileMeta = BaseFileMete<WidgetBaseProps>
-export class WidgetFile extends BaseFile<{}, WidgetFileMeta> {
-  protected constructor(meta: WidgetFileMeta) {
-    super({ fileType: FileTypeEnum.Widget, meta })
+export class WidgetFile extends BaseFile<{}, WidgetFileMeta, PageFile> {
+  protected constructor(meta: WidgetFileMeta, parentFile: PageFile) {
+    super({ fileType: FileTypeEnum.Widget, meta, parentFile })
     makeObservable(this, {
       subFileMap: observable,
     })
@@ -25,11 +26,18 @@ export class WidgetFile extends BaseFile<{}, WidgetFileMeta> {
     }
   }
 
-  static create(meta: WidgetFileMeta) {
-    return new WidgetFile(meta)
+  static create(meta: WidgetFileMeta, parentFile: PageFile) {
+    return runInAction(() => {
+      const widgetFile = new WidgetFile(meta, parentFile)
+      parentFile.widgets.push(widgetFile)
+      return widgetFile
+    })
   }
 
-  static formJSON(json: ReturnType<WidgetFile['toJSON']>): WidgetFile {
-    return WidgetFile.create(omit(json, 'fileType'))
+  static formJSON(
+    json: ReturnType<WidgetFile['toJSON']>,
+    parentFile: PageFile,
+  ): WidgetFile {
+    return WidgetFile.create(omit(json, 'fileType'), parentFile)
   }
 }

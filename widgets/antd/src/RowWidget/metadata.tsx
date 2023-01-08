@@ -11,8 +11,8 @@ import {
 } from './constants'
 
 export const MRSchemeRowWidgetProps = WidgetMetadata.createMRWidgetProps({
-  widgetType: 'RowWidget',
-  widgetName: '栅格行',
+  type: 'RowWidget',
+  name: '栅格行',
   props: {
     align: {
       def: mr.nativeEnum(RowWidgetAlignEnum).default(RowWidgetAlignEnum.Top),

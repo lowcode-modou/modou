@@ -7,38 +7,38 @@ import { observer } from 'mobx-react-lite'
 import { FC, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { useAppFile } from '@modou/core'
+import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
 const _AppHome: FC = () => {
   const params = useParams<BaseRouterParamsKey>()
   const navigate = useNavigate()
-  const { appFile } = useAppFile()
-  const isEmptyPage = isEmpty(appFile.pages)
+  const { app } = useAppManager()
+  const isEmptyPage = isEmpty(app.pages)
 
   useEffect(() => {
     if (!isEmptyPage) {
       navigate(
         generateRouterPath(ROUTER_PATH.PAGE, {
           ...params,
-          pageId: head(appFile.pages)?.meta?.id,
+          pageId: head(app.pages)?.meta?.id,
         }),
         {
           replace: true,
         },
       )
-    } else if (!isEmpty(appFile.entities)) {
+    } else if (!isEmpty(app.entities)) {
       navigate(
         generateRouterPath(ROUTER_PATH.Entity, {
           ...params,
-          entityId: head(appFile.entities)?.meta?.id,
+          entityId: head(app.entities)?.meta?.id,
         }),
         {
           replace: true,
         },
       )
     }
-  }, [appFile.entities, appFile.pages, isEmptyPage, navigate, params])
+  }, [app.entities, app.pages, isEmptyPage, navigate, params])
 
   return (
     <div className={classes.wrapper}>

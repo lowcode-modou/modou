@@ -5,8 +5,8 @@ import { SetterTypeEnum } from '@modou/setters'
 import { WidgetIcon } from '../_'
 
 export const MRSchemeInputWidgetProps = WidgetMetadata.createMRWidgetProps({
-  widgetType: 'InputWidget',
-  widgetName: '输入框',
+  type: 'InputWidget',
+  name: '输入框',
   props: {
     label: {
       def: mr.string().default('标签'),

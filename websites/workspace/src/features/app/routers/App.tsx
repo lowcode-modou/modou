@@ -15,14 +15,15 @@ import {
   useParams,
 } from 'react-router-dom'
 
-import { AppFileProvider, generateId } from '@modou/core'
+import { AppManagerProvider } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
-import { AppFile } from '@modou/meta-vfs'
+import { AppManager } from '@modou/meta-vfs'
 
 import { ModuleManager } from '../components'
 import { AppHeader } from '../components/AppHeader'
 import { AppHome } from '../components/AppHome'
 import { ModuleEnum } from '../types'
+import { mock_appFile } from './mock'
 
 const menuItems: ComponentProps<typeof Menu>['items'] = [
   {
@@ -37,17 +38,10 @@ const menuItems: ComponentProps<typeof Menu>['items'] = [
   },
 ]
 
-const appFile = runInAction(() => {
-  return AppFile.create({
-    name: 'Mobx_demo',
-    id: generateId(),
-    version: '0.0.0',
-  })
+const appManager = runInAction(() => {
+  return new AppManager(mock_appFile)
 })
-
-console.log(appFile.page('as'))
-
-const _App: FC = () => {
+export const App: FC = () => {
   const params = useParams<PageRouterParamsKey | EntityRouterParamsKey>()
   const [module, setModule] = useState<ModuleEnum | ''>('')
   const navigate = useNavigate()
@@ -96,8 +90,9 @@ const _App: FC = () => {
   }
 
   const isAppHome = matchPath(ROUTER_PATH.APP, pathname)
+
   return (
-    <AppFileProvider value={appFile}>
+    <AppManagerProvider value={appManager}>
       {isAppHome ? (
         <AppHome />
       ) : (
@@ -135,10 +130,9 @@ const _App: FC = () => {
           </Layout>
         </Layout>
       )}
-    </AppFileProvider>
+    </AppManagerProvider>
   )
 }
-export const App = observer(_App)
 
 const classes = {
   layout: mcss`

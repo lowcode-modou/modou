@@ -1,6 +1,7 @@
 import { omit } from 'lodash'
 import { computed, makeObservable, observable, runInAction } from 'mobx'
 
+import { AppFile } from '../AppFile'
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
 import { EntityFieldFile } from '../EntityFieldFile'
 import { EntityRelationFile } from '../EntityRelationFile'
@@ -10,8 +11,6 @@ export type EntityFileMeta = BaseFileMete<{
   readonly name: string
   title: string
   description: string
-  // fields: EntityField[]
-  // relations: EntityRelation[]
   position: {
     x: number
     y: number
@@ -22,9 +21,9 @@ interface FileMap extends BaseFileMap {
   readonly entityFields: EntityFieldFile[]
   readonly entityRelations: EntityRelationFile[]
 }
-export class EntityFile extends BaseFile<FileMap, EntityFileMeta> {
-  protected constructor(meta: EntityFileMeta) {
-    super({ fileType: FileTypeEnum.Widget, meta })
+export class EntityFile extends BaseFile<FileMap, EntityFileMeta, AppFile> {
+  protected constructor(meta: EntityFileMeta, parentFile: AppFile) {
+    super({ fileType: FileTypeEnum.Widget, meta, parentFile })
     makeObservable(this, {
       subFileMap: observable,
       entityFields: computed,
@@ -53,23 +52,33 @@ export class EntityFile extends BaseFile<FileMap, EntityFileMeta> {
     }
   }
 
-  static create(meta: EntityFileMeta) {
-    return new EntityFile(meta)
+  static create(meta: EntityFileMeta, parentFile: AppFile) {
+    return runInAction(() => {
+      const entityFile = new EntityFile(meta, parentFile)
+      parentFile.entities.push(entityFile)
+      return entityFile
+    })
   }
 
-  static formJSON(json: ReturnType<EntityFile['toJSON']>): EntityFile {
+  static formJSON(
+    json: ReturnType<EntityFile['toJSON']>,
+    parentFile: AppFile,
+  ): EntityFile {
     return runInAction(() => {
       const entityFile = EntityFile.create(
         omit(json, ['fileType', 'entityFields', 'entityRelations']),
+        parentFile,
       )
       const entityFields = json.entityFields.map((entityField) =>
         EntityFieldFile.formJSON(
           entityField as unknown as ReturnType<EntityFieldFile['toJSON']>,
+          entityFile,
         ),
       )
       const entityRelations = json.entityRelations.map((entityRelation) =>
         EntityRelationFile.formJSON(
           entityRelation as unknown as ReturnType<EntityRelationFile['toJSON']>,
+          entityFile,
         ),
       )
       entityFile.subFileMap.entityFields.push(...entityFields)

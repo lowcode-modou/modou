@@ -14,44 +14,52 @@ const appFile = AppFile.create({
   id: generateId(),
 })
 
-// const appFile = AppFile.formJSON(mock_metadata as any)
-const widget1 = WidgetFile.create({
-  name: '按钮_1',
-  version: '0.0.0',
-  id: generateId(),
-  widgetName: '按钮_1',
-  slots: {},
-  props: {
-    title: '提交',
-  },
-  widgetType: 'Button',
-})
-const widget2 = WidgetFile.create({
-  name: '输入框_2',
-  version: '0.0.0',
-  id: generateId(),
-  widgetName: '输入框_2',
-  slots: {},
-  props: {
-    title: '提交',
-  },
-  widgetType: 'Input',
-})
-
 runInAction(() => {
-  const page1 = PageFile.create({
-    name: 'Page_Demo_1',
-    version: '0.0.0',
-    id: generateId(),
-  })
-  page1.widgets.push(widget1)
-  const page2 = PageFile.create({
-    name: 'Page_Demo_2',
-    version: '0.0.0',
-    id: generateId(),
-  })
-  page2.widgets.push(widget2)
-  appFile.pages.push(page1, page2)
+  const page1 = PageFile.create(
+    {
+      name: 'Page_Demo_1',
+      version: '0.0.0',
+      id: generateId(),
+      rootWidgetId: '0',
+    },
+    appFile,
+  )
+  const page2 = PageFile.create(
+    {
+      name: 'Page_Demo_2',
+      version: '0.0.0',
+      id: generateId(),
+      rootWidgetId: '0',
+    },
+    appFile,
+  )
+  // const appFile = AppFile.formJSON(mock_metadata as any)
+  WidgetFile.create(
+    {
+      name: '按钮_1',
+      version: '0.0.0',
+      id: generateId(),
+      slots: {},
+      props: {
+        title: '提交',
+      },
+      type: 'Button',
+    },
+    page1,
+  )
+  WidgetFile.create(
+    {
+      name: '输入框_2',
+      version: '0.0.0',
+      id: generateId(),
+      slots: {},
+      props: {
+        title: '提交',
+      },
+      type: 'Input',
+    },
+    page2,
+  )
 })
 const test = () => {
   // console.log(JSON.stringify(appFile))

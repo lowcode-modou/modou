@@ -1,19 +1,21 @@
 import { FC, ReactNode, createContext, useContext } from 'react'
 
-import { AppFile } from '@modou/meta-vfs'
+import { AppManager } from '@modou/meta-vfs/src/AppManager'
 
-const AppFileContext = createContext<AppFile | null>(null)
+const AppManagerContext = createContext<AppManager | null>(null)
 
-export const AppFileProvider: FC<{ value: AppFile; children: ReactNode }> = ({
-  value,
-  children,
-}) => {
+export const AppManagerProvider: FC<{
+  value: AppManager
+  children: ReactNode
+}> = ({ value, children }) => {
   return (
-    <AppFileContext.Provider value={value}>{children}</AppFileContext.Provider>
+    <AppManagerContext.Provider value={value}>
+      {children}
+    </AppManagerContext.Provider>
   )
 }
 
-export const useAppFile = () => {
-  const appFile = useContext(AppFileContext) as unknown as AppFile
-  return { appFile }
+export const useAppManager = () => {
+  const appManager = useContext(AppManagerContext) as unknown as AppManager
+  return { appManager, app: appManager.app }
 }

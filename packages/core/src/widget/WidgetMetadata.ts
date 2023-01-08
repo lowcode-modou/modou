@@ -131,13 +131,13 @@ export class WidgetMetadata<
   }
 
   static createMRWidgetProps<T extends MRWidgetProps, S extends MRRawShape>({
-    widgetName,
-    widgetType,
+    name,
+    type,
     props,
     slots,
   }: {
-    widgetName: string
-    widgetType: string
+    name: string
+    type: string
     props: T
     // TODO 限制KEY的范围
     slots?: S
@@ -156,8 +156,8 @@ export class WidgetMetadata<
 
     return mr.object({
       id: mr.string(),
-      widgetType: mr.literal(widgetType),
-      widgetName: mr.literal(widgetName),
+      type: mr.literal(type),
+      name: mr.literal(name),
       props: mr.object(propsRawShape),
       slots: mr.object(slots ?? ({} as unknown as S)),
     })
@@ -239,67 +239,4 @@ export class WidgetMetadata<
     // TODO 增加WidgetId
     return schemeToJsonDefault(scheme) as unknown as WidgetBaseProps
   }
-}
-
-// TODO 新的 props 结构
-const demo = {
-  size: 'small',
-  block: true,
-  columns: [
-    {
-      title: '姓名',
-      dataIndex: '123',
-    },
-  ],
-  map: {
-    name: '小明',
-    age: 20,
-  },
-}
-
-const mDemo = {
-  size: {
-    $t: 'n',
-    $s: 'small',
-    $e: `'small'`,
-  },
-  block: {
-    $t: 'n',
-    $s: 'true',
-    $e: `true`,
-  },
-  columns: {
-    $t: 'n',
-    $s: [
-      {
-        title: {
-          $t: 'e',
-          $n: '小明',
-          $e: `'小明'`,
-        },
-        dataIndex: {
-          $t: 'n',
-          $n: '123',
-          $e: `'123'`,
-        },
-      },
-    ],
-    $e: `query.data`,
-  },
-  map: {
-    $t: 'n',
-    $s: {
-      name: {
-        $t: 'e',
-        $n: '小明',
-        $e: `'小明'`,
-      },
-      age: {
-        $t: 'n',
-        $n: 20,
-        $e: `20`,
-      },
-    },
-    $e: `map.value`,
-  },
 }

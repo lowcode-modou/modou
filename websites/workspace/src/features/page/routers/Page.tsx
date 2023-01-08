@@ -3,47 +3,46 @@ import { PageRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { Col, Row } from 'antd'
 import { head } from 'lodash'
+import { observer } from 'mobx-react-lite'
 import { FC, useLayoutEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useRecoilCallback, useRecoilState } from 'recoil'
 
 import { CanvasDesigner } from '@modou/canvas-designer'
-import { AppFactoryContext, Metadata, defaultAppFactory } from '@modou/core'
+import {
+  AppFactoryContext,
+  Metadata,
+  defaultAppFactory,
+  useAppManager,
+} from '@modou/core'
 import type { Page as IPage } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { SimulatorPC } from '@modou/simulator'
 
-export const Page: FC = () => {
+const _Page: FC = () => {
   const { pageId, appId } = useParams<PageRouterParamsKey>()
-  const [page, setPage] = useRecoilState(Metadata.pageSelector(pageId!))
-  const getFirstPage = useRecoilCallback(
-    ({ snapshot }) =>
-      () => {
-        return head<IPage>(
-          snapshot.getLoadable(Metadata.pagesSelector).contents,
-        )
-      },
-    [],
-  )
+  const { appManager } = useAppManager()
+  const page = appManager.pageMap.get(pageId as string)
   const navigate = useNavigate()
   useLayoutEffect(() => {
-    const firstPage = getFirstPage()
+    const firstPage = head(appManager.app.pages)
     if (!page && firstPage) {
       navigate(
         generateRouterPath(ROUTER_PATH.PAGE, {
           appId,
-          pageId: firstPage.id,
+          pageId: firstPage.meta?.id,
         }),
         {
           replace: true,
         },
       )
     }
-  }, [appId, getFirstPage, navigate, page])
+  }, [appId, appManager.app.pages, navigate, page])
 
   return (
     <Row justify="center" align="middle" className={classes.page}>
       <Col span={24} className={classes.container}>
+        Page{page?.meta.name}
         {page && (
           <AppFactoryContext.Provider value={defaultAppFactory}>
             <CanvasDesigner page={page} onPageChange={setPage}>
@@ -55,6 +54,7 @@ export const Page: FC = () => {
     </Row>
   )
 }
+export const Page = observer(_Page)
 
 const classes = {
   page: mcss`
