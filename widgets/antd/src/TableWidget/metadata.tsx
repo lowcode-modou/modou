@@ -65,8 +65,8 @@ export const tableWidgetMetadata = WidgetMetadata.createMetadata<
   typeof MRSchemeTableWidgetState
 >({
   version: '0.0.1',
-  widgetType: 'TableWidget',
-  widgetName: '表格',
+  type: 'TableWidget',
+  name: '表格',
   icon: <WidgetIcon type="col" />,
   slots: {},
   setters: {

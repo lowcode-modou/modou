@@ -21,16 +21,15 @@ const WidgetBlock: FC<{
 }> = ({ metadata }) => {
   const widgetFactory = useContext(AppFactoryContext)
   const [{ isDragging }, drag, preview] = useDrag(() => ({
-    type: metadata.widgetType,
+    type: metadata.type,
     item: () => {
       const widget = WidgetMetadata.mrSchemeToDefaultJson(
-        widgetFactory.widgetByType[metadata.widgetType].metadata
-          .jsonPropsSchema,
+        widgetFactory.widgetByType[metadata.type].metadata.jsonPropsSchema,
       )
       const newWidget: WidgetBaseProps = {
         ...widget,
         id: generateId(),
-        widgetName: `${widget.widgetName}-${generateId(4)}`,
+        name: `${widget.name}-${generateId(4)}`,
       }
       return {
         type: WidgetDragType.Add,
@@ -78,7 +77,7 @@ const WidgetBlock: FC<{
         }}
       >
         <div className={classes.previewWidgetIcon}>{metadata.icon}</div>
-        <div>{metadata.widgetName}</div>
+        <div>{metadata.name}</div>
       </Card>
       <Card
         ref={drag}
@@ -90,7 +89,7 @@ const WidgetBlock: FC<{
         }}
       >
         <div className={classes.widgetIcon}>{metadata.icon}</div>
-        <div>{metadata.widgetName}</div>
+        <div>{metadata.name}</div>
       </Card>
     </Col>
   )
@@ -143,9 +142,7 @@ export const CanvasDesignerWidgetStencil: FC = () => {
           <Typography.Title level={5}>{name}</Typography.Title>
           <Row gutter={[8, 8]}>
             {widgets.map(({ metadata }) => {
-              return (
-                <WidgetBlock metadata={metadata} key={metadata.widgetType} />
-              )
+              return <WidgetBlock metadata={metadata} key={metadata.type} />
             })}
           </Row>
         </div>

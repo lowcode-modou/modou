@@ -42,8 +42,8 @@ export const formWidgetMetadata = WidgetMetadata.createMetadata<
   typeof MRSchemeFormWidgetState
 >({
   version: '0.0.1',
-  widgetType: 'FormWidget',
-  widgetName: '表单',
+  type: 'FormWidget',
+  name: '表单',
   icon: <WidgetIcon type="col" />,
   slots: {
     children: {

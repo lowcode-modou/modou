@@ -59,8 +59,8 @@ export const rowWidgetMetadata = WidgetMetadata.createMetadata<
   typeof MRSchemeRowWidgetState
 >({
   version: '0.0.1',
-  widgetType: 'RowWidget',
-  widgetName: '栅格行',
+  type: 'RowWidget',
+  name: '栅格行',
   icon: <WidgetIcon type="row" />,
   mrPropsScheme: MRSchemeRowWidgetProps,
   mrStateScheme: MRSchemeRowWidgetState,

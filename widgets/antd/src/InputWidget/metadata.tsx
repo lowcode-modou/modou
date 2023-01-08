@@ -36,8 +36,8 @@ export const MRSchemeInputWidgetState = WidgetMetadata.createMRWidgetState(
 
 export const inputWidgetMetadata = WidgetMetadata.createMetadata({
   version: '0.0.1',
-  widgetType: 'InputWidget',
-  widgetName: '输入框',
+  type: 'InputWidget',
+  name: '输入框',
   icon: <WidgetIcon type="input" />,
   mrPropsScheme: MRSchemeInputWidgetProps,
   mrStateScheme: MRSchemeInputWidgetState,

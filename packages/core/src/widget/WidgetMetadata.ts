@@ -39,8 +39,8 @@ interface BaseWidgetMetadata<
 > {
   version: MDVersion
   icon: ReactNode
-  widgetType: WidgetType
-  widgetName: string
+  type: WidgetType
+  name: string
   slots: WidgetSlots<S>
   // TODO FIX TYPE
   setters: Record<string, FC<BaseSetterProps<any>>>
@@ -77,8 +77,8 @@ export class WidgetMetadata<
 {
   constructor({
     version,
-    widgetType,
-    widgetName,
+    type,
+    name,
     mrPropsScheme,
     mrStateScheme,
     slots,
@@ -87,8 +87,8 @@ export class WidgetMetadata<
     initState,
   }: BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>) {
     this.version = version
-    this.widgetType = widgetType
-    this.widgetName = widgetName
+    this.type = type
+    this.name = name
     this.mrPropsScheme = mrPropsScheme
     this.mrStateScheme = mrStateScheme
     this.jsonPropsSchema = mrToJsonSchema(
@@ -105,8 +105,8 @@ export class WidgetMetadata<
   }
 
   version
-  widgetType
-  widgetName
+  type
+  name
   icon
   mrPropsScheme
   mrStateScheme

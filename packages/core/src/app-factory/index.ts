@@ -4,7 +4,7 @@ import { FC } from 'react'
 import { BaseSetterProps } from '@modou/setters/src/types'
 import { rowWidgetMetadata } from '@modou/widgets-antd'
 
-import { Entity, EntityFieldEnum, Page, WidgetGroupEnum } from '../types'
+import { Entity, Page, WidgetGroupEnum } from '../types'
 import { generateId } from '../utils'
 import { WidgetMetadata } from '../widget'
 
@@ -31,9 +31,9 @@ export class AppFactory {
     this._widgetRegistry = unionWith(
       widgets,
       ({ metadata: preMetadata }, { metadata: curMetadata }) =>
-        isEqual(preMetadata.widgetType, curMetadata.widgetType),
+        isEqual(preMetadata.type, curMetadata.type),
     ).reduce<WidgetRegistry>((pre, cur) => {
-      pre[cur.metadata.widgetType] = {
+      pre[cur.metadata.type] = {
         ...cur,
       }
       return pre

@@ -11,6 +11,7 @@ import { CanvasDesignerFileContextProvider } from '../contexts/CanvasDesignerFil
 import { selectedWidgetIdAtom } from '../store'
 import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
 import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
+import { CanvasDesignerWidgetStencil } from './CanvasDesignerWidgetStencil'
 
 interface CanvasDesignerProps {
   file: PageFile
@@ -45,17 +46,17 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({ file, children }) => {
             >
               <CanvasDesignerCanvas>{children}</CanvasDesignerCanvas>
             </div>
-            {/* <div className={`${classes.section} ${classes.sectionRight}`}>
+            <div className={`${classes.section} ${classes.sectionRight}`}>
               <Tabs
                 className={classes.designerPanelTabs}
                 type="card"
                 tabBarGutter={0}
                 items={[
-                  {
-                    key: 'CanvasDesignerPropsPanel',
-                    label: '属性',
-                    children: <CanvasDesignerPropsPanel />,
-                  },
+                  // {
+                  //   key: 'CanvasDesignerPropsPanel',
+                  //   label: '属性',
+                  //   children: <CanvasDesignerPropsPanel />,
+                  // },
                   {
                     key: 'CanvasDesignerWidgetStencil',
                     label: '组件列表',
@@ -63,7 +64,7 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({ file, children }) => {
                   },
                 ]}
               />
-            </div> */}
+            </div>
           </div>
         </DndProvider>
       </CanvasDesignerFileContextProvider>

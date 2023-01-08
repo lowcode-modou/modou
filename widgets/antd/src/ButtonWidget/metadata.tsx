@@ -112,8 +112,8 @@ export const MRSchemeButtonWidgetState = WidgetMetadata.createMRWidgetState(
 
 export const buttonWidgetMetadata = WidgetMetadata.createMetadata({
   version: '0.0.1',
-  widgetType: 'ButtonWidget',
-  widgetName: '按钮',
+  type: 'ButtonWidget',
+  name: '按钮',
   // TODO 使用文本引入icon
   icon: <WidgetIcon type="button" />,
   mrPropsScheme: MRSchemeButtonWidgetProps,
