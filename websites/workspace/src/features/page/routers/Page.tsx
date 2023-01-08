@@ -42,11 +42,11 @@ const _Page: FC = () => {
   return (
     <Row justify="center" align="middle" className={classes.page}>
       <Col span={24} className={classes.container}>
-        Page{page?.meta.name}
         {page && (
           <AppFactoryContext.Provider value={defaultAppFactory}>
-            <CanvasDesigner page={page} onPageChange={setPage}>
-              <SimulatorPC src="/simulator/pc.html" />
+            <CanvasDesigner file={page}>
+              <div>SimulatorPC</div>
+              {/* <SimulatorPC src="/simulator/pc.html" /> */}
             </CanvasDesigner>
           </AppFactoryContext.Provider>
         )}

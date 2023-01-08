@@ -4,9 +4,10 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { RecoilRoot, useSetRecoilState } from 'recoil'
 
-import { Page } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { PageFile } from '@modou/meta-vfs'
 
+import { CanvasDesignerFileContextProvider } from '../contexts/CanvasDesignerFileContext'
 import { selectedWidgetIdAtom } from '../store'
 import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
 import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
@@ -15,21 +16,16 @@ import { CanvasDesignerWidgetStencil } from './CanvasDesignerWidgetStencil'
 import { RecoilWidgetsSync } from './RecoilWidgetsSync'
 
 interface CanvasDesignerProps {
-  page: Page
-  onPageChange: (page: Page) => void
+  file: PageFile
   children: ReactElement
 }
 
-export const CanvasDesigner: FC<CanvasDesignerProps> = ({
-  page,
-  onPageChange,
-  children,
-}) => {
+export const CanvasDesigner: FC<CanvasDesignerProps> = ({ file, children }) => {
   const setSelectedWidgetId = useSetRecoilState(selectedWidgetIdAtom)
 
   return (
     <RecoilRoot>
-      <RecoilWidgetsSync page={page} onPageChange={onPageChange}>
+      <CanvasDesignerFileContextProvider value={file}>
         <DndProvider backend={HTML5Backend}>
           <div className={classes.wrapper}>
             <div className={`${classes.section} ${classes.sectionLeft}`}>
@@ -52,7 +48,7 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
             >
               <CanvasDesignerCanvas>{children}</CanvasDesignerCanvas>
             </div>
-            <div className={`${classes.section} ${classes.sectionRight}`}>
+            {/* <div className={`${classes.section} ${classes.sectionRight}`}>
               <Tabs
                 className={classes.designerPanelTabs}
                 type="card"
@@ -70,10 +66,10 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({
                   },
                 ]}
               />
-            </div>
+            </div> */}
           </div>
         </DndProvider>
-      </RecoilWidgetsSync>
+      </CanvasDesignerFileContextProvider>
     </RecoilRoot>
   )
 }

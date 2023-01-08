@@ -27,6 +27,7 @@
     "@typescript-eslint/return-await": "off",
     "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/restrict-plus-operands": "off",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
     "max-len": ["error", { "code": 120 }],
     "react-hooks/rules-of-hooks": "error", // 检查 Hook 的规则
     "react-hooks/exhaustive-deps": [

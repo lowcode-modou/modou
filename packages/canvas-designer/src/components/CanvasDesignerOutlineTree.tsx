@@ -1,6 +1,8 @@
 import { DownOutlined } from '@ant-design/icons'
 import { Tree } from 'antd'
 import { head } from 'lodash'
+import { toJS } from 'mobx'
+import { observer } from 'mobx-react-lite'
 import type RcTree from 'rc-tree'
 import React, { ComponentProps, FC, useRef } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -28,7 +30,7 @@ enum DropPositionEnum {
   After = 1,
 }
 
-export const CanvasDesignerOutlineTree: FC = () => {
+const _CanvasDesignerOutlineTree: FC = () => {
   const { treeData: pageOutlineTree } = usePageOutlineTree()
   const [selectedWidgetId, setSelectedWidgetId] =
     useRecoilState(selectedWidgetIdAtom)
@@ -49,10 +51,10 @@ export const CanvasDesignerOutlineTree: FC = () => {
   const allowDrop: ComponentProps<
     typeof Tree<OutlineTreeNode>
   >['allowDrop'] = ({ dropNode, dropPosition, dragNode }) => {
-    if (dragNode.nodeType === 'slot' || dragNode.nodeType === 'page') {
+    if (dragNode.nodeType === 'slot' || dragNode.nodeType === 'root') {
       return false
     }
-    if (dropNode.nodeType === 'page') {
+    if (dropNode.nodeType === 'root') {
       return false
     }
 
@@ -171,11 +173,12 @@ export const CanvasDesignerOutlineTree: FC = () => {
         blockNode
         // onDragEnter={onDragEnter}
         onDrop={onDrop}
-        treeData={[pageOutlineTree]}
+        treeData={[toJS(pageOutlineTree)]}
       />
     </div>
   )
 }
+export const CanvasDesignerOutlineTree = observer(_CanvasDesignerOutlineTree)
 
 const classes = {
   treeWrapper: mcss`
