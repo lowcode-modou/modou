@@ -1,4 +1,5 @@
 import { Spin } from 'antd'
+import { observer } from 'mobx-react-lite'
 import {
   FC,
   ReactElement,
@@ -11,29 +12,35 @@ import {
 } from 'react'
 import { useRecoilValue } from 'recoil'
 
+import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
 import { SimulatorInstanceContext } from '../contexts'
+import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
 import { pageSelector } from '../store'
 import { CanvasDesignerKeyPress } from './CanvasDesignerKeyPress'
 import { DesignerIndicator } from './DesignerIndicator'
 
-export const CanvasDesignerCanvas: FC<{
+export const _CanvasDesignerCanvas: FC<{
   children: ReactElement
 }> = ({ children }) => {
   const { widgets, rootWidgetId } = useRecoilValue(pageSelector)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [initializedIframe, setInitializedIframe] = useState(false)
+  const { appManager } = useAppManager()
+  const { canvasDesignerFile } = useCanvasDesignerFile()
 
   useEffect(() => {
     if (!initializedIframe) {
       return
     }
-    iframeRef.current?.contentWindow?.reactRenderHost.updateWidgets(widgets)
-    iframeRef.current?.contentWindow?.reactRenderHost.updateRootWidgetId(
-      rootWidgetId,
+    iframeRef.current?.contentWindow?.reactRenderHost.updateAppManager(
+      appManager,
     )
-  }, [widgets, rootWidgetId, initializedIframe])
+    iframeRef.current?.contentWindow?.reactRenderHost.updateFile(
+      canvasDesignerFile,
+    )
+  }, [widgets, rootWidgetId, initializedIframe, appManager, canvasDesignerFile])
   const canvasRef = useRef<HTMLElement>(null)
 
   const [designerIndicatorStyle, setDesignerIndicatorStyle] = useState({
@@ -88,6 +95,7 @@ export const CanvasDesignerCanvas: FC<{
     </div>
   )
 }
+export const CanvasDesignerCanvas = observer(_CanvasDesignerCanvas)
 
 const classes = {
   wrapper: mcss`

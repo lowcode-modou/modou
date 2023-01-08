@@ -4,7 +4,7 @@ import {
   TextNode,
   baseParse,
 } from '@vue/compiler-core'
-import { useMemoizedFn, useMount, useUnmount, useUpdate } from 'ahooks'
+import { useMemoizedFn, useMount, useUnmount } from 'ahooks'
 import { ConfigProvider, Spin } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { flatten } from 'flat'
@@ -12,26 +12,27 @@ import { get, isFunction, keys, set } from 'lodash'
 import {
   IReactionDisposer,
   autorun,
-  comparer,
   makeAutoObservable,
-  reaction,
   runInAction,
 } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import { FC, memo, useContext, useEffect, useMemo, useRef } from 'react'
+import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { RecoilRoot } from 'recoil'
+
 import {
-  RecoilRoot,
-  atom,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil'
-
-import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
+  AppFactoryContext,
+  AppManagerProvider,
+  WidgetBaseProps,
+  useAppManager,
+} from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { AppManager, PageFile } from '@modou/meta-vfs'
 
+import {
+  CanvasFileContextProvider,
+  useCanvasFile,
+} from '../contexts/CanvasFileContext'
 import { useInitRender } from '../hooks'
-import { widgetSelector, widgetsAtom } from '../store'
 
 enum NodeTypes {
   ROOT = 0,
@@ -99,9 +100,10 @@ const store = new Store()
 const _WidgetWrapper: FC<{
   widgetId: string
 }> = ({ widgetId }) => {
-  const widget = useRecoilValue(widgetSelector(widgetId))
+  const { appManager } = useAppManager()
+  const widget = appManager.widgetMap.get(widgetId)!
   const appFactory = useContext(AppFactoryContext)
-  const widgetDef = appFactory.widgetByType[widget.widgetType]
+  const widgetDef = appFactory.widgetByType[widget.meta.type]
   // TODO any 替换 state 定义
   const WidgetComponent = widgetDef.component
 
@@ -110,7 +112,7 @@ const _WidgetWrapper: FC<{
       .map(([slotPath, slot]) => {
         return {
           key: slotPath,
-          elements: widget.slots[slotPath]?.map((widgetId) => (
+          elements: widget.meta.slots[slotPath]?.map((widgetId) => (
             <WidgetWrapper key={widgetId} widgetId={widgetId} />
           )),
         }
@@ -121,7 +123,7 @@ const _WidgetWrapper: FC<{
         Reflect.set(pre, key, elements)
         return pre
       }, {})
-  }, [widget.slots, widgetDef.metadata.slots])
+  }, [widget.meta.slots, widgetDef.metadata.slots])
 
   const renderSlotPaths = useMemo(() => {
     return Object.keys(renderSlots).reduce<Record<string, string>>(
@@ -137,7 +139,7 @@ const _WidgetWrapper: FC<{
   if (!get(store.state, widgetId)) {
     runInAction(() => {
       set(store.state, widgetId, {
-        ...widget.props,
+        ...widget.meta.slots,
         ...widgetDef.metadata.initState(widget),
       })
     })
@@ -146,16 +148,16 @@ const _WidgetWrapper: FC<{
   // reactive props
   if (!get(store.props, widgetId)) {
     runInAction(() => {
-      set(store.props, widgetId, widget.props)
+      set(store.props, widgetId, widget.meta.props)
     })
   }
 
   // update reactive props
   useEffect(() => {
     runInAction(() => {
-      set(store.props, widgetId, widget.props)
+      set(store.props, widgetId, widget.meta.props)
     })
-  }, [widget.props, widgetId])
+  }, [widget.meta.props, widgetId])
 
   // TODO 优化类型
   const updateWidgetState = useMemoizedFn(
@@ -174,9 +176,9 @@ const _WidgetWrapper: FC<{
     // FIXME 为什么会渲染两遍
     updateWidgetState<{}>((prev) => ({
       ...prev,
-      ...widget.props,
+      ...widget.meta.props,
     }))
-  }, [updateWidgetState, widget.props])
+  }, [updateWidgetState, widget.meta.props])
 
   const watchStopsRef = useRef<Record<string, IReactionDisposer>>({})
 
@@ -240,57 +242,48 @@ const _WidgetWrapper: FC<{
 const WidgetWrapper = observer(_WidgetWrapper)
 
 interface MoDouRenderProps {
-  rootWidgetId: string
-  widgets: WidgetBaseProps[]
   host?: 'simulator' | 'browser'
 }
 
-const MemoWidgetWrapper = memo(WidgetWrapper)
-const rootWidgetIdAtom = atom({
-  key: 'rootWidgetIdAtom@ReactRender',
-  default: '',
-})
-const _ReactRender: FC<MoDouRenderProps> = ({
-  widgets,
-  rootWidgetId: _rootWidgetId,
-  host = 'browser',
-}) => {
-  // TODO 使用 recoil-async
-  const setWidgets = useSetRecoilState(widgetsAtom)
-  const [rootWidgetId, setRootWidgetId] = useRecoilState(rootWidgetIdAtom)
-
-  useInitRender({ setWidgets, setRootWidgetId })
-
+const _ReactRenderTolerant: FC<MoDouRenderProps> = ({ host = 'browser' }) => {
+  const { canvasFile } = useCanvasFile()
+  const { appManager } = useAppManager()
   // FIXME 判断当前所在环境 是否从props更新widgets  可以加一个 host
-  useEffect(() => {
-    if (host === 'browser') {
-      setWidgets(widgets)
-      setRootWidgetId(_rootWidgetId)
-    }
-  }, [_rootWidgetId, host, setRootWidgetId, setWidgets, widgets])
-
-  const rootWidget = useRecoilValue(widgetSelector(rootWidgetId))
+  const rootWidget = appManager.widgetMap.get(canvasFile.meta.rootWidgetId)
   return rootWidget ? (
-    <MemoWidgetWrapper widgetId={rootWidgetId} />
+    <WidgetWrapper widgetId={canvasFile.meta.rootWidgetId} />
   ) : (
     <div className={classes.spinWrapper}>
       <Spin size={'large'} />
     </div>
   )
 }
+const ReactRenderTolerant = observer(_ReactRenderTolerant)
 
-export const ReactRender: FC<MoDouRenderProps> = (props) => {
+const _ReactRender_: FC<MoDouRenderProps> = (props) => {
   const appFactory = useContext(AppFactoryContext)
+  const [appManager, updateAppManager] = useState<AppManager>()
+  const [file, updateFile] = useState<PageFile>()
+  useInitRender({ updateAppManager, updateFile })
+  if (!file || !appManager) {
+    return null
+  }
   return (
     <RecoilRoot>
       <ConfigProvider locale={zhCN}>
         <AppFactoryContext.Provider value={appFactory}>
-          <_ReactRender {...props} />
+          <AppManagerProvider value={appManager}>
+            <CanvasFileContextProvider value={file}>
+              <ReactRenderTolerant {...props} />
+            </CanvasFileContextProvider>
+          </AppManagerProvider>
         </AppFactoryContext.Provider>
       </ConfigProvider>
     </RecoilRoot>
   )
 }
+
+export const ReactRender = observer(_ReactRender_)
 
 const classes = {
   spinWrapper: mcss`

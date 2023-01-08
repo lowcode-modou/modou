@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite'
 import { FC, ReactNode, createContext, useContext } from 'react'
 
 import { PageFile } from '@modou/meta-vfs'

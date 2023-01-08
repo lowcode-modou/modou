@@ -45,8 +45,7 @@ const _Page: FC = () => {
         {page && (
           <AppFactoryContext.Provider value={defaultAppFactory}>
             <CanvasDesigner file={page}>
-              <div>SimulatorPC</div>
-              {/* <SimulatorPC src="/simulator/pc.html" /> */}
+              <SimulatorPC src="/simulator/pc.html" />
             </CanvasDesigner>
           </AppFactoryContext.Provider>
         )}

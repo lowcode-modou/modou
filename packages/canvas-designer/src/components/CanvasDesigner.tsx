@@ -11,9 +11,6 @@ import { CanvasDesignerFileContextProvider } from '../contexts/CanvasDesignerFil
 import { selectedWidgetIdAtom } from '../store'
 import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
 import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
-import { CanvasDesignerPropsPanel } from './CanvasDesignerPropsPanel'
-import { CanvasDesignerWidgetStencil } from './CanvasDesignerWidgetStencil'
-import { RecoilWidgetsSync } from './RecoilWidgetsSync'
 
 interface CanvasDesignerProps {
   file: PageFile

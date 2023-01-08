@@ -9,8 +9,9 @@ import {
   WidgetBaseProps,
   WidgetGroupEnum,
   WidgetMetadata,
+  generateId,
+  getWidgetGroupLabel,
 } from '@modou/core'
-import { generateId, getWidgetGroupLabel } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
 import { WidgetDragType } from '../types'

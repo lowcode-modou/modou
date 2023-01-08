@@ -1,20 +1,20 @@
-import { WidgetBaseProps } from '@modou/core'
+import { AppManager, PageFile } from '@modou/meta-vfs'
 
-type UpdateWidgets = (widgets: WidgetBaseProps[]) => void
-type UpdateRootWidgetId = (widgetId: string) => void
+export type UpdateAppManager = (appManager: AppManager) => void
+export type UpdateFile = (file: PageFile) => void
 
 export class ReactRenderHost {
   constructor({
-    updateWidgets,
-    updateRootWidgetId,
+    updateAppManager,
+    updateFile,
   }: {
-    updateWidgets: UpdateWidgets
-    updateRootWidgetId: UpdateRootWidgetId
+    updateAppManager: UpdateAppManager
+    updateFile: UpdateFile
   }) {
-    this.updateWidgets = updateWidgets
-    this.updateRootWidgetId = updateRootWidgetId
+    this.updateAppManager = updateAppManager
+    this.updateFile = updateFile
   }
 
-  updateWidgets
-  updateRootWidgetId
+  updateAppManager
+  updateFile
 }
