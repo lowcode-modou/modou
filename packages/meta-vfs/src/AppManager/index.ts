@@ -24,6 +24,7 @@ export class AppManager {
   }
 
   get widgetMap() {
+    // TODO 优化 直接从page.widgetMap 取值
     return new Map(
       flatten(
         this.app.pages.map((page) =>

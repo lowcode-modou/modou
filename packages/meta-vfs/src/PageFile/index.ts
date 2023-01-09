@@ -1,5 +1,7 @@
-import { omit } from 'lodash'
+import { isEmpty, omit } from 'lodash'
 import { computed, makeObservable, observable, runInAction } from 'mobx'
+
+import { WidgetBaseProps } from '@modou/core'
 
 import { AppFile } from '../AppFile'
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
@@ -10,6 +12,14 @@ export interface PageFileMeta extends BaseFileMete {
   rootWidgetId: string
 }
 
+export interface RelationWidget {
+  props: WidgetBaseProps
+  slotPath: string
+  parent?: RelationWidget
+}
+
+type WidgetRelationById = Record<string, RelationWidget>
+
 interface FileMap extends BaseFileMap {
   readonly widgets: WidgetFile[]
 }
@@ -19,6 +29,8 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
     makeObservable(this, {
       subFileMap: observable,
       widgets: computed,
+      widgetMap: computed,
+      widgetRelationById: computed,
     })
   }
 
@@ -28,6 +40,40 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
 
   get widgets() {
     return this.subFileMap.widgets
+  }
+
+  get widgetMap() {
+    return new Map(this.widgets.map((widget) => [widget.meta.id, widget]))
+  }
+
+  get widgetRelationById(): WidgetRelationById {
+    return this.widgets.reduce<WidgetRelationById>((pre, cur) => {
+      const widgetId = cur.meta.id
+      if (!Reflect.has(pre, widgetId)) {
+        pre[widgetId] = {
+          props: cur.meta,
+          slotPath: '',
+        }
+      }
+      const parent = pre[widgetId]
+      if (!isEmpty(cur.meta.slots)) {
+        Object.entries(cur.meta.slots).forEach(([slotPath, slotChildren]) => {
+          slotChildren.forEach((widgetId) => {
+            if (!Reflect.has(pre, widgetId)) {
+              pre[widgetId] = {
+                props: this.widgetMap.get(widgetId)?.meta!,
+                parent,
+                slotPath,
+              }
+            } else {
+              pre[widgetId].parent = parent
+              pre[widgetId].slotPath = slotPath
+            }
+          })
+        })
+      }
+      return pre
+    }, {})
   }
 
   toJSON() {

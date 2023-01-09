@@ -4,7 +4,7 @@ import { PageFile } from '@modou/meta-vfs'
 
 const CanvasDesignerFileContext = createContext<PageFile | null>(null)
 
-export const CanvasDesignerFileContextProvider: FC<{
+export const CanvasDesignerFileProvider: FC<{
   children: ReactNode
   value: PageFile
 }> = ({ children, value }) => {

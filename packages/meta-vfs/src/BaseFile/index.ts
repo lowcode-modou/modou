@@ -42,7 +42,7 @@ export abstract class BaseFile<
   fileType: FileTypeEnum
   meta: T
 
-  subFileMapToJson() {
+  protected subFileMapToJson() {
     return mapValues(this.subFileMap, (dir) =>
       // TODO 是否有些特殊的file需求sort
       dir.map((file) => file.toJSON()),

@@ -1,31 +1,32 @@
 import { FullscreenOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
+import { observer } from 'mobx-react-lite'
 import { FC, useContext, useEffect, useRef } from 'react'
 import { useDrag } from 'react-dnd'
-import { useRecoilValue } from 'recoil'
 
+import { useAppManager } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
 
 import { SimulatorInstanceContext } from '../../../contexts'
-import {
-  selectedWidgetIdAtom,
-  widgetRelationByWidgetIdSelector,
-  widgetSelector,
-} from '../../../store'
+import { useCanvasDesignerFile } from '../../../contexts/CanvasDesignerFileContext'
+import { useCanvasDesignerStore } from '../../../contexts/CanvasDesignerStoreContext'
 import { WidgetDragType } from '../../../types'
 import { getRootElementFromWidgetId } from '../../../utils'
 
-export const SelectedToolBox: FC = () => {
-  const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
+const _SelectedToolBox: FC = () => {
+  const { canvasDesignerStore } = useCanvasDesignerStore()
+  const { appManager } = useAppManager()
+  const { canvasDesignerFile } = useCanvasDesignerFile()
+  const { widgetRelationById } = canvasDesignerFile
 
+  console.log('widgetRelationById', widgetRelationById)
+
+  const selectedWidgetId = canvasDesignerStore.selectedWidgetId
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const widget = useRecoilValue(widgetSelector(selectedWidgetId))
-  const widgetRelationByWidgetId = useRecoilValue(
-    widgetRelationByWidgetIdSelector,
-  )
+  const widget = appManager.widgetMap.get(selectedWidgetId)!
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
-      type: widget.widgetType,
+      type: widget.meta.type,
       item: () => {
         return {
           type: WidgetDragType.Move,
@@ -78,8 +79,7 @@ export const SelectedToolBox: FC = () => {
   ])
   const theme = useTheme()
 
-  return isDragging ||
-    !widgetRelationByWidgetId[selectedWidgetId].parent ? null : (
+  return isDragging || !widgetRelationById[selectedWidgetId].parent ? null : (
     <div
       ref={wrapperRef}
       style={{
@@ -104,6 +104,7 @@ export const SelectedToolBox: FC = () => {
     </div>
   )
 }
+export const SelectedToolBox = observer(_SelectedToolBox)
 
 const classes = {
   button: mcss`

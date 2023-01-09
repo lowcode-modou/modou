@@ -36,7 +36,7 @@ export const mock_appFile = AppFile.create({
 // mock page start
 const buttonDSL: WidgetBaseProps = {
   ...WidgetMetadata.mrSchemeToDefaultJson(buttonWidgetMetadata.jsonPropsSchema),
-  id: MOCK_ROOT_WIDGET_ID,
+  id: generateId(),
 }
 
 const colDSL: WidgetBaseProps = {
@@ -49,7 +49,7 @@ const colDSL: WidgetBaseProps = {
 
 const rowDSL: WidgetBaseProps = {
   ...WidgetMetadata.mrSchemeToDefaultJson(rowWidgetMetadata.jsonPropsSchema),
-  id: generateId(),
+  id: MOCK_ROOT_WIDGET_ID,
   slots: {
     children: [colDSL.id],
   },
@@ -62,59 +62,59 @@ const pageFile1 = PageFile.create(
     name: '大漠孤烟直',
     id: MOCK_PAGE_ID,
     version: '0.0.0',
-    rootWidgetId: MOCK_ROOT_WIDGET_ID + MOCK_PAGE_ID,
+    rootWidgetId: MOCK_ROOT_WIDGET_ID,
   },
   mock_appFile,
 )
 
-const pageFile2 = PageFile.create(
-  {
-    name: '测试',
-    id: MOCK_PAGE_ID + '___',
-    version: '0.0.0',
-    rootWidgetId: MOCK_ROOT_WIDGET_ID + MOCK_PAGE_ID + '___',
-  },
-  mock_appFile,
-)
-const pageFile3 = PageFile.create(
-  {
-    name: '长河落日圆',
-    id: MOCK_PAGE_ID + '________',
-    version: '0.0.0',
-    rootWidgetId: MOCK_ROOT_WIDGET_ID + MOCK_PAGE_ID + '________',
-  },
-  mock_appFile,
-)
+// const pageFile2 = PageFile.create(
+//   {
+//     name: '测试',
+//     id: MOCK_PAGE_ID + '___',
+//     version: '0.0.0',
+//     rootWidgetId: MOCK_ROOT_WIDGET_ID + MOCK_PAGE_ID + '___',
+//   },
+//   mock_appFile,
+// )
+// const pageFile3 = PageFile.create(
+//   {
+//     name: '长河落日圆',
+//     id: MOCK_PAGE_ID + '________',
+//     version: '0.0.0',
+//     rootWidgetId: MOCK_ROOT_WIDGET_ID + MOCK_PAGE_ID + '________',
+//   },
+//   mock_appFile,
+// )
 MOCK_WIDGETS.forEach((widget) =>
   WidgetFile.create(
     {
       ...widget,
       version: '0.0.1',
-      id: widget.id + pageFile1.meta.id,
+      id: widget.id,
     },
     pageFile1,
   ),
 )
-MOCK_WIDGETS.forEach((widget) =>
-  WidgetFile.create(
-    {
-      ...widget,
-      version: '0.0.1',
-      id: widget.id + pageFile2.meta.id,
-    },
-    pageFile2,
-  ),
-)
-MOCK_WIDGETS.forEach((widget) =>
-  WidgetFile.create(
-    {
-      ...widget,
-      version: '0.0.1',
-      id: widget.id + pageFile3.meta.id,
-    },
-    pageFile3,
-  ),
-)
+// MOCK_WIDGETS.forEach((widget) =>
+//   WidgetFile.create(
+//     {
+//       ...widget,
+//       version: '0.0.1',
+//       id: widget.id + pageFile2.meta.id,
+//     },
+//     pageFile2,
+//   ),
+// )
+// MOCK_WIDGETS.forEach((widget) =>
+//   WidgetFile.create(
+//     {
+//       ...widget,
+//       version: '0.0.1',
+//       id: widget.id + pageFile3.meta.id,
+//     },
+//     pageFile3,
+//   ),
+// )
 // mock page end
 const MOCK_FIELDS: EntityField[] = [
   {

@@ -1,7 +1,5 @@
 import { configure } from 'mobx'
 
-import { AppManager } from './AppManager'
-
 configure({
   useProxies: 'never',
   enforceActions: 'always',

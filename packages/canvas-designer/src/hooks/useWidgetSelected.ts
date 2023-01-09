@@ -1,11 +1,11 @@
 import { useEventListener } from 'ahooks'
 import { RefObject } from 'react'
-import { useSetRecoilState } from 'recoil'
 
-import { selectedWidgetIdAtom } from '../store'
+import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
 import { getSlotRawElement, getWidgetIdFromElement } from '../utils'
 
 export const useWidgetSelected = (canvasRef: RefObject<HTMLElement>) => {
+  const { canvasDesignerStore } = useCanvasDesignerStore()
   // TODO 由 select id 驱动 style
   useEventListener(
     'click',
@@ -15,7 +15,7 @@ export const useWidgetSelected = (canvasRef: RefObject<HTMLElement>) => {
         canvasRef.current,
       )
       const selectedWidgetId = getWidgetIdFromElement(rawElement as HTMLElement)
-      setSelectedWidgetId(selectedWidgetId)
+      canvasDesignerStore.setSelectedWidgetId(selectedWidgetId)
     },
     {
       target: canvasRef,

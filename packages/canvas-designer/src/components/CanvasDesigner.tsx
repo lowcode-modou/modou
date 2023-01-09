@@ -7,7 +7,8 @@ import { RecoilRoot, useSetRecoilState } from 'recoil'
 import { mcss } from '@modou/css-in-js'
 import { PageFile } from '@modou/meta-vfs'
 
-import { CanvasDesignerFileContextProvider } from '../contexts/CanvasDesignerFileContext'
+import { CanvasDesignerFileProvider } from '../contexts/CanvasDesignerFileContext'
+import { CanvasDesignerStoreProvider } from '../contexts/CanvasDesignerStoreContext'
 import { selectedWidgetIdAtom } from '../store'
 import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
 import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
@@ -23,51 +24,53 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({ file, children }) => {
 
   return (
     <RecoilRoot>
-      <CanvasDesignerFileContextProvider value={file}>
-        <DndProvider backend={HTML5Backend}>
-          <div className={classes.wrapper}>
-            <div className={`${classes.section} ${classes.sectionLeft}`}>
-              <Tabs
-                className={classes.designerPanelTabs}
-                type="card"
-                tabBarGutter={0}
-                items={[
-                  {
-                    key: 'CanvasDesignerOutlineTree',
-                    label: '大纲树',
-                    children: <CanvasDesignerOutlineTree />,
-                  },
-                ]}
-              />
+      <CanvasDesignerFileProvider value={file}>
+        <CanvasDesignerStoreProvider>
+          <DndProvider backend={HTML5Backend}>
+            <div className={classes.wrapper}>
+              <div className={`${classes.section} ${classes.sectionLeft}`}>
+                <Tabs
+                  className={classes.designerPanelTabs}
+                  type="card"
+                  tabBarGutter={0}
+                  items={[
+                    {
+                      key: 'CanvasDesignerOutlineTree',
+                      label: '大纲树',
+                      children: <CanvasDesignerOutlineTree />,
+                    },
+                  ]}
+                />
+              </div>
+              <div
+                className={`${classes.section} ${classes.canvasWrapper}`}
+                onClick={() => setSelectedWidgetId('')}
+              >
+                <CanvasDesignerCanvas>{children}</CanvasDesignerCanvas>
+              </div>
+              <div className={`${classes.section} ${classes.sectionRight}`}>
+                <Tabs
+                  className={classes.designerPanelTabs}
+                  type="card"
+                  tabBarGutter={0}
+                  items={[
+                    // {
+                    //   key: 'CanvasDesignerPropsPanel',
+                    //   label: '属性',
+                    //   children: <CanvasDesignerPropsPanel />,
+                    // },
+                    {
+                      key: 'CanvasDesignerWidgetStencil',
+                      label: '组件列表',
+                      children: <CanvasDesignerWidgetStencil />,
+                    },
+                  ]}
+                />
+              </div>
             </div>
-            <div
-              className={`${classes.section} ${classes.canvasWrapper}`}
-              onClick={() => setSelectedWidgetId('')}
-            >
-              <CanvasDesignerCanvas>{children}</CanvasDesignerCanvas>
-            </div>
-            <div className={`${classes.section} ${classes.sectionRight}`}>
-              <Tabs
-                className={classes.designerPanelTabs}
-                type="card"
-                tabBarGutter={0}
-                items={[
-                  // {
-                  //   key: 'CanvasDesignerPropsPanel',
-                  //   label: '属性',
-                  //   children: <CanvasDesignerPropsPanel />,
-                  // },
-                  {
-                    key: 'CanvasDesignerWidgetStencil',
-                    label: '组件列表',
-                    children: <CanvasDesignerWidgetStencil />,
-                  },
-                ]}
-              />
-            </div>
-          </div>
-        </DndProvider>
-      </CanvasDesignerFileContextProvider>
+          </DndProvider>
+        </CanvasDesignerStoreProvider>
+      </CanvasDesignerFileProvider>
     </RecoilRoot>
   )
 }

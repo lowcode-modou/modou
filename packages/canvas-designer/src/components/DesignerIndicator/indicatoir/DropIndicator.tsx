@@ -1,28 +1,24 @@
 import { useMount, useMutationObserver } from 'ahooks'
 import { Col, Row, Typography } from 'antd'
+import { observer } from 'mobx-react-lite'
 import {
   CSSProperties,
   FC,
-  memo,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from 'react'
-import { useRecoilValue } from 'recoil'
 
 import { AppFactoryContext } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
 
 import { SimulatorInstanceContext } from '../../../contexts'
+import { useCanvasDesignerFile } from '../../../contexts/CanvasDesignerFileContext'
+import { useCanvasDesignerStore } from '../../../contexts/CanvasDesignerStoreContext'
 import { useElementRect, useWidgetDrop } from '../../../hooks'
-import {
-  DropIndicatorPositionEnum,
-  dropIndicatorAtom,
-  widgetByIdSelector,
-  widgetsSelector,
-} from '../../../store'
+import { DropIndicatorPositionEnum } from '../../../store'
 import {
   getWidgetIdFromElement,
   getWidgetSlotPathFromElement,
@@ -36,8 +32,9 @@ interface DropElement {
   slotPath: string
 }
 
-const WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
-  const widgets = useRecoilValue(widgetsSelector)
+const _WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
+  const { canvasDesignerFile } = useCanvasDesignerFile()
+  const { canvasDesignerStore } = useCanvasDesignerStore()
   const appFactory = useContext(AppFactoryContext)
   // FIXME element 有可能会重复
   const elementSelector = `[data-widget-id=${widgetId}]${
@@ -56,27 +53,27 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
     slotPath,
     element,
   })
-  const dropIndicator = useRecoilValue(dropIndicatorAtom)
 
   const [styleUpdater, setStyleUpdater] = useState(0)
   const { style } = useElementRect(element, {
     deps: [styleUpdater],
   })
   useEffect(() => {
+    // TODO 是否需要深度监听
     // void Promise.resolve().then(() => {
     //   setStyleUpdater((prevState) => prevState + 1)
     // })
     setTimeout(() => {
       setStyleUpdater((prevState) => prevState + 1)
     })
-  }, [widgets])
+  }, [canvasDesignerFile.widgets])
 
   const dropIndicatorStyle: CSSProperties = useMemo(() => {
-    if (!dropIndicator.show) {
+    if (!canvasDesignerStore.dropIndicator.show) {
       return {}
     }
 
-    switch (dropIndicator.position) {
+    switch (canvasDesignerStore.dropIndicator.position) {
       case DropIndicatorPositionEnum.Top:
         return {
           width: '100%',
@@ -108,11 +105,14 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
       default:
         return {}
     }
-  }, [dropIndicator.position, dropIndicator.show])
+  }, [
+    canvasDesignerStore.dropIndicator.position,
+    canvasDesignerStore.dropIndicator.show,
+  ])
 
   const theme = useTheme()
 
-  const widgetMetadata = appFactory.widgetByType[widget.widgetType].metadata
+  const widgetMetadata = appFactory.widgetByType[widget.meta.type].metadata
 
   return (
     <>
@@ -125,7 +125,7 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
         >
           <Col>
             <Typography.Text type={'secondary'} strong>
-              {widgetMetadata.widgetName}-{widgetMetadata.slots[slotPath].name}
+              {widgetMetadata.name}-{widgetMetadata.slots[slotPath].name}
             </Typography.Text>
           </Col>
         </Row>
@@ -144,7 +144,7 @@ const WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
     </>
   )
 }
-
+const WidgetDrop = observer(_WidgetDrop)
 const widgetDropClasses = {
   emptyWrapper: mcss`
 		border: 1px solid rgba(0,0,0,.1);
@@ -163,12 +163,8 @@ const widgetDropClasses = {
   `,
 }
 
-const MemoWidgetDrop = memo(WidgetDrop)
-
-export const DropIndicator: FC = () => {
-  // TODO use Memo 优化性能
-  const widgetById = useRecoilValue(widgetByIdSelector)
-
+const _DropIndicator: FC = () => {
+  const { canvasDesignerFile } = useCanvasDesignerFile()
   const [dropElements, setDropElements] = useState<
     Array<{
       widgetId: string
@@ -198,13 +194,13 @@ export const DropIndicator: FC = () => {
   })
   const dropElementsRendered = useMemo(() => {
     return dropElements.filter(({ widgetId }) =>
-      Reflect.has(widgetById, widgetId),
+      canvasDesignerFile.widgetMap.has(widgetId),
     )
-  }, [dropElements, widgetById])
+  }, [canvasDesignerFile.widgetMap, dropElements])
   return (
     <>
       {dropElementsRendered.map(({ widgetId, slotPath }) => (
-        <MemoWidgetDrop
+        <WidgetDrop
           key={widgetId + slotPath}
           widgetId={widgetId}
           slotPath={slotPath}
@@ -213,3 +209,4 @@ export const DropIndicator: FC = () => {
     </>
   )
 }
+export const DropIndicator = observer(_DropIndicator)

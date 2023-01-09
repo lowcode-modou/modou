@@ -140,7 +140,7 @@ const _WidgetWrapper: FC<{
     runInAction(() => {
       set(store.state, widgetId, {
         ...widget.meta.slots,
-        ...widgetDef.metadata.initState(widget),
+        ...widgetDef.metadata.initState(widget.meta),
       })
     })
   }

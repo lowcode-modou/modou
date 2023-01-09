@@ -1,7 +1,7 @@
 import { useEventListener } from 'ahooks'
 import { CSSProperties, RefObject, useState } from 'react'
 
-import { getRootRawElement, getSlotRawElement } from '../utils'
+import { getRootRawElement } from '../utils'
 
 export const useWidgetHovering = (canvasRef: RefObject<HTMLElement>) => {
   const [hoveringElementRect, setHoveringElementRect] = useState<{

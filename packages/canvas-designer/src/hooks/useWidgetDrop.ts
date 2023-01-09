@@ -1,19 +1,17 @@
+import { useMemoizedFn } from 'ahooks'
 import { isEmpty } from 'lodash'
 import { useContext, useEffect, useRef } from 'react'
 import { useDrop } from 'react-dnd'
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil'
 import { match } from 'ts-pattern'
 
 import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
 
+import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
+import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
 import {
   DropIndicator,
   DropIndicatorInsertPositionEnum,
   DropIndicatorPositionEnum,
-  WidgetRelationByWidgetId,
-  dropIndicatorAtom,
-  widgetRelationByWidgetIdSelector,
-  widgetSelector,
 } from '../store'
 import { WidgetDragType } from '../types'
 import { useAddWidget } from './useAddWidget'
@@ -32,7 +30,7 @@ const useWidgetBgColor = ({
   isContainer: boolean
   element: HTMLElement
 }) => {
-  const dropIndicator = useRecoilValue(dropIndicatorAtom)
+  const { canvasDesignerStore } = useCanvasDesignerStore()
 
   const elementBgColor = useRef<{
     initialized: boolean
@@ -51,12 +49,18 @@ const useWidgetBgColor = ({
         initialized: true,
       }
     }
-    if (isActive && !dropIndicator.show) {
+    if (isActive && !canvasDesignerStore.dropIndicator.show) {
       element.style.backgroundColor = DROP_ELEMENT_ACTIVE_BG_COLOR
     } else {
       element.style.backgroundColor = elementBgColor.current.value
     }
-  }, [dropIndicator.show, element, element.style, isActive, isContainer])
+  }, [
+    canvasDesignerStore.dropIndicator.show,
+    element,
+    element.style,
+    isActive,
+    isContainer,
+  ])
 }
 
 const useWidgetMinHeight = ({
@@ -114,36 +118,26 @@ export const useWidgetDrop = ({
   slotPath: string
   element: HTMLElement
 }) => {
+  const { canvasDesignerStore } = useCanvasDesignerStore()
+  const { canvasDesignerFile } = useCanvasDesignerFile()
   // 如果有slotPath 则是插槽，没有是普通组件
   // 插槽只能放置内部
   // 普通组件只能放置兄弟节点
   const dropType: DropType = slotPath ? DropType.Slot : DropType.Widget
   const widgetFactory = useContext(AppFactoryContext)
-  const widget = useRecoilValue(widgetSelector(widgetId))
+  const widget = canvasDesignerFile.widgetMap.get(widgetId)!
 
   const { addWidget } = useAddWidget()
   const { moveWidget } = useMoveWidget()
 
-  const isEmptySlot = !!slotPath && isEmpty(widget.slots[slotPath])
-  const setDropIndicator = useSetRecoilState(dropIndicatorAtom)
+  const isEmptySlot = !!slotPath && isEmpty(widget.meta.slots[slotPath])
 
-  const getDropIndicator = useRecoilCallback<readonly unknown[], DropIndicator>(
-    ({ snapshot }) =>
-      () => {
-        return snapshot.getLoadable(dropIndicatorAtom).contents
-      },
-    [],
-  )
-  const getWidgetRelationByWidgetId = useRecoilCallback<
-    readonly unknown[],
-    WidgetRelationByWidgetId
-  >(
-    ({ snapshot }) =>
-      () => {
-        return snapshot.getLoadable(widgetRelationByWidgetIdSelector).contents
-      },
-    [],
-  )
+  const getDropIndicator = useMemoizedFn(() => {
+    return canvasDesignerStore.dropIndicator
+  })
+  const getWidgetRelationByWidgetId = useMemoizedFn(() => {
+    return canvasDesignerFile.widgetRelationById
+  })
 
   // // // TODO 查看 react-dnd 为什么能自动推断参数类型
   const [{ canDrop, isOverCurrent }, drop] = useDrop<
@@ -175,7 +169,7 @@ export const useWidgetDrop = ({
         const dropIndicator = getDropIndicator()
         const widgetRelationByWidgetId = getWidgetRelationByWidgetId()
         const { parent, slotPath: parentSlotPath } =
-          widgetRelationByWidgetId[widget.id]
+          widgetRelationByWidgetId[widget.meta.id]
         if (item.type === WidgetDragType.Move) {
           switch (dropIndicator.insertPosition) {
             case DropIndicatorInsertPositionEnum.Before:
@@ -185,7 +179,7 @@ export const useWidgetDrop = ({
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
                   targetPosition: parent.props.slots[parentSlotPath].findIndex(
-                    (widgetId) => widget.id === widgetId,
+                    (widgetId) => widget.meta.id === widgetId,
                   ),
                 })
               }
@@ -198,7 +192,7 @@ export const useWidgetDrop = ({
                   targetSlotPath: parentSlotPath,
                   targetPosition:
                     parent.props.slots[parentSlotPath].findIndex(
-                      (widgetId) => widget.id === widgetId,
+                      (widgetId) => widget.meta.id === widgetId,
                     ) + 1,
                 })
               }
@@ -206,9 +200,9 @@ export const useWidgetDrop = ({
             case DropIndicatorInsertPositionEnum.Inner:
               moveWidget({
                 sourceWidgetId: item.widget.id,
-                targetWidgetId: widget.id,
+                targetWidgetId: widget.meta.id,
                 targetSlotPath: slotPath,
-                targetPosition: widget.slots[slotPath].length,
+                targetPosition: widget.meta.slots[slotPath].length,
               })
               break
             default:
@@ -222,7 +216,7 @@ export const useWidgetDrop = ({
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
                   targetPosition: parent.props.slots[parentSlotPath].findIndex(
-                    (widgetId) => widget.id === widgetId,
+                    (widgetId) => widget.meta.id === widgetId,
                   ),
                 })
               }
@@ -235,7 +229,7 @@ export const useWidgetDrop = ({
                   targetSlotPath: parentSlotPath,
                   targetPosition:
                     parent.props.slots[parentSlotPath].findIndex(
-                      (widgetId) => widget.id === widgetId,
+                      (widgetId) => widget.meta.id === widgetId,
                     ) + 1,
                 })
               }
@@ -243,15 +237,15 @@ export const useWidgetDrop = ({
             case DropIndicatorInsertPositionEnum.Inner:
               addWidget({
                 sourceWidget: item.widget,
-                targetWidgetId: widget.id,
+                targetWidgetId: widget.meta.id,
                 targetSlotPath: slotPath,
-                targetPosition: widget.slots[slotPath].length,
+                targetPosition: widget.meta.slots[slotPath].length,
               })
               break
             default:
           }
         }
-        return { widget }
+        return { widget: widget.meta }
       },
       hover: (item, monitor) => {
         const didHover = monitor.isOver({ shallow: true })
@@ -320,7 +314,7 @@ export const useWidgetDrop = ({
             }
           })
           .exhaustive()
-        setDropIndicator(dropIndicator)
+        canvasDesignerStore.setDropIndicator(dropIndicator)
       },
       collect: (monitor) => ({
         canDrop: monitor.canDrop(),
@@ -335,7 +329,6 @@ export const useWidgetDrop = ({
       getDropIndicator,
       getWidgetRelationByWidgetId,
       moveWidget,
-      setDropIndicator,
       slotPath,
       widget,
       widgetFactory.widgetByType,

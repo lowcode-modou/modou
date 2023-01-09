@@ -5,12 +5,13 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import type RcTree from 'rc-tree'
 import React, { ComponentProps, FC, useRef } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
 import { match } from 'ts-pattern'
 
 import { WidgetBaseProps } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
+import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
+import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
 import { useMoveWidget } from '../hooks'
 import {
   OutlineTreeNode,
@@ -18,11 +19,7 @@ import {
   OutlineTreeNodeWidget,
   usePageOutlineTree,
 } from '../hooks/usePageOutlineTree'
-import {
-  selectedWidgetIdAtom,
-  widgetByIdSelector,
-  widgetRelationByWidgetIdSelector,
-} from '../store'
+import { widgetByIdSelector } from '../store'
 
 enum DropPositionEnum {
   Before = -1,
@@ -32,20 +29,21 @@ enum DropPositionEnum {
 
 const _CanvasDesignerOutlineTree: FC = () => {
   const { treeData: pageOutlineTree } = usePageOutlineTree()
-  const [selectedWidgetId, setSelectedWidgetId] =
-    useRecoilState(selectedWidgetIdAtom)
-  const selectedKeys = [selectedWidgetId || pageOutlineTree.key]
-  const widgetRelationByWidgetId = useRecoilValue(
-    widgetRelationByWidgetIdSelector,
-  )
-  const widgetById = useRecoilValue(widgetByIdSelector)
+  const { canvasDesignerStore } = useCanvasDesignerStore()
+
+  const { canvasDesignerFile } = useCanvasDesignerFile()
+
+  const selectedKeys = [
+    canvasDesignerStore.selectedWidgetId || pageOutlineTree.key,
+  ]
+  const { widgetRelationById } = canvasDesignerFile
   const { moveWidget } = useMoveWidget()
 
   // const appFactory = useContext(AppFactoryContext)
 
   const onSelect: ComponentProps<typeof Tree>['onSelect'] = ([key]) => {
     const widgetId = key === pageOutlineTree.key ? '' : key
-    setSelectedWidgetId(widgetId as string)
+    canvasDesignerStore.setSelectedWidgetId(widgetId as string)
   }
 
   const allowDrop: ComponentProps<
@@ -87,14 +85,16 @@ const _CanvasDesignerOutlineTree: FC = () => {
       [WidgetBaseProps, string]
     >(dropNode.nodeType)
       .with('slot', () => [
-        widgetById[(dropNode as unknown as OutlineTreeNodeSlot).slot.widgetId],
+        canvasDesignerFile.widgetMap.get(
+          (dropNode as unknown as OutlineTreeNodeSlot).slot.widgetId,
+        )?.meta!,
         (dropNode as unknown as OutlineTreeNodeSlot).slot.path,
       ])
       .with('widget', () => [
-        widgetRelationByWidgetId[
+        widgetRelationById[
           (dropNode as unknown as OutlineTreeNodeWidget).widget.id
         ].parent!.props,
-        widgetRelationByWidgetId[
+        widgetRelationById[
           (dropNode as unknown as OutlineTreeNodeWidget).widget.id
         ].slotPath,
       ])

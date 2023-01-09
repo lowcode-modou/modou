@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite'
 import {
   CSSProperties,
   FC,
@@ -7,23 +8,23 @@ import {
   useState,
 } from 'react'
 import { useDrag } from 'react-dnd'
-import { useRecoilValue } from 'recoil'
 
+import { useAppManager } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
 
 import { SimulatorInstanceContext } from '../../../contexts'
+import { useCanvasDesignerFile } from '../../../contexts/CanvasDesignerFileContext'
+import { useCanvasDesignerStore } from '../../../contexts/CanvasDesignerStoreContext'
 import { useWidgetSelected } from '../../../hooks/useWidgetSelected'
-import {
-  selectedWidgetIdAtom,
-  widgetSelector,
-  widgetsSelector,
-} from '../../../store'
 import { WidgetDragType } from '../../../types'
 import { getRootElementFromWidgetId } from '../../../utils'
 import { SelectedToolBox } from './SelectedToolBox'
 
-const SelectIndicatorContent: FC = () => {
-  const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
+const _SelectIndicatorContent: FC = () => {
+  const { canvasDesignerStore } = useCanvasDesignerStore()
+  const { canvasDesignerFile } = useCanvasDesignerFile()
+  const { appManager } = useAppManager()
+  const selectedWidgetId = canvasDesignerStore.selectedWidgetId
   const [selectedElementRect, setSelectedElementRect] = useState<{
     x: number
     y: number
@@ -35,9 +36,10 @@ const SelectIndicatorContent: FC = () => {
     width: 0,
     height: 0,
   })
-  const widgets = useRecoilValue(widgetsSelector)
   const [display, setDisplay] = useState(false)
   const [styleUpdater, setStyleUpdater] = useState(0)
+
+  // TODO 是否使用 watch deep
   useEffect(() => {
     // void Promise.resolve().then(() => {
     //   setStyleUpdater((prevState) => prevState + 1)
@@ -45,7 +47,7 @@ const SelectIndicatorContent: FC = () => {
     setTimeout(() => {
       setStyleUpdater((prevState) => prevState + 1)
     })
-  }, [widgets])
+  }, [canvasDesignerFile.widgets])
   const simulatorInstance = useContext(SimulatorInstanceContext)
   useEffect(() => {
     if (!selectedWidgetId) {
@@ -84,11 +86,11 @@ const SelectIndicatorContent: FC = () => {
     display: display ? 'block' : 'none',
   }
 
-  const widget = useRecoilValue(widgetSelector(selectedWidgetId))
+  const widget = appManager.widgetMap.get(selectedWidgetId)!
   // TODO 使用element
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
-      type: widget.type,
+      type: widget.meta.type,
       item: () => {
         return {
           type: WidgetDragType.Move,
@@ -131,18 +133,20 @@ const SelectIndicatorContent: FC = () => {
     </div>
   )
 }
+const SelectIndicatorContent = observer(_SelectIndicatorContent)
 
 interface SelectedIndicatorProps {
   canvasRef: RefObject<HTMLElement>
 }
 
-export const SelectedIndicator: FC<SelectedIndicatorProps> = ({
-  canvasRef,
-}) => {
+const _SelectedIndicator: FC<SelectedIndicatorProps> = ({ canvasRef }) => {
   useWidgetSelected(canvasRef)
-  const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
+  const { canvasDesignerStore } = useCanvasDesignerStore()
+  const selectedWidgetId = canvasDesignerStore.selectedWidgetId
   return selectedWidgetId ? <SelectIndicatorContent /> : null
 }
+
+export const SelectedIndicator = observer(_SelectedIndicator)
 
 const classes = {
   wrapper: mcss`

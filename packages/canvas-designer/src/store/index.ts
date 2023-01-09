@@ -2,8 +2,25 @@ import { makeAutoObservable } from 'mobx'
 
 export * from './dnd'
 export * from './page'
+export enum DropIndicatorPositionEnum {
+  Top,
+  Right,
+  Bottom,
+  Left,
+}
 
-class CanvasDesignerStore {
+export enum DropIndicatorInsertPositionEnum {
+  Before,
+  After,
+  Inner,
+}
+
+export interface DropIndicator {
+  position: DropIndicatorPositionEnum
+  insertPosition: DropIndicatorInsertPositionEnum
+  show: boolean
+}
+export class CanvasDesignerStore {
   constructor() {
     makeAutoObservable(this)
   }
@@ -12,6 +29,13 @@ class CanvasDesignerStore {
   setSelectedWidgetId(widgetId: string) {
     this.selectedWidgetId = widgetId
   }
-}
 
-export const canvasDesignerStore = new CanvasDesignerStore()
+  dropIndicator: DropIndicator = {
+    position: DropIndicatorPositionEnum.Left,
+    insertPosition: DropIndicatorInsertPositionEnum.Inner,
+    show: false,
+  }
+  setDropIndicator(dropIndicator: DropIndicator) {
+    this.dropIndicator = dropIndicator
+  }
+}
