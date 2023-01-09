@@ -88,7 +88,7 @@ const SelectIndicatorContent: FC = () => {
   // TODO 使用element
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
-      type: widget.widgetType,
+      type: widget.type,
       item: () => {
         return {
           type: WidgetDragType.Move,

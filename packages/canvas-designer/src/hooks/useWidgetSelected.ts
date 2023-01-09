@@ -6,8 +6,6 @@ import { selectedWidgetIdAtom } from '../store'
 import { getSlotRawElement, getWidgetIdFromElement } from '../utils'
 
 export const useWidgetSelected = (canvasRef: RefObject<HTMLElement>) => {
-  const setSelectedWidgetId = useSetRecoilState(selectedWidgetIdAtom)
-
   // TODO 由 select id 驱动 style
   useEventListener(
     'click',
