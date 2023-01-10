@@ -4,7 +4,8 @@ import { useContext, useEffect, useRef } from 'react'
 import { useDrop } from 'react-dnd'
 import { match } from 'ts-pattern'
 
-import { AppFactoryContext, WidgetBaseProps } from '@modou/core'
+import { AppFactoryContext } from '@modou/core'
+import { WidgetFileMeta } from '@modou/meta-vfs'
 
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
 import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
@@ -14,7 +15,6 @@ import {
   DropIndicatorPositionEnum,
 } from '../store'
 import { WidgetDragType } from '../types'
-import { useAddWidget } from './useAddWidget'
 import { useMoveWidget } from './useMoveWidget'
 
 const EMPTY_WIDGET_MIN_HEIGHT = '36px'
@@ -127,7 +127,6 @@ export const useWidgetDrop = ({
   const widgetFactory = useContext(AppFactoryContext)
   const widget = canvasDesignerFile.widgetMap.get(widgetId)!
 
-  const { addWidget } = useAddWidget()
   const { moveWidget } = useMoveWidget()
 
   const isEmptySlot = !!slotPath && isEmpty(widget.meta.slots[slotPath])
@@ -142,11 +141,11 @@ export const useWidgetDrop = ({
   // // // TODO 查看 react-dnd 为什么能自动推断参数类型
   const [{ canDrop, isOverCurrent }, drop] = useDrop<
     {
-      widget: WidgetBaseProps
+      widget: WidgetFileMeta
       type: WidgetDragType
     },
     {
-      widget: WidgetBaseProps
+      widget: WidgetFileMeta
     },
     {
       isOver: boolean
@@ -211,8 +210,8 @@ export const useWidgetDrop = ({
           switch (dropIndicator.insertPosition) {
             case DropIndicatorInsertPositionEnum.Before:
               if (dropType === DropType.Widget && parent && parentSlotPath) {
-                addWidget({
-                  sourceWidget: item.widget,
+                canvasDesignerFile.addWidget({
+                  sourceWidgetMeta: item.widget,
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
                   targetPosition: parent.props.slots[parentSlotPath].findIndex(
@@ -223,8 +222,8 @@ export const useWidgetDrop = ({
               break
             case DropIndicatorInsertPositionEnum.After:
               if (dropType === DropType.Widget && parent && parentSlotPath) {
-                addWidget({
-                  sourceWidget: item.widget,
+                canvasDesignerFile.addWidget({
+                  sourceWidgetMeta: item.widget,
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
                   targetPosition:
@@ -235,8 +234,8 @@ export const useWidgetDrop = ({
               }
               break
             case DropIndicatorInsertPositionEnum.Inner:
-              addWidget({
-                sourceWidget: item.widget,
+              canvasDesignerFile.addWidget({
+                sourceWidgetMeta: item.widget,
                 targetWidgetId: widget.meta.id,
                 targetSlotPath: slotPath,
                 targetPosition: widget.meta.slots[slotPath].length,
@@ -323,14 +322,15 @@ export const useWidgetDrop = ({
       }),
     }),
     [
-      addWidget,
+      canvasDesignerFile,
+      canvasDesignerStore,
       dropType,
       element,
       getDropIndicator,
       getWidgetRelationByWidgetId,
       moveWidget,
       slotPath,
-      widget,
+      widget.meta,
       widgetFactory.widgetByType,
     ],
   )

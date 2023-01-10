@@ -1,11 +1,11 @@
 import { isEmpty, omit } from 'lodash'
-import { computed, makeObservable, observable, runInAction } from 'mobx'
+import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 
 import { WidgetBaseProps } from '@modou/core'
 
 import { AppFile } from '../AppFile'
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
-import { WidgetFile } from '../WidgetFile'
+import { WidgetFile, WidgetFileMeta } from '../WidgetFile'
 import { FileTypeEnum } from '../types'
 
 export interface PageFileMeta extends BaseFileMete {
@@ -31,6 +31,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       widgets: computed,
       widgetMap: computed,
       widgetRelationById: computed,
+      addWidget: action,
     })
   }
 
@@ -74,6 +75,30 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       }
       return pre
     }, {})
+  }
+
+  addWidget({
+    sourceWidgetMeta,
+    targetPosition,
+    targetSlotPath,
+    targetWidgetId,
+  }: {
+    sourceWidgetMeta: WidgetFileMeta
+    targetWidgetId: string
+    targetPosition: number
+    targetSlotPath: string
+  }) {
+    const sourceWidget = WidgetFile.create(sourceWidgetMeta, this)
+    const targetWidget = this.widgetMap.get(targetWidgetId)
+    if (!targetWidget) {
+      return
+    }
+    this.widgets.push(sourceWidget)
+    targetWidget.meta.slots[targetSlotPath].splice(
+      targetPosition,
+      0,
+      sourceWidget.meta.id,
+    )
   }
 
   toJSON() {
