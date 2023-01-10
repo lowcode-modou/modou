@@ -1,5 +1,4 @@
 import { Spin } from 'antd'
-import { observer } from 'mobx-react-lite'
 import {
   FC,
   ReactElement,
@@ -14,6 +13,7 @@ import { useRecoilValue } from 'recoil'
 
 import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { observer } from '@modou/reactivity-react'
 
 import { SimulatorInstanceContext } from '../contexts'
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'

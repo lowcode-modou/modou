@@ -1,7 +1,13 @@
 import { isEmpty, omit } from 'lodash'
-import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 
 import { WidgetBaseProps } from '@modou/core'
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from '@modou/reactivity'
 
 import { AppFile } from '../AppFile'
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'

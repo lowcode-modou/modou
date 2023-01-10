@@ -1,7 +1,7 @@
 import { omit } from 'lodash'
-import { makeObservable, observable, runInAction } from 'mobx'
 
 import { EntityField } from '@modou/core'
+import { makeObservable, observable, runInAction } from '@modou/reactivity'
 
 import { BaseFile, BaseFileMete } from '../BaseFile'
 import { EntityFile } from '../EntityFile'

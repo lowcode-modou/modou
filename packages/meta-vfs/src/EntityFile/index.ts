@@ -1,5 +1,11 @@
 import { omit } from 'lodash'
-import { computed, makeObservable, observable, runInAction } from 'mobx'
+
+import {
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from '@modou/reactivity'
 
 import { AppFile } from '../AppFile'
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'

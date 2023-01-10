@@ -3,7 +3,6 @@ import { PageRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { Col, Row } from 'antd'
 import { head } from 'lodash'
-import { observer } from 'mobx-react-lite'
 import { FC, useLayoutEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useRecoilCallback, useRecoilState } from 'recoil'
@@ -17,6 +16,7 @@ import {
 } from '@modou/core'
 import type { Page as IPage } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { observer } from '@modou/reactivity-react'
 import { SimulatorPC } from '@modou/simulator'
 
 const _Page: FC = () => {

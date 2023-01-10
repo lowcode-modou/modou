@@ -1,5 +1,6 @@
 import { flatten } from 'lodash'
-import { makeAutoObservable } from 'mobx'
+
+import { makeAutoObservable } from '@modou/reactivity'
 
 import { AppFile } from '../AppFile'
 

@@ -3,12 +3,12 @@ import { BaseRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { Spin } from 'antd'
 import { head, isEmpty } from 'lodash'
-import { observer } from 'mobx-react-lite'
 import { FC, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { observer } from '@modou/reactivity-react'
 
 const _AppHome: FC = () => {
   const params = useParams<BaseRouterParamsKey>()

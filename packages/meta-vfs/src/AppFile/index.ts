@@ -1,4 +1,9 @@
-import { computed, makeObservable, observable, runInAction } from 'mobx'
+import {
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from '@modou/reactivity'
 
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
 import { EntityFile } from '../EntityFile'

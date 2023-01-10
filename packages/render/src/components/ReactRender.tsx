@@ -9,13 +9,6 @@ import { ConfigProvider, Spin } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { flatten } from 'flat'
 import { get, isFunction, keys, set } from 'lodash'
-import {
-  IReactionDisposer,
-  autorun,
-  makeAutoObservable,
-  runInAction,
-} from 'mobx'
-import { observer } from 'mobx-react-lite'
 import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { RecoilRoot } from 'recoil'
 
@@ -27,6 +20,13 @@ import {
 } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { AppManager, PageFile } from '@modou/meta-vfs'
+import {
+  IReactionDisposer,
+  autorun,
+  makeAutoObservable,
+  runInAction,
+} from '@modou/reactivity'
+import { observer } from '@modou/reactivity-react'
 
 import {
   CanvasFileContextProvider,
@@ -268,6 +268,9 @@ const _ReactRender_: FC<MoDouRenderProps> = (props) => {
   if (!file || !appManager) {
     return null
   }
+  autorun(() => {
+    console.log('appManager_autorun', file.widgetMap)
+  })
   return (
     <RecoilRoot>
       <ConfigProvider locale={zhCN}>

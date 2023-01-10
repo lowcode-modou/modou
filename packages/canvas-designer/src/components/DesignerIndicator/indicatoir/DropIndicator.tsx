@@ -1,6 +1,5 @@
 import { useMount, useMutationObserver } from 'ahooks'
 import { Col, Row, Typography } from 'antd'
-import { observer } from 'mobx-react-lite'
 import {
   CSSProperties,
   FC,
@@ -13,6 +12,7 @@ import {
 
 import { AppFactoryContext } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
+import { observer } from '@modou/reactivity-react'
 
 import { SimulatorInstanceContext } from '../../../contexts'
 import { useCanvasDesignerFile } from '../../../contexts/CanvasDesignerFileContext'

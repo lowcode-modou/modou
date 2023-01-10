@@ -1,14 +1,14 @@
 import { DownOutlined } from '@ant-design/icons'
 import { Tree } from 'antd'
 import { head } from 'lodash'
-import { toJS } from 'mobx'
-import { observer } from 'mobx-react-lite'
 import type RcTree from 'rc-tree'
 import React, { ComponentProps, FC, useRef } from 'react'
 import { match } from 'ts-pattern'
 
 import { WidgetBaseProps } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { toJS } from '@modou/reactivity'
+import { observer } from '@modou/reactivity-react'
 
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
 import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'

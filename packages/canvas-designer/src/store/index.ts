@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable } from '@modou/reactivity'
 
 export * from './dnd'
 export * from './page'

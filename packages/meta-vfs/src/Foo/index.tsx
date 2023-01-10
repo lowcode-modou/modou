@@ -1,8 +1,8 @@
-import { autorun, runInAction } from 'mobx'
-import { observer } from 'mobx-react-lite'
 import React, { type FC } from 'react'
 
 import { generateId } from '@modou/core'
+import { autorun, runInAction } from '@modou/reactivity'
+import { observer } from '@modou/reactivity-react'
 
 import { AppFile } from '../AppFile'
 import { PageFile } from '../PageFile'

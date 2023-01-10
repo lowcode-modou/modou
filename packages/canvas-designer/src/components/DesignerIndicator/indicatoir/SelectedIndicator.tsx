@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite'
 import {
   CSSProperties,
   FC,
@@ -11,6 +10,7 @@ import { useDrag } from 'react-dnd'
 
 import { useAppManager } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
+import { observer } from '@modou/reactivity-react'
 
 import { SimulatorInstanceContext } from '../../../contexts'
 import { useCanvasDesignerFile } from '../../../contexts/CanvasDesignerFileContext'

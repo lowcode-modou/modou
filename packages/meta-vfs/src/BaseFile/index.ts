@@ -1,8 +1,8 @@
 import { mapValues } from 'lodash'
-import { makeObservable, observable } from 'mobx'
 
 import { MDVersion } from '@modou/core'
 import { FileTypeEnum } from '@modou/file'
+import { makeObservable, observable } from '@modou/reactivity'
 
 export type BaseFileMete<T extends object = {}> = {
   readonly id: string

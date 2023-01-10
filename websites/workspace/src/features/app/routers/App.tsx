@@ -4,8 +4,6 @@ import { generateRouterPath } from '@/utils/router'
 import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
 import { useMount } from 'ahooks'
 import { Layout, Menu } from 'antd'
-import { runInAction } from 'mobx'
-import { observer } from 'mobx-react-lite'
 import { ComponentProps, FC, useCallback, useState } from 'react'
 import {
   Outlet,
@@ -18,6 +16,8 @@ import {
 import { AppManagerProvider } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { AppManager } from '@modou/meta-vfs'
+import { runInAction } from '@modou/reactivity'
+import { observer } from '@modou/reactivity-react'
 
 import { ModuleManager } from '../components'
 import { AppHeader } from '../components/AppHeader'
