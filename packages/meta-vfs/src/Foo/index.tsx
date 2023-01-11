@@ -81,7 +81,7 @@ autorun(() => {
 //   console.log(appFile.pages[0])
 // })
 
-const Foo: FC<{ title: string }> = observer((props) => (
+const Foo: FC<{ title: string }> = observer(() => (
   <div>
     <button onClick={test}>测试:{appFile.pages[0].meta.name}</button>
   </div>

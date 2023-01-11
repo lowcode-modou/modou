@@ -1,4 +1,5 @@
 import * as _mobxReactLite from 'mobx-react-lite'
+import * as React from 'react'
 
 let mobxReactLite: typeof _mobxReactLite = _mobxReactLite
 
@@ -8,7 +9,11 @@ if (window.top?.__md_mobx_react_lite__) {
 }
 window.__md_mobx_react_lite__ = mobxReactLite
 
+if (!window.React) {
+  window.React = React
+}
+
 // export const observer = mobxReactLite.observer
 // export const Observer = mobxReactLite.Observer
-
+//
 export { observer, Observer } from 'mobx-react-lite'

@@ -23,4 +23,7 @@ export const set = mobx.set
 export const toJS = mobx.toJS
 export const trace = mobx.trace
 export const untracked = mobx.untracked
+export const Reaction = mobx.Reaction
 export const when = mobx.when
+
+export { type IReactionDisposer } from 'mobx'

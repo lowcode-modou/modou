@@ -1,4 +1,5 @@
 import { DownOutlined } from '@ant-design/icons'
+import { useMount } from 'ahooks'
 import { Tree } from 'antd'
 import { head } from 'lodash'
 import type RcTree from 'rc-tree'
@@ -19,7 +20,6 @@ import {
   OutlineTreeNodeWidget,
   usePageOutlineTree,
 } from '../hooks/usePageOutlineTree'
-import { widgetByIdSelector } from '../store'
 
 enum DropPositionEnum {
   Before = -1,
@@ -40,7 +40,6 @@ const _CanvasDesignerOutlineTree: FC = () => {
   const { moveWidget } = useMoveWidget()
 
   // const appFactory = useContext(AppFactoryContext)
-
   const onSelect: ComponentProps<typeof Tree>['onSelect'] = ([key]) => {
     const widgetId = key === pageOutlineTree.key ? '' : key
     canvasDesignerStore.setSelectedWidgetId(widgetId as string)

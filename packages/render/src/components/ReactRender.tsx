@@ -10,6 +10,7 @@ import zhCN from 'antd/locale/zh_CN'
 import { flatten } from 'flat'
 import { get, isFunction, keys, set } from 'lodash'
 import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import * as React from 'react'
 import { RecoilRoot } from 'recoil'
 
 import {
@@ -260,7 +261,7 @@ const _ReactRenderTolerant: FC<MoDouRenderProps> = ({ host = 'browser' }) => {
 }
 const ReactRenderTolerant = observer(_ReactRenderTolerant)
 
-const _ReactRender_: FC<MoDouRenderProps> = (props) => {
+const UOReactRender: FC<MoDouRenderProps> = (props) => {
   const appFactory = useContext(AppFactoryContext)
   const [appManager, updateAppManager] = useState<AppManager>()
   const [file, updateFile] = useState<PageFile>()
@@ -268,9 +269,6 @@ const _ReactRender_: FC<MoDouRenderProps> = (props) => {
   if (!file || !appManager) {
     return null
   }
-  autorun(() => {
-    console.log('appManager_autorun', file.widgetMap)
-  })
   return (
     <RecoilRoot>
       <ConfigProvider locale={zhCN}>
@@ -286,7 +284,7 @@ const _ReactRender_: FC<MoDouRenderProps> = (props) => {
   )
 }
 
-export const ReactRender = observer(_ReactRender_)
+export const ReactRender = observer(UOReactRender)
 
 const classes = {
   spinWrapper: mcss`
