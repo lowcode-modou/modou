@@ -262,26 +262,37 @@ const _ReactRenderTolerant: FC<MoDouRenderProps> = ({ host = 'browser' }) => {
 const ReactRenderTolerant = observer(_ReactRenderTolerant)
 
 const UOReactRender: FC<MoDouRenderProps> = (props) => {
-  const appFactory = useContext(AppFactoryContext)
-  const [appManager, updateAppManager] = useState<AppManager>()
-  const [file, updateFile] = useState<PageFile>()
-  useInitRender({ updateAppManager, updateFile })
-  if (!file || !appManager) {
-    return null
-  }
-  return (
-    <RecoilRoot>
-      <ConfigProvider locale={zhCN}>
-        <AppFactoryContext.Provider value={appFactory}>
-          <AppManagerProvider value={appManager}>
-            <CanvasFileContextProvider value={file}>
-              <ReactRenderTolerant {...props} />
-            </CanvasFileContextProvider>
-          </AppManagerProvider>
-        </AppFactoryContext.Provider>
-      </ConfigProvider>
-    </RecoilRoot>
-  )
+  useEffect(() => {
+    console.log('asdasd')
+  })
+  useEffect(() => {
+    console.log('asdasd')
+  })
+
+  return <div>121211sss12</div>
+  // const appFactory = useContext(AppFactoryContext)
+  // const [appManager, updateAppManager] = useState<AppManager>()
+  // const [file, updateFile] = useState<PageFile>()
+  // useInitRender({ updateAppManager, updateFile })
+  // useEffect(() => {
+  //   console.log('asdasd')
+  // })
+  // if (!file || !appManager) {
+  //   return null
+  // }
+  // return (
+  //   <RecoilRoot>
+  //     <ConfigProvider locale={zhCN}>
+  //       <AppFactoryContext.Provider value={appFactory}>
+  //         <AppManagerProvider value={appManager}>
+  //           <CanvasFileContextProvider value={file}>
+  //             <ReactRenderTolerant {...props} />
+  //           </CanvasFileContextProvider>
+  //         </AppManagerProvider>
+  //       </AppFactoryContext.Provider>
+  //     </ConfigProvider>
+  //   </RecoilRoot>
+  // )
 }
 
 export const ReactRender = observer(UOReactRender)

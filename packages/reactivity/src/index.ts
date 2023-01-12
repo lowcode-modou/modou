@@ -25,5 +25,6 @@ export const trace = mobx.trace
 export const untracked = mobx.untracked
 export const Reaction = mobx.Reaction
 export const when = mobx.when
+export const getDependencyTree = mobx.getDependencyTree
 
 export { type IReactionDisposer } from 'mobx'

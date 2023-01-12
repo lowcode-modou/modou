@@ -1,19 +1,42 @@
-import * as _mobxReactLite from 'mobx-react-lite'
-import * as React from 'react'
+import { enableStaticRendering } from './staticRendering'
+import { useObserver as useObserverOriginal } from './useObserver'
+import './utils/assertEnvironment'
+import { observerBatching } from './utils/observerBatching'
+import { unstable_batchedUpdates as batch } from './utils/reactBatchedUpdates'
+import { useDeprecated } from './utils/utils'
 
-let mobxReactLite: typeof _mobxReactLite = _mobxReactLite
+observerBatching(batch)
 
-// TODO 判断浏览器环境还是Node环境
-if (window.top?.__md_mobx_react_lite__) {
-  mobxReactLite = window.top.__md_mobx_react_lite__
+export {
+  isUsingStaticRendering,
+  enableStaticRendering,
+} from './staticRendering'
+export { observer, type IObserverOptions } from './observer'
+export { Observer } from './ObserverComponent'
+export { useLocalObservable } from './useLocalObservable'
+export { useLocalStore } from './useLocalStore'
+export { useAsObservableSource } from './useAsObservableSource'
+export { resetCleanupScheduleForTests as clearTimers } from './utils/reactionCleanupTracking'
+
+export function useObserver<T>(
+  fn: () => T,
+  baseComponentName: string = 'observed',
+): T {
+  if ('production' !== process.env.NODE_ENV) {
+    useDeprecated(
+      "[mobx-react-lite] 'useObserver(fn)' is deprecated. Use `<Observer>{fn}</Observer>` instead, or wrap the entire component in `observer`.",
+    )
+  }
+  return useObserverOriginal(fn, baseComponentName)
 }
-window.__md_mobx_react_lite__ = mobxReactLite
 
-if (!window.React) {
-  window.React = React
+export { isObserverBatched, observerBatching } from './utils/observerBatching'
+
+export function useStaticRendering(enable: boolean) {
+  if ('production' !== process.env.NODE_ENV) {
+    console.warn(
+      "[mobx-react-lite] 'useStaticRendering' is deprecated, use 'enableStaticRendering' instead",
+    )
+  }
+  enableStaticRendering(enable)
 }
-
-// export const observer = mobxReactLite.observer
-// export const Observer = mobxReactLite.Observer
-//
-export { observer, Observer } from 'mobx-react-lite'

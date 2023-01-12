@@ -4,10 +4,11 @@ import {
   SettingOutlined,
 } from '@ant-design/icons'
 import { Avatar, Card, Col, Layout, Row } from 'antd'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { mcss } from '@modou/css-in-js'
+import { observer } from '@modou/reactivity-react'
 
 const headerClasses = {
   header: mcss`
@@ -109,10 +110,17 @@ const AppsContent: FC = () => {
 }
 
 export const Apps: FC = () => {
+  useEffect(() => {
+    console.log(123)
+  })
+  useEffect(() => {
+    console.log(123222)
+  })
   return (
     <Layout className={mcss({ width: '100%' })}>
-      <AppsHeader />
-      <AppsContent />
+      qwwqqw
+      {/*<AppsHeader />*/}
+      {/*<AppsContent />*/}
       {/* <Layout.Footer>©MoDou</Layout.Footer> */}
     </Layout>
   )

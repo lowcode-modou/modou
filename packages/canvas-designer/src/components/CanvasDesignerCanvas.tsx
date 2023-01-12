@@ -30,17 +30,17 @@ export const _CanvasDesignerCanvas: FC<{
   const { appManager } = useAppManager()
   const { canvasDesignerFile } = useCanvasDesignerFile()
 
-  useEffect(() => {
-    if (!initializedIframe) {
-      return
-    }
-    iframeRef.current?.contentWindow?.reactRenderHost.updateAppManager(
-      appManager,
-    )
-    iframeRef.current?.contentWindow?.reactRenderHost.updateFile(
-      canvasDesignerFile,
-    )
-  }, [widgets, rootWidgetId, initializedIframe, appManager, canvasDesignerFile])
+  // useEffect(() => {
+  //   if (!initializedIframe) {
+  //     return
+  //   }
+  //   iframeRef.current?.contentWindow?.reactRenderHost.updateAppManager(
+  //     appManager,
+  //   )
+  //   iframeRef.current?.contentWindow?.reactRenderHost.updateFile(
+  //     canvasDesignerFile,
+  //   )
+  // }, [widgets, rootWidgetId, initializedIframe, appManager, canvasDesignerFile])
   const canvasRef = useRef<HTMLElement>(null)
 
   const [designerIndicatorStyle, setDesignerIndicatorStyle] = useState({
