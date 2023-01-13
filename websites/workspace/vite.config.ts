@@ -11,9 +11,9 @@ export default defineConfig({
   plugins: [
     react({
       babel: {
-        presets: [
+        plugins: [
           [
-            '@emotion/babel-preset-css-prop',
+            '@emotion',
             {
               autoLabel: 'dev-only',
               labelFormat: '[local]',
