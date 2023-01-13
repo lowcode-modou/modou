@@ -65,7 +65,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        simulatorPC: resolve(__dirname, 'simulator/index.html'),
+        simulatorPC: resolve(__dirname, 'simulator/pc/index.html'),
       },
     },
   },

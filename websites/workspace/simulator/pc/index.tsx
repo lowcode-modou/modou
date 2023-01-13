@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client'
 
 import { CanvasDesignerReactRender } from '@modou/canvas-designer'
 
-import '../src/styles/index.css'
+import '../../src/styles/index.css'
 
 ReactDOM.createRoot(
   document.getElementById('simulator_pc_root') as HTMLElement,

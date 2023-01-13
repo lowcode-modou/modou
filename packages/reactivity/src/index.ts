@@ -27,4 +27,4 @@ export const Reaction = mobx.Reaction
 export const when = mobx.when
 export const getDependencyTree = mobx.getDependencyTree
 
-export { type IReactionDisposer } from 'mobx'
+export { type IReactionDisposer, type AnnotationsMap } from 'mobx'
