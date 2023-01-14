@@ -12,6 +12,7 @@ import { CanvasDesignerStoreProvider } from '../contexts/CanvasDesignerStoreCont
 import { selectedWidgetIdAtom } from '../store'
 import { CanvasDesignerCanvas } from './CanvasDesignerCanvas'
 import { CanvasDesignerOutlineTree } from './CanvasDesignerOutlineTree'
+import { CanvasDesignerPropsPanel } from './CanvasDesignerPropsPanel'
 import { CanvasDesignerWidgetStencil } from './CanvasDesignerWidgetStencil'
 
 interface CanvasDesignerProps {
@@ -54,11 +55,11 @@ export const CanvasDesigner: FC<CanvasDesignerProps> = ({ file, children }) => {
                   type="card"
                   tabBarGutter={0}
                   items={[
-                    // {
-                    //   key: 'CanvasDesignerPropsPanel',
-                    //   label: '属性',
-                    //   children: <CanvasDesignerPropsPanel />,
-                    // },
+                    {
+                      key: 'CanvasDesignerPropsPanel',
+                      label: '属性',
+                      children: <CanvasDesignerPropsPanel />,
+                    },
                     {
                       key: 'CanvasDesignerWidgetStencil',
                       label: '组件列表',

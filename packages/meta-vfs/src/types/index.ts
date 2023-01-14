@@ -1,3 +1,5 @@
+import { PageFileMeta } from '../PageFile'
+
 export enum FileTypeEnum {
   App = 'App',
   Page = 'Page',
@@ -8,3 +10,5 @@ export enum FileTypeEnum {
   FlowNode = 'FlowNode',
   FlowEdge = 'FlowEdge',
 }
+
+export type UpdateParams<T extends object> = ((meta: T) => T) | T

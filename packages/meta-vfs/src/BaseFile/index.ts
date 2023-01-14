@@ -1,8 +1,8 @@
-import { mapValues } from 'lodash'
+import { isFunction, mapValues } from 'lodash'
 
 import { MDVersion } from '@modou/core'
-import { FileTypeEnum } from '@modou/file'
-import { makeObservable, observable } from '@modou/reactivity'
+import { FileTypeEnum, UpdateParams } from '@modou/file'
+import { action, makeObservable, observable } from '@modou/reactivity'
 
 export type BaseFileMete<T extends object = {}> = {
   readonly id: string
@@ -35,7 +35,16 @@ export abstract class BaseFile<
       meta: observable,
       fileType: observable,
       parentFile: observable,
+      updateMeta: action,
     })
+  }
+
+  updateMeta(meta: UpdateParams<T>) {
+    if (isFunction(meta)) {
+      this.meta = meta(this.meta)
+    } else {
+      this.meta = meta
+    }
   }
 
   parentFile: P

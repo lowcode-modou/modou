@@ -1,15 +1,12 @@
 import produce from 'immer'
 import { isObject } from 'lodash'
 import { useCallback } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { widgetRelationByWidgetIdSelector, widgetsSelector } from '../store'
+import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
 
 export const useMoveWidget = () => {
-  const setWidgets = useSetRecoilState(widgetsSelector)
-  const widgetRelationByWidgetId = useRecoilValue(
-    widgetRelationByWidgetIdSelector,
-  )
+  const { canvasDesignerFile } = useCanvasDesignerFile()
+  const widgetRelationByWidgetId = canvasDesignerFile.widgetRelationById
   const moveWidget = useCallback(
     ({
       sourceWidgetId,
@@ -22,26 +19,26 @@ export const useMoveWidget = () => {
       targetSlotPath: string
       targetPosition: number
     }) => {
-      setWidgets(
+      canvasDesignerFile.updateWidgets(
         produce((draft) => {
           let sourceIndex = -1
           draft.forEach((widget) => {
             // 删除
-            if (isObject(widget.slots)) {
-              Object.keys(widget.slots).forEach((slotPath) => {
+            if (isObject(widget.meta.slots)) {
+              Object.keys(widget.meta.slots).forEach((slotPath) => {
                 if (sourceIndex !== -1) {
                   return
                 }
-                sourceIndex = widget.slots[slotPath].findIndex(
+                sourceIndex = widget.meta.slots[slotPath].findIndex(
                   (slotWidgetId) => slotWidgetId === sourceWidgetId,
                 )
                 if (sourceIndex !== -1) {
-                  widget.slots[slotPath].splice(sourceIndex, 1)
+                  widget.meta.slots[slotPath].splice(sourceIndex, 1)
                 }
               })
             }
             // 添加
-            if (widget.id === targetWidgetId) {
+            if (widget.meta.id === targetWidgetId) {
               // 如果是同一个parent的同一个slot内移动
               const isSameParentSlot =
                 widgetRelationByWidgetId[sourceWidgetId]?.parent?.props.id ===
@@ -49,7 +46,7 @@ export const useMoveWidget = () => {
                 widgetRelationByWidgetId[sourceWidgetId].slotPath ===
                   targetSlotPath
               if (isSameParentSlot) {
-                widget.slots[targetSlotPath].splice(
+                widget.meta.slots[targetSlotPath].splice(
                   sourceIndex < targetPosition
                     ? targetPosition - 1
                     : targetPosition,
@@ -57,7 +54,7 @@ export const useMoveWidget = () => {
                   sourceWidgetId,
                 )
               } else {
-                widget.slots[targetSlotPath].splice(
+                widget.meta.slots[targetSlotPath].splice(
                   targetPosition,
                   0,
                   sourceWidgetId,
@@ -68,7 +65,7 @@ export const useMoveWidget = () => {
         }),
       )
     },
-    [setWidgets, widgetRelationByWidgetId],
+    [canvasDesignerFile, widgetRelationByWidgetId],
   )
   return {
     moveWidget,

@@ -9,28 +9,26 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { AppFactoryContext } from '@modou/core'
 import { cx, mcss } from '@modou/css-in-js'
+import { PageFileMeta, WidgetFileMeta } from '@modou/meta-vfs'
+import { observer } from '@modou/reactivity-react'
 import { SETTER_KEY } from '@modou/setters'
 import { SetterTypeEnum } from '@modou/setters/src/constants'
 import { BaseMRSetterOptions } from '@modou/setters/src/types'
 
+import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
+import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
 import { useRemoveWidget } from '../hooks'
-import {
-  isRootWidgetSelector,
-  pageSelector,
-  selectedWidgetIdAtom,
-  widgetSelector,
-} from '../store'
 
 const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
-  const [widget, setWidget] = useRecoilState(widgetSelector(widgetId))
+  const { canvasDesignerFile } = useCanvasDesignerFile()
+  const widget = canvasDesignerFile.widgetMap.get(widgetId)!
   const widgetFactory = useContext(AppFactoryContext)
   const widgetMetadata = useMemo(() => {
-    return widgetFactory.widgetByType[widget.widgetType].metadata
-  }, [widgetFactory.widgetByType, widget.widgetType])
+    return widgetFactory.widgetByType[widget.meta.type].metadata
+  }, [widgetFactory.widgetByType, widget.meta.type])
   const propsDef = (
     widgetMetadata.jsonPropsSchema.properties
       .props as unknown as typeof widgetMetadata.jsonPropsSchema
@@ -51,10 +49,10 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
         >
           {NativeSetter ? (
             <NativeSetter
-              value={widget.props[key]}
+              value={widget.meta.props[key]}
               onChange={(value: any) => {
-                setWidget(
-                  produce((draft) => {
+                widget.updateMeta(
+                  produce<WidgetFileMeta>((draft) => {
                     draft.props[key] = value
                   }),
                 )
@@ -63,10 +61,10 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
           ) : (
             <Setter
               options={setterOptions}
-              value={widget.props[key]}
+              value={widget.meta.props[key]}
               onChange={(value: any) => {
-                setWidget(
-                  produce((draft) => {
+                widget.updateMeta(
+                  produce<WidgetFileMeta>((draft) => {
                     draft.props[key] = value
                   }),
                 )
@@ -78,19 +76,20 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
     })
   return {
     formRender,
-    setWidget,
     widgetMetadata,
     widget,
   }
 }
 
-const WidgetPropsPanel: FC = () => {
-  const [selectedWidgetId, setSelectedWidgetId] =
-    useRecoilState(selectedWidgetIdAtom)
-  const isRootWidget = useRecoilValue(isRootWidgetSelector(selectedWidgetId))
+const _WidgetPropsPanel: FC = () => {
+  const { canvasDesignerStore } = useCanvasDesignerStore()
+  const { canvasDesignerFile } = useCanvasDesignerFile()
+  const isRootWidget =
+    canvasDesignerStore.selectedWidgetId ===
+    canvasDesignerFile.meta.rootWidgetId
 
-  const { setWidget, widgetMetadata, formRender, widget } = useRenderFormItem({
-    widgetId: selectedWidgetId,
+  const { widgetMetadata, formRender, widget } = useRenderFormItem({
+    widgetId: canvasDesignerStore.selectedWidgetId,
   })
 
   const { removeWidget } = useRemoveWidget()
@@ -105,18 +104,18 @@ const WidgetPropsPanel: FC = () => {
       layout={'vertical'}
     >
       <Form.Item label="组件ID">
-        <Input readOnly value={selectedWidgetId} />
+        <Input readOnly value={canvasDesignerStore.selectedWidgetId} />
       </Form.Item>
       <Form.Item label="组件类型">
-        <Input readOnly value={widgetMetadata.widgetName} />
+        <Input readOnly value={widgetMetadata.name} />
       </Form.Item>
       <Form.Item label="组件名称">
         <BlurInput
-          value={widget.widgetName}
+          value={widget.meta.name}
           onChange={(value) => {
-            setWidget(
-              produce((draft) => {
-                draft.widgetName = value
+            widget.updateMeta(
+              produce<WidgetFileMeta>((draft) => {
+                draft.name = value
               }),
             )
           }}
@@ -132,8 +131,8 @@ const WidgetPropsPanel: FC = () => {
             block
             danger
             onClick={() => {
-              removeWidget(selectedWidgetId)
-              setSelectedWidgetId('')
+              removeWidget(canvasDesignerStore.selectedWidgetId)
+              canvasDesignerStore.setSelectedWidgetId('')
             }}
           >
             删除
@@ -143,34 +142,43 @@ const WidgetPropsPanel: FC = () => {
     </Form>
   )
 }
-const PagePropsPanel: FC = () => {
-  const [page, setPage] = useRecoilState(pageSelector)
+
+const WidgetPropsPanel = observer(_WidgetPropsPanel)
+const _PagePropsPanel: FC = () => {
+  const { canvasDesignerFile } = useCanvasDesignerFile()
   return (
     <Form className={classes.form} labelWrap size={'small'}>
       <Form.Item label="页面名称">
         <BlurInput
           onChange={(value) => {
-            setPage(
-              produce((draft) => {
+            canvasDesignerFile.updateMeta(
+              produce<PageFileMeta>((draft) => {
                 draft.name = value
               }),
             )
           }}
-          value={page.name}
+          value={canvasDesignerFile.meta.name}
         />
       </Form.Item>
     </Form>
   )
 }
+const PagePropsPanel = observer(_PagePropsPanel)
 
-export const CanvasDesignerPropsPanel: FC = () => {
-  const selectedWidgetId = useRecoilValue(selectedWidgetIdAtom)
+const _CanvasDesignerPropsPanel: FC = () => {
+  const { canvasDesignerStore } = useCanvasDesignerStore()
   return (
     <div className={classes.wrapper}>
-      {selectedWidgetId ? <WidgetPropsPanel /> : <PagePropsPanel />}
+      {canvasDesignerStore.selectedWidgetId ? (
+        <WidgetPropsPanel />
+      ) : (
+        <PagePropsPanel />
+      )}
     </div>
   )
 }
+
+export const CanvasDesignerPropsPanel = observer(_CanvasDesignerPropsPanel)
 
 const classes = {
   wrapper: mcss`

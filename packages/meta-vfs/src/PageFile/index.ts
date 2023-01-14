@@ -1,4 +1,4 @@
-import { isEmpty, omit } from 'lodash'
+import { isEmpty, isFunction, omit } from 'lodash'
 
 import { WidgetBaseProps } from '@modou/core'
 import {
@@ -12,7 +12,7 @@ import {
 import { AppFile } from '../AppFile'
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
 import { WidgetFile, WidgetFileMeta } from '../WidgetFile'
-import { FileTypeEnum } from '../types'
+import { FileTypeEnum, UpdateParams } from '../types'
 
 export interface PageFileMeta extends BaseFileMete {
   rootWidgetId: string
@@ -29,6 +29,7 @@ type WidgetRelationById = Record<string, RelationWidget>
 interface FileMap extends BaseFileMap {
   readonly widgets: WidgetFile[]
 }
+
 export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
   protected constructor(meta: PageFileMeta, parentFile: AppFile) {
     super({ fileType: FileTypeEnum.App, meta, parentFile })
@@ -38,6 +39,8 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       widgetMap: computed,
       widgetRelationById: computed,
       addWidget: action,
+      removeWidget: action,
+      updateWidgets: action,
     })
   }
 
@@ -105,6 +108,18 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       0,
       sourceWidget.meta.id,
     )
+  }
+
+  removeWidget() {}
+
+  updateWidgets(widgets: UpdateParams<WidgetFile[]>) {
+    const oldWidgets = [...this.subFileMap.widgets]
+    this.subFileMap.widgets.length = 0
+    if (isFunction(widgets)) {
+      this.subFileMap.widgets.push(...widgets(oldWidgets))
+    } else {
+      this.subFileMap.widgets.push(...widgets)
+    }
   }
 
   toJSON() {

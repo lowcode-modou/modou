@@ -1,7 +1,5 @@
 import { makeAutoObservable } from '@modou/reactivity'
 
-export * from './dnd'
-export * from './page'
 export enum DropIndicatorPositionEnum {
   Top,
   Right,
@@ -35,6 +33,7 @@ export class CanvasDesignerStore {
     insertPosition: DropIndicatorInsertPositionEnum.Inner,
     show: false,
   }
+
   setDropIndicator(dropIndicator: DropIndicator) {
     this.dropIndicator = dropIndicator
   }

@@ -5,10 +5,7 @@ import { useSetRecoilState } from 'recoil'
 
 import { WidgetBaseProps } from '@modou/core'
 
-import { widgetsSelector } from '../store'
-
 export const useRemoveWidget = () => {
-  const setWidgets = useSetRecoilState(widgetsSelector)
   const removeWidget = useCallback(
     (widgetId: string, deleteRaw: boolean = true) => {
       setWidgets(
