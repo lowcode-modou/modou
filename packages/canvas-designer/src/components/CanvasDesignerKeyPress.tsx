@@ -1,19 +1,20 @@
 import { useKeyPress } from 'ahooks'
 import { FC } from 'react'
-import { useRecoilState } from 'recoil'
 
-import { useRemoveWidget } from '../hooks'
-import { selectedWidgetIdAtom } from '../store'
+import { observer } from '@modou/reactivity-react'
 
-export const CanvasDesignerKeyPress: FC = () => {
-  const [selectWidgetId, setSelectedWidgetId] =
-    useRecoilState(selectedWidgetIdAtom)
-  const { removeWidget } = useRemoveWidget()
+import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
+import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
+
+const _CanvasDesignerKeyPress: FC = () => {
+  const { canvasDesignerStore } = useCanvasDesignerStore()
+  const { canvasDesignerFile } = useCanvasDesignerFile()
   useKeyPress('delete', () => {
-    if (selectWidgetId) {
-      removeWidget(selectWidgetId)
-      setSelectedWidgetId('')
+    if (canvasDesignerStore.selectedWidgetId) {
+      canvasDesignerFile.removeWidget(canvasDesignerStore.selectedWidgetId)
+      canvasDesignerStore.setSelectedWidgetId('')
     }
   })
   return null
 }
+export const CanvasDesignerKeyPress = observer(_CanvasDesignerKeyPress)

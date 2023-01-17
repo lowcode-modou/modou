@@ -15,7 +15,6 @@ import {
   DropIndicatorPositionEnum,
 } from '../store'
 import { WidgetDragType } from '../types'
-import { useMoveWidget } from './useMoveWidget'
 
 const EMPTY_WIDGET_MIN_HEIGHT = '36px'
 // const DROP_CONTAINER_LIMIT = 6
@@ -127,8 +126,6 @@ export const useWidgetDrop = ({
   const widgetFactory = useContext(AppFactoryContext)
   const widget = canvasDesignerFile.widgetMap.get(widgetId)!
 
-  const { moveWidget } = useMoveWidget()
-
   const isEmptySlot = !!slotPath && isEmpty(widget.meta.slots[slotPath])
 
   const getDropIndicator = useMemoizedFn(() => {
@@ -173,7 +170,7 @@ export const useWidgetDrop = ({
           switch (dropIndicator.insertPosition) {
             case DropIndicatorInsertPositionEnum.Before:
               if (dropType === DropType.Widget && parent && parentSlotPath) {
-                moveWidget({
+                canvasDesignerFile.moveWidget({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
@@ -185,7 +182,7 @@ export const useWidgetDrop = ({
               break
             case DropIndicatorInsertPositionEnum.After:
               if (dropType === DropType.Widget && parent && parentSlotPath) {
-                moveWidget({
+                canvasDesignerFile.moveWidget({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
@@ -197,7 +194,7 @@ export const useWidgetDrop = ({
               }
               break
             case DropIndicatorInsertPositionEnum.Inner:
-              moveWidget({
+              canvasDesignerFile.moveWidget({
                 sourceWidgetId: item.widget.id,
                 targetWidgetId: widget.meta.id,
                 targetSlotPath: slotPath,
@@ -328,7 +325,6 @@ export const useWidgetDrop = ({
       element,
       getDropIndicator,
       getWidgetRelationByWidgetId,
-      moveWidget,
       slotPath,
       widget.meta,
       widgetFactory.widgetByType,

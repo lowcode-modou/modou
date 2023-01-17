@@ -1,4 +1,5 @@
-import { isEmpty, isFunction, omit } from 'lodash'
+import produce from 'immer'
+import { isEmpty, isFunction, isObject, omit } from 'lodash'
 
 import { WidgetBaseProps } from '@modou/core'
 import {
@@ -41,6 +42,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       addWidget: action,
       removeWidget: action,
       updateWidgets: action,
+      moveWidget: action,
     })
   }
 
@@ -110,7 +112,111 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
     )
   }
 
-  removeWidget() {}
+  moveWidget({
+    sourceWidgetId,
+    targetWidgetId,
+    targetPosition,
+    targetSlotPath,
+  }: {
+    sourceWidgetId: string
+    targetWidgetId: string
+    targetPosition: number
+    targetSlotPath: string
+  }) {
+    this.updateWidgets(
+      produce((draft) => {
+        let sourceIndex = -1
+        draft.forEach((widget) => {
+          // 删除
+          if (isObject(widget.meta.slots)) {
+            Object.keys(widget.meta.slots).forEach((slotPath) => {
+              if (sourceIndex !== -1) {
+                return
+              }
+              sourceIndex = widget.meta.slots[slotPath].findIndex(
+                (slotWidgetId) => slotWidgetId === sourceWidgetId,
+              )
+              if (sourceIndex !== -1) {
+                widget.meta.slots[slotPath].splice(sourceIndex, 1)
+              }
+            })
+          }
+          // 添加
+          if (widget.meta.id === targetWidgetId) {
+            // 如果是同一个parent的同一个slot内移动
+            const isSameParentSlot =
+              this.widgetRelationById[sourceWidgetId]?.parent?.props.id ===
+                targetWidgetId &&
+              this.widgetRelationById[sourceWidgetId].slotPath ===
+                targetSlotPath
+            if (isSameParentSlot) {
+              widget.meta.slots[targetSlotPath].splice(
+                sourceIndex < targetPosition
+                  ? targetPosition - 1
+                  : targetPosition,
+                0,
+                sourceWidgetId,
+              )
+            } else {
+              widget.meta.slots[targetSlotPath].splice(
+                targetPosition,
+                0,
+                sourceWidgetId,
+              )
+            }
+          }
+        })
+      }),
+    )
+  }
+
+  removeWidget(widgetId: string, deleteRaw: boolean = true) {
+    this.updateWidgets(
+      produce((draft) => {
+        draft.forEach((widget) => {
+          if (isObject(widget.meta.slots)) {
+            Object.keys(widget.meta.slots).forEach((slotPath) => {
+              const deletedIndex = widget.meta.slots[slotPath].findIndex(
+                (slotWidgetId) => slotWidgetId === widgetId,
+              )
+              if (deletedIndex !== -1) {
+                widget.meta.slots[slotPath].splice(deletedIndex, 1)
+              }
+            })
+          }
+        })
+        const deletedWidgetIds: string[] = [widgetId]
+        const deletedWidgets: WidgetFileMeta[] = [
+          draft.find(
+            (widget) => widget.meta.id === widgetId,
+          ) as unknown as WidgetFileMeta,
+        ]
+        while (!isEmpty(deletedWidgets)) {
+          const currentDeletedWidget = deletedWidgets.shift() as WidgetBaseProps
+          if (isObject(currentDeletedWidget.slots)) {
+            Object.values(currentDeletedWidget.slots).forEach((widgetIds) => {
+              widgetIds.forEach((slotWidgetId) => {
+                deletedWidgetIds.push(slotWidgetId)
+                deletedWidgets.push(
+                  draft.find(
+                    (widget) => widget.meta.id === slotWidgetId,
+                  ) as unknown as WidgetFileMeta,
+                )
+              })
+            })
+          }
+        }
+        deletedWidgetIds.forEach((deletedWidgetId) => {
+          const deletedIndex = draft.findIndex(
+            (widget) => widget.meta.id === deletedWidgetId,
+          )
+          if (deletedIndex !== -1) {
+            draft.splice(deletedIndex, 1)
+          }
+        })
+      }),
+    )
+  }
 
   updateWidgets(widgets: UpdateParams<WidgetFile[]>) {
     const oldWidgets = [...this.subFileMap.widgets]

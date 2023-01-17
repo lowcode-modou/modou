@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import { useRecoilValue } from 'recoil'
 
 import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
@@ -17,14 +16,12 @@ import { observer } from '@modou/reactivity-react'
 
 import { SimulatorInstanceContext } from '../contexts'
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
-import { pageSelector } from '../store'
 import { CanvasDesignerKeyPress } from './CanvasDesignerKeyPress'
 import { DesignerIndicator } from './DesignerIndicator'
 
 export const _CanvasDesignerCanvas: FC<{
   children: ReactElement
 }> = ({ children }) => {
-  const { widgets, rootWidgetId } = useRecoilValue(pageSelector)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [initializedIframe, setInitializedIframe] = useState(false)
   const { appManager } = useAppManager()
@@ -40,7 +37,7 @@ export const _CanvasDesignerCanvas: FC<{
     iframeRef.current?.contentWindow?.reactRenderHost.updateFile(
       canvasDesignerFile,
     )
-  }, [widgets, rootWidgetId, initializedIframe, appManager, canvasDesignerFile])
+  }, [initializedIframe, appManager, canvasDesignerFile])
   const canvasRef = useRef<HTMLElement>(null)
 
   const [designerIndicatorStyle, setDesignerIndicatorStyle] = useState({

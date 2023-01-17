@@ -1,5 +1,3 @@
 export * from './useWidgetHovering'
-export * from './useRemoveWidget'
-export * from './useMoveWidget'
 export * from './useWidgetDrop'
 export * from './useElementRect'

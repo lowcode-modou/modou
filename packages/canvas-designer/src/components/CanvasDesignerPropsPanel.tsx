@@ -20,7 +20,6 @@ import { BaseMRSetterOptions } from '@modou/setters/src/types'
 
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
 import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
-import { useRemoveWidget } from '../hooks'
 
 const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
   const { canvasDesignerFile } = useCanvasDesignerFile()
@@ -92,8 +91,6 @@ const _WidgetPropsPanel: FC = () => {
     widgetId: canvasDesignerStore.selectedWidgetId,
   })
 
-  const { removeWidget } = useRemoveWidget()
-
   return (
     <Form
       // labelCol={{ span: 10 }}
@@ -131,7 +128,9 @@ const _WidgetPropsPanel: FC = () => {
             block
             danger
             onClick={() => {
-              removeWidget(canvasDesignerStore.selectedWidgetId)
+              canvasDesignerFile.removeWidget(
+                canvasDesignerStore.selectedWidgetId,
+              )
               canvasDesignerStore.setSelectedWidgetId('')
             }}
           >

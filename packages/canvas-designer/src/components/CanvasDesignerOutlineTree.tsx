@@ -1,5 +1,4 @@
 import { DownOutlined } from '@ant-design/icons'
-import { useMount } from 'ahooks'
 import { Tree } from 'antd'
 import { head } from 'lodash'
 import type RcTree from 'rc-tree'
@@ -13,7 +12,6 @@ import { observer } from '@modou/reactivity-react'
 
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
 import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
-import { useMoveWidget } from '../hooks'
 import {
   OutlineTreeNode,
   OutlineTreeNodeSlot,
@@ -37,7 +35,6 @@ const _CanvasDesignerOutlineTree: FC = () => {
     canvasDesignerStore.selectedWidgetId || pageOutlineTree.key,
   ]
   const { widgetRelationById } = canvasDesignerFile
-  const { moveWidget } = useMoveWidget()
 
   // const appFactory = useContext(AppFactoryContext)
   const onSelect: ComponentProps<typeof Tree>['onSelect'] = ([key]) => {
@@ -101,7 +98,7 @@ const _CanvasDesignerOutlineTree: FC = () => {
     switch (dropPosition) {
       case DropPositionEnum.Before:
         if (parentWidget && parentSlotPath) {
-          moveWidget({
+          canvasDesignerFile.moveWidget({
             sourceWidgetId: dragWidget.id,
             targetWidgetId: parentWidget.id,
             targetSlotPath: parentSlotPath,
@@ -114,7 +111,7 @@ const _CanvasDesignerOutlineTree: FC = () => {
         break
       case DropPositionEnum.After:
         if (parentWidget && parentSlotPath) {
-          moveWidget({
+          canvasDesignerFile.moveWidget({
             sourceWidgetId: dragWidget.id,
             targetWidgetId: parentWidget.id,
             targetSlotPath: parentSlotPath,
@@ -127,7 +124,7 @@ const _CanvasDesignerOutlineTree: FC = () => {
         }
         break
       case DropPositionEnum.Inner:
-        moveWidget({
+        canvasDesignerFile.moveWidget({
           sourceWidgetId: dragWidget.id,
           targetWidgetId: parentWidget.id,
           targetSlotPath: parentSlotPath,
