@@ -128,7 +128,7 @@ const _WidgetPropsPanel: FC = () => {
             block
             danger
             onClick={() => {
-              canvasDesignerFile.removeWidget(
+              canvasDesignerFile.deleteWidget(
                 canvasDesignerStore.selectedWidgetId,
               )
               canvasDesignerStore.setSelectedWidgetId('')

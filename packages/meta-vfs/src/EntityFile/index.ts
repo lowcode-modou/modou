@@ -1,6 +1,7 @@
 import { omit } from 'lodash'
 
 import {
+  action,
   computed,
   makeObservable,
   observable,
@@ -29,11 +30,12 @@ interface FileMap extends BaseFileMap {
 }
 export class EntityFile extends BaseFile<FileMap, EntityFileMeta, AppFile> {
   protected constructor(meta: EntityFileMeta, parentFile: AppFile) {
-    super({ fileType: FileTypeEnum.Widget, meta, parentFile })
+    super({ fileType: FileTypeEnum.Entity, meta, parentFile })
     makeObservable(this, {
       subFileMap: observable,
       entityFields: computed,
       entityRelations: computed,
+      deleteEntityField: action,
     })
   }
 
@@ -44,6 +46,14 @@ export class EntityFile extends BaseFile<FileMap, EntityFileMeta, AppFile> {
 
   get entityFields() {
     return this.subFileMap.entityFields
+  }
+
+  deleteEntityField(entityFieldId: string) {
+    const oldEntityFields = [...this.subFileMap.entityFields]
+    this.subFileMap.entityFields.length = 0
+    this.subFileMap.entityFields.push(
+      ...oldEntityFields.filter((field) => field.meta.id !== entityFieldId),
+    )
   }
 
   get entityRelations() {

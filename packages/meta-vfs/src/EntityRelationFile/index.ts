@@ -14,9 +14,9 @@ export class EntityRelationFile extends BaseFile<
   EntityFile
 > {
   protected constructor(meta: EntityRelationFileMeta, parentFile: EntityFile) {
-    super({ fileType: FileTypeEnum.Widget, meta, parentFile })
+    super({ fileType: FileTypeEnum.EntityRelation, meta, parentFile })
     makeObservable(this, {
-      subFileMapToJson: observable,
+      subFileMap: observable,
     })
   }
 

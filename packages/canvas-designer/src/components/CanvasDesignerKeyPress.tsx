@@ -11,7 +11,7 @@ const _CanvasDesignerKeyPress: FC = () => {
   const { canvasDesignerFile } = useCanvasDesignerFile()
   useKeyPress('delete', () => {
     if (canvasDesignerStore.selectedWidgetId) {
-      canvasDesignerFile.removeWidget(canvasDesignerStore.selectedWidgetId)
+      canvasDesignerFile.deleteWidget(canvasDesignerStore.selectedWidgetId)
       canvasDesignerStore.setSelectedWidgetId('')
     }
   })

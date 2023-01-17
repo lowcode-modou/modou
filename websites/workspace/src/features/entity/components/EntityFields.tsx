@@ -1,10 +1,9 @@
 import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
-import produce from 'immer'
 import { ComponentProps, FC, useRef } from 'react'
-import { useRecoilState, useSetRecoilState } from 'recoil'
 
-import { Entity, EntityField, Metadata } from '@modou/core'
+import { useAppManager } from '@modou/core'
+import { EntityFieldFileMeta } from '@modou/meta-vfs'
 
 import { EntityFieldCreator } from './EntityFieldCreator'
 import { EntityModuleActionWrapper } from './EntityModuleActions'
@@ -14,9 +13,11 @@ export const EntityFields: FC<{
 }> = ({ entityId }) => {
   const fieldCreatorRef: ComponentProps<typeof EntityFieldCreator>['ref'] =
     useRef(null)
-  const [entity, setEntity] = useRecoilState(Metadata.entitySelector(entityId))
 
-  const columns: ColumnsType<EntityField> = [
+  const { app } = useAppManager()
+  const entity = app.entityMap.get(entityId)!
+
+  const columns: ColumnsType<EntityFieldFileMeta> = [
     {
       title: '名称',
       dataIndex: 'title',
@@ -46,7 +47,7 @@ export const EntityFields: FC<{
             type={'link'}
             onClick={() => {
               fieldCreatorRef.current?.edit({
-                entityId: entity.id,
+                entityId: entity.meta.id,
                 fieldId: record.id,
               })
             }}
@@ -58,7 +59,7 @@ export const EntityFields: FC<{
             type={'link'}
             onClick={() => {
               fieldCreatorRef.current?.showDetail({
-                entityId: entity.id,
+                entityId: entity.meta.id,
                 fieldId: record.id,
               })
             }}
@@ -70,13 +71,7 @@ export const EntityFields: FC<{
             danger
             type={'text'}
             onClick={() => {
-              setEntity(
-                produce((draft) => {
-                  draft.fields = draft.fields.filter(
-                    (field) => field.id !== record.id,
-                  )
-                }),
-              )
+              entity.deleteEntityField(record.id)
             }}
           >
             删除
@@ -93,16 +88,16 @@ export const EntityFields: FC<{
         <Button
           type={'link'}
           onClick={() => {
-            fieldCreatorRef.current?.create({ entityId: entity.id })
+            fieldCreatorRef.current?.create({ entityId: entity.meta.id })
           }}
         >
           添加字段
         </Button>
       </EntityModuleActionWrapper>
       <div>
-        <Table<EntityField>
+        <Table<EntityFieldFileMeta>
           size={'small'}
-          dataSource={entity.fields}
+          dataSource={entity.entityFields.map((field) => field.meta)}
           rowKey={'id'}
           columns={columns}
           pagination={false}

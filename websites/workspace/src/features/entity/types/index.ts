@@ -1,6 +1,6 @@
-import { Entity, EntityRelation } from '@modou/core'
+import { EntityFile, EntityRelationFile } from '@modou/meta-vfs'
 
 export interface EntityNodeData {
-  entity: Entity
-  passiveEntityRelations: EntityRelation[]
+  entity: EntityFile
+  passiveEntityRelations: EntityRelationFile[]
 }

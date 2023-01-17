@@ -35,7 +35,7 @@ export class AppManager {
     )
   }
 
-  get EntityFieldMap() {
+  get entityFieldMap() {
     return new Map(
       flatten(
         this.app.entities.map((entity) =>
@@ -45,7 +45,7 @@ export class AppManager {
     )
   }
 
-  get EntityRelationMap() {
+  get entityRelationMap() {
     return new Map(
       flatten(
         this.app.entities.map((entity) =>

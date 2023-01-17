@@ -1,20 +1,15 @@
 import { ROUTER_PATH } from '@/constants'
-import { useEntityCreator } from '@/features/entity/hooks'
 import { BaseRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import useUrlState from '@ahooksjs/use-url-state'
-import { PlusOutlined } from '@ant-design/icons'
-import { useBoolean } from 'ahooks'
-import { Button, Card, Form, Space } from 'antd'
-import produce from 'immer'
+import { Button, Card } from 'antd'
 import { ComponentProps, FC, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useSetRecoilState } from 'recoil'
 
-import { AppFactory, Entity, Metadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
 import { EntitiesER, EntitiesList, EntityCreator } from '../components'
+import { useEntityCreator } from '../hooks'
 
 enum EntityTabKeyEnum {
   List = 'List',
@@ -38,26 +33,17 @@ export const Entities: FC = () => {
     activeTabKey: EntityTabKeyEnum.List,
   })
 
-  const setEntityById = useSetRecoilState(Metadata.entityByIdSelector)
-
   const [mode, setMode] =
     useState<ComponentProps<typeof EntityCreator>['mode']>('edit')
-  const onDeleteEntity = (entityId: string) => {
-    setEntityById(
-      produce((draft) => {
-        Reflect.deleteProperty(draft, entityId)
-      }),
-    )
-  }
 
   const { open, setFalse, setTrue, onSubmitEntity, form } = useEntityCreator()
 
   const navigate = useNavigate()
   const params = useParams<BaseRouterParamsKey>()
-  const onChangeEntity = (entity: Entity) => {
+  const navEntityEditor = (entityId: string) => {
     navigate(
       generateRouterPath(ROUTER_PATH.Entity, {
-        entityId: entity.id,
+        entityId,
         appId: params.appId,
       }),
     )
@@ -106,15 +92,9 @@ export const Entities: FC = () => {
           }
         >
           {urlState.activeTabKey === EntityTabKeyEnum.List ? (
-            <EntitiesList
-              onDeleteEntity={onDeleteEntity}
-              onChangeEntity={onChangeEntity}
-            />
+            <EntitiesList onClickEditEntity={navEntityEditor} />
           ) : (
-            <EntitiesER
-              onDeleteEntity={onDeleteEntity}
-              onChangeEntity={onChangeEntity}
-            />
+            <EntitiesER onClickEditEntity={navEntityEditor} />
           )}
         </Card>
       </div>

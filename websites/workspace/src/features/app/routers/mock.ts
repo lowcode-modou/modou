@@ -224,7 +224,7 @@ const MOCK_FIELDS: EntityField[] = [
 const entityFile1 = EntityFile.create(
   {
     version: '0.0.1',
-    id: generateId(),
+    id: 'user',
     name: 'user',
     title: '人员',
     description: '人员',
@@ -249,7 +249,7 @@ MOCK_FIELDS.forEach((field) => {
 const entityFile2 = EntityFile.create(
   {
     version: '0.0.1',
-    id: generateId(),
+    id: 'department',
     name: 'department',
     title: '部门',
     description: '部门',

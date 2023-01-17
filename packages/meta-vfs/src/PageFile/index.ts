@@ -40,7 +40,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       widgetMap: computed,
       widgetRelationById: computed,
       addWidget: action,
-      removeWidget: action,
+      deleteWidget: action,
       updateWidgets: action,
       moveWidget: action,
     })
@@ -170,7 +170,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
     )
   }
 
-  removeWidget(widgetId: string, deleteRaw: boolean = true) {
+  deleteWidget(widgetId: string, deleteRaw: boolean = true) {
     this.updateWidgets(
       produce((draft) => {
         draft.forEach((widget) => {
@@ -218,6 +218,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
     )
   }
 
+  // TODO 改成 setWidgets
   updateWidgets(widgets: UpdateParams<WidgetFile[]>) {
     const oldWidgets = [...this.subFileMap.widgets]
     this.subFileMap.widgets.length = 0

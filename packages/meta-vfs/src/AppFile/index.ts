@@ -1,4 +1,7 @@
+import { flatten, isArray, toPairs } from 'lodash'
+
 import {
+  action,
   computed,
   makeObservable,
   observable,
@@ -7,6 +10,7 @@ import {
 
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
 import { EntityFile } from '../EntityFile'
+import { EntityRelationFile } from '../EntityRelationFile'
 import { PageFile } from '../PageFile'
 import { FileTypeEnum } from '../types'
 
@@ -22,11 +26,15 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
       subFileMap: observable,
       entities: computed,
       pages: computed,
+      entityMap: computed,
+      entityRelationMap: computed,
+      entityRelationsByTargetEntityNameMap: computed,
+      entityRelationsBySourceEntityNameMap: computed,
+      deleteEntity: action,
     })
   }
 
   subFileMap: FileMap = {
-    // TODO make it readonly
     pages: [],
     entities: [],
   }
@@ -51,6 +59,72 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
       this.subFileMap.entities.length = 0
       this.subFileMap.entities.push(...entities)
     })
+  }
+
+  get entityMap() {
+    return new Map(this.entities.map((entity) => [entity.meta.id, entity]))
+  }
+
+  deleteEntity(entityId: string) {
+    const oldEntities = [...this.subFileMap.entities]
+    this.subFileMap.entities.length = 0
+    this.subFileMap.entities.push(
+      ...oldEntities.filter((entity) => entity.meta.id !== entityId),
+    )
+  }
+
+  get entityRelationMap() {
+    return new Map(
+      flatten(
+        this.entities.map((entity) =>
+          entity.subFileMap.entityRelations.map((relation) => [
+            relation.meta.id,
+            relation,
+          ]),
+        ),
+      ),
+    )
+  }
+
+  get entityRelationsByTargetEntityNameMap() {
+    return new Map(
+      toPairs(
+        [...this.entityRelationMap.values()].reduce<
+          Record<string, EntityRelationFile[]>
+        >((pre, cur) => {
+          // TODO 如果是ManyToOne 的 Lookup 则不在对方双向生成关系
+          // if (
+          //   cur.type === EntityRelationTypeEnum.Lookup &&
+          //   cur.relationType === EntityRelationLookupRelationTypeEnum.ManyToOne
+          // ) {
+          //   return pre
+          // }
+          const targetEntityName = cur.meta.targetEntity
+          if (!isArray(pre[targetEntityName])) {
+            pre[targetEntityName] = []
+          }
+          pre[targetEntityName].push(cur)
+          return pre
+        }, {}),
+      ),
+    )
+  }
+
+  get entityRelationsBySourceEntityNameMap() {
+    return new Map(
+      toPairs(
+        [...this.entityRelationMap.values()].reduce<
+          Record<string, EntityRelationFile[]>
+        >((pre, cur) => {
+          const sourceEntityName = cur.meta.sourceEntity
+          if (!isArray(pre[sourceEntityName])) {
+            pre[sourceEntityName] = []
+          }
+          pre[sourceEntityName].push(cur)
+          return pre
+        }, {}),
+      ),
+    )
   }
 
   toJSON() {

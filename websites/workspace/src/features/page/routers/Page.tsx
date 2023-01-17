@@ -3,18 +3,15 @@ import { PageRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { Col, Row } from 'antd'
 import { head } from 'lodash'
-import { FC, useEffect, useLayoutEffect } from 'react'
+import { FC, useLayoutEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useRecoilCallback, useRecoilState } from 'recoil'
 
 import { CanvasDesigner } from '@modou/canvas-designer'
 import {
   AppFactoryContext,
-  Metadata,
   defaultAppFactory,
   useAppManager,
 } from '@modou/core'
-import type { Page as IPage } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { observer } from '@modou/reactivity-react'
 import { SimulatorPC } from '@modou/simulator'

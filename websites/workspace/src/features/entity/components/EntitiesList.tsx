@@ -1,17 +1,17 @@
 import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { FC } from 'react'
-import { useRecoilValue } from 'recoil'
 
-import { Entity, Metadata } from '@modou/core'
+import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { EntityFileMeta } from '@modou/meta-vfs'
+import { observer } from '@modou/reactivity-react'
 
-export const EntitiesList: FC<{
-  onChangeEntity: (entity: Entity) => void
-  onDeleteEntity: (entityId: string) => void
-}> = ({ onChangeEntity, onDeleteEntity }) => {
-  const entities = useRecoilValue(Metadata.entitiesSelector)
-  const columns: ColumnsType<Entity> = [
+const _EntitiesList: FC<{
+  onClickEditEntity: (entityId: string) => void
+}> = ({ onClickEditEntity }) => {
+  const { app } = useAppManager()
+  const columns: ColumnsType<EntityFileMeta> = [
     {
       title: '名称',
       dataIndex: 'title',
@@ -39,7 +39,7 @@ export const EntitiesList: FC<{
           <Button
             size={'small'}
             type={'link'}
-            onClick={() => onChangeEntity(record)}
+            onClick={() => onClickEditEntity(record.id)}
           >
             编辑
           </Button>
@@ -47,7 +47,7 @@ export const EntitiesList: FC<{
             size={'small'}
             danger
             type={'text'}
-            onClick={() => onDeleteEntity(record.id)}
+            onClick={() => app.deleteEntity(record.id)}
           >
             删除
           </Button>
@@ -57,15 +57,17 @@ export const EntitiesList: FC<{
   ]
   return (
     <div className={classes.wrapper}>
-      <Table<Entity>
+      <Table<EntityFileMeta>
         rowKey={'id'}
         size={'small'}
         columns={columns}
-        dataSource={entities}
+        dataSource={app.entities.map((entity) => entity.meta)}
       />
     </div>
   )
 }
+
+export const EntitiesList = observer(_EntitiesList)
 
 const classes = {
   wrapper: mcss`

@@ -14,7 +14,7 @@ export class EntityFieldFile extends BaseFile<
   EntityFile
 > {
   protected constructor(meta: EntityFieldFileMeta, parentFile: EntityFile) {
-    super({ fileType: FileTypeEnum.Widget, meta, parentFile })
+    super({ fileType: FileTypeEnum.EntityField, meta, parentFile })
     makeObservable(this, {
       subFileMap: observable,
     })

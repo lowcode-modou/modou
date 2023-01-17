@@ -6,6 +6,8 @@ export enum FileTypeEnum {
   Widget = 'Widget',
   View = 'View',
   Entity = 'Entity',
+  EntityRelation = 'EntityRelation',
+  EntityField = 'EntityField',
   Flow = 'Flow',
   FlowNode = 'FlowNode',
   FlowEdge = 'FlowEdge',
