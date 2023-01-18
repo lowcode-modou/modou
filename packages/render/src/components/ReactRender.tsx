@@ -2,7 +2,6 @@ import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { FC, useContext, useEffect, useState } from 'react'
 import * as React from 'react'
-import { RecoilRoot } from 'recoil'
 
 import { AppFactoryContext, AppManagerProvider } from '@modou/core'
 import { AppManager, PageFile } from '@modou/meta-vfs'
@@ -24,16 +23,14 @@ export const ReactRender: FC<MoDouRenderProps> = (props) => {
     return null
   }
   return (
-    <RecoilRoot>
-      <ConfigProvider locale={zhCN}>
-        <AppFactoryContext.Provider value={appFactory}>
-          <AppManagerProvider value={appManager}>
-            <CanvasFileContextProvider value={file}>
-              <ReactRenderTolerant {...props} />
-            </CanvasFileContextProvider>
-          </AppManagerProvider>
-        </AppFactoryContext.Provider>
-      </ConfigProvider>
-    </RecoilRoot>
+    <ConfigProvider locale={zhCN}>
+      <AppFactoryContext.Provider value={appFactory}>
+        <AppManagerProvider value={appManager}>
+          <CanvasFileContextProvider value={file}>
+            <ReactRenderTolerant {...props} />
+          </CanvasFileContextProvider>
+        </AppManagerProvider>
+      </AppFactoryContext.Provider>
+    </ConfigProvider>
   )
 }

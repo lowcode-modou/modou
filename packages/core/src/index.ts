@@ -1,5 +1,4 @@
 export * from './widget'
-export * from './store'
 export * from './app-factory'
 export * from './types'
 export * from './contexts'

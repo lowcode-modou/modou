@@ -1,12 +1,8 @@
-import { Tabs } from 'antd'
 import { FC, ReactElement } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { RecoilRoot } from 'recoil'
 
-import { mcss } from '@modou/css-in-js'
 import { PageFile } from '@modou/meta-vfs'
-import { observer } from '@modou/reactivity-react'
 
 import { CanvasDesignerFileProvider } from '../contexts/CanvasDesignerFileContext'
 import { CanvasDesignerStoreProvider } from '../contexts/CanvasDesignerStoreContext'
