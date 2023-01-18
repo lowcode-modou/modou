@@ -3,6 +3,7 @@ packages:
   - 'websites/**'
   - 'designers/**'
   - 'widgets/**'
+  - 'auxiliaries/**'
   #  - 'app/**'
   # exclude packages that are inside test directories
   - '!**/test/**'

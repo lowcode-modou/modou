@@ -1,11 +1,9 @@
-import { isEqual, pick, unionWith } from 'lodash'
+import { isEqual, unionWith } from 'lodash'
 import { FC } from 'react'
 
 import { BaseSetterProps } from '@modou/setters/src/types'
-import { rowWidgetMetadata } from '@modou/widgets-antd'
 
-import { Entity, EntityFieldEnum, Page, WidgetGroupEnum } from '../types'
-import { generateId } from '../utils'
+import { WidgetGroupEnum } from '../types'
 import { WidgetMetadata } from '../widget'
 
 interface Widget {
@@ -31,9 +29,9 @@ export class AppFactory {
     this._widgetRegistry = unionWith(
       widgets,
       ({ metadata: preMetadata }, { metadata: curMetadata }) =>
-        isEqual(preMetadata.widgetType, curMetadata.widgetType),
+        isEqual(preMetadata.type, curMetadata.type),
     ).reduce<WidgetRegistry>((pre, cur) => {
-      pre[cur.metadata.widgetType] = {
+      pre[cur.metadata.type] = {
         ...cur,
       }
       return pre
@@ -76,39 +74,5 @@ export class AppFactory {
     setters: Record<string, SetterElement>
   }) {
     return new AppFactory(params)
-  }
-
-  static generateDefaultPage = (name?: string): Page => {
-    const rootWidget = {
-      ...WidgetMetadata.mrSchemeToDefaultJson(
-        rowWidgetMetadata.jsonPropsSchema,
-      ),
-      id: generateId(),
-      slots: {
-        children: [],
-      },
-    }
-    return {
-      id: generateId(),
-      name: name ?? `页面-${generateId(4)}`,
-      widgets: [rootWidget],
-      rootWidgetId: rootWidget.id,
-    }
-  }
-
-  static generateDefaultEntity = (
-    entity: Pick<Entity, 'name' | 'title'>,
-  ): Entity => {
-    return {
-      id: generateId(),
-      description: '',
-      fields: [],
-      relations: [],
-      position: {
-        x: 0,
-        y: 0,
-      },
-      ...pick(entity, ['name', 'title']),
-    }
   }
 }

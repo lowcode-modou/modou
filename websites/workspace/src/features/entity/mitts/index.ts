@@ -1,10 +1,8 @@
 import mitt from 'mitt'
 
-import { Entity } from '@modou/core'
-
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type EntityEvents = {
   onDelete: string
-  onChange: Entity
+  onClickEditEntity: string
 }
 export const entityEmitter = mitt<EntityEvents>()

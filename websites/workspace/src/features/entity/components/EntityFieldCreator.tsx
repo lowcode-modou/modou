@@ -7,7 +7,6 @@ import {
   ProFormText,
 } from '@ant-design/pro-components'
 import { SelectProps } from 'antd'
-import produce from 'immer'
 import {
   ForwardRefRenderFunction,
   ReactNode,
@@ -15,15 +14,14 @@ import {
   useImperativeHandle,
   useState,
 } from 'react'
-import { useRecoilCallback, useSetRecoilState } from 'recoil'
 
+import { generateId, useAppManager } from '@modou/core'
 import {
-  EntityField, // 不要直接使用  需要注册后使用
   EntityFieldEnum,
-  Metadata,
-  generateId,
-  getEntityFieldTypeLabel,
-} from '@modou/core'
+  EntityFieldFile,
+  EntityFieldFileMeta,
+  EntityFile,
+} from '@modou/meta-vfs'
 
 const buildEntityFieldConfig = (
   entityFieldType: EntityFieldEnum,
@@ -118,7 +116,7 @@ const buildEntityFieldConfig = (
 const EntityFieldRadioOptions: SelectProps['options'] = Object.values(
   EntityFieldEnum,
 ).map((fieldType) => ({
-  label: getEntityFieldTypeLabel(fieldType),
+  label: EntityFile.getEntityFieldTypeLabel(fieldType),
   value: fieldType,
 }))
 
@@ -132,27 +130,15 @@ const _EntityFieldCreator: ForwardRefRenderFunction<
   EntityFieldCreatorInstance,
   {}
 > = (_, ref) => {
-  const [form] = ProForm.useForm<EntityField>()
+  const { app, appManager } = useAppManager()
+  const [form] = ProForm.useForm<EntityFieldFileMeta>()
   const fieldType = ProForm.useWatch<EntityFieldEnum>('type', form)
 
   const [entityId, setEntityId] = useState('')
   const [entityFieldId, setEntityFieldId] = useState('')
   const [mode, setMode] = useState<'detail' | 'create' | 'edit'>('detail')
 
-  const setEntity = useSetRecoilState(Metadata.entitySelector(entityId))
-
   const [open, setOpen] = useState(false)
-
-  const getEntityField = useRecoilCallback(
-    ({ snapshot }) =>
-      ({ entityId, fieldId }: { entityId: string; fieldId: string }) => {
-        return snapshot
-          .getLoadable(Metadata.entitySelector(entityId))
-          .getValue()
-          .fields.find((field) => field.id === fieldId) as EntityField
-      },
-    [],
-  )
 
   useImperativeHandle(
     ref,
@@ -167,22 +153,22 @@ const _EntityFieldCreator: ForwardRefRenderFunction<
         setEntityId(entityId)
         setEntityFieldId(fieldId)
         setMode('edit')
-        form.setFieldsValue(getEntityField({ entityId, fieldId }))
+        form.setFieldsValue(appManager.entityFieldMap.get(fieldId)!.meta)
         setOpen(true)
       },
       showDetail: ({ entityId, fieldId }) => {
         setEntityId(entityId)
         setEntityFieldId(fieldId)
         setMode('detail')
-        form.setFieldsValue(getEntityField({ entityId, fieldId }))
+        form.setFieldsValue(appManager.entityFieldMap.get(fieldId)!.meta)
         setOpen(true)
       },
     }),
-    [form, getEntityField],
+    [appManager.entityFieldMap, form],
   )
 
   return (
-    <DrawerForm<EntityField>
+    <DrawerForm<EntityFieldFileMeta>
       readonly={mode === 'detail'}
       title="新建字段"
       width={500}
@@ -201,28 +187,29 @@ const _EntityFieldCreator: ForwardRefRenderFunction<
       onOpenChange={setOpen}
       onFinish={async (formData) => {
         switch (mode) {
-          case 'create':
-            setEntity(
-              produce((draft) => {
-                draft.fields.push({
+          case 'create': {
+            const entity = app.entityMap.get(entityId)!
+            EntityFieldFile.create(
+              {
+                ...formData,
+                id: generateId(),
+              },
+              entity,
+            )
+            break
+          }
+          case 'edit': {
+            const entity = app.entityMap.get(entityId)!
+            entity.entityFields.forEach((field) => {
+              if (field.meta.id === entityFieldId) {
+                field.updateMeta({
+                  ...field.meta,
                   ...formData,
-                  id: generateId(),
                 })
-              }),
-            )
+              }
+            })
             break
-          case 'edit':
-            setEntity(
-              produce((draft) => {
-                draft.fields = draft.fields.map((field) => {
-                  if (field.id === entityFieldId) {
-                    return { ...formData }
-                  }
-                  return field
-                })
-              }),
-            )
-            break
+          }
           case 'detail':
           default:
         }

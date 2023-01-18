@@ -1,4 +1,3 @@
-import { entityEmitter } from '@/features/entity/mitts'
 import { keyBy } from 'lodash'
 import { FC, memo, useCallback, useEffect } from 'react'
 import ReactFlow, {
@@ -14,32 +13,34 @@ import ReactFlow, {
   useEdgesState,
   useNodesState,
 } from 'reactflow'
-import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { Entity, Metadata } from '@modou/core'
+import { useAppManager } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
+import { runInAction } from '@modou/reactivity'
+import { observer } from '@modou/reactivity-react'
 
-import { EntityNode } from '../components/EntityNode'
+import { entityEmitter } from '../mitts'
 import { generateSourceHandle, getEntityRelationColor } from '../utils'
+import { EntityNode } from './EntityNode'
 
 const nodeTypes: Record<string, FC<NodeProps>> = {
   EntityNode: memo(EntityNode),
 }
 
 const useEntityNodeState = () => {
-  const [entities, setEntities] = useRecoilState(Metadata.entitiesSelector)
-  const passiveEntityRelations = useRecoilValue(
-    Metadata.entityRelationsByTargetEntityNameMapSelector,
-  )
+  const { app } = useAppManager()
+  const passiveEntityRelations = app.entityRelationsByTargetEntityNameMap
+
   const [nodes, setNodes, onNodesChange] = useNodesState(
-    entities.map((entity) => ({
-      id: entity.name,
+    app.entities.map((entity) => ({
+      id: entity.meta.name,
       type: 'EntityNode',
       data: {
         entity,
-        passiveEntityRelations: passiveEntityRelations[entity.name] || [],
+        passiveEntityRelations:
+          passiveEntityRelations.get(entity.meta.name) || [],
       },
-      position: entity.position,
+      position: entity.meta.position,
     })),
   )
 
@@ -53,51 +54,52 @@ const useEntityNodeState = () => {
         'id',
       )
       const nodeChangeByEntityName = keyBy(nodeChanges, (node) => node.id)
-      setEntities((pre) => {
-        return pre.map((entity) => {
-          if (Reflect.has(positionChangesByEntityName, entity.name)) {
-            return {
-              ...entity,
+      runInAction(() => {
+        app.entities.forEach((entity) => {
+          if (Reflect.has(positionChangesByEntityName, entity.meta.name)) {
+            entity.updateMeta({
+              ...entity.meta,
               position:
-                nodeChangeByEntityName[entity.name]?.positionAbsolute ??
-                entity.position,
-            }
+                nodeChangeByEntityName[entity.meta.name]?.positionAbsolute ??
+                entity.meta.position,
+            })
           }
-          return entity
         })
       })
     },
-    [nodes, onNodesChange, setEntities],
+    [app, nodes, onNodesChange],
   )
 
   // 元数据同步画布
   useEffect(() => {
     setNodes((pre) => {
       const nodeByEntityName = keyBy(pre, (node) => node.id)
-      return entities.map((entity) => {
-        if (nodeByEntityName[entity.name]) {
+      return app.entities.map((entity) => {
+        if (nodeByEntityName[entity.meta.name]) {
           return {
-            ...nodeByEntityName[entity.name],
+            ...nodeByEntityName[entity.meta.name],
             data: {
               entity,
-              passiveEntityRelations: passiveEntityRelations[entity.name] || [],
+              passiveEntityRelations:
+                passiveEntityRelations.get(entity.meta.name) || [],
             },
-            position: entity.position,
+            position: entity.meta.position,
           }
         } else {
           return {
-            id: entity.name,
+            id: entity.meta.name,
             type: 'EntityNode',
             data: {
               entity,
-              passiveEntityRelations: passiveEntityRelations[entity.name] || [],
+              passiveEntityRelations:
+                passiveEntityRelations.get(entity.meta.name) || [],
             },
-            position: entity.position,
+            position: entity.meta.position,
           }
         }
       })
     })
-  }, [entities, passiveEntityRelations, setNodes])
+  }, [app.entities, passiveEntityRelations, setNodes])
 
   return {
     nodes,
@@ -105,26 +107,25 @@ const useEntityNodeState = () => {
   }
 }
 
-export const EntitiesER: FC<{
-  onChangeEntity: (entity: Entity) => void
-  onDeleteEntity: (entityId: string) => void
-}> = ({ onChangeEntity, onDeleteEntity }) => {
+const _EntitiesER: FC<{
+  onClickEditEntity: (entityId: string) => void
+}> = ({ onClickEditEntity }) => {
   const theme = useTheme()
+  const { app, appManager } = useAppManager()
 
-  const entityRelations = useRecoilValue(Metadata.entityRelationsSelector)
-
+  const entityRelations = [...appManager.entityRelationMap.values()]
   const { nodes, onNodesChange } = useEntityNodeState()
 
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     entityRelations.map((entityRelation) => {
       return {
-        id: entityRelation.id,
-        source: entityRelation.sourceEntity,
-        target: entityRelation.targetEntity,
-        sourceHandle: generateSourceHandle(entityRelation),
-        targetHandle: generateSourceHandle(entityRelation),
+        id: entityRelation.meta.id,
+        source: entityRelation.meta.sourceEntity,
+        target: entityRelation.meta.targetEntity,
+        sourceHandle: generateSourceHandle(entityRelation.meta),
+        targetHandle: generateSourceHandle(entityRelation.meta),
         style: {
-          stroke: getEntityRelationColor(entityRelation),
+          stroke: getEntityRelationColor(entityRelation.meta),
           zIndex: 999999,
         },
       }
@@ -139,13 +140,13 @@ export const EntitiesER: FC<{
   )
 
   useEffect(() => {
-    entityEmitter.on('onDelete', onDeleteEntity)
-    entityEmitter.on('onChange', onChangeEntity)
+    entityEmitter.on('onDelete', app.deleteEntity)
+    entityEmitter.on('onClickEditEntity', onClickEditEntity)
     return () => {
-      entityEmitter.off('onDelete', onDeleteEntity)
-      entityEmitter.off('onChange', onChangeEntity)
+      entityEmitter.off('onDelete', app.deleteEntity)
+      entityEmitter.off('onClickEditEntity', onClickEditEntity)
     }
-  }, [onChangeEntity, onDeleteEntity])
+  }, [app.deleteEntity, onClickEditEntity])
 
   return (
     <div className={classes.wrapper}>
@@ -171,22 +172,28 @@ export const EntitiesER: FC<{
     </div>
   )
 }
+export const EntitiesER = observer(_EntitiesER)
 
 const classes = {
   wrapper: mcss`
     height: 100%;
-    .react-flow__attribution{
+
+    .react-flow__attribution {
       display: none;
     }
-    .react-flow__node{
+
+    .react-flow__node {
       border: none;
     }
-    .react-flow__handle{
+
+    .react-flow__handle {
       z-index: 9;
     }
-    .react-flow__edges{
-      z-index: 999999!important;
+
+    .react-flow__edges {
+      z-index: 999999 !important;
     }
+
     //.react-flow__minimap{
     //  title{
     //    display: none;

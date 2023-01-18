@@ -1,4 +1,3 @@
-import { entityEmitter } from '@/features/entity/mitts'
 import { Button, Col, Empty, Row, Space, Typography } from 'antd'
 import { isEmpty } from 'lodash'
 import { FC } from 'react'
@@ -6,6 +5,7 @@ import { NodeProps } from 'reactflow'
 
 import { cx, mcss, useTheme } from '@modou/css-in-js'
 
+import { entityEmitter } from '../mitts'
 import { EntityNodeData } from '../types'
 import {
   generateEntityDomId,
@@ -16,16 +16,13 @@ import { EntityNodeHandle } from './EntityNodeHandle'
 
 const EntityNodeHandles: FC<NodeProps<EntityNodeData>> = (props) => {
   const {
-    data: {
-      entity: { relations },
-      passiveEntityRelations,
-    },
+    data: { entity, passiveEntityRelations },
   } = props
   return (
     <>
-      {relations.map((relation) => (
+      {entity.entityRelations.map((relation) => (
         <EntityNodeHandle
-          key={relation.id}
+          key={relation.meta.id}
           {...props}
           passive={false}
           relation={relation}
@@ -33,7 +30,7 @@ const EntityNodeHandles: FC<NodeProps<EntityNodeData>> = (props) => {
       ))}
       {passiveEntityRelations.map((relation) => (
         <EntityNodeHandle
-          key={relation.id}
+          key={relation.meta.id}
           {...props}
           passive
           relation={relation}
@@ -51,20 +48,20 @@ const EntityNodeFields: FC<NodeProps<EntityNodeData>> = ({
       <Typography.Title className={cx(classes.sectionTitle)} level={5}>
         字段
       </Typography.Title>
-      {isEmpty(entity.fields) ? (
+      {isEmpty(entity.entityFields) ? (
         <Empty description={'暂无字段'} />
       ) : (
-        entity.fields.map((field) => (
-          <div key={field.name} className={cx(classes.sectionItem)}>
+        entity.entityFields.map((field) => (
+          <div key={field.meta.name} className={cx(classes.sectionItem)}>
             <Space size={'small'}>
               <Typography.Text>
-                {field.description}({field.name})
+                {field.meta.description}({field.meta.name})
               </Typography.Text>
-              {field.required && (
+              {field.meta.required && (
                 <Typography.Text type={'danger'}>*</Typography.Text>
               )}
             </Space>
-            <Typography.Text>{field.type}</Typography.Text>
+            <Typography.Text>{field.meta.type}</Typography.Text>
           </div>
         ))
       )}
@@ -72,47 +69,46 @@ const EntityNodeFields: FC<NodeProps<EntityNodeData>> = ({
   )
 }
 const EntityNodeRelations: FC<NodeProps<EntityNodeData>> = ({
-  data: {
-    entity,
-    entity: { relations },
-    passiveEntityRelations,
-  },
+  data: { entity, passiveEntityRelations },
 }) => {
   const enabledPassiveEntityRelations = passiveEntityRelations.filter(
-    (relation) => !isLookupManyToOneRelation(relation),
+    (relation) => !isLookupManyToOneRelation(relation.meta),
   )
-  const allRelations = [...relations, ...enabledPassiveEntityRelations]
+  const allRelations = [
+    ...entity.entityRelations,
+    ...enabledPassiveEntityRelations,
+  ]
   return isEmpty(allRelations) ? null : (
     <div className={cx(classes.section)}>
       <Typography.Title className={cx(classes.sectionTitle)} level={5}>
         关系
       </Typography.Title>
-      {relations.map((relation) => (
+      {entity.entityRelations.map((relation) => (
         <div
-          key={relation.name}
+          key={relation.meta.name}
           className={cx(classes.sectionItem)}
-          id={generateEntityRelationDomId(entity, relation)}
+          id={generateEntityRelationDomId(entity.meta, relation.meta)}
         >
           <Space size={'small'}>
             <Typography.Text>
-              {relation.description}({relation.name})
+              {relation.meta.description}({relation.meta.name})
             </Typography.Text>
           </Space>
-          <Typography.Text>{relation.type}</Typography.Text>
+          <Typography.Text>{relation.meta.type}</Typography.Text>
         </div>
       ))}
       {enabledPassiveEntityRelations.map((relation) => (
         <div
-          key={relation.targetName}
+          key={relation.meta.targetName}
           className={cx(classes.sectionItem)}
-          id={generateEntityRelationDomId(entity, relation)}
+          id={generateEntityRelationDomId(entity.meta, relation.meta)}
         >
           <Space size={'small'}>
             <Typography.Text disabled>
-              {relation.targetDescription}({relation.targetName})
+              {relation.meta.targetDescription}({relation.meta.targetName})
             </Typography.Text>
           </Space>
-          <Typography.Text disabled>{relation.type}</Typography.Text>
+          <Typography.Text disabled>{relation.meta.type}</Typography.Text>
         </div>
       ))}
     </div>
@@ -128,14 +124,14 @@ export const EntityNode: FC<NodeProps<EntityNodeData>> = (props) => {
     <>
       <EntityNodeHandles {...props} />
       <div
-        id={generateEntityDomId(entity)}
+        id={generateEntityDomId(entity.meta)}
         style={{
           '--header-bg-color': theme.colorPrimary,
         }}
         className={classes.wrapper}
       >
         <div className={classes.header}>
-          <Typography.Title level={5}>{entity.title}</Typography.Title>
+          <Typography.Title level={5}>{entity.meta.title}</Typography.Title>
         </div>
         <div className={classes.body}>
           <EntityNodeFields {...props} />
@@ -157,7 +153,9 @@ export const EntityNode: FC<NodeProps<EntityNodeData>> = (props) => {
             <Button
               block
               type="link"
-              onClick={() => entityEmitter.emit('onChange', entity)}
+              onClick={() =>
+                entityEmitter.emit('onClickEditEntity', entity.meta.id)
+              }
             >
               编辑
             </Button>
@@ -167,7 +165,7 @@ export const EntityNode: FC<NodeProps<EntityNodeData>> = (props) => {
               block
               type="text"
               danger
-              onClick={() => entityEmitter.emit('onDelete', entity.id)}
+              onClick={() => entityEmitter.emit('onDelete', entity.meta.id)}
             >
               删除
             </Button>
@@ -184,7 +182,7 @@ const classes = {
 		border-radius: 10px;
 		background-color: white;
 		overflow: hidden;
-    border: solid rgba(0,0,0,.1);
+    border: 1px solid rgba(0,0,0,.1);
   `,
   header: mcss`
 		background-color: var(--header-bg-color);
@@ -216,6 +214,6 @@ const classes = {
 		}
   `,
   footer: mcss`
-		border-top: solid rgba(0,0,0,.1);
+		border-top:1px solid rgba(0,0,0,.1);
   `,
 }

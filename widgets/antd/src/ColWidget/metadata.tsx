@@ -5,8 +5,8 @@ import { SetterTypeEnum } from '@modou/setters'
 import { WidgetIcon } from '../_'
 
 export const MRSchemeColWidgetProps = WidgetMetadata.createMRWidgetProps({
-  widgetType: 'ColWidget',
-  widgetName: '栅格列',
+  type: 'ColWidget',
+  name: '栅格列',
   props: {
     span: {
       def: mr.number().default(12),
@@ -32,8 +32,8 @@ export const colWidgetMetadata = WidgetMetadata.createMetadata<
   typeof MRSchemeColWidgetState
 >({
   version: '0.0.1',
-  widgetType: 'ColWidget',
-  widgetName: '栅格列',
+  type: 'ColWidget',
+  name: '栅格列',
   icon: <WidgetIcon type="col" />,
   slots: {
     children: {

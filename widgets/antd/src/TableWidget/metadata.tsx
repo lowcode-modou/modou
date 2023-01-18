@@ -9,8 +9,8 @@ import { ColumnsSetter } from './setters/ColumnsSetter'
 import { ColumnValueTypeEnum } from './types'
 
 export const MRSchemeTableWidgetProps = WidgetMetadata.createMRWidgetProps({
-  widgetType: 'TableWidget',
-  widgetName: '表格',
+  type: 'TableWidget',
+  name: '表格',
   props: {
     dataSource: {
       def: mr.array(mr.object({})).default([]),
@@ -65,8 +65,8 @@ export const tableWidgetMetadata = WidgetMetadata.createMetadata<
   typeof MRSchemeTableWidgetState
 >({
   version: '0.0.1',
-  widgetType: 'TableWidget',
-  widgetName: '表格',
+  type: 'TableWidget',
+  name: '表格',
   icon: <WidgetIcon type="col" />,
   slots: {},
   setters: {

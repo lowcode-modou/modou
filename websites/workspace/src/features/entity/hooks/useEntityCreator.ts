@@ -1,40 +1,34 @@
 import { useBoolean } from 'ahooks'
 import { Form } from 'antd'
-import produce from 'immer'
-import { useSetRecoilState } from 'recoil'
 
-import { AppFactory, Entity, Metadata } from '@modou/core'
+import { generateId, useAppManager } from '@modou/core'
+import { EntityFile, EntityFileMeta } from '@modou/meta-vfs'
 
 export const useEntityCreator = () => {
-  const setEntityById = useSetRecoilState(Metadata.entityByIdSelector)
   const [open, { setFalse, setTrue }] = useBoolean(false)
-  const [form] = Form.useForm<Entity>()
+  const [form] = Form.useForm<EntityFileMeta>()
+  const { app } = useAppManager()
 
-  const onSubmitEntity = (entity: Entity) => {
-    setEntityById(
-      produce((draft) => {
-        if (Reflect.has(draft, entity.id)) {
-          // 编辑
-          draft[entity.id] = {
-            ...draft[entity.id],
-            ...entity,
-          }
-        } else {
-          // 新建
-          const newEntity = AppFactory.generateDefaultEntity(entity)
-          const maxX = Math.max(
-            ...Object.values(draft).map((entity) => entity.position.x),
-          )
-          draft[newEntity.id] = {
-            ...newEntity,
-            position: {
-              x: maxX + 400,
-              y: 100,
-            },
-          }
-        }
-      }),
-    )
+  const onSubmitEntity = (entity: EntityFileMeta) => {
+    // 编辑
+    if (entity.id) {
+      app.entityMap.get(entity.id)!.updateMeta(entity)
+    } else {
+      const maxX = Math.max(
+        ...app.entities.map((entity) => entity.meta.position.x),
+      )
+      EntityFile.create(
+        {
+          ...entity,
+          id: generateId(),
+          position: {
+            x: maxX + 400,
+            y: 100,
+          },
+        },
+        app,
+      )
+    }
     setFalse()
   }
   return {

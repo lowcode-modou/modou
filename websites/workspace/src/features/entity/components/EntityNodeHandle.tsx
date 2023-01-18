@@ -8,13 +8,14 @@ import {
   useUpdateNodeInternals,
 } from 'reactflow'
 
+import { mcss } from '@modou/css-in-js'
 import {
-  Entity,
-  EntityRelation,
+  EntityFileMeta,
+  EntityRelationFile,
+  EntityRelationFileMeta,
   EntityRelationLookupRelationTypeEnum,
   EntityRelationMasterDetailRelationTypeEnum,
-} from '@modou/core'
-import { mcss } from '@modou/css-in-js'
+} from '@modou/meta-vfs'
 
 import { EntityNodeData } from '../types'
 import {
@@ -40,8 +41,8 @@ const useHandlePosition = ({
   relation,
   passive,
 }: {
-  entity: Entity
-  relation: EntityRelation
+  entity: EntityFileMeta
+  relation: EntityRelationFileMeta
   passive: boolean
 }) => {
   const reactFlow = useReactFlow()
@@ -75,7 +76,7 @@ const useHandleIcon = ({
   relation,
   passive,
 }: {
-  relation: EntityRelation
+  relation: EntityRelationFileMeta
   passive: boolean
 }) => {
   const [icon, setIcon] = useState<EntityRelationTypeIconEnum>(
@@ -112,24 +113,21 @@ const useHandleIcon = ({
 }
 
 export const EntityNodeHandle: FC<
-  NodeProps<EntityNodeData> & { relation: EntityRelation; passive: boolean }
-> = ({
-  data: {
-    entity,
-    entity: { relations },
-  },
-  relation,
-  passive,
-}) => {
+  NodeProps<EntityNodeData> & { relation: EntityRelationFile; passive: boolean }
+> = ({ data: { entity }, relation, passive }) => {
   const id = passive
-    ? generateTargetHandle(relation)
-    : generateSourceHandle(relation)
-  const { top, left, right } = useHandlePosition({ entity, relation, passive })
-  const { icon, color } = useHandleIcon({ relation, passive })
+    ? generateTargetHandle(relation.meta)
+    : generateSourceHandle(relation.meta)
+  const { top, left, right } = useHandlePosition({
+    entity: entity.meta,
+    relation: relation.meta,
+    passive,
+  })
+  const { icon, color } = useHandleIcon({ relation: relation.meta, passive })
   return (
     <Handle
       className={classes.wrapper}
-      key={relation.id}
+      key={relation.meta.id}
       id={id}
       type={passive ? 'target' : 'source'}
       position={passive ? Position.Left : Position.Right}

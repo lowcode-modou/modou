@@ -5,43 +5,40 @@ import { Spin } from 'antd'
 import { head, isEmpty } from 'lodash'
 import { FC, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
 
-import { Metadata } from '@modou/core'
+import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { observer } from '@modou/reactivity-react'
 
-export const AppHome: FC = () => {
+const _AppHome: FC = () => {
   const params = useParams<BaseRouterParamsKey>()
   const navigate = useNavigate()
-  const app = useRecoilValue(Metadata.appAtom)
-  const isEmptyApp = isEmpty(app)
+  const { app } = useAppManager()
   const isEmptyPage = isEmpty(app.pages)
 
   useEffect(() => {
-    if (!isEmptyApp) {
-      if (!isEmptyPage) {
-        navigate(
-          generateRouterPath(ROUTER_PATH.PAGE, {
-            ...params,
-            pageId: head(app.pages)?.id,
-          }),
-          {
-            replace: true,
-          },
-        )
-      } else if (!isEmpty(app.entities)) {
-        navigate(
-          generateRouterPath(ROUTER_PATH.Entity, {
-            ...params,
-            entityId: head(app.entities)?.id,
-          }),
-          {
-            replace: true,
-          },
-        )
-      }
+    if (!isEmptyPage) {
+      navigate(
+        generateRouterPath(ROUTER_PATH.PAGE, {
+          ...params,
+          pageId: head(app.pages)?.meta?.id,
+        }),
+        {
+          replace: true,
+        },
+      )
+    } else if (!isEmpty(app.entities)) {
+      navigate(
+        generateRouterPath(ROUTER_PATH.Entity, {
+          ...params,
+          entityId: head(app.entities)?.meta?.id,
+        }),
+        {
+          replace: true,
+        },
+      )
     }
-  }, [app.entities, app.pages, isEmptyApp, isEmptyPage, navigate, params])
+  }, [app.entities, app.pages, isEmptyPage, navigate, params])
 
   return (
     <div className={classes.wrapper}>
@@ -52,6 +49,7 @@ export const AppHome: FC = () => {
     </div>
   )
 }
+export const AppHome = observer(_AppHome)
 
 const classes = {
   wrapper: mcss`

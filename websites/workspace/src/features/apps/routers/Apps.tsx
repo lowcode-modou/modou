@@ -94,7 +94,7 @@ const AppsContent: FC = () => {
                   avatar={
                     <Avatar
                       shape="square"
-                      src={`https://joeschmoe.io/api/v1/random?${index}`}
+                      src={`https://api.multiavatar.com/modou_app_logo_${index}.png`}
                     />
                   }
                   title="APP NAME"

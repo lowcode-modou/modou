@@ -13,9 +13,17 @@ import {
 } from './constants'
 
 export const MRSchemeButtonWidgetProps = WidgetMetadata.createMRWidgetProps({
-  widgetType: 'ButtonWidget',
-  widgetName: '按钮',
+  type: 'ButtonWidget',
+  name: '按钮',
   props: {
+    title: {
+      def: mr.string().default('按钮'),
+      setter: {
+        type: SetterTypeEnum.String,
+        label: '内容',
+        description: '按钮内容',
+      },
+    },
     block: {
       def: mr.boolean().default(false),
       setter: {
@@ -94,14 +102,6 @@ export const MRSchemeButtonWidgetProps = WidgetMetadata.createMRWidgetProps({
         options: typeOptions,
       },
     },
-    title: {
-      def: mr.string().default('按钮'),
-      setter: {
-        type: SetterTypeEnum.String,
-        label: '内容',
-        description: '按钮内容',
-      },
-    },
   },
 })
 
@@ -112,8 +112,9 @@ export const MRSchemeButtonWidgetState = WidgetMetadata.createMRWidgetState(
 
 export const buttonWidgetMetadata = WidgetMetadata.createMetadata({
   version: '0.0.1',
-  widgetType: 'ButtonWidget',
-  widgetName: '按钮',
+  type: 'ButtonWidget',
+  name: '按钮',
+  // TODO 使用文本引入icon
   icon: <WidgetIcon type="button" />,
   mrPropsScheme: MRSchemeButtonWidgetProps,
   mrStateScheme: MRSchemeButtonWidgetState,

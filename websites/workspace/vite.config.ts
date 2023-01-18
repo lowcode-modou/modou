@@ -11,9 +11,9 @@ export default defineConfig({
   plugins: [
     react({
       babel: {
-        presets: [
+        plugins: [
           [
-            '@emotion/babel-preset-css-prop',
+            '@emotion',
             {
               autoLabel: 'dev-only',
               labelFormat: '[local]',
@@ -59,12 +59,13 @@ export default defineConfig({
       cert: fs.readFileSync(path.join(__dirname, '../../keys/cert.crt')),
       key: fs.readFileSync(path.join(__dirname, '../../keys/cert.key')),
     },
+    host: '0.0.0.0',
   },
   build: {
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        simulatorPC: resolve(__dirname, 'simulator/pc.html'),
+        simulatorPC: resolve(__dirname, 'simulator/pc/index.html'),
       },
     },
   },

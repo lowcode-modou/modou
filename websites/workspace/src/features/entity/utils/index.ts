@@ -1,30 +1,30 @@
 import { CSSProperties } from 'react'
 
 import {
-  Entity,
-  EntityRelation,
+  EntityFileMeta,
+  EntityRelationFileMeta,
   EntityRelationLookupRelationTypeEnum,
-} from '@modou/core'
-import { EntityRelationTypeEnum } from '@modou/core/src/types/entity-relation'
+  EntityRelationTypeEnum,
+} from '@modou/meta-vfs'
 
-export const generateSourceHandle = (entityRelation: EntityRelation) =>
+export const generateSourceHandle = (entityRelation: EntityRelationFileMeta) =>
   `${entityRelation.sourceEntity}_${entityRelation.name}`
 
-export const generateTargetHandle = (entityRelation: EntityRelation) =>
+export const generateTargetHandle = (entityRelation: EntityRelationFileMeta) =>
   `${entityRelation.targetEntity}_${entityRelation.targetName}`
 
-export const generateEntityDomId = (entity: Entity) => {
+export const generateEntityDomId = (entity: EntityFileMeta) => {
   return `entity_er_node_id_${entity.id}`
 }
 
 export const generateEntityRelationDomId = (
-  entity: Entity,
-  relation: EntityRelation,
+  entity: EntityFileMeta,
+  relation: EntityRelationFileMeta,
 ) => {
   return `${generateEntityDomId(entity)}_${relation.id}`
 }
 
-export const isLookupManyToOneRelation = (relation: EntityRelation) => {
+export const isLookupManyToOneRelation = (relation: EntityRelationFileMeta) => {
   return (
     relation.type === EntityRelationTypeEnum.Lookup &&
     relation.relationType === EntityRelationLookupRelationTypeEnum.ManyToOne
@@ -32,7 +32,7 @@ export const isLookupManyToOneRelation = (relation: EntityRelation) => {
 }
 
 export const getEntityRelationColor = (
-  relation: EntityRelation,
+  relation: EntityRelationFileMeta,
 ): CSSProperties['color'] => {
   if (relation.type === EntityRelationTypeEnum.Lookup) {
     return 'green'

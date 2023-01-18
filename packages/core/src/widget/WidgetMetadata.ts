@@ -21,6 +21,7 @@ import {
 } from '@modou/setters'
 import { InferWidgetState } from '@modou/widgets-antd'
 
+import { MDVersion } from '../types'
 import { WidgetBaseProps } from './types'
 
 type WidgetType = `${string}Widget`
@@ -36,10 +37,10 @@ interface BaseWidgetMetadata<
   StateMRScheme extends MRScheme,
   S extends string = '',
 > {
-  version: `${number}.${number}.${number}`
+  version: MDVersion
   icon: ReactNode
-  widgetType: WidgetType
-  widgetName: string
+  type: WidgetType
+  name: string
   slots: WidgetSlots<S>
   // TODO FIX TYPE
   setters: Record<string, FC<BaseSetterProps<any>>>
@@ -76,8 +77,8 @@ export class WidgetMetadata<
 {
   constructor({
     version,
-    widgetType,
-    widgetName,
+    type,
+    name,
     mrPropsScheme,
     mrStateScheme,
     slots,
@@ -86,8 +87,8 @@ export class WidgetMetadata<
     initState,
   }: BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>) {
     this.version = version
-    this.widgetType = widgetType
-    this.widgetName = widgetName
+    this.type = type
+    this.name = name
     this.mrPropsScheme = mrPropsScheme
     this.mrStateScheme = mrStateScheme
     this.jsonPropsSchema = mrToJsonSchema(
@@ -104,8 +105,8 @@ export class WidgetMetadata<
   }
 
   version
-  widgetType
-  widgetName
+  type
+  name
   icon
   mrPropsScheme
   mrStateScheme
@@ -130,13 +131,13 @@ export class WidgetMetadata<
   }
 
   static createMRWidgetProps<T extends MRWidgetProps, S extends MRRawShape>({
-    widgetName,
-    widgetType,
+    name,
+    type,
     props,
     slots,
   }: {
-    widgetName: string
-    widgetType: string
+    name: string
+    type: string
     props: T
     // TODO 限制KEY的范围
     slots?: S
@@ -155,8 +156,8 @@ export class WidgetMetadata<
 
     return mr.object({
       id: mr.string(),
-      widgetType: mr.literal(widgetType),
-      widgetName: mr.literal(widgetName),
+      type: mr.literal(type),
+      name: mr.literal(name),
       props: mr.object(propsRawShape),
       slots: mr.object(slots ?? ({} as unknown as S)),
     })

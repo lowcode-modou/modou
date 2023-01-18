@@ -3,10 +3,10 @@ import useUrlState from '@ahooksjs/use-url-state'
 import { Card } from 'antd'
 import { FC } from 'react'
 import { useParams } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
 
-import { Metadata } from '@modou/core'
+import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { observer } from '@modou/reactivity-react'
 
 import {
   EntityBaseInfo,
@@ -42,14 +42,15 @@ const entityModuleTabs: Array<{ key: EntityModuleTabKeyEnum; tab: string }> = [
   },
 ]
 
-export const Entity: FC = () => {
+const _Entity: FC = () => {
   const [urlState, setUrlState] = useUrlState<{
     activeTabKey: EntityModuleTabKeyEnum
   }>({
     activeTabKey: EntityModuleTabKeyEnum.Base,
   })
+  const { app } = useAppManager()
   const { entityId } = useParams<EntityRouterParamsKey>()
-  const entity = useRecoilValue(Metadata.entitySelector(entityId as string))
+  const entity = app.entityMap.get(entityId!)!
   const { open, setFalse, setTrue, onSubmitEntity, form } = useEntityCreator()
 
   const buildTabPanel = (tabKey: EntityModuleTabKeyEnum) => {
@@ -57,19 +58,19 @@ export const Entity: FC = () => {
       case EntityModuleTabKeyEnum.Base:
         return (
           <EntityBaseInfo
-            entity={entity}
+            entity={entity.meta}
             onEditEntity={() => {
-              form.setFieldsValue(entity)
+              form.setFieldsValue(entity.meta)
               setTrue()
             }}
           />
         )
       case EntityModuleTabKeyEnum.Field:
-        return <EntityFields entityId={entity.id} />
+        return <EntityFields entityId={entity.meta.id} />
       case EntityModuleTabKeyEnum.Method:
-        return <EntityFields entityId={entity.id} />
+        return <EntityFields entityId={entity.meta.id} />
       case EntityModuleTabKeyEnum.View:
-        return <EntityFields entityId={entity.id} />
+        return <EntityFields entityId={entity.meta.id} />
       default:
         return <div>未知模块</div>
     }
@@ -92,7 +93,7 @@ export const Entity: FC = () => {
           tabProps={{
             size: 'small',
           }}
-          title={`${entity.title}(${entity.name})`}
+          title={`${entity.meta.title}(${entity.meta.name})`}
           tabList={entityModuleTabs}
           tabBarExtraContent={<EntityModuleActionPortal />}
           className={classes.card}
@@ -109,6 +110,7 @@ export const Entity: FC = () => {
     </>
   )
 }
+export const Entity = observer(_Entity)
 
 const classes = {
   wrapper: mcss`

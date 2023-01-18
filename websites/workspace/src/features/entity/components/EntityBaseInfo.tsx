@@ -1,14 +1,16 @@
-import { EntityModuleActionWrapper } from '@/features/entity/components/EntityModuleActions'
 import { ProForm, ProFormText } from '@ant-design/pro-components'
 import { Button } from 'antd'
 import { FC } from 'react'
 
-import { Entity } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { EntityFileMeta } from '@modou/meta-vfs'
+import { observer } from '@modou/reactivity-react'
 
-export const EntityBaseInfo: FC<{
-  entity: Entity
-  onEditEntity: (entity: Entity) => void
+import { EntityModuleActionWrapper } from './EntityModuleActions'
+
+const _EntityBaseInfo: FC<{
+  entity: EntityFileMeta
+  onEditEntity: (entity: EntityFileMeta) => void
 }> = ({ entity, onEditEntity }) => {
   return (
     <>
@@ -18,7 +20,7 @@ export const EntityBaseInfo: FC<{
         </Button>
       </EntityModuleActionWrapper>
       <div className={classes.wrapper}>
-        <ProForm<Entity>
+        <ProForm<EntityFileMeta>
           readonly
           layout="horizontal"
           grid
@@ -48,6 +50,8 @@ export const EntityBaseInfo: FC<{
     </>
   )
 }
+
+export const EntityBaseInfo = observer(_EntityBaseInfo)
 
 const classes = {
   wrapper: mcss`
