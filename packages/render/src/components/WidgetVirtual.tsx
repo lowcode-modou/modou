@@ -4,7 +4,7 @@ import {
   TextNode,
   baseParse,
 } from '@vue/compiler-core'
-import { useMemoizedFn, useMount, useUnmount } from 'ahooks'
+import { useMemoizedFn, useMount } from 'ahooks'
 import { flatten } from 'flat'
 import { get, isFunction, keys, set } from 'lodash'
 import { FC, useContext, useEffect, useRef } from 'react'
@@ -180,11 +180,6 @@ const _WidgetVirtual: FC<{
         }
       })
     })
-  })
-
-  useUnmount(() => {
-    //  FIXME
-    // Object.values(watchStopsRef.current).forEach((stop) => stop())
   })
 
   // FIXME 会导致重新渲染

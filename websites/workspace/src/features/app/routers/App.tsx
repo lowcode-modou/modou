@@ -17,7 +17,6 @@ import { AppManagerProvider } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { AppManager } from '@modou/meta-vfs'
 import { runInAction } from '@modou/reactivity'
-import { observer } from '@modou/reactivity-react'
 
 import { ModuleManager } from '../components'
 import { AppHeader } from '../components/AppHeader'

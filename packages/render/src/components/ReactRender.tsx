@@ -1,6 +1,6 @@
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
-import { FC, useContext, useEffect, useState } from 'react'
+import { FC, useContext, useState } from 'react'
 import * as React from 'react'
 
 import { AppFactoryContext, AppManagerProvider } from '@modou/core'
@@ -16,9 +16,6 @@ export const ReactRender: FC<MoDouRenderProps> = (props) => {
   const [appManager, updateAppManager] = useState<AppManager>()
   const [file, updateFile] = useState<PageFile>()
   useInitRender({ ...props, updateAppManager, updateFile })
-  useEffect(() => {
-    console.log('123')
-  })
   if (!file || !appManager) {
     return null
   }
