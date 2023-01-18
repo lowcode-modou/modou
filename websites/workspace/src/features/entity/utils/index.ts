@@ -1,8 +1,11 @@
 import { CSSProperties } from 'react'
 
-import { EntityRelationLookupRelationTypeEnum } from '@modou/core'
-import { EntityRelationTypeEnum } from '@modou/core/src/types/entity-relation'
-import { EntityFileMeta, EntityRelationFileMeta } from '@modou/meta-vfs'
+import {
+  EntityFileMeta,
+  EntityRelationFileMeta,
+  EntityRelationLookupRelationTypeEnum,
+  EntityRelationTypeEnum,
+} from '@modou/meta-vfs'
 
 export const generateSourceHandle = (entityRelation: EntityRelationFileMeta) =>
   `${entityRelation.sourceEntity}_${entityRelation.name}`

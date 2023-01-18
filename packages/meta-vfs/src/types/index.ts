@@ -14,3 +14,6 @@ export enum FileTypeEnum {
 }
 
 export type UpdateParams<T extends object> = ((meta: T) => T) | T
+
+export * from '../EntityFieldFile/types'
+export * from '../EntityRelationFile/types'

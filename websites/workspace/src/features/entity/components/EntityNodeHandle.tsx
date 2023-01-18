@@ -8,15 +8,13 @@ import {
   useUpdateNodeInternals,
 } from 'reactflow'
 
-import {
-  EntityRelationLookupRelationTypeEnum,
-  EntityRelationMasterDetailRelationTypeEnum,
-} from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import {
   EntityFileMeta,
   EntityRelationFile,
   EntityRelationFileMeta,
+  EntityRelationLookupRelationTypeEnum,
+  EntityRelationMasterDetailRelationTypeEnum,
 } from '@modou/meta-vfs'
 
 import { EntityNodeData } from '../types'

@@ -15,13 +15,13 @@ import {
   useState,
 } from 'react'
 
+import { generateId, useAppManager } from '@modou/core'
 import {
   EntityFieldEnum,
-  generateId,
-  getEntityFieldTypeLabel,
-  useAppManager,
-} from '@modou/core'
-import { EntityFieldFile, EntityFieldFileMeta } from '@modou/meta-vfs'
+  EntityFieldFile,
+  EntityFieldFileMeta,
+  EntityFile,
+} from '@modou/meta-vfs'
 
 const buildEntityFieldConfig = (
   entityFieldType: EntityFieldEnum,
@@ -116,7 +116,7 @@ const buildEntityFieldConfig = (
 const EntityFieldRadioOptions: SelectProps['options'] = Object.values(
   EntityFieldEnum,
 ).map((fieldType) => ({
-  label: getEntityFieldTypeLabel(fieldType),
+  label: EntityFile.getEntityFieldTypeLabel(fieldType),
   value: fieldType,
 }))
 

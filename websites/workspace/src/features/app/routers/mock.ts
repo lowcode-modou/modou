@@ -1,18 +1,13 @@
-import {
-  EntityField,
-  EntityFieldEnum,
-  EntityRelationLookupRelationTypeEnum,
-  WidgetBaseProps,
-  WidgetMetadata,
-  generateId,
-  getEntityFieldTypeLabel,
-} from '@modou/core'
-import { EntityRelationTypeEnum } from '@modou/core/src/types/entity-relation'
+import { WidgetBaseProps, WidgetMetadata, generateId } from '@modou/core'
 import {
   AppFile,
+  EntityFieldEnum,
   EntityFieldFile,
+  EntityFieldFileMeta,
   EntityFile,
   EntityRelationFile,
+  EntityRelationLookupRelationTypeEnum,
+  EntityRelationTypeEnum,
   PageFile,
   WidgetFile,
 } from '@modou/meta-vfs'
@@ -114,108 +109,121 @@ MOCK_WIDGETS.forEach((widget) =>
 //   ),
 // )
 // mock page end
-const MOCK_FIELDS: EntityField[] = [
+const MOCK_FIELDS: EntityFieldFileMeta[] = [
   {
     id: generateId(),
     type: EntityFieldEnum.AutoNumber,
     name: EntityFieldEnum.AutoNumber,
     title: EntityFieldEnum.AutoNumber,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.AutoNumber),
+    description: EntityFile.getEntityFieldTypeLabel(EntityFieldEnum.AutoNumber),
     required: false,
     config: {},
+    version: '0.0.1',
   },
   {
     id: generateId(),
     type: EntityFieldEnum.Date,
     name: EntityFieldEnum.Date,
     title: EntityFieldEnum.Date,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.Date),
+    description: EntityFile.getEntityFieldTypeLabel(EntityFieldEnum.Date),
     required: false,
     config: {},
+    version: '0.0.1',
   },
   {
     id: generateId(),
     type: EntityFieldEnum.DateTime,
     name: EntityFieldEnum.DateTime,
     title: EntityFieldEnum.DateTime,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.DateTime),
+    description: EntityFile.getEntityFieldTypeLabel(EntityFieldEnum.DateTime),
     required: false,
     config: {},
+    version: '0.0.1',
   },
   {
     id: generateId(),
     type: EntityFieldEnum.Email,
     name: EntityFieldEnum.Email,
     title: EntityFieldEnum.Email,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.Email),
+    description: EntityFile.getEntityFieldTypeLabel(EntityFieldEnum.Email),
     required: false,
     config: {},
+    version: '0.0.1',
   },
   {
     id: generateId(),
     type: EntityFieldEnum.Image,
     name: EntityFieldEnum.Image,
     title: EntityFieldEnum.Image,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.Image),
+    description: EntityFile.getEntityFieldTypeLabel(EntityFieldEnum.Image),
     required: false,
     config: {},
+    version: '0.0.1',
   },
   {
     id: generateId(),
     type: EntityFieldEnum.LongText,
     name: EntityFieldEnum.LongText,
     title: EntityFieldEnum.LongText,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.LongText),
+    description: EntityFile.getEntityFieldTypeLabel(EntityFieldEnum.LongText),
     required: false,
     config: {},
+    version: '0.0.1',
   },
   {
     id: generateId(),
     type: EntityFieldEnum.Number,
     name: EntityFieldEnum.Number,
     title: EntityFieldEnum.Number,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.Number),
+    description: EntityFile.getEntityFieldTypeLabel(EntityFieldEnum.Number),
     required: false,
     config: {},
+    version: '0.0.1',
   },
   {
     id: generateId(),
     type: EntityFieldEnum.PhoneNumber,
     name: EntityFieldEnum.PhoneNumber,
     title: EntityFieldEnum.PhoneNumber,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.PhoneNumber),
+    description: EntityFile.getEntityFieldTypeLabel(
+      EntityFieldEnum.PhoneNumber,
+    ),
     required: false,
     config: {},
+    version: '0.0.1',
   },
   {
     id: generateId(),
     type: EntityFieldEnum.Text,
     name: EntityFieldEnum.Text,
     title: EntityFieldEnum.Text,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.Text),
+    description: EntityFile.getEntityFieldTypeLabel(EntityFieldEnum.Text),
     required: false,
     config: {},
+    version: '0.0.1',
   },
   {
     id: generateId(),
     type: EntityFieldEnum.URL,
     name: EntityFieldEnum.URL,
     title: EntityFieldEnum.URL,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.URL),
+    description: EntityFile.getEntityFieldTypeLabel(EntityFieldEnum.URL),
     required: false,
     config: {},
+    version: '0.0.1',
   },
   {
     id: generateId(),
     type: EntityFieldEnum.Enum,
     name: EntityFieldEnum.Enum,
     title: EntityFieldEnum.Enum,
-    description: getEntityFieldTypeLabel(EntityFieldEnum.Enum),
+    description: EntityFile.getEntityFieldTypeLabel(EntityFieldEnum.Enum),
     required: false,
     config: {
       enumCode: '',
       multiple: true,
     },
+    version: '0.0.1',
   },
 ]
 // mock entity start
@@ -238,7 +246,6 @@ MOCK_FIELDS.forEach((field) => {
   EntityFieldFile.create(
     {
       ...field,
-      version: '0.0.1',
     },
     entityFile1,
   )
@@ -281,7 +288,6 @@ MOCK_FIELDS.forEach((field) => {
   EntityFieldFile.create(
     {
       ...field,
-      version: '0.0.1',
       required: true,
       id: field.id + entityFile2.meta.id,
     },
