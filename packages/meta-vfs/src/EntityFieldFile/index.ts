@@ -30,9 +30,19 @@ export class EntityFieldFile extends BaseFile<
     }
   }
 
-  static create(meta: EntityFieldFileMeta, parentFile: EntityFile) {
+  static create(
+    meta: Omit<EntityFieldFileMeta, 'version'>,
+    parentFile: EntityFile,
+  ) {
     return runInAction(() => {
-      const entityFieldFile = new EntityFieldFile(meta, parentFile)
+      const entityFieldFile = new EntityFieldFile(
+        {
+          ...meta,
+          version: '0.0.1',
+          // FIXME ts type
+        } as unknown as EntityFieldFileMeta,
+        parentFile,
+      )
       parentFile.entityFields.push(entityFieldFile)
       return entityFieldFile
     })

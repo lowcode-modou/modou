@@ -26,9 +26,15 @@ export class WidgetFile extends BaseFile<{}, WidgetFileMeta, PageFile> {
     }
   }
 
-  static create(meta: WidgetFileMeta, parentFile: PageFile) {
+  static create(meta: Omit<WidgetFileMeta, 'version'>, parentFile: PageFile) {
     return runInAction(() => {
-      const widgetFile = new WidgetFile(meta, parentFile)
+      const widgetFile = new WidgetFile(
+        {
+          ...meta,
+          version: '0.0.1',
+        },
+        parentFile,
+      )
       parentFile.widgets.push(widgetFile)
       return widgetFile
     })

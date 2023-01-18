@@ -31,6 +31,7 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
       entityRelationsByTargetEntityNameMap: computed,
       entityRelationsBySourceEntityNameMap: computed,
       deleteEntity: action,
+      deletePage: action,
     })
   }
 
@@ -48,6 +49,14 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
       this.subFileMap.pages.length = 0
       this.subFileMap.pages.push(...pages)
     })
+  }
+
+  deletePage(pageId: string) {
+    const oldPages = [...this.subFileMap.pages]
+    this.subFileMap.pages.length = 0
+    this.subFileMap.pages.push(
+      ...oldPages.filter((page) => page.meta.id !== pageId),
+    )
   }
 
   get entities() {

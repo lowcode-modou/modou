@@ -1,14 +1,14 @@
 import { Form, FormInstance, Input, Modal } from 'antd'
 import { FC } from 'react'
 
-import { Entity } from '@modou/core'
+import { EntityFileMeta } from '@modou/meta-vfs'
 
 export const EntityCreator: FC<{
-  onOk: (entity: Entity) => void
+  onOk: (entity: EntityFileMeta) => void
   onCancel: () => void
   open: boolean
   mode: 'create' | 'edit'
-  form: FormInstance<Entity>
+  form: FormInstance<EntityFileMeta>
 }> = ({ onOk, onCancel, open, mode, form }) => {
   // useExternal(
   //   'https://cdn.jsdelivr.net/npm/pinyin-pro@3.11.0/dist/index.cjs.min.js',
@@ -31,7 +31,7 @@ export const EntityCreator: FC<{
         open={open}
         destroyOnClose
       >
-        <Form<Entity>
+        <Form<EntityFileMeta>
           form={form}
           labelCol={{
             style: {

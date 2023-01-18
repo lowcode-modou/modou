@@ -8,12 +8,11 @@ import { ComponentProps, FC } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { AppFactory, Page, useAppManager } from '@modou/core'
+import { Page, WidgetMetadata, generateId, useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
-import { PageFile } from '@modou/meta-vfs'
+import { PageFile, WidgetFile } from '@modou/meta-vfs'
 import { Observer, observer } from '@modou/reactivity-react'
-
-import { useAddPage, useRemovePage } from '../hooks'
+import { rowWidgetMetadata } from '@modou/widgets-antd'
 
 enum PageActionEnum {
   Delete = 'Delete',
@@ -24,6 +23,7 @@ const _ModuleManagerPage: FC<{
   searchVal: string
   itemAddRef: HTMLElement | null
 }> = ({ searchVal, itemAddRef }) => {
+  const { app } = useAppManager()
   const { appId, pageId } = useParams<PageRouterParamsKey>()
   const navigate = useNavigate()
   const pages = useAppManager().app.pages
@@ -31,9 +31,6 @@ const _ModuleManagerPage: FC<{
     return page.meta.name.includes(searchVal)
   })
   const [form] = Form.useForm<Pick<Page, 'name'>>()
-
-  const { addPage } = useAddPage()
-  const { removePage } = useRemovePage()
 
   const renderListItem: ComponentProps<typeof List<PageFile>>['renderItem'] = (
     page,
@@ -64,7 +61,7 @@ const _ModuleManagerPage: FC<{
                 onClick: ({ key }) => {
                   switch (key) {
                     case PageActionEnum.Delete:
-                      removePage(page.meta.id)
+                      app.deletePage(page.meta.id)
                       break
                     default:
                   }
@@ -120,7 +117,28 @@ const _ModuleManagerPage: FC<{
             onFinish={async (formData) => {
               await form.validateFields()
               console.log(formData)
-              addPage(AppFactory.generateDefaultPage(formData.name))
+              // TODO 完善 addPage
+              const rootWidgetId = generateId()
+              const page = PageFile.create(
+                {
+                  id: generateId(),
+                  name: formData.name,
+                  rootWidgetId,
+                },
+                app,
+              )
+              WidgetFile.create(
+                {
+                  ...WidgetMetadata.mrSchemeToDefaultJson(
+                    rowWidgetMetadata.jsonPropsSchema,
+                  ),
+                  id: rootWidgetId,
+                  slots: {
+                    children: [],
+                  },
+                },
+                page,
+              )
               form.resetFields()
               return true
             }}

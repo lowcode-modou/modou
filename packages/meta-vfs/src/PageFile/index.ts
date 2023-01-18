@@ -237,9 +237,15 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
     }
   }
 
-  static create(meta: PageFileMeta, parentFile: AppFile) {
+  static create(meta: Omit<PageFileMeta, 'version'>, parentFile: AppFile) {
     return runInAction(() => {
-      const pageFile = new PageFile(meta, parentFile)
+      const pageFile = new PageFile(
+        {
+          ...meta,
+          version: '0.0.1',
+        },
+        parentFile,
+      )
       parentFile.pages.push(pageFile)
       return pageFile
     })

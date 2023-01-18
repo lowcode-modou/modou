@@ -61,7 +61,6 @@ const pageFile1 = PageFile.create(
   {
     name: '大漠孤烟直',
     id: MOCK_PAGE_ID,
-    version: '0.0.0',
     rootWidgetId: MOCK_ROOT_WIDGET_ID,
   },
   mock_appFile,
@@ -89,7 +88,6 @@ MOCK_WIDGETS.forEach((widget) =>
   WidgetFile.create(
     {
       ...widget,
-      version: '0.0.1',
       id: widget.id,
     },
     pageFile1,

@@ -68,9 +68,16 @@ export class EntityFile extends BaseFile<FileMap, EntityFileMeta, AppFile> {
     }
   }
 
+  // TODO 所有 version 提到 create 函数内部
   static create(meta: EntityFileMeta, parentFile: AppFile) {
     return runInAction(() => {
-      const entityFile = new EntityFile(meta, parentFile)
+      const entityFile = new EntityFile(
+        {
+          ...meta,
+          version: '0.0.1',
+        },
+        parentFile,
+      )
       parentFile.entities.push(entityFile)
       return entityFile
     })

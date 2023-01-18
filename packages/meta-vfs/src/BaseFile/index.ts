@@ -69,7 +69,7 @@ export abstract class BaseFile<
   }
 
   static create(
-    meta: BaseFileMete,
+    meta: Omit<BaseFileMete, 'version'>,
     parentFile?: BaseFile<any, any, any>,
   ): BaseFile<any, any, any> {
     throw new Error(`【${this.name}】未实现create方法`)

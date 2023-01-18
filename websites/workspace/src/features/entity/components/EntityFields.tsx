@@ -4,11 +4,12 @@ import { ComponentProps, FC, useRef } from 'react'
 
 import { useAppManager } from '@modou/core'
 import { EntityFieldFileMeta } from '@modou/meta-vfs'
+import { observer } from '@modou/reactivity-react'
 
 import { EntityFieldCreator } from './EntityFieldCreator'
 import { EntityModuleActionWrapper } from './EntityModuleActions'
 
-export const EntityFields: FC<{
+const _EntityFields: FC<{
   entityId: string
 }> = ({ entityId }) => {
   const fieldCreatorRef: ComponentProps<typeof EntityFieldCreator>['ref'] =
@@ -106,6 +107,8 @@ export const EntityFields: FC<{
     </>
   )
 }
+
+export const EntityFields = observer(_EntityFields)
 // const classes = {
 //   actions: mcss`
 //     //display: flex;
