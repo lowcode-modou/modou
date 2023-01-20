@@ -1,3 +1,4 @@
+import { AppFile } from '@modou/meta-vfs'
 import { makeAutoObservable } from '@modou/reactivity'
 
 import { PageState } from '../PageState'
@@ -9,14 +10,21 @@ interface User {
 }
 
 export class AppState {
-  constructor({ user, id, name }: { user: User; id: string; name: string }) {
+  constructor(file: AppFile) {
+    this.file = file
     this.state = {
-      id,
-      name,
-      user,
+      id: file.meta.id,
+      name: file.meta.name,
+      user: {
+        name: '张三',
+        email: 'zhangsan@gmail.com',
+        id: 'zhangsan',
+      },
     }
     makeAutoObservable(this)
   }
+
+  file: AppFile
 
   state: {
     id: string
@@ -25,9 +33,9 @@ export class AppState {
   }
 
   subState: {
-    page: Map<string, PageState>
+    page: Record<string, PageState>
   } = {
-    page: new Map(),
+    page: {},
   }
   // pages: []
 }

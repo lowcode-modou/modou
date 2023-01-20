@@ -1,18 +1,16 @@
 import { useMemoizedFn } from 'ahooks'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+
+import { AppManager, PageFile } from '@modou/meta-vfs'
 
 import { APP_MANAGER_SYMBOL, FILE_SYMBOL } from '../constants'
-import { MoDouRenderProps } from '../types'
 import { ReactRenderHost } from '../utils'
 import { UpdateAppManager, UpdateFile } from '../utils/ReactRenderHost'
 
-export const useInitRender = ({
-  updateFile,
-  updateAppManager,
-}: {
-  updateAppManager: UpdateAppManager
-  updateFile: UpdateFile
-} & MoDouRenderProps) => {
+export const useInitRender = () => {
+  // TODO 判断 host type 浏览器 or 模拟器
+  const [appManager, updateAppManager] = useState<AppManager>()
+  const [file, updateFile] = useState<PageFile>()
   const _updateAppManager: UpdateAppManager = useMemoizedFn((appManager) => {
     if (!Reflect.get(window, APP_MANAGER_SYMBOL)) {
       Reflect.set(window, APP_MANAGER_SYMBOL, appManager)
@@ -42,4 +40,9 @@ export const useInitRender = ({
       updateFile(Reflect.get(window, FILE_SYMBOL))
     }
   })
+
+  return {
+    file,
+    appManager,
+  }
 }

@@ -62,8 +62,6 @@ importers:
       react-json-view: ^1.21.3
       react-router-dom: ^6.3.0
       reactflow: ^11.3.0
-      recoil: ^0.7.5
-      recoil-sync: ^0.1.1
       rollup-plugin-visualizer: ^5.8.2
       ts-pattern: ^4.0.5
       typescript: ^4.7.4
@@ -101,8 +99,6 @@ importers:
       react-json-view: 1.21.3_rj7ozvcq3uehdlnj3cbwzbi5ce
       react-router-dom: 6.4.2_biqbaboplfbrettd7655fr4n2y
       reactflow: 11.3.0_rekktpi253ghbdqoi5qfkp32ay
-      recoil: 0.7.6_biqbaboplfbrettd7655fr4n2y
-      recoil-sync: 0.1.1_recoil@0.7.6
       ts-pattern: 4.0.5
     devDependencies:
       '@emotion/babel-plugin': 11.10.5
@@ -333,7 +329,10 @@ importers:
       '@lowcode-modou/zod-to-json-schema': 0.0.19_@lowcode-modou+zod@0.0.14
 
   packages/render:
-    specifiers: {}
+    specifiers:
+      '@modou/state-manager': workspace:^0.0.1
+    dependencies:
+      '@modou/state-manager': link:../state-manager
 
   packages/setters:
     specifiers: {}
@@ -9155,10 +9154,6 @@ packages:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==}
     dev: true
 
-  /hamt_plus/1.0.2:
-    resolution: {integrity: sha512-t2JXKaehnMb9paaYA7J0BX8QQAY8lwfQ9Gjf4pg/mk4krt+cmwmU652HOoWonf+7+EQV97ARPMhhVgU1ra2GhA==}
-    dev: false
-
   /handle-thing/2.0.1:
     resolution: {integrity: sha512-9Qn4yBxelxoh2Ow62nP+Ka/kMnOXRi8BXnRaUwezLNhqelnN49xKz4F/dPP8OYLxLxq6JDtZb2i9XznUQbNPTg==}
     dev: true
@@ -14080,33 +14075,6 @@ packages:
     engines: {node: '>= 12.13.0'}
     dev: true
 
-  /recoil-sync/0.1.1_recoil@0.7.6:
-    resolution: {integrity: sha512-+ZVMT4sLIyUFif7EeIlJjOLdiMarF3M0E9uJWQG9vK5yoFLrXzY8qR0fzIH36ofOwpPUmX4fw90YkV29X3Ts+w==}
-    peerDependencies:
-      recoil: '>=0.7.3'
-    dependencies:
-      '@recoiljs/refine': 0.1.1
-      recoil: 0.7.6_biqbaboplfbrettd7655fr4n2y
-      transit-js: 0.8.874
-    dev: false
-
-  /recoil/0.7.6_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-hsBEw7jFdpBCY/tu2GweiyaqHKxVj6EqF2/SfrglbKvJHhpN57SANWvPW+gE90i3Awi+A5gssOd3u+vWlT+g7g==}
-    peerDependencies:
-      react: '>=16.13.1'
-      react-dom: '*'
-      react-native: '*'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-    dependencies:
-      hamt_plus: 1.0.2
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-    dev: false
-
   /redent/3.0.0:
     resolution: {integrity: sha512-6tDA8g98We0zd0GvVeMT9arEOnTw9qM03L9cJXaCjrip1OO764RDBLBfrB4cwzNGDj5OA5ioymC9GkizgWJDUg==}
     engines: {node: '>=8'}
@@ -15428,11 +15396,6 @@ packages:
 
   /tr46/0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
-
-  /transit-js/0.8.874:
-    resolution: {integrity: sha512-IDJJGKRzUbJHmN0P15HBBa05nbKor3r2MmG6aSt0UxXIlJZZKcddTk67/U7WyAeW9Hv/VYI02IqLzolsC4sbPA==}
-    engines: {node: '>= 0.10.0'}
-    dev: false
 
   /traverse/0.6.6:
     resolution: {integrity: sha512-kdf4JKs8lbARxWdp7RKdNzoJBhGUcIalSYibuGyHJbmk40pOysQ0+QPvlkCOICOivDWU2IJo2rkrxyTK2AH4fw==}

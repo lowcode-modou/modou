@@ -1,31 +1,35 @@
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
-import { FC, useContext, useState } from 'react'
+import { FC, useContext } from 'react'
 import * as React from 'react'
 
 import { AppFactoryContext, AppManagerProvider } from '@modou/core'
-import { AppManager, PageFile } from '@modou/meta-vfs'
+import { StateManagerProvider } from '@modou/state-manager/src/contexts'
 
-import { CanvasFileContextProvider } from '../contexts/CanvasFileContext'
-import { useInitRender } from '../hooks'
+import { CanvasFileContextProvider } from '../contexts'
+import { useInitRender, useInitStateManager } from '../hooks'
 import { MoDouRenderProps } from '../types'
 import { ReactRenderTolerant } from './ReactRenderTolerant'
 
+// TODO 支持页面的 State 缓存 比如详情页面回退到列表页面
 export const ReactRender: FC<MoDouRenderProps> = (props) => {
   const appFactory = useContext(AppFactoryContext)
-  const [appManager, updateAppManager] = useState<AppManager>()
-  const [file, updateFile] = useState<PageFile>()
-  useInitRender({ ...props, updateAppManager, updateFile })
-  if (!file || !appManager) {
+  const { file, appManager } = useInitRender()
+  const { stateManager } = useInitStateManager({ app: appManager?.app, file })
+  console.log('stateManager', file, appManager, stateManager)
+  if (!file || !appManager || !stateManager) {
     return null
   }
   return (
     <ConfigProvider locale={zhCN}>
+      {/* TODO 去除点(.)保持跟其他Context统一 */}
       <AppFactoryContext.Provider value={appFactory}>
         <AppManagerProvider value={appManager}>
-          <CanvasFileContextProvider value={file}>
-            <ReactRenderTolerant {...props} />
-          </CanvasFileContextProvider>
+          <StateManagerProvider value={stateManager}>
+            <CanvasFileContextProvider value={file}>
+              <ReactRenderTolerant {...props} />
+            </CanvasFileContextProvider>
+          </StateManagerProvider>
         </AppManagerProvider>
       </AppFactoryContext.Provider>
     </ConfigProvider>
