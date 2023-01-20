@@ -6,7 +6,7 @@ import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { observer } from '@modou/reactivity-react'
 
-import { useCanvasFile } from '../contexts/CanvasFileContext'
+import { useCanvasFile } from '../contexts'
 import { MoDouRenderProps } from '../types'
 import { WidgetVirtual } from './WidgetVirtual'
 

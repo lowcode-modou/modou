@@ -1,9 +1,3 @@
-import { name } from '../../package.json'
-
-export const generateRecoilKey = (key: string): string => {
-  return `@${name}/${key}`
-}
-
 export const getWidgetIdFromElement = (element: HTMLElement): string => {
   return element?.dataset?.widgetId ?? ''
 }
