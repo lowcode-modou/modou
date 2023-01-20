@@ -27,9 +27,10 @@ import { evalExpression, isExpression } from '../utils/evaluate'
 const _WidgetVirtual: FC<{
   widgetId: string
 }> = ({ widgetId }) => {
+  // trace(true)
   const { appManager } = useAppManager()
   const { canvasState } = useStateManager()
-  const widget = appManager.widgetMap.get(widgetId)!
+  const widget = appManager.widgetMap[widgetId]
   const appFactory = useContext(AppFactoryContext)
   let widgetState = canvasState.subState.widget[widget.meta.id]
   if (!widgetState) {
@@ -110,7 +111,14 @@ const _WidgetVirtual: FC<{
             )
           })
         } else {
-          set(widgetState.state, `${path}`, rawPropVal)
+          console.log('fullPath', fullPath, rawPropVal)
+          set(
+            widgetState.state,
+            `${fullPath}`,
+            rawPropVal === undefined
+              ? get(widgetState.state, fullPath)
+              : rawPropVal,
+          )
         }
       })
     })
@@ -118,7 +126,6 @@ const _WidgetVirtual: FC<{
 
   // FIXME 会导致重新渲染
   // FIXME 完善组件类型
-  // console.log('toJS(widgetState)', toJS(widgetState.state))
   return (
     <WidgetComponent
       {...toJS(widgetState.state)}

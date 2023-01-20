@@ -81,9 +81,9 @@ const _CanvasDesignerOutlineTree: FC = () => {
       [WidgetBaseProps, string]
     >(dropNode.nodeType)
       .with('slot', () => [
-        canvasDesignerFile.widgetMap.get(
-          (dropNode as unknown as OutlineTreeNodeSlot).slot.widgetId,
-        )?.meta!,
+        canvasDesignerFile.widgetMap[
+          (dropNode as unknown as OutlineTreeNodeSlot).slot.widgetId
+        ]?.meta!,
         (dropNode as unknown as OutlineTreeNodeSlot).slot.path,
       ])
       .with('widget', () => [

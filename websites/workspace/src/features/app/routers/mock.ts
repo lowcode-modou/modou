@@ -31,12 +31,12 @@ export const mock_appFile = AppFile.create({
 // mock page start
 const buttonDSL: WidgetBaseProps = {
   ...WidgetMetadata.mrSchemeToDefaultJson(buttonWidgetMetadata.jsonPropsSchema),
-  id: generateId(),
+  id: 'buttonDSL',
 }
 
 const colDSL: WidgetBaseProps = {
   ...WidgetMetadata.mrSchemeToDefaultJson(colWidgetMetadata.jsonPropsSchema),
-  id: generateId(),
+  id: 'colDSL',
   slots: {
     children: [buttonDSL.id],
   },

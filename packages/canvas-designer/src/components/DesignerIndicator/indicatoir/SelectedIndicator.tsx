@@ -86,7 +86,7 @@ const _SelectIndicatorContent: FC = () => {
     display: display ? 'block' : 'none',
   }
 
-  const widget = appManager.widgetMap.get(selectedWidgetId)!
+  const widget = appManager.widgetMap[selectedWidgetId]
   // TODO 使用element
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({

@@ -23,7 +23,7 @@ const _SelectedToolBox: FC = () => {
 
   const selectedWidgetId = canvasDesignerStore.selectedWidgetId
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const widget = appManager.widgetMap.get(selectedWidgetId)!
+  const widget = appManager.widgetMap[selectedWidgetId]
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: widget.meta.type,

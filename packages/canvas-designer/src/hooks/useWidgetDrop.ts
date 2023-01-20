@@ -124,7 +124,7 @@ export const useWidgetDrop = ({
   // 普通组件只能放置兄弟节点
   const dropType: DropType = slotPath ? DropType.Slot : DropType.Widget
   const widgetFactory = useContext(AppFactoryContext)
-  const widget = canvasDesignerFile.widgetMap.get(widgetId)!
+  const widget = canvasDesignerFile.widgetMap[widgetId]!
 
   const isEmptySlot = !!slotPath && isEmpty(widget.meta.slots[slotPath])
 

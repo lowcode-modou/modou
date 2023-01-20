@@ -1,5 +1,5 @@
 import produce from 'immer'
-import { isEmpty, isFunction, isObject, omit } from 'lodash'
+import { isEmpty, isFunction, isObject, keyBy, omit } from 'lodash'
 
 import { WidgetBaseProps } from '@modou/core'
 import {
@@ -37,8 +37,8 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
     makeObservable(this, {
       subFileMap: observable,
       widgets: computed,
-      widgetMap: computed,
-      widgetRelationById: computed,
+      widgetMap: computed.struct,
+      widgetRelationById: computed.struct,
       addWidget: action,
       deleteWidget: action,
       updateWidgets: action,
@@ -55,7 +55,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
   }
 
   get widgetMap() {
-    return new Map(this.widgets.map((widget) => [widget.meta.id, widget]))
+    return keyBy(this.subFileMap.widgets, (widget) => widget.meta.id)
   }
 
   get widgetRelationById(): WidgetRelationById {
@@ -73,7 +73,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
           slotChildren.forEach((widgetId) => {
             if (!Reflect.has(pre, widgetId)) {
               pre[widgetId] = {
-                props: this.widgetMap.get(widgetId)?.meta!,
+                props: this.widgetMap[widgetId].meta,
                 parent,
                 slotPath,
               }
@@ -100,7 +100,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
     targetSlotPath: string
   }) {
     const sourceWidget = WidgetFile.create(sourceWidgetMeta, this)
-    const targetWidget = this.widgetMap.get(targetWidgetId)
+    const targetWidget = this.widgetMap[targetWidgetId]
     if (!targetWidget) {
       return
     }

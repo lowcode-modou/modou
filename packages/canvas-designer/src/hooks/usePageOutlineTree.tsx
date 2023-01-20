@@ -33,9 +33,7 @@ export type OutlineTreeNode = DataNode & {
 export const usePageOutlineTree = () => {
   const { canvasDesignerFile } = useCanvasDesignerFile()
   const { appManager } = useAppManager()
-  const rootWidget = appManager.widgetMap.get(
-    canvasDesignerFile.meta.rootWidgetId,
-  )!
+  const rootWidget = appManager.widgetMap[canvasDesignerFile.meta.rootWidgetId]
   const appFactory = useContext(AppFactoryContext)
 
   const parentTreeNodes: OutlineTreeNode[] = [
@@ -84,14 +82,13 @@ export const usePageOutlineTree = () => {
       }
       const parentTreeNode = parentTreeNodes.pop()
       parentTreeNode?.children.unshift(curTreeNode)
-      const curSlot = appManager.widgetMap.get(curNode.widgetId)?.meta.slots?.[
-        curNode.path
-      ]
+      const curSlot =
+        appManager.widgetMap[curNode.widgetId]?.meta.slots?.[curNode.path]
       if (curSlot && !isEmpty(curSlot)) {
         curSlot.forEach((widgetId: string) => {
           nodeStack.push({
             _type: 'widget',
-            ...appManager.widgetMap.get(widgetId)?.meta!,
+            ...appManager.widgetMap[widgetId]?.meta!,
           })
           parentTreeNodes.push(curTreeNode)
         })

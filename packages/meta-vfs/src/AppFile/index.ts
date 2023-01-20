@@ -1,4 +1,4 @@
-import { flatten, isArray, toPairs } from 'lodash'
+import { isArray, keyBy } from 'lodash'
 
 import {
   action,
@@ -24,12 +24,12 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
     super({ fileType: FileTypeEnum.App, meta, parentFile: null })
     makeObservable(this, {
       subFileMap: observable,
-      entities: computed,
-      pages: computed,
-      entityMap: computed,
-      entityRelationMap: computed,
-      entityRelationsByTargetEntityNameMap: computed,
-      entityRelationsBySourceEntityNameMap: computed,
+      entities: computed.struct,
+      pages: computed.struct,
+      entityMap: computed.struct,
+      entityRelationMap: computed.struct,
+      entityRelationsByTargetEntityNameMap: computed.struct,
+      entityRelationsBySourceEntityNameMap: computed.struct,
       deleteEntity: action,
       deletePage: action,
     })
@@ -71,7 +71,7 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
   }
 
   get entityMap() {
-    return new Map(this.entities.map((entity) => [entity.meta.id, entity]))
+    return keyBy(this.entities, (entity) => entity.meta.id)
   }
 
   deleteEntity(entityId: string) {
@@ -83,57 +83,49 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
   }
 
   get entityRelationMap() {
-    return new Map(
-      flatten(
-        this.entities.map((entity) =>
-          entity.subFileMap.entityRelations.map((relation) => [
-            relation.meta.id,
-            relation,
-          ]),
+    return this.entities.reduce<Record<string, EntityRelationFile>>(
+      (pre, cur) => ({
+        ...pre,
+        ...keyBy(
+          cur.subFileMap.entityRelations,
+          (relation) => relation.meta.id,
         ),
-      ),
+      }),
+      {},
     )
   }
 
   get entityRelationsByTargetEntityNameMap() {
-    return new Map(
-      toPairs(
-        [...this.entityRelationMap.values()].reduce<
-          Record<string, EntityRelationFile[]>
-        >((pre, cur) => {
-          // TODO 如果是ManyToOne 的 Lookup 则不在对方双向生成关系
-          // if (
-          //   cur.type === EntityRelationTypeEnum.Lookup &&
-          //   cur.relationType === EntityRelationLookupRelationTypeEnum.ManyToOne
-          // ) {
-          //   return pre
-          // }
-          const targetEntityName = cur.meta.targetEntity
-          if (!isArray(pre[targetEntityName])) {
-            pre[targetEntityName] = []
-          }
-          pre[targetEntityName].push(cur)
-          return pre
-        }, {}),
-      ),
-    )
+    return Object.values(this.entityRelationMap).reduce<
+      Record<string, EntityRelationFile[]>
+    >((pre, cur) => {
+      // TODO 如果是ManyToOne 的 Lookup 则不在对方双向生成关系
+      // if (
+      //   cur.type === EntityRelationTypeEnum.Lookup &&
+      //   cur.relationType === EntityRelationLookupRelationTypeEnum.ManyToOne
+      // ) {
+      //   return pre
+      // }
+      const targetEntityName = cur.meta.targetEntity
+      if (!isArray(pre[targetEntityName])) {
+        pre[targetEntityName] = []
+      }
+      pre[targetEntityName].push(cur)
+      return pre
+    }, {})
   }
 
   get entityRelationsBySourceEntityNameMap() {
-    return new Map(
-      toPairs(
-        [...this.entityRelationMap.values()].reduce<
-          Record<string, EntityRelationFile[]>
-        >((pre, cur) => {
-          const sourceEntityName = cur.meta.sourceEntity
-          if (!isArray(pre[sourceEntityName])) {
-            pre[sourceEntityName] = []
-          }
-          pre[sourceEntityName].push(cur)
-          return pre
-        }, {}),
-      ),
-    )
+    return Object.values(this.entityRelationMap).reduce<
+      Record<string, EntityRelationFile[]>
+    >((pre, cur) => {
+      const sourceEntityName = cur.meta.sourceEntity
+      if (!isArray(pre[sourceEntityName])) {
+        pre[sourceEntityName] = []
+      }
+      pre[sourceEntityName].push(cur)
+      return pre
+    }, {})
   }
 
   toJSON() {

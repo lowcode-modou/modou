@@ -23,7 +23,7 @@ import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
 
 const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
   const { canvasDesignerFile } = useCanvasDesignerFile()
-  const widget = canvasDesignerFile.widgetMap.get(widgetId)!
+  const widget = canvasDesignerFile.widgetMap[widgetId]
   const widgetFactory = useContext(AppFactoryContext)
   const widgetMetadata = useMemo(() => {
     return widgetFactory.widgetByType[widget.meta.type].metadata

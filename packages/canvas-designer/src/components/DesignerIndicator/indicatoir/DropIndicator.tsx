@@ -193,8 +193,8 @@ const _DropIndicator: FC = () => {
     subtree: true,
   })
   const dropElementsRendered = useMemo(() => {
-    return dropElements.filter(({ widgetId }) =>
-      canvasDesignerFile.widgetMap.has(widgetId),
+    return dropElements.filter(
+      ({ widgetId }) => canvasDesignerFile.widgetMap[widgetId],
     )
   }, [canvasDesignerFile.widgetMap, dropElements])
   return (

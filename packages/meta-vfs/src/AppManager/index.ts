@@ -1,13 +1,22 @@
 import { flatten } from 'lodash'
 
-import { makeAutoObservable } from '@modou/reactivity'
+import { computed, makeObservable } from '@modou/reactivity'
 
 import { AppFile } from '../AppFile'
+import { WidgetFile } from '../WidgetFile'
 
 export class AppManager {
   constructor(appFile: AppFile) {
     this.root = appFile
-    makeAutoObservable(this)
+    makeObservable(this, {
+      // root: observable,
+      app: computed,
+      pageMap: computed.struct,
+      entityMap: computed.struct,
+      widgetMap: computed.struct,
+      entityFieldMap: computed.struct,
+      entityRelationMap: computed.struct,
+    })
   }
 
   private readonly root: AppFile
@@ -26,13 +35,9 @@ export class AppManager {
 
   get widgetMap() {
     // TODO 优化 直接从page.widgetMap 取值
-    return new Map(
-      flatten(
-        this.app.pages.map((page) =>
-          page.subFileMap.widgets.map((widget) => [widget.meta.id, widget]),
-        ),
-      ),
-    )
+    return this.app.pages.reduce<Record<string, WidgetFile>>((pre, cur) => {
+      return { ...pre, ...cur.widgetMap }
+    }, {})
   }
 
   get entityFieldMap() {
