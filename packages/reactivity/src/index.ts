@@ -1,17 +1,14 @@
-// @ts-ignore
-// @ts-ignore
 import * as _mobx from 'mobx'
+
+const MD_MOBX_PATH = '__md_mobx__'
 
 let mobx: typeof _mobx = _mobx
 
 // TODO 判断浏览器环境还是Node环境
-// @ts-expect-error
-if (window.top?.__md_mobx__) {
-  // @ts-expect-error
-  mobx = window.top.__md_mobx__
+if (window.top && Reflect.has(window.top, MD_MOBX_PATH)) {
+  mobx = Reflect.get(window.top, MD_MOBX_PATH)
 }
-// @ts-expect-error
-window.__md_mobx__ = mobx
+Reflect.set(window, MD_MOBX_PATH, mobx)
 
 export const action = mobx.action
 export const autorun = mobx.autorun
