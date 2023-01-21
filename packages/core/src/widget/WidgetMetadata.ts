@@ -103,7 +103,7 @@ export class WidgetMetadata<
     // TODO FIX TYPE
     this.setters = setters
     this.icon = icon
-    // TODO IMPORTMANT 完善类型定义
+    // TODO IMPORTANT 完善类型定义
     this.initState = ((...args: [{ id: string }]) => {
       const { id } = args[0]
       return {
@@ -114,7 +114,9 @@ export class WidgetMetadata<
         },
         ...(initState?.(...args) ?? {}),
       }
-    }) as unknown as typeof initState
+    }) as unknown as Required<
+      BaseWidgetMetadata<PropsMRScheme, StateMRScheme, S>
+    >['initState']
   }
 
   version
