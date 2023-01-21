@@ -46,7 +46,8 @@ interface BaseWidgetMetadata<
   setters: Record<string, FC<BaseSetterProps<any>>>
   mrPropsScheme: PropsMRScheme
   mrStateScheme: StateMRScheme
-  initState: (
+  // TODO 通过 props 和 state 的类型对比判断 initState 是否是必传的
+  initState?: (
     widget: mr.infer<PropsMRScheme>,
   ) => Omit<
     InferWidgetState<StateMRScheme>,
@@ -54,6 +55,7 @@ interface BaseWidgetMetadata<
     | 'renderSlotPaths'
     | 'renderSlots'
     | 'updateState'
+    | 'instance'
   >
 }
 
@@ -101,7 +103,18 @@ export class WidgetMetadata<
     // TODO FIX TYPE
     this.setters = setters
     this.icon = icon
-    this.initState = initState
+    // TODO IMPORTMANT 完善类型定义
+    this.initState = ((...args: [{ id: string }]) => {
+      const { id } = args[0]
+      return {
+        instance: {
+          id,
+          widgetId: id,
+          initialized: true,
+        },
+        ...(initState?.(...args) ?? {}),
+      }
+    }) as unknown as typeof initState
   }
 
   version

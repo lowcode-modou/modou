@@ -70,13 +70,4 @@ export const rowWidgetMetadata = WidgetMetadata.createMetadata<
     },
   },
   setters: {},
-  initState: ({ id }) => {
-    return {
-      instance: {
-        id,
-        widgetId: id,
-        initialized: true,
-      },
-    }
-  },
 })

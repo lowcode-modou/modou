@@ -74,13 +74,4 @@ export const tableWidgetMetadata = WidgetMetadata.createMetadata<
   },
   mrPropsScheme: MRSchemeTableWidgetProps,
   mrStateScheme: MRSchemeTableWidgetState,
-  initState: ({ id }) => {
-    return {
-      instance: {
-        id,
-        widgetId: id,
-        initialized: true,
-      },
-    }
-  },
 })

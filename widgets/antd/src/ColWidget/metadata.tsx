@@ -43,13 +43,4 @@ export const colWidgetMetadata = WidgetMetadata.createMetadata<
   setters: {},
   mrPropsScheme: MRSchemeColWidgetProps,
   mrStateScheme: MRSchemeColWidgetState,
-  initState: ({ id }) => {
-    return {
-      instance: {
-        id,
-        widgetId: id,
-        initialized: true,
-      },
-    }
-  },
 })

@@ -46,11 +46,6 @@ export const inputWidgetMetadata = WidgetMetadata.createMetadata({
   initState: ({ id, props }) => {
     return {
       value: props.defaultValue,
-      instance: {
-        id,
-        widgetId: id,
-        initialized: true,
-      },
     }
   },
 })

@@ -56,13 +56,4 @@ export const formWidgetMetadata = WidgetMetadata.createMetadata<
   setters: {},
   mrPropsScheme: MRSchemeFormWidgetProps,
   mrStateScheme: MRSchemeFormWidgetState,
-  initState: ({ id }) => {
-    return {
-      instance: {
-        id,
-        widgetId: id,
-        initialized: true,
-      },
-    }
-  },
 })

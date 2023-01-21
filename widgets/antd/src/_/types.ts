@@ -1,6 +1,6 @@
 // import { SelectSetter } from '@modou/setters'
 // export type MRSelectOptions = Parameters<typeof SelectSetter>[0]['options']
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { MRTypeAny, mr } from '@modou/refine'
 
