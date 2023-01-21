@@ -1,4 +1,4 @@
-import { Reaction } from '@modou/reactivity'
+import { ReactionType } from '@modou/reactivity'
 
 import {
   CLEANUP_TIMER_LOOP_MILLIS,
@@ -110,7 +110,7 @@ export function createTimerBasedReactionCleanupTracking(): ReactionCleanupTracki
   return {
     addReactionToTrack(
       reactionTrackingRef: React.MutableRefObject<IReactionTracking | null>,
-      reaction: Reaction,
+      reaction: ReactionType,
       /**
        * On timer based implementation we don't really need this object,
        * but we keep the same api

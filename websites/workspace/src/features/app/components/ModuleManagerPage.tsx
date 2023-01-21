@@ -8,9 +8,9 @@ import { ComponentProps, FC } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { Page, WidgetMetadata, generateId, useAppManager } from '@modou/core'
+import { WidgetMetadata, generateId, useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
-import { PageFile, WidgetFile } from '@modou/meta-vfs'
+import { PageFile, PageFileMeta, WidgetFile } from '@modou/meta-vfs'
 import { Observer, observer } from '@modou/reactivity-react'
 import { rowWidgetMetadata } from '@modou/widgets-antd'
 
@@ -30,7 +30,7 @@ const _ModuleManagerPage: FC<{
   const dataSource = pages.filter((page) => {
     return page.meta.name.includes(searchVal)
   })
-  const [form] = Form.useForm<Pick<Page, 'name'>>()
+  const [form] = Form.useForm<Pick<PageFileMeta, 'name'>>()
 
   const renderListItem: ComponentProps<typeof List<PageFile>>['renderItem'] = (
     page,
@@ -107,7 +107,7 @@ const _ModuleManagerPage: FC<{
     <>
       {itemAddRef &&
         createPortal(
-          <ModalForm<Pick<Page, 'name'>>
+          <ModalForm<Pick<PageFileMeta, 'name'>>
             form={form}
             layout="horizontal"
             title="创建页面"

@@ -1,11 +1,16 @@
+// @ts-ignore
+// @ts-ignore
 import * as _mobx from 'mobx'
 
 let mobx: typeof _mobx = _mobx
 
 // TODO 判断浏览器环境还是Node环境
+// @ts-expect-error
 if (window.top?.__md_mobx__) {
+  // @ts-expect-error
   mobx = window.top.__md_mobx__
 }
+// @ts-expect-error
 window.__md_mobx__ = mobx
 
 export const action = mobx.action
@@ -28,4 +33,8 @@ export const Reaction = mobx.Reaction
 export const when = mobx.when
 export const getDependencyTree = mobx.getDependencyTree
 
-export { type IReactionDisposer, type AnnotationsMap } from 'mobx'
+export {
+  type IReactionDisposer,
+  type AnnotationsMap,
+  Reaction as ReactionType,
+} from 'mobx'

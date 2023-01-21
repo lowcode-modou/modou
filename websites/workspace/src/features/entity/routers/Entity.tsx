@@ -50,7 +50,7 @@ const _Entity: FC = () => {
   })
   const { app } = useAppManager()
   const { entityId } = useParams<EntityRouterParamsKey>()
-  const entity = app.entityMap.get(entityId!)!
+  const entity = app.entityMap[entityId!]
   const { open, setFalse, setTrue, onSubmitEntity, form } = useEntityCreator()
 
   const buildTabPanel = (tabKey: EntityModuleTabKeyEnum) => {

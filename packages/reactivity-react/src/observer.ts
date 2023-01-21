@@ -83,12 +83,15 @@ export function observer<P extends object, TRef = {}>(
     )
   }
 
-  if (ReactMemoSymbol && baseComponent['$$typeof'] === ReactMemoSymbol) {
+  // @ts-expect-error
+  if (ReactMemoSymbol && baseComponent.$$typeof === ReactMemoSymbol) {
     throw new Error(
-      `[mobx-react-lite] You are trying to use \`observer\` on a function component wrapped in either another \`observer\` or \`React.memo\`. The observer already applies 'React.memo' for you.`,
+      `[mobx-react-lite] You are trying to use \`observer\` on a function component` +
+        ` wrapped in either another \`observer\` or \`React.memo\`. The observer already applies 'React.memo' for you.`,
     )
   }
-  // The working of observer is explained step by step in this talk: https://www.youtube.com/watch?v=cPF4iBedoF0&feature=youtu.be&t=1307
+  // The working of observer is explained step by step in this talk:
+  // https://www.youtube.com/watch?v=cPF4iBedoF0&feature=youtu.be&t=1307
   if (isUsingStaticRendering()) {
     return baseComponent
   }
@@ -102,9 +105,11 @@ export function observer<P extends object, TRef = {}>(
   // so we can patch render and apply memo
   if (
     ReactForwardRefSymbol &&
+    // @ts-expect-error
     baseComponent['$$typeof'] === ReactForwardRefSymbol
   ) {
     useForwardRef = true
+    // @ts-expect-error
     render = baseComponent['render']
     if (typeof render !== 'function') {
       throw new Error(

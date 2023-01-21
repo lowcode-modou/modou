@@ -1,6 +1,6 @@
-import { Reaction } from '@modou/reactivity'
+import { Reaction, ReactionType } from '@modou/reactivity'
 
-export function createTrackingData(reaction: typeof Reaction) {
+export function createTrackingData(reaction: ReactionType) {
   const trackingData: IReactionTracking = {
     reaction,
     mounted: false,
@@ -22,7 +22,7 @@ export interface ReactionCleanupTracking {
    */
   addReactionToTrack(
     reactionTrackingRef: React.MutableRefObject<IReactionTracking | null>,
-    reaction: typeof Reaction,
+    reaction: ReactionType,
     objectRetainedByReact: object,
   ): IReactionTracking
   recordReactionAsCommitted(
@@ -34,7 +34,7 @@ export interface ReactionCleanupTracking {
 
 export interface IReactionTracking {
   /** The Reaction created during first render, which may be leaked */
-  reaction: typeof Reaction
+  reaction: ReactionType
   /**
    * The time (in ticks) at which point we should dispose of the reaction
    * if this component hasn't yet been fully mounted.

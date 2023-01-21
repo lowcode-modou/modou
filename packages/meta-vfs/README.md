@@ -1,9 +1,9 @@
-# @modou/file
+# @modou/meta-vfs
 
 ## TODO 增加单元测试
 
-[![NPM version](https://img.shields.io/npm/v/@modou/file.svg?style=flat)](https://npmjs.org/package/@modou/file)
-[![NPM downloads](http://img.shields.io/npm/dm/@modou/file.svg?style=flat)](https://npmjs.org/package/@modou/file)
+[![NPM version](https://img.shields.io/npm/v/@modou/meta-vfs.svg?style=flat)](https://npmjs.org/package/@modou/meta-vfs)
+[![NPM downloads](http://img.shields.io/npm/dm/@modou/meta-vfs.svg?style=flat)](https://npmjs.org/package/@modou/meta-vfs)
 
 
 

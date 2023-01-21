@@ -16,7 +16,7 @@ const _EntityFields: FC<{
     useRef(null)
 
   const { app } = useAppManager()
-  const entity = app.entityMap.get(entityId)!
+  const entity = app.entityMap[entityId]!
 
   const columns: ColumnsType<EntityFieldFileMeta> = [
     {

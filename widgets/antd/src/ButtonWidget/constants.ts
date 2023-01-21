@@ -64,7 +64,7 @@ export const typeOptions: MRSelectOptions = [
     value: ButtonWidgetTypeEnum.Text,
   },
   {
-    label: '连接按钮',
+    label: '链接按钮',
     value: ButtonWidgetTypeEnum.Link,
   },
   {

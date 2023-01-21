@@ -19,4 +19,4 @@ features:
     description: Put ! description here
 ---
 
-@modou/file
+@modou/meta-vfs

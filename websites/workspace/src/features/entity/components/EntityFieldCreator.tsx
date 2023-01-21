@@ -188,7 +188,7 @@ const _EntityFieldCreator: ForwardRefRenderFunction<
       onFinish={async (formData) => {
         switch (mode) {
           case 'create': {
-            const entity = app.entityMap.get(entityId)!
+            const entity = app.entityMap[entityId]!
             EntityFieldFile.create(
               {
                 ...formData,
@@ -199,7 +199,7 @@ const _EntityFieldCreator: ForwardRefRenderFunction<
             break
           }
           case 'edit': {
-            const entity = app.entityMap.get(entityId)!
+            const entity = app.entityMap[entityId]!
             entity.entityFields.forEach((field) => {
               if (field.meta.id === entityFieldId) {
                 field.updateMeta({

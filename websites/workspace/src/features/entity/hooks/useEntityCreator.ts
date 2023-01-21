@@ -12,7 +12,7 @@ export const useEntityCreator = () => {
   const onSubmitEntity = (entity: EntityFileMeta) => {
     // 编辑
     if (entity.id) {
-      app.entityMap.get(entity.id)!.updateMeta(entity)
+      app.entityMap[entity.id].updateMeta(entity)
     } else {
       const maxX = Math.max(
         ...app.entities.map((entity) => entity.meta.position.x),

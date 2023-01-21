@@ -37,8 +37,7 @@ const useEntityNodeState = () => {
       type: 'EntityNode',
       data: {
         entity,
-        passiveEntityRelations:
-          passiveEntityRelations.get(entity.meta.name) || [],
+        passiveEntityRelations: passiveEntityRelations[entity.meta.name] || [],
       },
       position: entity.meta.position,
     })),
@@ -81,7 +80,7 @@ const useEntityNodeState = () => {
             data: {
               entity,
               passiveEntityRelations:
-                passiveEntityRelations.get(entity.meta.name) || [],
+                passiveEntityRelations[entity.meta.name] || [],
             },
             position: entity.meta.position,
           }
@@ -92,7 +91,7 @@ const useEntityNodeState = () => {
             data: {
               entity,
               passiveEntityRelations:
-                passiveEntityRelations.get(entity.meta.name) || [],
+                passiveEntityRelations[entity.meta.name] || [],
             },
             position: entity.meta.position,
           }

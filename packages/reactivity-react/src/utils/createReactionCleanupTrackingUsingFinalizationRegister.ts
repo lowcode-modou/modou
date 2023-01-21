@@ -1,4 +1,4 @@
-import { Reaction } from '@modou/reactivity'
+import { ReactionType } from '@modou/reactivity'
 
 import { FinalizationRegistry as FinalizationRegistryMaybeUndefined } from './FinalizationRegistryWrapper'
 import {
@@ -29,7 +29,7 @@ export function createReactionCleanupTrackingUsingFinalizationRegister(
   return {
     addReactionToTrack(
       reactionTrackingRef: React.MutableRefObject<IReactionTracking | null>,
-      reaction: Reaction,
+      reaction: ReactionType,
       objectRetainedByReact: object,
     ) {
       const token = globalCleanupTokensCounter++

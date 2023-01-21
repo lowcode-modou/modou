@@ -15,7 +15,7 @@ type Props = BaseSetterProps<string, MRStringSetterType>
 export const StringSetter: FC<Props> = ({ value, onChange, options }) => {
   const Component = options?.textArea ? Input.TextArea : Input
   const [realValue, setRealValue] = useState(value)
-  const { run } = useDebounceFn(onChange, { wait: 200 })
+  const { run } = useDebounceFn(onChange, { wait: 300 })
   const debounceSetValue = useMemoizedFn(
     (valOrUpdater: ((currVal: any) => any) | any): void => {
       setRealValue(valOrUpdater)

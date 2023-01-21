@@ -1,7 +1,7 @@
 import { isFunction, mapValues } from 'lodash'
 
 import { MDVersion } from '@modou/core'
-import { FileTypeEnum, UpdateParams } from '@modou/file'
+import { FileTypeEnum, UpdateParams } from '@modou/meta-vfs'
 import { action, makeObservable, observable } from '@modou/reactivity'
 
 export type BaseFileMete<T extends object = {}> = {

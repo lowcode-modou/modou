@@ -18,7 +18,6 @@ runInAction(() => {
   const page1 = PageFile.create(
     {
       name: 'Page_Demo_1',
-      version: '0.0.0',
       id: generateId(),
       rootWidgetId: '0',
     },
@@ -27,7 +26,6 @@ runInAction(() => {
   const page2 = PageFile.create(
     {
       name: 'Page_Demo_2',
-      version: '0.0.0',
       id: generateId(),
       rootWidgetId: '0',
     },
@@ -37,7 +35,6 @@ runInAction(() => {
   WidgetFile.create(
     {
       name: '按钮_1',
-      version: '0.0.0',
       id: generateId(),
       slots: {},
       props: {
@@ -50,7 +47,6 @@ runInAction(() => {
   WidgetFile.create(
     {
       name: '输入框_2',
-      version: '0.0.0',
       id: generateId(),
       slots: {},
       props: {
