@@ -8,7 +8,6 @@ configure({
   reactionRequiresObservable: true,
 })
 
-export { default as Foo } from './Foo'
 export * from './AppFile'
 export * from './PageFile'
 export * from './EntityFile'

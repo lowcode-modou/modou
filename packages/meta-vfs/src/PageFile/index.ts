@@ -99,12 +99,11 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
     targetPosition: number
     targetSlotPath: string
   }) {
-    const sourceWidget = WidgetFile.create(sourceWidgetMeta, this)
     const targetWidget = this.widgetMap[targetWidgetId]
     if (!targetWidget) {
       return
     }
-    this.widgets.push(sourceWidget)
+    const sourceWidget = WidgetFile.create(sourceWidgetMeta, this)
     targetWidget.meta.slots[targetSlotPath].splice(
       targetPosition,
       0,

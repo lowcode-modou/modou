@@ -1,4 +1,5 @@
 import { isArray, keyBy } from 'lodash'
+import { makePersistable } from 'mobx-persist-store'
 
 import {
   action,
@@ -32,6 +33,21 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
       entityRelationsBySourceEntityNameMap: computed.struct,
       deleteEntity: action,
       deletePage: action,
+    })
+    void makePersistable(this, {
+      name: `${meta.id}`,
+      properties: [
+        {
+          key: 'meta',
+          serialize: () => {
+            return this.toJSON()
+          },
+          deserialize: () => {
+            return {} as unknown as AppFileMeta
+          },
+        },
+      ],
+      storage: window.localStorage,
     })
   }
 
