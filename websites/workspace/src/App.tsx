@@ -1,6 +1,6 @@
 import { AppSpin } from '@/components'
 import { AppRouters } from '@/routers'
-import { ConfigProvider } from 'antd'
+import { ConfigProvider, Watermark } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { FC, Suspense } from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
@@ -13,7 +13,14 @@ export const App: FC = () => {
       <ConfigProvider locale={zhCN}>
         <ThemeProvider>
           <Router>
-            <AppRouters />
+            <Watermark
+              content="Celebrating Lunar New Year"
+              style={{ height: '100%' }}
+              zIndex={9999999}
+              font={{ color: '#aa381e' }}
+            >
+              <AppRouters />
+            </Watermark>
           </Router>
         </ThemeProvider>
       </ConfigProvider>
