@@ -1,3 +1,4 @@
+import { useMemoizedFn, useMutationObserver } from 'ahooks'
 import {
   CSSProperties,
   FC,
@@ -38,17 +39,24 @@ const _SelectIndicatorContent: FC = () => {
   })
   const [display, setDisplay] = useState(false)
   const [styleUpdater, setStyleUpdater] = useState(0)
+  const simulatorInstance = useContext(SimulatorInstanceContext)
+
+  const forceUpdateStyle = useMemoizedFn(() => {
+    setStyleUpdater((prevState) => prevState + 1)
+  })
 
   // TODO 是否使用 watch deep
   useEffect(() => {
     // void Promise.resolve().then(() => {
     //   setStyleUpdater((prevState) => prevState + 1)
     // })
-    setTimeout(() => {
-      setStyleUpdater((prevState) => prevState + 1)
-    })
-  }, [canvasDesignerFile.widgets])
-  const simulatorInstance = useContext(SimulatorInstanceContext)
+    setTimeout(forceUpdateStyle)
+  }, [canvasDesignerFile.widgets, forceUpdateStyle])
+  useMutationObserver(forceUpdateStyle, simulatorInstance.document?.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+  })
   useEffect(() => {
     if (!selectedWidgetId) {
       setDisplay(false)
