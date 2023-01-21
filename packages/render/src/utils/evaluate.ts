@@ -1,3 +1,5 @@
+import { mapValues } from 'lodash'
+
 import { PageState } from '@modou/state-manager'
 
 const EXPRESSION_REG = /[\s\S]*{{[\s\S]*}}[\s\S]*/m
@@ -14,7 +16,11 @@ export const evalExpression = (expression: string, canvasState: PageState) => {
       `with(state){
       return ${expression}
     }`,
-    ).call(null, canvasState.subState.widget)
+      // TODO state 打平收集到 stateManager
+    ).call(
+      null,
+      mapValues(canvasState.subState.widget, (widget) => widget.state),
+    )
   } catch (e) {
     return String((e as SyntaxError)?.message) ?? 'Error'
   }

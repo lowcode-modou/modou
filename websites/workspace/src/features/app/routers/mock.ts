@@ -29,8 +29,15 @@ export const mock_appFile = AppFile.create({
 // mock app end
 
 // mock page start
+const defaultButton = WidgetMetadata.mrSchemeToDefaultJson(
+  buttonWidgetMetadata.jsonPropsSchema,
+)
 const buttonDSL: WidgetBaseProps = {
-  ...WidgetMetadata.mrSchemeToDefaultJson(buttonWidgetMetadata.jsonPropsSchema),
+  ...defaultButton,
+  props: {
+    ...defaultButton.props,
+    title: '按钮-{{colDSL.span}}-大漠孤烟直哈哈',
+  },
   id: 'buttonDSL',
 }
 

@@ -1,6 +1,6 @@
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
-import { FC, useContext } from 'react'
+import { FC, useContext, useEffect } from 'react'
 import * as React from 'react'
 
 import { AppFactoryContext, AppManagerProvider } from '@modou/core'
@@ -17,11 +17,10 @@ const _ReactRender: FC<MoDouRenderProps> = (props) => {
   const appFactory = useContext(AppFactoryContext)
   const { file, appManager } = useInitRender()
   const { stateManager } = useInitStateManager({ app: appManager?.app, file })
+
   if (!file || !appManager || !stateManager) {
     return null
   }
-  console.log('stateManager', file.widgetMap, appManager, stateManager)
-
   return (
     <ConfigProvider locale={zhCN}>
       {/* TODO 去除点(.)保持跟其他Context统一 */}

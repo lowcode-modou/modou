@@ -1,19 +1,12 @@
-import {
-  InterpolationNode,
-  SimpleExpressionNode,
-  TextNode,
-  baseParse,
-} from '@vue/compiler-core'
-import { useMount } from 'ahooks'
-import { flatten } from 'flat'
-import { get, keys, set } from 'lodash'
-import { FC, useContext, useRef } from 'react'
+import { mapValues, set } from 'lodash'
+import { FC, useContext, useEffect } from 'react'
 import * as React from 'react'
 
 import { AppFactoryContext, useAppManager } from '@modou/core'
 import {
   IReactionDisposer,
   autorun,
+  reaction,
   runInAction,
   toJS,
 } from '@modou/reactivity'
@@ -21,13 +14,13 @@ import { observer, useLocalObservable } from '@modou/reactivity-react'
 import { WidgetState } from '@modou/state-manager'
 import { useStateManager } from '@modou/state-manager/src/contexts'
 
-import { ParseNodeTypes } from '../types'
-import { evalExpression, isExpression } from '../utils/evaluate'
+import { evalExpression } from '../utils/evaluate'
 
 const _WidgetVirtual: FC<{
   widgetId: string
 }> = ({ widgetId }) => {
   // trace(true)
+  // 按钮-{{colDSL.span}}
   const { appManager } = useAppManager()
   const { canvasState } = useStateManager()
   const widget = appManager.widgetMap[widgetId]
@@ -40,8 +33,7 @@ const _WidgetVirtual: FC<{
   const widgetDef = appFactory.widgetByType[widget.meta.type]
   // TODO any 替换 state 定义
   const WidgetComponent = widgetDef.component
-
-  const state = useLocalObservable(() => ({
+  const localState = useLocalObservable(() => ({
     get renderSlots() {
       return Object.entries(widgetDef.metadata.slots || {})
         .map(([slotPath, slot]) => {
@@ -70,59 +62,37 @@ const _WidgetVirtual: FC<{
     },
   }))
 
-  const watchStopsRef = useRef<Record<string, IReactionDisposer>>({})
-
-  useMount(() => {
-    const flattenStateKeys = keys(flatten(widgetState.state))
-    flattenStateKeys.forEach((path) => {
-      if (Reflect.has(watchStopsRef.current, path)) {
-        return
-      }
-      watchStopsRef.current[path] = autorun(() => {
-        const fullPath = `${path}`
-        const rawPropVal = get(widget.meta.props, fullPath)
-        if (isExpression(rawPropVal)) {
-          const ast = baseParse(rawPropVal)
-          const expression = `\`${ast.children
-            .map((item) => {
-              // @ts-expect-error
-              if (item.type === ParseNodeTypes.TEXT) {
-                return (item as unknown as TextNode).content
-                // @ts-expect-error
-              } else if (item.type === ParseNodeTypes.INTERPOLATION) {
-                const content = (
-                  (item as unknown as InterpolationNode)
-                    .content as unknown as SimpleExpressionNode
-                ).content
-                if (content) {
-                  return `\${${content}}`
-                }
-                return ''
-              }
-              // TODO 适配其他类型
-              return item.loc.source
-            })
-            .join('')}\``
-          runInAction(() => {
-            set(
-              widgetState.state,
-              fullPath,
-              evalExpression(expression, canvasState),
+  useEffect(() => {
+    const stopExps: IReactionDisposer[] = []
+    const stop = reaction(
+      () => widgetState.file.flattenedMetaValMap,
+      (value, prev) => {
+        stopExps.forEach((stop) => stop())
+        Object.entries(value).forEach(([path, val]) => {
+          if (val.type === 'Normal') {
+            if (prev?.[path]?.raw !== val.raw) {
+              set(widgetState.state, path, val.raw)
+            }
+          } else {
+            stopExps.push(
+              autorun(() => {
+                const newVal = evalExpression(val.evalString, canvasState)
+                runInAction(() => {
+                  set(widgetState.state, path, newVal)
+                })
+              }),
             )
-          })
-        } else {
-          console.log('fullPath', fullPath, rawPropVal)
-          set(
-            widgetState.state,
-            `${fullPath}`,
-            rawPropVal === undefined
-              ? get(widgetState.state, fullPath)
-              : rawPropVal,
-          )
-        }
-      })
-    })
-  })
+          }
+        })
+      },
+      {
+        fireImmediately: true,
+      },
+    )
+    return () => {
+      stop()
+    }
+  }, [])
 
   // FIXME 会导致重新渲染
   // FIXME 完善组件类型
@@ -130,8 +100,8 @@ const _WidgetVirtual: FC<{
     <WidgetComponent
       {...toJS(widgetState.state)}
       updateState={widgetState.updateState}
-      renderSlots={toJS(state.renderSlots)}
-      renderSlotPaths={toJS(state.renderSlotPaths)}
+      renderSlots={toJS(localState.renderSlots)}
+      renderSlotPaths={toJS(localState.renderSlotPaths)}
     />
   )
 }

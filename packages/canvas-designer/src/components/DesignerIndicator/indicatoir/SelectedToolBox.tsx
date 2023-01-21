@@ -19,8 +19,6 @@ const _SelectedToolBox: FC = () => {
   const { canvasDesignerFile } = useCanvasDesignerFile()
   const { widgetRelationById } = canvasDesignerFile
 
-  console.log('widgetRelationById', widgetRelationById)
-
   const selectedWidgetId = canvasDesignerStore.selectedWidgetId
   const wrapperRef = useRef<HTMLDivElement>(null)
   const widget = appManager.widgetMap[selectedWidgetId]

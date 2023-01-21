@@ -41,6 +41,7 @@
     "@modou/compile-core": "workspace:^0.0.1",
     "@modou/core": "workspace:^1.0.0",
     "@modou/css-in-js": "workspace:^1.0.0",
+    "@modou/evaluate": "workspace:^1.0.0",
     "@modou/meta-vfs": "workspace:^0.0.1",
     "@modou/reactivity": "workspace:^0.0.1",
     "@modou/reactivity-react": "workspace:^0.0.1",

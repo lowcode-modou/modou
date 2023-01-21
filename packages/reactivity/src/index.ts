@@ -18,6 +18,7 @@ export const makeAutoObservable = mobx.makeAutoObservable
 export const makeObservable = mobx.makeObservable
 export const observable = mobx.observable
 export const observe = mobx.observe
+export const reaction = mobx.reaction
 export const runInAction = mobx.runInAction
 export const set = mobx.set
 export const toJS = mobx.toJS

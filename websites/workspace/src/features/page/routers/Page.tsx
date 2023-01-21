@@ -3,7 +3,7 @@ import { PageRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { Col, Row } from 'antd'
 import { head } from 'lodash'
-import { FC, useLayoutEffect } from 'react'
+import { FC, useEffect, useLayoutEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { CanvasDesigner } from '@modou/canvas-designer'

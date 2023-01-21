@@ -15,6 +15,7 @@ importers:
       '@modou/compile-core': workspace:^0.0.1
       '@modou/core': workspace:^1.0.0
       '@modou/css-in-js': workspace:^1.0.0
+      '@modou/evaluate': workspace:^1.0.0
       '@modou/meta-vfs': workspace:^0.0.1
       '@modou/reactivity': workspace:^0.0.1
       '@modou/reactivity-react': workspace:^0.0.1
@@ -31,7 +32,6 @@ importers:
       '@types/react-dom': ^18.0.6
       '@vitejs/plugin-react': ^3.0.1
       '@vue/compiler-core': ^3.2.45
-      '@vue/reactivity': ^3.2.45
       '@vue/runtime-core': ^3.2.45
       ahooks: ^3.7.0
       antd: ^5.1.5
@@ -72,6 +72,7 @@ importers:
       '@modou/compile-core': link:packages/compiler-core
       '@modou/core': link:packages/core
       '@modou/css-in-js': link:packages/css-in-js
+      '@modou/evaluate': link:packages/evaluate
       '@modou/meta-vfs': link:packages/meta-vfs
       '@modou/reactivity': link:packages/reactivity
       '@modou/reactivity-react': link:packages/reactivity-react
@@ -82,7 +83,6 @@ importers:
       '@modou/widgets-antd': link:widgets/antd
       '@recoiljs/refine': 0.1.1
       '@vue/compiler-core': 3.2.45
-      '@vue/reactivity': 3.2.45
       '@vue/runtime-core': 3.2.45
       ahooks: 3.7.1_react@18.2.0
       antd: 5.1.5_biqbaboplfbrettd7655fr4n2y
