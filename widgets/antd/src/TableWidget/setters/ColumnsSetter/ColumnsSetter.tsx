@@ -4,7 +4,7 @@ import {
   SettingOutlined,
 } from '@ant-design/icons'
 import { useMount, useUpdate } from 'ahooks'
-import { Button, Form, Space, Table, Tooltip } from 'antd'
+import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import produce from 'immer'
 import update from 'immutability-helper'
@@ -22,17 +22,37 @@ import { generateId } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
 import { BaseSetterProps } from '@modou/setters'
 
-import { ColumnValueTypeEnum } from '../../types'
+import {
+  ColumnAlignEnum,
+  ColumnFixedEnum,
+  ColumnValueTypeEnum,
+} from '../../types'
 import { ColumnSetting } from './ColumnSetting'
 import { DraggableBodyRow } from './DraggableBodyRow'
 import { TableWidgetColumn } from './types'
 
-const generateDefaultColumn = (): TableWidgetColumn => {
+const CUSTOM_COLUMN_DATA_INDEX_PREFIX = 'custom_column_'
+const CUSTOM_COLUMN_TITLE_PREFIX = '自定义列-'
+const NORMAL_WIDTH = -1
+
+// TODO 从 mr 生成默认值
+const generateDefaultColumn = (
+  columns: TableWidgetColumn[],
+): TableWidgetColumn => {
+  const customColumns = columns.filter((c) => !c.buildIn)
+  const customColumnNumbers = customColumns.map(
+    (c) => +c.dataIndex.replace(CUSTOM_COLUMN_DATA_INDEX_PREFIX, ''),
+  )
+  const maxCustomColumnNumber =
+    customColumnNumbers.length === 0 ? 1 : Math.max(...customColumnNumbers) + 1
   return {
-    dataIndex: generateId(4),
-    title: '自定义列',
+    dataIndex: `${CUSTOM_COLUMN_DATA_INDEX_PREFIX}${maxCustomColumnNumber}`,
+    title: `${CUSTOM_COLUMN_TITLE_PREFIX}${maxCustomColumnNumber}`,
     valueType: ColumnValueTypeEnum.text,
     buildIn: false,
+    align: ColumnAlignEnum.left,
+    fixed: ColumnFixedEnum.false,
+    width: NORMAL_WIDTH,
   }
 }
 
@@ -83,7 +103,7 @@ export const ColumnsSetter: FC<BaseSetterProps<TableWidgetColumn[]>> = ({
   const [currentColumnIndex, setCurrentColumnIndex] = useState(0)
 
   const addColumn = () => {
-    onChange([...value, generateDefaultColumn()])
+    onChange([...value, generateDefaultColumn(value)])
     setCurrentColumnIndex(value.length)
   }
   const removeColumn = (index: number) => {

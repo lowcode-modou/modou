@@ -14,13 +14,22 @@ export const TableWidget: FC<
   })
 
   const _columns: Array<ProColumns<any>> = useMemo(() => {
-    return columns.map((c) => ({
-      dataIndex: c.dataIndex,
-      title: c.title,
-      valueType: c.valueType,
-    }))
+    return columns.map((c, index) => {
+      const res: ProColumns<any> = {
+        dataIndex: c.dataIndex,
+        title: c.title,
+        valueType: c.valueType,
+        align: c.align,
+        fixed: c.fixed ? c.fixed : false,
+      }
+      if (c.width > 0) {
+        res.width = c.width + 'px'
+      }
+      return res
+    })
   }, [columns])
 
+  console.log('_columns', _columns)
   return (
     <ProTable
       size={size ?? undefined}

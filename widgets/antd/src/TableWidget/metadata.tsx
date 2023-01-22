@@ -6,7 +6,7 @@ import { SetterTypeEnum } from '@modou/setters'
 import { ButtonWidgetSizeEnum, sizeOptions } from '../ButtonWidget/constants'
 import { WidgetIcon } from '../_'
 import { ColumnsSetter } from './setters/ColumnsSetter'
-import { ColumnValueTypeEnum } from './types'
+import { ColumnAlignEnum, ColumnFixedEnum, ColumnValueTypeEnum } from './types'
 
 export const MRSchemeTableWidgetProps = WidgetMetadata.createMRWidgetProps({
   type: 'TableWidget',
@@ -35,12 +35,20 @@ export const MRSchemeTableWidgetProps = WidgetMetadata.createMRWidgetProps({
     columns: {
       def: mr
         .array(
+          // TODO 提取单独定义 供添加列生成默认值使用
           mr
             .object({
               dataIndex: mr.string(),
               title: mr.string(),
               valueType: mr.nativeEnum(ColumnValueTypeEnum),
               buildIn: mr.boolean().default(false),
+              align: mr
+                .nativeEnum(ColumnAlignEnum)
+                .default(ColumnAlignEnum.left),
+              fixed: mr
+                .nativeEnum(ColumnFixedEnum)
+                .default(ColumnFixedEnum.false),
+              width: mr.number().default(-1),
             })
             .merge(mr.object({})),
         )

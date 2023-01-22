@@ -20,6 +20,10 @@ type Props = BaseSetterProps<number>
 
 export const NumberSetter: FC<Props> = ({ value, onChange }) => {
   return (
-    <InputNumber value={value} onChange={(val) => onChange(val as number)} />
+    <InputNumber
+      value={value}
+      onChange={(val) => onChange(val as number)}
+      style={{ width: '100%' }}
+    />
   )
 }

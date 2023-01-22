@@ -8,6 +8,7 @@ import { FC, ReactNode, useMemo } from 'react'
 interface MDTheme {
   colorPrimary: string
   colorError: string
+  colorText: string
 }
 
 interface ThemeProviderProps {
@@ -21,6 +22,7 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
     return {
       colorPrimary: token.colorPrimary,
       colorError: token.colorError,
+      colorText: token.colorText,
     }
   }, [token])
   return <ThemeProvider_ theme={mdTheme}>{children}</ThemeProvider_>
