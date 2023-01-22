@@ -102,7 +102,7 @@ const _SelectIndicatorContent: FC = () => {
       item: () => {
         return {
           type: WidgetDragType.Move,
-          widget,
+          widget: widget.meta,
         }
       },
       collect: (monitor) => ({

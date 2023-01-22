@@ -28,7 +28,7 @@ const _SelectedToolBox: FC = () => {
       item: () => {
         return {
           type: WidgetDragType.Move,
-          widget,
+          widget: widget.meta,
         }
       },
       collect: (monitor) => ({
