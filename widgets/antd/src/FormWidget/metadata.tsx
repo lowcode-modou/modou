@@ -46,11 +46,11 @@ export const formWidgetMetadata = WidgetMetadata.createMetadata<
   name: '表单',
   icon: <WidgetIcon type="col" />,
   slots: {
+    header: {
+      name: '表单头',
+    },
     children: {
       name: '默认插槽',
-    },
-    header: {
-      name: '表头',
     },
   },
   setters: {},
