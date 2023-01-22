@@ -21,6 +21,7 @@ import { observer, useComputed } from '@modou/reactivity-react'
 import { SimulatorInstanceContext } from '../../../contexts'
 import { useCanvasDesignerFile } from '../../../contexts/CanvasDesignerFileContext'
 import { useCanvasDesignerStore } from '../../../contexts/CanvasDesignerStoreContext'
+import { emitter } from '../../../event-bus'
 import { useElementRect, useWidgetDrop } from '../../../hooks'
 import { DropIndicatorPositionEnum } from '../../../store'
 import {
@@ -79,6 +80,13 @@ const _WidgetDrop: ForwardRefRenderFunction<WidgetDropInstance, DropElement> = (
     // })
     setTimeout(forceUpdateStyle)
   }, [canvasDesignerFile.widgets, forceUpdateStyle])
+
+  useEffect(() => {
+    emitter.on('onWidgetElementChange', forceUpdateStyle)
+    return () => {
+      emitter.off('onWidgetElementChange', forceUpdateStyle)
+    }
+  })
 
   const dropIndicatorStyle: CSSProperties = useComputed(() => {
     if (!canvasDesignerStore.dropIndicator.show) {

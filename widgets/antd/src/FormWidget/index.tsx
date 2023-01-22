@@ -50,6 +50,12 @@ export const FormWidget: FC<
           </Col>
         ))}
       </div>
+      <div
+        data-widget-id={instance.widgetId}
+        data-widget-slot-path={renderSlotPaths.footer}
+      >
+        {renderSlots.footer}
+      </div>
     </ProForm>
   )
 }

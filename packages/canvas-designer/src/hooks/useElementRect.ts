@@ -27,9 +27,8 @@ export const useElementRect = (
       width: rect.width,
       height: rect.height,
     })
-    // }, [element, ...(options.deps as any[])])
-    //   TODO 优化性能
-  })
+  }, [element, ...(options.deps as any[])])
+  // })
   const style: CSSProperties = {
     width: `${elementRect.width ?? 0}px`,
     height: `${elementRect.height ?? 0}px`,

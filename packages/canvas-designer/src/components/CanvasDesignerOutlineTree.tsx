@@ -12,6 +12,7 @@ import { observer } from '@modou/reactivity-react'
 
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
 import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
+import { emitter } from '../event-bus'
 import {
   OutlineTreeNode,
   OutlineTreeNodeSlot,
@@ -83,7 +84,7 @@ const _CanvasDesignerOutlineTree: FC = () => {
       .with('slot', () => [
         canvasDesignerFile.widgetMap[
           (dropNode as unknown as OutlineTreeNodeSlot).slot.widgetId
-        ]?.meta!,
+        ]?.meta,
         (dropNode as unknown as OutlineTreeNodeSlot).slot.path,
       ])
       .with('widget', () => [
@@ -133,6 +134,9 @@ const _CanvasDesignerOutlineTree: FC = () => {
         break
       default:
     }
+    setTimeout(() => {
+      emitter.emit('onWidgetElementChange')
+    })
   }
 
   // TODO 支持大纲树和其画布及面板组件互相拖拽 IMPORTANT

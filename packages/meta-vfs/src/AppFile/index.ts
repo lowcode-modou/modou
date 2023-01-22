@@ -179,7 +179,6 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
     const appMeta = JSON.parse(
       localStorage.getItem(appId) ?? '{}',
     ) as unknown as ReturnType<AppFile['toJSON']>
-    console.log('appMetaappMeta', appMeta)
     return this.formJSON(appMeta)
   }
 }

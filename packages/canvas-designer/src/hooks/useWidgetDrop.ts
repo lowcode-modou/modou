@@ -9,6 +9,7 @@ import { WidgetFileMeta } from '@modou/meta-vfs'
 
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
 import { useCanvasDesignerStore } from '../contexts/CanvasDesignerStoreContext'
+import { emitter } from '../event-bus'
 import {
   DropIndicator,
   DropIndicatorInsertPositionEnum,
@@ -186,10 +187,9 @@ export const useWidgetDrop = ({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
-                  targetPosition:
-                    parent.props.slots[parentSlotPath].findIndex(
-                      (widgetId) => widget.meta.id === widgetId,
-                    ) + 1,
+                  targetPosition: parent.props.slots[parentSlotPath].findIndex(
+                    (widgetId) => widget.meta.id === widgetId,
+                  ),
                 })
               }
               break
@@ -241,6 +241,10 @@ export const useWidgetDrop = ({
             default:
           }
         }
+        setTimeout(() => {
+          emitter.emit('onWidgetElementChange')
+        })
+
         return { widget: widget.meta }
       },
       hover: (item, monitor) => {

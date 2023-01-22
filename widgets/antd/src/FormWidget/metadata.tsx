@@ -29,6 +29,7 @@ export const MRSchemeFormWidgetProps = WidgetMetadata.createMRWidgetProps({
   slots: {
     children: mr.array(mr.string()).default([]),
     header: mr.array(mr.string()).default([]),
+    footer: mr.array(mr.string()).default([]),
   },
 })
 
@@ -51,6 +52,9 @@ export const formWidgetMetadata = WidgetMetadata.createMetadata<
     },
     children: {
       name: '默认插槽',
+    },
+    footer: {
+      name: '表单尾',
     },
   },
   setters: {},
