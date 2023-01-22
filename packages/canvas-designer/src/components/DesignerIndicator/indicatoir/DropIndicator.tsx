@@ -1,18 +1,22 @@
-import { useMount, useMutationObserver } from 'ahooks'
+import { useMemoizedFn, useMount, useMutationObserver } from 'ahooks'
 import { Col, Row, Typography } from 'antd'
 import {
   CSSProperties,
   FC,
+  ForwardRefRenderFunction,
+  forwardRef,
   useCallback,
   useContext,
   useEffect,
+  useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
 import { AppFactoryContext } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
-import { observer } from '@modou/reactivity-react'
+import { observer, useComputed } from '@modou/reactivity-react'
 
 import { SimulatorInstanceContext } from '../../../contexts'
 import { useCanvasDesignerFile } from '../../../contexts/CanvasDesignerFileContext'
@@ -32,7 +36,14 @@ interface DropElement {
   slotPath: string
 }
 
-const _WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
+interface WidgetDropInstance {
+  forceUpdateStyle: () => void
+}
+
+const _WidgetDrop: ForwardRefRenderFunction<WidgetDropInstance, DropElement> = (
+  { widgetId, slotPath },
+  ref,
+) => {
   const { canvasDesignerFile } = useCanvasDesignerFile()
   const { canvasDesignerStore } = useCanvasDesignerStore()
   const appFactory = useContext(AppFactoryContext)
@@ -55,6 +66,9 @@ const _WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
   })
 
   const [styleUpdater, setStyleUpdater] = useState(0)
+  const forceUpdateStyle = useMemoizedFn(() => {
+    setStyleUpdater((prevState) => prevState + 1)
+  })
   const { style } = useElementRect(element, {
     deps: [styleUpdater],
   })
@@ -63,12 +77,10 @@ const _WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
     // void Promise.resolve().then(() => {
     //   setStyleUpdater((prevState) => prevState + 1)
     // })
-    setTimeout(() => {
-      setStyleUpdater((prevState) => prevState + 1)
-    })
-  }, [canvasDesignerFile.widgets])
+    setTimeout(forceUpdateStyle)
+  }, [canvasDesignerFile.widgets, forceUpdateStyle])
 
-  const dropIndicatorStyle: CSSProperties = useMemo(() => {
+  const dropIndicatorStyle: CSSProperties = useComputed(() => {
     if (!canvasDesignerStore.dropIndicator.show) {
       return {}
     }
@@ -105,14 +117,15 @@ const _WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
       default:
         return {}
     }
-  }, [
-    canvasDesignerStore.dropIndicator.position,
-    canvasDesignerStore.dropIndicator.show,
-  ])
+  })
 
   const theme = useTheme()
 
   const widgetMetadata = appFactory.widgetByType[widget.meta.type].metadata
+
+  useImperativeHandle(ref, () => ({
+    forceUpdateStyle,
+  }))
 
   return (
     <>
@@ -131,7 +144,10 @@ const _WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
         </Row>
       ) : null}
       {isActive ? (
-        <Row className={widgetDropClasses.activeWrapper} style={{ ...style }}>
+        <Row
+          className={widgetDropClasses.activeWrapper}
+          style={{ ...style, border: '1px solid green' }}
+        >
           <div
             className={widgetDropClasses.active}
             style={{
@@ -144,7 +160,7 @@ const _WidgetDrop: FC<DropElement> = ({ widgetId, slotPath }) => {
     </>
   )
 }
-const WidgetDrop = observer(_WidgetDrop)
+const WidgetDrop = observer(forwardRef(_WidgetDrop))
 const widgetDropClasses = {
   emptyWrapper: mcss`
 		border: 1px solid rgba(0,0,0,.1);
@@ -173,6 +189,8 @@ const _DropIndicator: FC = () => {
   >([])
   const simulatorInstance = useContext(SimulatorInstanceContext)
 
+  const widgetDropRef = useRef<WidgetDropInstance>(null)
+
   const initDrop = useCallback(() => {
     const elements = [
       ...(simulatorInstance?.document?.querySelectorAll('[data-widget-id]') ??
@@ -188,10 +206,18 @@ const _DropIndicator: FC = () => {
     )
   }, [simulatorInstance?.document])
   useMount(initDrop)
-  useMutationObserver(initDrop, simulatorInstance.document?.body, {
-    childList: true,
-    subtree: true,
-  })
+  useMutationObserver(
+    () => {
+      initDrop()
+      widgetDropRef.current?.forceUpdateStyle?.()
+    },
+    simulatorInstance.document?.body,
+    {
+      childList: true,
+      subtree: true,
+      attributes: true,
+    },
+  )
   const dropElementsRendered = useMemo(() => {
     return dropElements.filter(
       ({ widgetId }) => canvasDesignerFile.widgetMap[widgetId],
@@ -201,6 +227,7 @@ const _DropIndicator: FC = () => {
     <>
       {dropElementsRendered.map(({ widgetId, slotPath }) => (
         <WidgetDrop
+          ref={widgetDropRef}
           key={widgetId + slotPath}
           widgetId={widgetId}
           slotPath={slotPath}
