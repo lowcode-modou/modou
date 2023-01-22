@@ -259,13 +259,12 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
         omit(json, ['fileType', 'widgets']),
         parentFile,
       )
-      const widgets = json.widgets.map((widget) =>
+      json.widgets.map((widget) =>
         WidgetFile.formJSON(
           widget as unknown as ReturnType<WidgetFile['toJSON']>,
           pageFile,
         ),
       )
-      pageFile.subFileMap.widgets.push(...widgets)
       return pageFile
     })
   }

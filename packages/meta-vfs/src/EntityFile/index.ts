@@ -121,20 +121,18 @@ export class EntityFile extends BaseFile<FileMap, EntityFileMeta, AppFile> {
         omit(json, ['fileType', 'entityFields', 'entityRelations']),
         parentFile,
       )
-      const entityFields = json.entityFields.map((entityField) =>
+      json.entityFields.map((entityField) =>
         EntityFieldFile.formJSON(
           entityField as unknown as ReturnType<EntityFieldFile['toJSON']>,
           entityFile,
         ),
       )
-      const entityRelations = json.entityRelations.map((entityRelation) =>
+      json.entityRelations.map((entityRelation) =>
         EntityRelationFile.formJSON(
           entityRelation as unknown as ReturnType<EntityRelationFile['toJSON']>,
           entityFile,
         ),
       )
-      entityFile.subFileMap.entityFields.push(...entityFields)
-      entityFile.subFileMap.entityRelations.push(...entityRelations)
       return entityFile
     })
   }

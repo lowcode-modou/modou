@@ -15,7 +15,7 @@ import {
 
 import { AppManagerProvider } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
-import { AppManager } from '@modou/meta-vfs'
+import { AppFile, AppManager } from '@modou/meta-vfs'
 import { runInAction } from '@modou/reactivity'
 
 import { ModuleManager } from '../components'
@@ -38,8 +38,13 @@ const menuItems: ComponentProps<typeof Menu>['items'] = [
 ]
 
 const appManager = runInAction(() => {
-  return new AppManager(mock_appFile)
+  try {
+    return new AppManager(AppFile.formLocal(mock_appFile.meta.id))
+  } catch (e) {
+    return new AppManager(mock_appFile)
+  }
 })
+
 export const App: FC = () => {
   const params = useParams<PageRouterParamsKey | EntityRouterParamsKey>()
   const [module, setModule] = useState<ModuleEnum | ''>('')

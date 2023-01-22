@@ -1,5 +1,4 @@
 import { isArray, keyBy } from 'lodash'
-import { makePersistable } from 'mobx-persist-store'
 
 import {
   action,
@@ -34,21 +33,18 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
       deleteEntity: action,
       deletePage: action,
     })
-    void makePersistable(this, {
-      name: `${meta.id}`,
-      properties: [
-        {
-          key: 'meta',
-          serialize: () => {
-            return this.toJSON()
-          },
-          deserialize: () => {
-            return {} as unknown as AppFileMeta
-          },
-        },
-      ],
-      storage: window.localStorage,
-    })
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('visibilitychange', () => {
+        if (this.meta.id) {
+          window.localStorage.removeItem(this.meta.id)
+          window.localStorage.setItem(
+            this.meta.id,
+            JSON.stringify(this.toJSON()),
+          )
+        }
+      })
+    }
   }
 
   subFileMap: FileMap = {
@@ -163,23 +159,27 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
         id: json.id,
         version: json.version,
       })
-      const entities = json.entities.map((entity) =>
+      json.entities.map((entity) =>
         EntityFile.formJSON(
           entity as unknown as ReturnType<EntityFile['toJSON']>,
           appFile,
         ),
       )
-      const pages = json.pages.map((page) =>
+      json.pages.map((page) =>
         PageFile.formJSON(
           page as unknown as ReturnType<PageFile['toJSON']>,
           appFile,
         ),
       )
-      runInAction(() => {
-        appFile.subFileMap.entities.push(...entities)
-        appFile.subFileMap.pages.push(...pages)
-      })
       return appFile
     })
+  }
+
+  static formLocal(appId: string) {
+    const appMeta = JSON.parse(
+      localStorage.getItem(appId) ?? '{}',
+    ) as unknown as ReturnType<AppFile['toJSON']>
+    console.log('appMetaappMeta', appMeta)
+    return this.formJSON(appMeta)
   }
 }
