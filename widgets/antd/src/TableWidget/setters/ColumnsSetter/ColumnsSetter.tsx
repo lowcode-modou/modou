@@ -277,7 +277,6 @@ export const ColumnsSetter: FC<BaseSetterProps<TableWidgetColumn[]>> = ({
           operationWrapper,
         )}
       <Table<TableWidgetColumn>
-        className={classes.table}
         pagination={false}
         size={'small'}
         columns={columns}
@@ -298,19 +297,11 @@ export const ColumnsSetter: FC<BaseSetterProps<TableWidgetColumn[]>> = ({
 const classes = {
   wrapper: mcss`
 		.ant-table tr.drop-over-downward td {
-			border-bottom: 2px dashed var(--border-color);
+			border-bottom: 2px dashed var(--border-color) !important;
 		}
 
 		.ant-table tr.drop-over-upward td {
-			border-top: 2px dashed var(--border-color);
+			border-top: 2px dashed var(--border-color) !important;
 		}
-  `,
-  table: mcss`
-    tr.drop-over-downward td {
-      border-bottom: 2px dashed #1677ff !important;
-    }
-    tr.drop-over-upward td {
-      border-top: 2px dashed #1677ff !important;
-    }
   `,
 }
