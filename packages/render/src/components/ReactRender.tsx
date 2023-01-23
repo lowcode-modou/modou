@@ -1,6 +1,6 @@
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useContext } from 'react'
 import * as React from 'react'
 
 import { AppFactoryContext, AppManagerProvider } from '@modou/core'

@@ -49,6 +49,7 @@ export const MRSchemeTableWidgetProps = WidgetMetadata.createMRWidgetProps({
                 .nativeEnum(ColumnFixedEnum)
                 .default(ColumnFixedEnum.false),
               width: mr.number().default(-1),
+              mappedValue: mr.any(),
             })
             .merge(mr.object({})),
         )

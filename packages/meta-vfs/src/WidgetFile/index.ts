@@ -4,6 +4,7 @@ import {
   TextNode,
   baseParse,
 } from '@vue/compiler-core'
+import { flatten } from 'flat'
 import { mapValues, omit } from 'lodash'
 
 import { WidgetBaseProps } from '@modou/core'
@@ -13,6 +14,7 @@ import {
   makeObservable,
   observable,
   runInAction,
+  toJS,
 } from '@modou/reactivity'
 import { ParseNodeTypes } from '@modou/render/src/types'
 
@@ -57,7 +59,7 @@ export class WidgetFile extends BaseFile<{}, WidgetFileMeta, PageFile> {
 
   get flattenedMetaValMap(): Record<MetaPath, MetaVal> {
     return mapValues<typeof this.meta.props, MetaVal>(
-      this.meta.props,
+      flatten(toJS(this.meta.props)),
       (value) => {
         if (isExpression(value)) {
           const ast = baseParse(value)

@@ -54,6 +54,7 @@ const generateDefaultColumn = (
     align: ColumnAlignEnum.left,
     fixed: ColumnFixedEnum.false,
     width: NORMAL_WIDTH,
+    mappedValue: '开始-{{Math.random()}}-结束',
   }
 }
 

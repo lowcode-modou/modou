@@ -23,6 +23,9 @@ export const TableWidget: FC<
         valueType: c.valueType,
         align: c.align,
         fixed: c.fixed ? c.fixed : false,
+        render: () => {
+          return c.mappedValue || '-'
+        },
       }
       if (c.width > 0) {
         res.width = c.width
@@ -32,6 +35,9 @@ export const TableWidget: FC<
       return res
     })
   }, [columns])
+
+  console.log('MOCK_TABLE_DATA.data', MOCK_TABLE_DATA.data)
+
   // FIXME 修改属性面板fixed需要刷新页面才会生效
   return (
     <ProTable
