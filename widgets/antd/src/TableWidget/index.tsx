@@ -6,6 +6,8 @@ import { InferWidgetState } from '../_'
 import { MRSchemeTableWidgetState } from './metadata'
 import { MOCK_TABLE_DATA } from './mock'
 
+const DEFAULT_COLUMN_WIDTH = 150
+
 export const TableWidget: FC<
   InferWidgetState<typeof MRSchemeTableWidgetState>
 > = ({ instance, renderSlots, renderSlotPaths, columns, size }) => {
@@ -23,15 +25,17 @@ export const TableWidget: FC<
         fixed: c.fixed ? c.fixed : false,
       }
       if (c.width > 0) {
-        res.width = c.width + 'px'
+        res.width = c.width
+      } else {
+        c.width = DEFAULT_COLUMN_WIDTH
       }
       return res
     })
   }, [columns])
-
-  console.log('_columns', _columns)
+  // FIXME 修改属性面板fixed需要刷新页面才会生效
   return (
     <ProTable
+      scroll={{ x: 1 }}
       size={size ?? undefined}
       data-widget-root
       data-widget-id={instance.widgetId}

@@ -1,4 +1,4 @@
-import { ProForm, ProFormText } from '@ant-design/pro-components'
+import { ProFormText } from '@ant-design/pro-components'
 import { FC, useEffect } from 'react'
 
 import { InferWidgetState } from '../_'
@@ -10,21 +10,16 @@ export const InputWidget: FC<
   useEffect(() => {
     console.log('我是Input 我重新渲染了')
   })
-  useEffect(() => {
-    const hackElement = document.querySelector(
-      `[data-hack-widget-id=${instance.widgetId}]`,
-    )
-    hackElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.setAttribute(
-      'data-widget-id',
-      instance.widgetId,
-    )
-  }, [instance.widgetId])
   return (
     <ProFormText
       name="name"
+      key={instance.widgetId}
       label={label}
+      formItemProps={{
+        // @ts-expect-error
+        'data-widget-id': instance.widgetId,
+      }}
       fieldProps={{
-        'data-hack-widget-id': instance.widgetId,
         defaultValue,
         onChange: (e) => {
           console.log('onChange', e)

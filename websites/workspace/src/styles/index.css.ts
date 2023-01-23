@@ -12,12 +12,15 @@ injectGlobal`
 // 优化滚动条样式
 injectGlobal`
 	::-webkit-scrollbar {
-		width: 4px;
+		width: 6px;
+    height: 6px;
 	}
 
 	/* 设置滚动条的背景颜色 */
 	::-webkit-scrollbar-track {
 		background: #f1f1f1;
+    width: 6px;
+    height: 6px;
 	}
 
 	/* 设置滚动条的滑块（滑轮）的颜色 */

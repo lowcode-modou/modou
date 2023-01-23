@@ -3,7 +3,7 @@ import {
   HolderOutlined,
   SettingOutlined,
 } from '@ant-design/icons'
-import { useMount, useUpdate } from 'ahooks'
+import { useMemoizedFn, useMount, useUpdate } from 'ahooks'
 import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import produce from 'immer'
@@ -20,6 +20,7 @@ import { createPortal } from 'react-dom'
 
 import { generateId } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
+import { toJS } from '@modou/reactivity'
 import { BaseSetterProps } from '@modou/setters'
 
 import {
@@ -79,7 +80,7 @@ export const ColumnsSetter: FC<BaseSetterProps<TableWidgetColumn[]>> = ({
     (dragIndex: number, hoverIndex: number) => {
       const dragRow = value[dragIndex]
       onChange(
-        update(value, {
+        update(toJS(value), {
           $splice: [
             [dragIndex, 1],
             [hoverIndex, 0, dragRow],
@@ -119,16 +120,13 @@ export const ColumnsSetter: FC<BaseSetterProps<TableWidgetColumn[]>> = ({
   }
 
   const currentColumn = value[currentColumnIndex]
-  const updateCurrentColumn = useCallback(
-    (newColumn: TableWidgetColumn) => {
-      onChange(
-        produce(value, (draft) => {
-          draft[currentColumnIndex] = newColumn
-        }),
-      )
-    },
-    [currentColumnIndex, onChange, value],
-  )
+  const updateCurrentColumn = useMemoizedFn((newColumn: TableWidgetColumn) => {
+    onChange(
+      produce(toJS(value), (draft) => {
+        draft[currentColumnIndex] = newColumn
+      }),
+    )
+  })
 
   const columns: ColumnsType<TableWidgetColumn> = [
     {

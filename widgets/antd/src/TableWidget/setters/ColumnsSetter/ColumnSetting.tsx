@@ -11,7 +11,7 @@ import { FC, ReactElement } from 'react'
 import { mcss, useTheme } from '@modou/css-in-js'
 import { NumberSetter } from '@modou/setters'
 
-import { ColumnAlignEnum } from '../../types'
+import { ColumnAlignEnum, ColumnFixedEnum } from '../../types'
 import { TableWidgetColumn } from './types'
 
 export const ColumnSetting: FC<{
@@ -101,19 +101,19 @@ export const ColumnSetting: FC<{
                     value={value.fixed}
                   >
                     <Tooltip title="列固定到左侧">
-                      <Radio.Button value={ColumnAlignEnum.left}>
+                      <Radio.Button value={ColumnFixedEnum.left}>
                         <VerticalAlignTopOutlined
                           className={classes.rotate_90}
                         />
                       </Radio.Button>
                     </Tooltip>
                     <Tooltip title="不固定列">
-                      <Radio.Button value={ColumnAlignEnum.center}>
+                      <Radio.Button value={ColumnFixedEnum.false}>
                         <LineOutlined />
                       </Radio.Button>
                     </Tooltip>
                     <Tooltip title="列固定到右侧">
-                      <Radio.Button value={ColumnAlignEnum.right}>
+                      <Radio.Button value={ColumnFixedEnum.right}>
                         <VerticalAlignBottomOutlined
                           className={classes.rotate_90}
                         />

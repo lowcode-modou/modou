@@ -117,7 +117,6 @@ const _ModuleManagerPage: FC<{
             onFinish={async (formData) => {
               await form.validateFields()
               console.log(formData)
-              // TODO 完善 addPage
               const rootWidgetId = generateId()
               const page = PageFile.create(
                 {
