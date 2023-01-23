@@ -4,7 +4,6 @@ import * as React from 'react'
 
 import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
-import { trace } from '@modou/reactivity'
 import { observer } from '@modou/reactivity-react'
 
 import { useCanvasFile } from '../contexts'

@@ -33,7 +33,7 @@ export const TableWidget: FC<
       if (c.width > 0) {
         res.width = c.width
       } else {
-        c.width = DEFAULT_COLUMN_WIDTH
+        res.width = DEFAULT_COLUMN_WIDTH
       }
       return res
     })
