@@ -1,4 +1,4 @@
-import { set } from 'lodash'
+import { get, head, isNumber, omit, set, take, takeRight, unset } from 'lodash'
 import { FC, useContext, useEffect } from 'react'
 import * as React from 'react'
 
@@ -7,6 +7,7 @@ import {
   IReactionDisposer,
   autorun,
   reaction,
+  remove,
   runInAction,
   toJS,
 } from '@modou/reactivity'
@@ -67,6 +68,26 @@ const _WidgetVirtual: FC<{
       () => widgetState.file.flattenedMetaValMap,
       (value, prev) => {
         stopExps.forEach((stop) => stop())
+        const omitPaths = Object.keys(omit(prev, Object.keys(value)))
+        // 处理 数组 类型的 state 在props删除后不会更新的问题
+        // 比如 {columns:[{a:1},{a:2}]} => {columns:[{a:1}]}
+        runInAction(() => {
+          if (omitPaths.length > 0) {
+            omitPaths.forEach((path) => {
+              unset(widgetState.state, path)
+              const pathArr = path.split('.')
+              // TODO 需要更加准确的判断需要删除的数组路径
+              if (isNumber(+pathArr[pathArr.length - 2])) {
+                remove(
+                  get(widgetState.state, take(pathArr, pathArr.length - 2)),
+                  head(takeRight(pathArr, 2)),
+                )
+              }
+            })
+          }
+          console.log('widgetState.state', widgetState.state)
+        })
+        // TODO 如果state是数组的时候如何删除多余的数组
         Object.entries(value).forEach(([path, val]) => {
           if (val.type === 'Normal') {
             if (prev?.[path]?.raw !== val.raw) {

@@ -41,23 +41,25 @@ export const TableWidget: FC<
 
   // FIXME 修改属性面板fixed需要刷新页面才会生效
   return (
-    <ProTable
-      scroll={{ x: 1 }}
-      size={size ?? undefined}
-      data-widget-root
-      data-widget-id={instance.widgetId}
-      data-widget-slot-path={renderSlotPaths.children}
-      columns={_columns}
-      dataSource={isArray(dataSource) ? dataSource : []}
-      search={false}
-      options={false}
-      rowKey={'id'}
-      cardProps={{
-        bodyStyle: {
-          padding: 0,
-        },
-      }}
-    />
+    <div>
+      <ProTable
+        scroll={{ x: '100%' }}
+        size={size ?? undefined}
+        data-widget-root
+        data-widget-id={instance.widgetId}
+        data-widget-slot-path={renderSlotPaths.children}
+        columns={_columns}
+        dataSource={isArray(dataSource) ? dataSource : []}
+        search={false}
+        options={false}
+        rowKey={'id'}
+        cardProps={{
+          bodyStyle: {
+            padding: 0,
+          },
+        }}
+      />
+    </div>
   )
 }
 
