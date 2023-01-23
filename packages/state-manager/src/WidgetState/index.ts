@@ -2,7 +2,7 @@ import { isFunction } from 'lodash'
 
 import { AppFactory } from '@modou/core'
 import { WidgetFile } from '@modou/meta-vfs'
-import { makeAutoObservable } from '@modou/reactivity'
+import { makeAutoObservable, toJS } from '@modou/reactivity'
 
 // TODO 完善类型定义
 type BaseWidgetState = Record<string, any> & {
@@ -18,9 +18,10 @@ export class WidgetState {
   constructor(file: WidgetFile, appFactory: AppFactory) {
     const widgetDef = appFactory.widgetByType[file.meta.type]
     this.file = file
+    const rawMeta = toJS(file.meta)
     this.state = {
-      ...file.meta.props,
-      ...widgetDef.metadata.initState(file.meta),
+      ...toJS(rawMeta.props),
+      ...widgetDef.metadata.initState(rawMeta),
     } as unknown as BaseWidgetState
     makeAutoObservable(this)
   }

@@ -55,6 +55,18 @@ export const ColumnSetting: FC<{
                     }
                   />
                 </Form.Item>
+                <Form.Item label="匹配值">
+                  <Input
+                    value={value.mappedValue}
+                    onChange={(e) =>
+                      onChange(
+                        produce(value, (draft) => {
+                          draft.mappedValue = e.target.value
+                        }),
+                      )
+                    }
+                  />
+                </Form.Item>
                 <Form.Item label="对齐方式">
                   <Radio.Group
                     onChange={(e) =>
