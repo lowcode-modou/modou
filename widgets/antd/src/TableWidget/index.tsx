@@ -23,9 +23,7 @@ export const TableWidget: FC<
         valueType: c.valueType,
         align: c.align,
         fixed: c.fixed ? c.fixed : false,
-        render: () => {
-          return c.mappedValue || '-'
-        },
+        renderText: () => c.mappedValue,
       }
       if (c.width > 0) {
         res.width = c.width

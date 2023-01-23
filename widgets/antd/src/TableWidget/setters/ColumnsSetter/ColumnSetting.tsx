@@ -4,14 +4,19 @@ import {
   VerticalAlignMiddleOutlined,
   VerticalAlignTopOutlined,
 } from '@ant-design/icons'
-import { Card, Form, Input, Radio, Tooltip } from 'antd'
+import { Card, Form, Input, Radio, Select, Tooltip } from 'antd'
 import produce from 'immer'
 import { FC, ReactElement } from 'react'
 
 import { mcss, useTheme } from '@modou/css-in-js'
 import { NumberSetter } from '@modou/setters'
 
-import { ColumnAlignEnum, ColumnFixedEnum } from '../../types'
+import {
+  ColumnAlignEnum,
+  ColumnFixedEnum,
+  ColumnValueTypeEnum,
+  ColumnValueTypeLabelMap,
+} from '../../types'
 import { TableWidgetColumn } from './types'
 
 export const ColumnSetting: FC<{
@@ -54,6 +59,28 @@ export const ColumnSetting: FC<{
                       )
                     }
                   />
+                </Form.Item>
+                <Form.Item label="列类型">
+                  <Select<ColumnValueTypeEnum>
+                    popupClassName={classes.selectPopup}
+                    showSearch
+                    value={value.valueType}
+                    onChange={(v) =>
+                      onChange(
+                        produce(value, (draft) => {
+                          draft.valueType = v
+                        }),
+                      )
+                    }
+                  >
+                    {Object.entries(ColumnValueTypeLabelMap).map(
+                      ([val, label]) => (
+                        <Select.Option key={val} value={val}>
+                          {label}
+                        </Select.Option>
+                      ),
+                    )}
+                  </Select>
                 </Form.Item>
                 <Form.Item label="匹配值">
                   <Input
@@ -182,5 +209,8 @@ const classes = {
   `,
   rotate_90: mcss`
     transform: rotate(-90deg);
+  `,
+  selectPopup: mcss`
+    z-index: 999999;
   `,
 }
