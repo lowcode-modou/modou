@@ -68,7 +68,12 @@ const _WidgetVirtual: FC<{
       () => widgetState.file.flattenedMetaValMap,
       (value, prev) => {
         stopExps.forEach((stop) => stop())
-        const omitPaths = Object.keys(omit(prev, Object.keys(value)))
+        // TODO 需要更加准确的判断需要删除的数组路径
+        const newValPaths = Object.keys(value)
+        const newValHeadPath = newValPaths.map((path) => head(path.split('.')))
+        const omitPaths = Object.keys(omit(prev, newValPaths)).filter(
+          (path) => !newValHeadPath.includes(path),
+        )
         // 处理 数组 类型的 state 在props删除后不会更新的问题
         // 比如 {columns:[{a:1},{a:2}]} => {columns:[{a:1}]}
         runInAction(() => {
