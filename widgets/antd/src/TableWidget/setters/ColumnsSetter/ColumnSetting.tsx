@@ -4,7 +4,7 @@ import {
   VerticalAlignMiddleOutlined,
   VerticalAlignTopOutlined,
 } from '@ant-design/icons'
-import { Card, Form, Input, Radio, Select, Tooltip } from 'antd'
+import { Button, Card, Form, Input, Radio, Select, Tooltip } from 'antd'
 import produce from 'immer'
 import { FC, ReactElement } from 'react'
 
@@ -64,6 +64,17 @@ export const ColumnSetting: FC<{
                   <Select<ColumnValueTypeEnum>
                     popupClassName={classes.selectPopup}
                     showSearch
+                    filterOption={(input, option) => {
+                      return (`${option?.label}` ?? '')
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }}
+                    options={Object.entries(ColumnValueTypeLabelMap).map(
+                      ([value, label]) => ({
+                        label,
+                        value,
+                      }),
+                    )}
                     value={value.valueType}
                     onChange={(v) =>
                       onChange(
@@ -72,15 +83,7 @@ export const ColumnSetting: FC<{
                         }),
                       )
                     }
-                  >
-                    {Object.entries(ColumnValueTypeLabelMap).map(
-                      ([val, label]) => (
-                        <Select.Option key={val} value={val}>
-                          {label}
-                        </Select.Option>
-                      ),
-                    )}
-                  </Select>
+                  />
                 </Form.Item>
                 <Form.Item label="匹配值">
                   <Input

@@ -5,7 +5,7 @@ import {
   baseParse,
 } from '@vue/compiler-core'
 import { flatten } from 'flat'
-import { mapValues, omit } from 'lodash'
+import { head, mapValues, omit } from 'lodash'
 
 import { WidgetBaseProps } from '@modou/core'
 import { isExpression } from '@modou/evaluate'
@@ -63,11 +63,19 @@ export class WidgetFile extends BaseFile<{}, WidgetFileMeta, PageFile> {
       (value) => {
         if (isExpression(value)) {
           const ast = baseParse(value)
-          return {
-            type: 'Expression',
-            raw: value,
-            ast,
-            evalString: `\`${ast.children
+          let evalString: string
+          if (
+            ast.children.length === 1 &&
+            // @ts-expect-error
+            head(ast.children)?.type === ParseNodeTypes.INTERPOLATION
+          ) {
+            evalString =
+              (
+                (head(ast.children) as unknown as InterpolationNode)
+                  ?.content as unknown as SimpleExpressionNode
+              ).content || ''
+          } else {
+            evalString = `\`${ast.children
               .map((item) => {
                 // @ts-expect-error
                 if (item.type === ParseNodeTypes.TEXT) {
@@ -86,7 +94,13 @@ export class WidgetFile extends BaseFile<{}, WidgetFileMeta, PageFile> {
                 // TODO 适配其他类型
                 return item.loc.source
               })
-              .join('')}\``,
+              .join('')}\``
+          }
+          return {
+            type: 'Expression',
+            raw: value,
+            ast,
+            evalString,
           }
         } else {
           return {

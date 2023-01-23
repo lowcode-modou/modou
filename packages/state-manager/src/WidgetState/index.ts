@@ -19,8 +19,11 @@ export class WidgetState {
     const widgetDef = appFactory.widgetByType[file.meta.type]
     this.file = file
     const rawMeta = toJS(file.meta)
+    console.log('rawMeta', rawMeta)
+    // TODO 这个地方就要 eval
     this.state = {
       ...toJS(rawMeta.props),
+      // TODO initState 传递的参数应该是初始化的state 或者 计算后的 props
       ...widgetDef.metadata.initState(rawMeta),
     } as unknown as BaseWidgetState
     makeAutoObservable(this)

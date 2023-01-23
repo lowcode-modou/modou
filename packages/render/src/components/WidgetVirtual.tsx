@@ -70,7 +70,9 @@ const _WidgetVirtual: FC<{
         Object.entries(value).forEach(([path, val]) => {
           if (val.type === 'Normal') {
             if (prev?.[path]?.raw !== val.raw) {
-              set(widgetState.state, path, val.raw)
+              runInAction(() => {
+                set(widgetState.state, path, val.raw)
+              })
             }
           } else {
             stopExps.push(
@@ -82,6 +84,8 @@ const _WidgetVirtual: FC<{
               }),
             )
           }
+          // TODO 如果是异步的 expression 如何处理
+          widgetState.state.instance.initialized = true
         })
       },
       {
@@ -95,13 +99,13 @@ const _WidgetVirtual: FC<{
 
   // FIXME 会导致重新渲染
   // FIXME 完善组件类型
-  return (
+  return widgetState.state.instance.initialized ? (
     <WidgetComponent
       {...toJS(widgetState.state)}
       updateState={widgetState.updateState}
       renderSlots={toJS(renderSlots)}
       renderSlotPaths={toJS(renderSlotPaths)}
     />
-  )
+  ) : null
 }
 export const WidgetVirtual = observer(_WidgetVirtual)

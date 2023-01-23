@@ -154,7 +154,7 @@ const _WidgetDrop: ForwardRefRenderFunction<WidgetDropInstance, DropElement> = (
       {isActive ? (
         <Row
           className={widgetDropClasses.activeWrapper}
-          style={{ ...style, border: '1px solid green' }}
+          style={{ ...style, border: '1px solid rgba(0,255,0,.1)' }}
         >
           <div
             className={widgetDropClasses.active}

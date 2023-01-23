@@ -50,6 +50,7 @@ export const MRSchemeTableWidgetProps = WidgetMetadata.createMRWidgetProps({
                 .default(ColumnFixedEnum.false),
               width: mr.number().default(-1),
               mappedValue: mr.any(),
+              hideInTable: mr.boolean().default(false),
             })
             .merge(mr.object({})),
         )

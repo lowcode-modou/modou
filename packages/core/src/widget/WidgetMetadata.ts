@@ -110,7 +110,7 @@ export class WidgetMetadata<
         instance: {
           id,
           widgetId: id,
-          initialized: true,
+          initialized: false,
         },
         ...(initState?.(...args) ?? {}),
       }

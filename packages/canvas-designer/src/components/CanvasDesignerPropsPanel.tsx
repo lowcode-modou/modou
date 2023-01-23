@@ -13,6 +13,7 @@ import {
 import { AppFactoryContext } from '@modou/core'
 import { cx, mcss } from '@modou/css-in-js'
 import { PageFileMeta, WidgetFileMeta } from '@modou/meta-vfs'
+import { toJS } from '@modou/reactivity'
 import { observer } from '@modou/reactivity-react'
 import { SETTER_KEY } from '@modou/setters'
 import { SetterTypeEnum } from '@modou/setters/src/constants'
@@ -48,7 +49,7 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
         >
           {NativeSetter ? (
             <NativeSetter
-              value={widget.meta.props[key]}
+              value={toJS(widget.meta.props[key])}
               onChange={(value: any) => {
                 widget.updateMeta(
                   produce<WidgetFileMeta>((draft) => {
@@ -60,7 +61,7 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
           ) : (
             <Setter
               options={setterOptions}
-              value={widget.meta.props[key]}
+              value={toJS(widget.meta.props[key])}
               onChange={(value: any) => {
                 widget.updateMeta(
                   produce<WidgetFileMeta>((draft) => {
