@@ -8,6 +8,7 @@ import { MRSchemeTableWidgetState } from './metadata'
 
 const DEFAULT_COLUMN_WIDTH = 150
 
+// TODO 实现 self 和 currentRow
 export const TableWidget: FC<
   InferWidgetState<typeof MRSchemeTableWidgetState>
 > = ({ instance, renderSlots, renderSlotPaths, columns, size, dataSource }) => {
@@ -27,8 +28,22 @@ export const TableWidget: FC<
         // TODO ellipsis
         // ellipsis: true,
       }
-      if (c.mappedValue) {
-        res.renderText = () => c.mappedValue
+      if (!c.buildIn) {
+        res.render = (val, record, index) => {
+          return (
+            <div
+              data-widget-id={instance.widgetId}
+              data-widget-slot-path={renderSlotPaths.custom_column_1}
+            >
+              {renderSlots.custom_column_1}
+            </div>
+          )
+        }
+      }
+      if (c.mappedValue && c.buildIn) {
+        res.renderText = (text, record, index) => {
+          return c.mappedValue
+        }
       }
       if (c.width > 0) {
         res.width = c.width
@@ -37,7 +52,7 @@ export const TableWidget: FC<
       }
       return res
     })
-  }, [columns])
+  }, [columns, instance.widgetId, renderSlotPaths.custom_column_1])
 
   // FIXME 修改属性面板fixed需要刷新页面才会生效
   return (
@@ -47,12 +62,11 @@ export const TableWidget: FC<
         size={size ?? undefined}
         data-widget-root
         data-widget-id={instance.widgetId}
-        data-widget-slot-path={renderSlotPaths.children}
         columns={_columns}
         dataSource={isArray(dataSource) ? dataSource : []}
         search={false}
         options={false}
-        rowKey={'id'}
+        rowKey={(record) => record.id || Math.random()}
         cardProps={{
           bodyStyle: {
             padding: 0,

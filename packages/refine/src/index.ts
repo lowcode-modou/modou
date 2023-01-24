@@ -7,7 +7,7 @@ import type {
   ZodType,
   ZodTypeAny,
 } from '@lowcode-modou/zod'
-import { ZodObject } from '@lowcode-modou/zod'
+import { ZodObject, ZodRecord } from '@lowcode-modou/zod'
 
 import { name, version } from '../package.json'
 

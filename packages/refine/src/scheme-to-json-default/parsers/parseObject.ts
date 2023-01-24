@@ -12,6 +12,9 @@ export const parseObject = (
   )
     ? cloneDeep(schema.default!)
     : DEFAULT_TO_EMPTY
+  if (!schema.properties) {
+    return {}
+  }
   Object.entries(schema.properties).forEach(([key, value]) => {
     const defaultItem = parseScheme(value)
     if (defaultItem === DEFAULT_TO_EMPTY) {

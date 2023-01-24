@@ -1,3 +1,4 @@
+import { WidgetFile } from '@modou/meta-vfs'
 import { MRType } from '@modou/refine'
 
 import { SETTER_KEY, SetterTypeEnum } from '../constants'
@@ -16,6 +17,12 @@ export interface BaseSetterProps<T, O = any> {
   value: T
   onChange: (value: T) => void
   options?: O
+}
+
+export interface BaseWidgetSetterProps<T, O = any>
+  extends BaseSetterProps<T, O> {
+  // TODO widget meta
+  widget: WidgetFile
 }
 
 export interface BaseMRSetterOptions {

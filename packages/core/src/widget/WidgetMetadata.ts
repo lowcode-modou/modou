@@ -19,6 +19,7 @@ import {
   MRStringSetterType,
   SETTER_KEY,
 } from '@modou/setters'
+import { BaseWidgetSetterProps } from '@modou/setters/src/types'
 import { InferWidgetState } from '@modou/widgets-antd'
 
 import { MDVersion } from '../types'
@@ -43,7 +44,7 @@ interface BaseWidgetMetadata<
   name: string
   slots: WidgetSlots<S>
   // TODO FIX TYPE
-  setters: Record<string, FC<BaseSetterProps<any>>>
+  setters: Record<string, FC<BaseWidgetSetterProps<any>>>
   mrPropsScheme: PropsMRScheme
   mrStateScheme: StateMRScheme
   // TODO 通过 props 和 state 的类型对比判断 initState 是否是必传的
@@ -129,7 +130,7 @@ export class WidgetMetadata<
   jsonStateSchema: JsonSchema7ObjectType
   initState
   slots: WidgetSlots<S>
-  setters: Record<string, FC<BaseSetterProps<any>>>
+  setters: Record<string, FC<BaseWidgetSetterProps<any>>>
 
   static createMetadata<
     PropsMRScheme extends MRScheme,
@@ -175,6 +176,15 @@ export class WidgetMetadata<
       name: mr.literal(name),
       props: mr.object(propsRawShape),
       slots: mr.object(slots ?? ({} as unknown as S)),
+      dynamicSlots: mr
+        .record(
+          mr.object({
+            name: mr.string(),
+            children: mr.array(mr.string()),
+            accept: mr.array(mr.string()).optional(),
+          }),
+        )
+        .default({}),
     })
   }
 

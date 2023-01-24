@@ -34,9 +34,9 @@ export class WidgetState {
   // TODO 完善 Widget State 定义
   state: BaseWidgetState
 
-  updateState(
+  updateState = (
     state: BaseWidgetState | ((oldState: BaseWidgetState) => BaseWidgetState),
-  ) {
+  ) => {
     if (isFunction(state)) {
       this.state = state(this.state)
     } else {

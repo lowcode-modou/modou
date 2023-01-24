@@ -93,11 +93,14 @@ const _SelectedToolBox: FC = () => {
           icon={<FullscreenOutlined className={classes.button} />}
         />
         <Button className={classes.button} type="primary">
+          {widget.meta.name}
+        </Button>
+        {/* <Button className={classes.button} type="primary">
           2
         </Button>
         <Button className={classes.button} type="primary">
           3
-        </Button>
+        </Button> */}
       </Button.Group>
     </div>
   )

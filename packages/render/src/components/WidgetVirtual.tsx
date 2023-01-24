@@ -69,15 +69,17 @@ const _WidgetVirtual: FC<{
       (value, prev) => {
         stopExps.forEach((stop) => stop())
         // TODO 需要更加准确的判断需要删除的数组路径
+        // 处理 数组 类型的 state 在props删除后不会更新的问题
+        // 比如 {columns:[{a:1},{a:2}]} => {columns:[{a:1}]} state 的第一项并不会删除
         const newValPaths = Object.keys(value)
         const newValHeadPath = newValPaths.map((path) => head(path.split('.')))
         const omitPaths = Object.keys(omit(prev, newValPaths)).filter(
           (path) => !newValHeadPath.includes(path),
         )
-        // 处理 数组 类型的 state 在props删除后不会更新的问题
-        // 比如 {columns:[{a:1},{a:2}]} => {columns:[{a:1}]}
         runInAction(() => {
           if (omitPaths.length > 0) {
+            // 处理 数组 类型的 state 在props删除后不会更新的问题
+            // 比如 {columns:[{a:1},{a:2}]} => {columns:[{a:1}]} state 的第一项并不会删除
             omitPaths.forEach((path) => {
               unset(widgetState.state, path)
               const pathArr = path.split('.')
@@ -90,7 +92,6 @@ const _WidgetVirtual: FC<{
               }
             })
           }
-          console.log('widgetState.state', widgetState.state)
         })
         // TODO 如果state是数组的时候如何删除多余的数组
         Object.entries(value).forEach(([path, val]) => {
@@ -123,7 +124,7 @@ const _WidgetVirtual: FC<{
     }
   }, [])
 
-  // FIXME 会导致重新渲染
+  console.log('widgetState.state', widgetState.state)
   // FIXME 完善组件类型
   return widgetState.state.instance.initialized ? (
     <WidgetComponent

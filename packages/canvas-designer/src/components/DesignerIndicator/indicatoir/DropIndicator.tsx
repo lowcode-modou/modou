@@ -233,10 +233,11 @@ const _DropIndicator: FC = () => {
   }, [canvasDesignerFile.widgetMap, dropElements])
   return (
     <>
-      {dropElementsRendered.map(({ widgetId, slotPath }) => (
+      {dropElementsRendered.map(({ widgetId, slotPath }, index) => (
         <WidgetDrop
           ref={widgetDropRef}
-          key={widgetId + slotPath}
+          // TODO key 加上instanceId
+          key={widgetId + slotPath + index}
           widgetId={widgetId}
           slotPath={slotPath}
         />

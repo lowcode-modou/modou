@@ -28,7 +28,7 @@ import {
 import { createPortal } from 'react-dom'
 
 import { mcss, useTheme } from '@modou/css-in-js'
-import { BaseSetterProps } from '@modou/setters'
+import { BaseWidgetSetterProps } from '@modou/setters/src/types'
 
 import { MOCK_TABLE_DATA } from '../../mock'
 import { ColumnValueTypeEnum } from '../../types'
@@ -61,9 +61,10 @@ async function quicktypeJSON(
   })
 }
 
-export const ColumnsSetter: FC<BaseSetterProps<TableWidgetColumn[]>> = ({
+export const ColumnsSetter: FC<BaseWidgetSetterProps<TableWidgetColumn[]>> = ({
   value = [],
   onChange,
+  widget,
 }) => {
   const dataSource = useMemo(
     () =>
