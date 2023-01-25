@@ -5,7 +5,7 @@ configure({
   enforceActions: 'always',
   // computedRequiresReaction: true,
   // observableRequiresReaction: true,
-  reactionRequiresObservable: true,
+  reactionRequiresObservable: false,
 })
 
 export * from './AppFile'

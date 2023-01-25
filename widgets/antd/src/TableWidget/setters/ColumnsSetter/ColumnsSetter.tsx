@@ -8,8 +8,6 @@ import {
 import { useMemoizedFn, useMount, useUpdate } from 'ahooks'
 import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
-import produce from 'immer'
-import update from 'immutability-helper'
 import { JSONSchema7 } from 'json-schema'
 import { isBoolean } from 'lodash'
 import {
@@ -17,19 +15,16 @@ import {
   jsonInputForTargetLanguage,
   quicktype,
 } from 'quicktype-core'
-import {
-  FC,
-  HTMLAttributes,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { FC, HTMLAttributes, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { mcss, useTheme } from '@modou/css-in-js'
+import { runInAction, toJS } from '@modou/reactivity'
+import { Observer, observer, useComputed } from '@modou/reactivity-react'
 import { BaseWidgetSetterProps } from '@modou/setters/src/types'
 
+import { InterWidgetProps } from '../../../_'
+import { MRSchemeTableWidgetProps } from '../../metadata'
 import { MOCK_TABLE_DATA } from '../../mock'
 import { ColumnValueTypeEnum } from '../../types'
 import { ColumnSetting } from './ColumnSetting'
@@ -61,40 +56,24 @@ async function quicktypeJSON(
   })
 }
 
-export const ColumnsSetter: FC<BaseWidgetSetterProps<TableWidgetColumn[]>> = ({
-  value = [],
-  onChange,
-  widget,
-}) => {
-  const dataSource = useMemo(
-    () =>
-      value.map((v, index) => ({
-        ...v,
-        key: v.dataIndex || index,
-      })),
-    [value],
-  )
-
+const _ColumnsSetter: FC<
+  BaseWidgetSetterProps<InterWidgetProps<typeof MRSchemeTableWidgetProps>>
+> = ({ widget }) => {
   const components = {
     body: {
       row: DraggableBodyRow,
     },
   }
 
-  const moveRow = useCallback(
-    (dragIndex: number, hoverIndex: number) => {
-      const dragRow = value[dragIndex]
-      onChange(
-        update(value, {
-          $splice: [
-            [dragIndex, 1],
-            [hoverIndex, 0, dragRow],
-          ],
-        }),
-      )
-    },
-    [onChange, value],
-  )
+  const moveRow = useMemoizedFn((dragIndex: number, hoverIndex: number) => {
+    const dragRow = widget.meta.props.columns[dragIndex]
+    runInAction(() => {
+      widget.meta.props.columns[dragIndex] =
+        widget.meta.props.columns[hoverIndex]
+      widget.meta.props.columns[hoverIndex] = dragRow
+    })
+  })
+
   const wrapperRef = useRef<HTMLDivElement>(null)
   const theme = useTheme()
 
@@ -108,30 +87,37 @@ export const ColumnsSetter: FC<BaseWidgetSetterProps<TableWidgetColumn[]>> = ({
       ?.previousElementSibling
   const [currentColumnIndex, setCurrentColumnIndex] = useState(0)
 
-  const addColumn = () => {
-    onChange([...value, generateDefaultColumn(value)])
-    setCurrentColumnIndex(value.length)
-  }
-  const removeColumn = (index: number) => {
-    onChange(
-      produce(value, (draft) => {
-        draft.splice(index, 1)
-      }),
-    )
-  }
+  const addColumn = useMemoizedFn(() => {
+    runInAction(() => {
+      widget.meta.props.columns.push(
+        generateDefaultColumn(toJS(widget.meta.props.columns)),
+      )
+    })
+    setCurrentColumnIndex(widget.meta.props.columns.length)
+  })
+  const removeColumn = useMemoizedFn((index: number) => {
+    runInAction(() => {
+      widget.meta.props.columns.splice(index, 1)
+    })
+  })
 
   const editColumn = (index: number) => {
     setCurrentColumnIndex(index)
   }
 
-  const currentColumn = value[currentColumnIndex]
+  const currentColumn = widget.meta.props.columns[currentColumnIndex]
   const updateCurrentColumn = useMemoizedFn((newColumn: TableWidgetColumn) => {
-    onChange(
-      produce(value, (draft) => {
-        draft[currentColumnIndex] = newColumn
-      }),
-    )
+    runInAction(() => {
+      widget.meta.props.columns[currentColumnIndex] = newColumn
+    })
   })
+
+  const columnsDataSource = useComputed(() =>
+    widget.meta.props.columns.map((v, index) => ({
+      ...v,
+      key: v.dataIndex || index,
+    })),
+  )
 
   const columns: ColumnsType<TableWidgetColumn> = [
     {
@@ -141,17 +127,21 @@ export const ColumnsSetter: FC<BaseWidgetSetterProps<TableWidgetColumn[]>> = ({
       align: 'center',
       render: (value) => {
         return (
-          <div
-            style={{
-              width: '100%',
-              textAlign: 'left',
-            }}
-          >
-            <Space size={'small'}>
-              <HolderOutlined />
-              {value}
-            </Space>
-          </div>
+          <Observer>
+            {() => (
+              <div
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                }}
+              >
+                <Space size={'small'}>
+                  <HolderOutlined />
+                  {value}
+                </Space>
+              </div>
+            )}
+          </Observer>
         )
       },
     },
@@ -161,34 +151,48 @@ export const ColumnsSetter: FC<BaseWidgetSetterProps<TableWidgetColumn[]>> = ({
       key: 'operation',
       align: 'center',
       render: (_value, record, index) => (
-        <>
-          <ColumnSetting value={currentColumn} onChange={updateCurrentColumn}>
-            <Button type={'link'} onClick={() => editColumn(index)}>
-              <SettingOutlined />
-            </Button>
-          </ColumnSetting>
-          {!record.buildIn && (
-            <Button type={'text'} danger onClick={() => removeColumn(index)}>
-              <DeleteOutlined />
-            </Button>
-          )}
+        <Observer>
+          {() => (
+            <>
+              <ColumnSetting
+                value={currentColumn}
+                onChange={updateCurrentColumn}
+              >
+                <Button type={'link'} onClick={() => editColumn(index)}>
+                  <SettingOutlined />
+                </Button>
+              </ColumnSetting>
+              {!record.buildIn && (
+                <Button
+                  type={'text'}
+                  danger
+                  onClick={() => removeColumn(index)}
+                >
+                  <DeleteOutlined />
+                </Button>
+              )}
 
-          {record.buildIn && (
-            <Button
-              type={'text'}
-              danger
-              onClick={() => {
-                onChange(
-                  produce<TableWidgetColumn[]>(value, (draft) => {
-                    draft[index].hideInTable = !draft[index].hideInTable
-                  }),
-                )
-              }}
-            >
-              {record.hideInTable ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-            </Button>
+              {record.buildIn && (
+                <Button
+                  type={'text'}
+                  danger
+                  onClick={() => {
+                    runInAction(() => {
+                      widget.meta.props.columns[index].hideInTable =
+                        !widget.meta.props.columns[index].hideInTable
+                    })
+                  }}
+                >
+                  {record.hideInTable ? (
+                    <EyeInvisibleOutlined />
+                  ) : (
+                    <EyeOutlined />
+                  )}
+                </Button>
+              )}
+            </>
           )}
-        </>
+        </Observer>
       ),
     },
   ]
@@ -206,7 +210,7 @@ export const ColumnsSetter: FC<BaseWidgetSetterProps<TableWidgetColumn[]>> = ({
     const schemeRoot: JSONSchema7 = scheme.definitions!
       .RootElement as unknown as JSONSchema7
 
-    const usedDataIndex = value.map((v) => v.dataIndex)
+    const usedDataIndex = widget.meta.props.columns.map((v) => v.dataIndex)
     Object.entries(schemeRoot.properties!).forEach(([prop, scheme]) => {
       // format [date-time, uri]
       if (isBoolean(scheme)) {
@@ -255,7 +259,9 @@ export const ColumnsSetter: FC<BaseWidgetSetterProps<TableWidgetColumn[]>> = ({
       }
     })
 
-    onChange([...value, ...columns])
+    runInAction(() => {
+      widget.meta.props.columns.push(...columns)
+    })
   })
 
   return (
@@ -281,7 +287,7 @@ export const ColumnsSetter: FC<BaseWidgetSetterProps<TableWidgetColumn[]>> = ({
         pagination={false}
         size={'small'}
         columns={columns}
-        dataSource={dataSource}
+        dataSource={columnsDataSource}
         components={components}
         onRow={(_, index) => {
           const attr = {
@@ -294,6 +300,8 @@ export const ColumnsSetter: FC<BaseWidgetSetterProps<TableWidgetColumn[]>> = ({
     </div>
   )
 }
+
+export const ColumnsSetter = observer(_ColumnsSetter)
 
 const classes = {
   wrapper: mcss`

@@ -48,17 +48,7 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
           label={setterOptions.label}
         >
           {NativeSetter ? (
-            <NativeSetter
-              widget={toJS(widget)}
-              value={toJS(widget.meta.props[key])}
-              onChange={(value: any) => {
-                widget.updateMeta(
-                  produce<WidgetFileMeta>((draft) => {
-                    draft.props[key] = value
-                  }),
-                )
-              }}
-            />
+            <NativeSetter widget={widget} />
           ) : (
             <Setter
               options={setterOptions}

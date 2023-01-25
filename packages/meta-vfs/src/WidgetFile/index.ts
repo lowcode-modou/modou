@@ -24,9 +24,9 @@ import { FileTypeEnum } from '../types'
 
 type MetaPath = string
 
-enum MetaDepTypeEnum {
-  Widget,
-}
+// enum MetaDepTypeEnum {
+//   Widget,
+// }
 
 // interface MetaDep {
 //   type: MetaDepTypeEnum
@@ -45,10 +45,13 @@ interface MetaValNormal {
 }
 type MetaVal = MetaValExpression | MetaValNormal
 
-export type WidgetFileMeta = BaseFileMete<WidgetBaseProps>
+export type WidgetFileMeta<T extends WidgetBaseProps = WidgetBaseProps> =
+  BaseFileMete<T>
 
-export class WidgetFile extends BaseFile<{}, WidgetFileMeta, PageFile> {
-  protected constructor(meta: WidgetFileMeta, parentFile: PageFile) {
+export class WidgetFile<
+  T extends WidgetBaseProps = WidgetBaseProps,
+> extends BaseFile<{}, WidgetFileMeta<T>, PageFile> {
+  protected constructor(meta: WidgetFileMeta<T>, parentFile: PageFile) {
     super({ fileType: FileTypeEnum.Widget, meta, parentFile })
     makeObservable(this, {
       subFileMap: observable,
@@ -139,7 +142,7 @@ export class WidgetFile extends BaseFile<{}, WidgetFileMeta, PageFile> {
 
   static create(meta: Omit<WidgetFileMeta, 'version'>, parentFile: PageFile) {
     return runInAction(() => {
-      const widgetFile = new WidgetFile(
+      const widgetFile = new WidgetFile<WidgetBaseProps>(
         {
           ...meta,
           version: '0.0.1',

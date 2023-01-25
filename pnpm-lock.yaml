@@ -52,7 +52,6 @@ importers:
       flat: ^5.0.2
       handlebars: ^4.7.7
       immer: ^9.0.15
-      immutability-helper: ^3.1.1
       json-schema: ^0.4.0
       lodash: ^4.17.21
       mitt: ^3.0.0
@@ -94,7 +93,6 @@ importers:
       flat: 5.0.2
       handlebars: 4.7.7
       immer: 9.0.15
-      immutability-helper: 3.1.1
       json-schema: 0.4.0
       lodash: 4.17.21
       mitt: 3.0.0
@@ -9680,10 +9678,6 @@ packages:
 
   /immer/9.0.15:
     resolution: {integrity: sha512-2eB/sswms9AEUSkOm4SbV5Y7Vmt/bKRwByd52jfLkW4OLYeaTP3EEiJ9agqU0O/tq6Dk62Zfj+TJSqfm1rLVGQ==}
-    dev: false
-
-  /immutability-helper/3.1.1:
-    resolution: {integrity: sha512-Q0QaXjPjwIju/28TsugCHNEASwoCcJSyJV3uO1sOIQGI0jKgm9f41Lvz0DZj3n46cNCyAZTsEYoY4C2bVRUzyQ==}
     dev: false
 
   /immutable/4.1.0:
