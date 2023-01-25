@@ -21,7 +21,8 @@ export class PageState {
   }
 
   subState: {
-    widget: Record<string, WidgetState>
+    // TODO 动态定义WidgetState[][][]类型
+    widget: Record<string, WidgetState | WidgetState[][][]>
   } = {
     widget: {},
   }

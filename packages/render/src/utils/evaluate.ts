@@ -8,7 +8,10 @@ export const isExpression = (str: unknown): str is string => {
   return typeof str === 'string' && EXPRESSION_REG.test(str)
 }
 // TODO 完善 store 类型
-export const evalExpression = (expression: string, canvasState: PageState) => {
+export const evalExpression = (
+  expression: string,
+  state: Record<string, any>,
+) => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval,no-new-func,no-useless-call
     return new Function(
@@ -17,10 +20,7 @@ export const evalExpression = (expression: string, canvasState: PageState) => {
       return ${expression}
     }`,
       // TODO state 打平收集到 stateManager
-    ).call(
-      null,
-      mapValues(canvasState.subState.widget, (widget) => widget.state),
-    )
+    ).call(null, state)
   } catch (e) {
     return String((e as SyntaxError)?.message) ?? 'Error'
   }

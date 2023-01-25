@@ -5,7 +5,7 @@ import * as React from 'react'
 
 import { AppFactoryContext, AppManagerProvider } from '@modou/core'
 import { observer } from '@modou/reactivity-react'
-import { StateManagerProvider } from '@modou/state-manager/src/contexts'
+import { StateManagerProvider } from '@modou/state-manager'
 
 import { CanvasFileContextProvider } from '../contexts'
 import { useInitRender, useInitStateManager } from '../hooks'

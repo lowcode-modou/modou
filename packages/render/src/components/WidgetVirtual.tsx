@@ -1,6 +1,16 @@
-import { get, head, isNumber, omit, set, take, takeRight, unset } from 'lodash'
-import { all } from 'quicktype-core/dist/language/All'
-import { FC, useContext, useEffect, useMemo } from 'react'
+import {
+  get,
+  head,
+  isArray,
+  isNumber,
+  mapValues,
+  omit,
+  set,
+  take,
+  takeRight,
+  unset,
+} from 'lodash'
+import { FC, useContext, useEffect } from 'react'
 import * as React from 'react'
 
 import {
@@ -17,8 +27,11 @@ import {
   toJS,
 } from '@modou/reactivity'
 import { observer } from '@modou/reactivity-react'
-import { WidgetState } from '@modou/state-manager'
-import { useStateManager } from '@modou/state-manager/src/contexts'
+import {
+  WidgetState,
+  useStateManager,
+  useWidgetVariables,
+} from '@modou/state-manager'
 
 import { evalExpression } from '../utils/evaluate'
 
@@ -27,14 +40,39 @@ const _WidgetVirtual: FC<{
 }> = ({ widgetId }) => {
   // trace(true)
   // 按钮-{{colDSL.span}}
+  const { widgetVariables } = useWidgetVariables()
+
   const { appManager } = useAppManager()
   const { canvasState } = useStateManager()
   const widget = appManager.widgetMap[widgetId]
   const appFactory = useContext(AppFactoryContext)
-  let widgetState = canvasState.subState.widget[widget.meta.id]
+  // ri [1,2,3,4,5]
+  // i 5
+  // TODO 支持 v_ri
+  const vi = widgetVariables.i
+  let widgetState: WidgetState
+  if (isNumber(vi)) {
+    if (!isArray(canvasState.subState.widget[widget.meta.id])) {
+      set(canvasState.subState.widget, [widget.meta.id], [])
+    }
+  }
+
+  if (isNumber(vi)) {
+    // TODO 完善 canvasState.subState 类型定义
+    // @ts-expect-error
+    widgetState = canvasState.subState.widget[widget.meta.id][vi]
+  } else {
+    widgetState = canvasState.subState.widget[widget.meta.id] as WidgetState
+  }
+
   if (!widgetState) {
     widgetState = new WidgetState(widget, appFactory)
-    canvasState.subState.widget[widget.meta.id] = widgetState
+    if (isNumber(vi)) {
+      // @ts-expect-error
+      canvasState.subState.widget[widget.meta.id][vi] = widgetState
+    } else {
+      canvasState.subState.widget[widget.meta.id] = widgetState
+    }
   }
   const widgetDef = appFactory.widgetByType[widget.meta.type]
   // TODO any 替换 state 定义
@@ -70,7 +108,6 @@ const _WidgetVirtual: FC<{
       {},
     )
   })()
-
   useEffect(() => {
     const stopExps: IReactionDisposer[] = []
     const stop = reaction(
@@ -113,7 +150,19 @@ const _WidgetVirtual: FC<{
           } else {
             stopExps.push(
               autorun(() => {
-                const newVal = evalExpression(val.evalString, canvasState)
+                const newVal = evalExpression(val.evalString, {
+                  ...mapValues(canvasState.subState.widget, (widget) => {
+                    if (isArray(widget)) {
+                      // TODO 支持v_ri
+                      return widget.map(
+                        (w) => (w as unknown as WidgetState).state,
+                      )
+                    } else {
+                      return widget.state
+                    }
+                  }),
+                  ...widgetVariables,
+                })
                 runInAction(() => {
                   set(widgetState.state, path, newVal)
                 })
@@ -131,9 +180,13 @@ const _WidgetVirtual: FC<{
     return () => {
       stop()
     }
-  }, [])
+  }, [widgetVariables])
 
-  console.log('widgetState.state', widgetState.state)
+  console.log(
+    'widgetState.state',
+    widgetState.state.instance.initialized,
+    widgetState.state,
+  )
   // FIXME 完善组件类型
   return widgetState.state.instance.initialized ? (
     <WidgetComponent

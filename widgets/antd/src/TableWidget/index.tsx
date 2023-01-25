@@ -3,6 +3,8 @@ import type { ProColumns } from '@ant-design/pro-components'
 import { isArray } from 'lodash'
 import { FC, useEffect, useMemo } from 'react'
 
+import { WidgetVariablesProvider } from '@modou/state-manager'
+
 import { InferWidgetState } from '../_'
 import { MRSchemeTableWidgetState } from './metadata'
 
@@ -37,7 +39,11 @@ export const TableWidget: FC<
           }
         }
         res.render = (val, record, index) => {
-          return Reflect.get(renderSlots, c.dataIndex)
+          return (
+            <WidgetVariablesProvider value={{ i: index }}>
+              {Reflect.get(renderSlots, c.dataIndex)}
+            </WidgetVariablesProvider>
+          )
         }
       }
       if (c.mappedValue && c.buildIn) {
@@ -52,7 +58,7 @@ export const TableWidget: FC<
       }
       return res
     })
-  }, [columns])
+  }, [columns, instance.widgetId, renderSlots])
 
   // FIXME 修改属性面板fixed需要刷新页面才会生效
   return (

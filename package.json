@@ -50,6 +50,7 @@
     "@modou/render": "workspace:^1.0.0",
     "@modou/setters": "workspace:^1.0.0",
     "@modou/simulator": "workspace:^1.0.0",
+    "@modou/state-manager": "workspace:^0.0.1",
     "@modou/widgets-antd": "workspace:^1.0.0",
     "@recoiljs/refine": "^0.1.1",
     "@vue/compiler-core": "^3.2.45",

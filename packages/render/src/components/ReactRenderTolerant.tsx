@@ -5,6 +5,10 @@ import * as React from 'react'
 import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { observer } from '@modou/reactivity-react'
+import {
+  DEFAULT_WIDGET_VARIABLES,
+  WidgetVariablesProvider,
+} from '@modou/state-manager'
 
 import { useCanvasFile } from '../contexts'
 import { MoDouRenderProps } from '../types'
@@ -16,7 +20,9 @@ const _ReactRenderTolerant: FC<MoDouRenderProps> = ({ host = 'browser' }) => {
   // FIXME 判断当前所在环境 是否从props更新widgets  可以加一个 host
   const rootWidget = appManager.widgetMap[canvasFile.meta.rootWidgetId]
   return rootWidget ? (
-    <WidgetVirtual widgetId={canvasFile.meta.rootWidgetId} />
+    <WidgetVariablesProvider value={{ ...DEFAULT_WIDGET_VARIABLES }}>
+      <WidgetVirtual widgetId={canvasFile.meta.rootWidgetId} />
+    </WidgetVariablesProvider>
   ) : (
     <div className={classes.spinWrapper}>
       <Spin size={'large'} />

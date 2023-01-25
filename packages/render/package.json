@@ -10,6 +10,5 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@modou/state-manager": "workspace:^0.0.1"
   }
 }
