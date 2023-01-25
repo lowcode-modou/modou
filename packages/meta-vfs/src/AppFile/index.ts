@@ -1,5 +1,4 @@
 import { isArray, keyBy } from 'lodash'
-import { makePersistable } from 'mobx-persist-store'
 
 import {
   action,
@@ -13,6 +12,7 @@ import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
 import { EntityFile } from '../EntityFile'
 import { EntityRelationFile } from '../EntityRelationFile'
 import { PageFile } from '../PageFile'
+import { emitters } from '../event-bus'
 import { FileTypeEnum } from '../types'
 
 export type AppFileMeta = BaseFileMete
@@ -34,23 +34,7 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
       deleteEntity: action,
       deletePage: action,
     })
-
-    void makePersistable(this, {
-      name: `${meta.id}`,
-      properties: [
-        // @ts-expect-error
-        {
-          key: 'root',
-          serialize: () => {
-            return this.toJSON()
-          },
-          deserialize: () => {
-            return {} as any
-          },
-        },
-      ],
-      storage: window.localStorage,
-    })
+    emitters.on('updateFileMeta', this.persistMeta)
 
     // if (typeof window !== 'undefined') {
     //   window.addEventListener('visibilitychange', () => {
@@ -68,6 +52,18 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
   subFileMap: FileMap = {
     pages: [],
     entities: [],
+  }
+
+  private readonly persistMeta = () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+    window.localStorage.setItem(this.meta.id, JSON.stringify(this.toJSON()))
+  }
+
+  protected disposer = () => {
+    super.disposer()
+    emitters.off('updateFileMeta', this.persistMeta)
   }
 
   get pages() {

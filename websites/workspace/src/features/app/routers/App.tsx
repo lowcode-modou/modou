@@ -40,7 +40,7 @@ const menuItems: ComponentProps<typeof Menu>['items'] = [
 const appManager = runInAction(() => {
   try {
     // @ts-expect-error
-    const appJson = JSON.parse(window.localStorage.getItem('app_id_mock')).root
+    const appJson = JSON.parse(window.localStorage.getItem('app_id_mock'))
     return new AppManager(AppFile.formJSON(appJson))
   } catch {
     return new AppManager(generateMockAppFile())

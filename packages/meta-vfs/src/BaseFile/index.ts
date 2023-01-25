@@ -1,8 +1,16 @@
-import { isFunction, mapValues } from 'lodash'
+import { get, isFunction, mapValues } from 'lodash'
 
 import { MDVersion } from '@modou/core'
 import { FileTypeEnum, UpdateParams } from '@modou/meta-vfs'
-import { action, makeObservable, observable } from '@modou/reactivity'
+import {
+  action,
+  makeObservable,
+  observable,
+  reaction,
+  toJS,
+} from '@modou/reactivity'
+
+import { emitters } from '../event-bus'
 
 export type BaseFileMete<T extends object = {}> = {
   readonly id: string
@@ -37,6 +45,50 @@ export abstract class BaseFile<
       parentFile: observable,
       updateMeta: action,
     })
+    // 监听meta变化 包括subFile移动
+    const disposer = reaction(
+      () => toJS(this.meta),
+      (newValue) => {
+        emitters.emit('updateFileMeta', newValue)
+      },
+      {
+        fireImmediately: true,
+        delay: 300,
+        // equals: comparer.structural,
+      },
+    )
+    // 监听删除和添加
+    const disposerSubFiles = reaction(
+      () =>
+        mapValues(this.subFileMap, (files) =>
+          files.reduce<Record<string, BaseFile<any, any, any>>>((pre, cur) => {
+            pre[cur.meta.id] = cur
+            return pre
+          }, {}),
+        ),
+      (newValue, prevValue) => {
+        // 如果是删除 调用子文件的disposer方法
+        // 找出删除的文件
+        if (!prevValue) {
+          return
+        }
+        Object.entries(prevValue).forEach(([fileType, filesMap]) =>
+          Object.entries(filesMap).forEach(([fileId, file]) => {
+            if (!get(newValue, [fileType, fileId])) {
+              file.disposer()
+            }
+          }),
+        )
+      },
+      {
+        fireImmediately: true,
+        delay: 300,
+      },
+    )
+    this.disposer = () => {
+      disposer()
+      disposerSubFiles()
+    }
   }
 
   updateMeta(meta: UpdateParams<T>) {
@@ -50,6 +102,8 @@ export abstract class BaseFile<
   parentFile: P
   fileType: FileTypeEnum
   meta: T
+
+  protected disposer: () => void
 
   protected subFileMapToJson() {
     return mapValues(this.subFileMap, (dir) =>
