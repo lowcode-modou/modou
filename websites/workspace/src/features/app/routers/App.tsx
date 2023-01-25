@@ -22,7 +22,7 @@ import { ModuleManager } from '../components'
 import { AppHeader } from '../components/AppHeader'
 import { AppHome } from '../components/AppHome'
 import { ModuleEnum } from '../types'
-import { mock_appFile } from './mock'
+import { generateMockAppFile } from './mock'
 
 const menuItems: ComponentProps<typeof Menu>['items'] = [
   {
@@ -39,9 +39,11 @@ const menuItems: ComponentProps<typeof Menu>['items'] = [
 
 const appManager = runInAction(() => {
   try {
-    return new AppManager(AppFile.formLocal(mock_appFile.meta.id))
-  } catch (e) {
-    return new AppManager(mock_appFile)
+    // @ts-expect-error
+    const appJson = JSON.parse(window.localStorage.getItem('app_id_mock')).root
+    return new AppManager(AppFile.formJSON(appJson))
+  } catch {
+    return new AppManager(generateMockAppFile())
   }
 })
 

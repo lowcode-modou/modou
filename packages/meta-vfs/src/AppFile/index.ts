@@ -1,4 +1,5 @@
 import { isArray, keyBy } from 'lodash'
+import { makePersistable } from 'mobx-persist-store'
 
 import {
   action,
@@ -34,17 +35,34 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
       deletePage: action,
     })
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('visibilitychange', () => {
-        if (this.meta.id) {
-          window.localStorage.removeItem(this.meta.id)
-          window.localStorage.setItem(
-            this.meta.id,
-            JSON.stringify(this.toJSON()),
-          )
-        }
-      })
-    }
+    void makePersistable(this, {
+      name: `${meta.id}`,
+      properties: [
+        // @ts-expect-error
+        {
+          key: 'root',
+          serialize: () => {
+            return this.toJSON()
+          },
+          deserialize: () => {
+            return {} as any
+          },
+        },
+      ],
+      storage: window.localStorage,
+    })
+
+    // if (typeof window !== 'undefined') {
+    //   window.addEventListener('visibilitychange', () => {
+    //     if (this.meta.id) {
+    //       window.localStorage.removeItem(this.meta.id)
+    //       window.localStorage.setItem(
+    //         this.meta.id,
+    //         JSON.stringify(this.toJSON()),
+    //       )
+    //     }
+    //   })
+    // }
   }
 
   subFileMap: FileMap = {
@@ -175,10 +193,10 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
     })
   }
 
-  static formLocal(appId: string) {
-    const appMeta = JSON.parse(
-      localStorage.getItem(appId) ?? '{}',
-    ) as unknown as ReturnType<AppFile['toJSON']>
-    return this.formJSON(appMeta)
-  }
+  // static formLocal(appId: string) {
+  //   const appMeta = JSON.parse(
+  //     localStorage.getItem(appId) ?? '{}',
+  //   ) as unknown as ReturnType<AppFile['toJSON']>
+  //   return this.formJSON(appMeta)
+  // }
 }
