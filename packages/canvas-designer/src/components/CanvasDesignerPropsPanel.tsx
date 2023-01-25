@@ -29,6 +29,7 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
   const widgetMetadata = useMemo(() => {
     return widgetFactory.widgetByType[widget.meta.type].metadata
   }, [widgetFactory.widgetByType, widget.meta.type])
+  console.log('widgetMetadata', widgetMetadata)
   const propsDef = (
     widgetMetadata.jsonPropsSchema.properties
       .props as unknown as typeof widgetMetadata.jsonPropsSchema

@@ -9,11 +9,13 @@ export const MRSchemeColWidgetProps = WidgetMetadata.createMRWidgetProps({
   name: '栅格列',
   props: {
     span: {
-      def: mr.number().default(12),
+      def: mr.number().min(0).max(24).default(12),
       setter: {
         type: SetterTypeEnum.Number,
         label: '占位数',
         description: '栅格占位格数，为 0 时相当于 display: none',
+        min: 0,
+        max: 24,
       },
     },
   },
