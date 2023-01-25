@@ -1,0 +1,1 @@
+export { useWidgetMetaSlots } from './useWidgetMetaSlots'

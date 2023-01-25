@@ -63,9 +63,7 @@ export const MRSchemeTableWidgetProps = WidgetMetadata.createMRWidgetProps({
       },
     },
   },
-  slots: {
-    custom_column_1: mr.array(mr.string()).default([]),
-  },
+  slots: {},
 })
 
 export const MRSchemeTableWidgetState = WidgetMetadata.createMRWidgetState(
@@ -81,11 +79,7 @@ export const tableWidgetMetadata = WidgetMetadata.createMetadata<
   type: 'TableWidget',
   name: '表格',
   icon: <WidgetIcon type="col" />,
-  slots: {
-    custom_column_1: {
-      name: '自定义列1',
-    },
-  },
+  slots: {},
   setters: {
     ColumnsSetter,
   },

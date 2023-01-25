@@ -41,4 +41,4 @@ export function useStaticRendering(enable: boolean) {
   enableStaticRendering(enable)
 }
 
-export { useComputed } from './useComputed'
+// export { useComputed } from './useComputed'

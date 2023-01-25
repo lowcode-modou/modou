@@ -21,6 +21,7 @@ export interface PageFileMeta extends BaseFileMete {
 
 export interface RelationWidget {
   props: WidgetBaseProps
+  file: WidgetFile
   slotPath: string
   parent?: RelationWidget
 }
@@ -64,16 +65,18 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       if (!Reflect.has(pre, widgetId)) {
         pre[widgetId] = {
           props: cur.meta,
+          file: cur,
           slotPath: '',
         }
       }
       const parent = pre[widgetId]
-      if (!isEmpty(cur.meta.slots)) {
-        Object.entries(cur.meta.slots).forEach(([slotPath, slotChildren]) => {
+      if (!isEmpty(cur.slots)) {
+        Object.entries(cur.slots).forEach(([slotPath, slotChildren]) => {
           slotChildren.forEach((widgetId) => {
             if (!Reflect.has(pre, widgetId)) {
               pre[widgetId] = {
                 props: this.widgetMap[widgetId].meta,
+                file: this.widgetMap[widgetId],
                 parent,
                 slotPath,
               }
@@ -104,7 +107,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       return
     }
     const sourceWidget = WidgetFile.create(sourceWidgetMeta, this)
-    targetWidget.meta.slots[targetSlotPath].splice(
+    targetWidget.slots[targetSlotPath].splice(
       targetPosition,
       0,
       sourceWidget.meta.id,
@@ -127,16 +130,16 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
         let sourceIndex = -1
         draft.forEach((widget) => {
           // 删除
-          if (isObject(widget.meta.slots)) {
-            Object.keys(widget.meta.slots).forEach((slotPath) => {
+          if (isObject(widget.slots)) {
+            Object.keys(widget.slots).forEach((slotPath) => {
               if (sourceIndex !== -1) {
                 return
               }
-              sourceIndex = widget.meta.slots[slotPath].findIndex(
+              sourceIndex = widget.slots[slotPath].findIndex(
                 (slotWidgetId) => slotWidgetId === sourceWidgetId,
               )
               if (sourceIndex !== -1) {
-                widget.meta.slots[slotPath].splice(sourceIndex, 1)
+                widget.slots[slotPath].splice(sourceIndex, 1)
               }
             })
           }
@@ -149,7 +152,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
               this.widgetRelationById[sourceWidgetId].slotPath ===
                 targetSlotPath
             if (isSameParentSlot) {
-              widget.meta.slots[targetSlotPath].splice(
+              widget.slots[targetSlotPath].splice(
                 sourceIndex < targetPosition
                   ? targetPosition - 1
                   : targetPosition,
@@ -157,7 +160,7 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
                 sourceWidgetId,
               )
             } else {
-              widget.meta.slots[targetSlotPath].splice(
+              widget.slots[targetSlotPath].splice(
                 targetPosition,
                 0,
                 sourceWidgetId,
@@ -173,13 +176,13 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
     this.updateWidgets(
       produce((draft) => {
         draft.forEach((widget) => {
-          if (isObject(widget.meta.slots)) {
-            Object.keys(widget.meta.slots).forEach((slotPath) => {
-              const deletedIndex = widget.meta.slots[slotPath].findIndex(
+          if (isObject(widget.slots)) {
+            Object.keys(widget.slots).forEach((slotPath) => {
+              const deletedIndex = widget.slots[slotPath].findIndex(
                 (slotWidgetId) => slotWidgetId === widgetId,
               )
               if (deletedIndex !== -1) {
-                widget.meta.slots[slotPath].splice(deletedIndex, 1)
+                widget.slots[slotPath].splice(deletedIndex, 1)
               }
             })
           }

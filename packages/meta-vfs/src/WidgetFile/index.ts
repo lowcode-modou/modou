@@ -57,6 +57,7 @@ export class WidgetFile<
       subFileMap: observable,
       // depMap: computed.struct,
       flattenedMetaValMap: computed.struct,
+      slots: computed.struct,
     })
   }
 
@@ -113,6 +114,13 @@ export class WidgetFile<
         }
       },
     )
+  }
+
+  get slots() {
+    return {
+      ...this.meta.slots,
+      ...mapValues(this.meta.dynamicSlots || {}, (v) => v.children),
+    }
   }
 
   // TODO state 修改为主动 watch dep

@@ -22,7 +22,6 @@ export const InputWidget: FC<
       fieldProps={{
         defaultValue,
         onChange: (e) => {
-          console.log('onChange', e)
           updateState((prev) => ({
             ...prev,
             value: e.target.value,

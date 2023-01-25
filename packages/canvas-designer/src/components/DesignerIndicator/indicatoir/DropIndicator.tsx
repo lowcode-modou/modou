@@ -14,9 +14,9 @@ import {
   useState,
 } from 'react'
 
-import { AppFactoryContext } from '@modou/core'
+import { AppFactoryContext, useWidgetMetaSlots } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
-import { observer, useComputed } from '@modou/reactivity-react'
+import { observer } from '@modou/reactivity-react'
 
 import { SimulatorInstanceContext } from '../../../contexts'
 import { useCanvasDesignerFile } from '../../../contexts/CanvasDesignerFileContext'
@@ -88,7 +88,7 @@ const _WidgetDrop: ForwardRefRenderFunction<WidgetDropInstance, DropElement> = (
     }
   })
 
-  const dropIndicatorStyle: CSSProperties = useComputed(() => {
+  const dropIndicatorStyle: CSSProperties = (() => {
     if (!canvasDesignerStore.dropIndicator.show) {
       return {}
     }
@@ -125,7 +125,7 @@ const _WidgetDrop: ForwardRefRenderFunction<WidgetDropInstance, DropElement> = (
       default:
         return {}
     }
-  })
+  })()
 
   const theme = useTheme()
 
@@ -134,6 +134,11 @@ const _WidgetDrop: ForwardRefRenderFunction<WidgetDropInstance, DropElement> = (
   useImperativeHandle(ref, () => ({
     forceUpdateStyle,
   }))
+
+  const allSlots = useWidgetMetaSlots({
+    widgetMeta: widgetMetadata,
+    widget,
+  })
 
   return (
     <>
@@ -146,7 +151,7 @@ const _WidgetDrop: ForwardRefRenderFunction<WidgetDropInstance, DropElement> = (
         >
           <Col>
             <Typography.Text type={'secondary'} strong>
-              {widgetMetadata.name}-{widgetMetadata.slots[slotPath].name}
+              {widgetMetadata.name}-{allSlots[slotPath].name}
             </Typography.Text>
           </Col>
         </Row>
@@ -227,9 +232,15 @@ const _DropIndicator: FC = () => {
     },
   )
   const dropElementsRendered = useMemo(() => {
-    return dropElements.filter(
-      ({ widgetId }) => canvasDesignerFile.widgetMap[widgetId],
-    )
+    // 去除列表模式下重复的widgetId
+    const usedWidgetIdMap: Record<string, boolean> = {}
+    return dropElements.filter(({ widgetId, slotPath }) => {
+      const res =
+        !usedWidgetIdMap[widgetId + slotPath] &&
+        canvasDesignerFile.widgetMap[widgetId]
+      usedWidgetIdMap[widgetId + slotPath] = true
+      return res
+    })
   }, [canvasDesignerFile.widgetMap, dropElements])
   return (
     <>

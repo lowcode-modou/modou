@@ -1,8 +1,13 @@
 import { get, head, isNumber, omit, set, take, takeRight, unset } from 'lodash'
-import { FC, useContext, useEffect } from 'react'
+import { all } from 'quicktype-core/dist/language/All'
+import { FC, useContext, useEffect, useMemo } from 'react'
 import * as React from 'react'
 
-import { AppFactoryContext, useAppManager } from '@modou/core'
+import {
+  AppFactoryContext,
+  useAppManager,
+  useWidgetMetaSlots,
+} from '@modou/core'
 import {
   IReactionDisposer,
   autorun,
@@ -11,7 +16,7 @@ import {
   runInAction,
   toJS,
 } from '@modou/reactivity'
-import { observer, useComputed } from '@modou/reactivity-react'
+import { observer } from '@modou/reactivity-react'
 import { WidgetState } from '@modou/state-manager'
 import { useStateManager } from '@modou/state-manager/src/contexts'
 
@@ -35,12 +40,16 @@ const _WidgetVirtual: FC<{
   // TODO any 替换 state 定义
   const WidgetComponent = widgetDef.component
 
-  const renderSlots = useComputed(() => {
-    return Object.entries(widgetDef.metadata.slots || {})
+  const allSlots = useWidgetMetaSlots({
+    widgetMeta: widgetDef.metadata,
+    widget,
+  })
+  const renderSlots = (() => {
+    return Object.entries(allSlots)
       .map(([slotPath, slot]) => {
         return {
           key: slotPath,
-          elements: widget.meta.slots[slotPath]?.map((widgetId) => (
+          elements: widget.slots[slotPath]?.map((widgetId) => (
             <WidgetVirtual key={widgetId} widgetId={widgetId} />
           )),
         }
@@ -51,8 +60,8 @@ const _WidgetVirtual: FC<{
         Reflect.set(pre, key, elements)
         return pre
       }, {})
-  })
-  const renderSlotPaths = useComputed(() => {
+  })()
+  const renderSlotPaths = (() => {
     return Object.keys(renderSlots).reduce<Record<string, string>>(
       (pre, cur) => {
         pre[cur] = cur
@@ -60,7 +69,7 @@ const _WidgetVirtual: FC<{
       },
       {},
     )
-  })
+  })()
 
   useEffect(() => {
     const stopExps: IReactionDisposer[] = []

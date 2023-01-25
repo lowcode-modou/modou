@@ -127,7 +127,7 @@ export const useWidgetDrop = ({
   const widgetFactory = useContext(AppFactoryContext)
   const widget = canvasDesignerFile.widgetMap[widgetId]!
 
-  const isEmptySlot = !!slotPath && isEmpty(widget.meta.slots[slotPath])
+  const isEmptySlot = !!slotPath && isEmpty(widget.slots[slotPath])
 
   const getDropIndicator = useMemoizedFn(() => {
     return canvasDesignerStore.dropIndicator
@@ -175,7 +175,7 @@ export const useWidgetDrop = ({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
-                  targetPosition: parent.props.slots[parentSlotPath].findIndex(
+                  targetPosition: parent.file.slots[parentSlotPath].findIndex(
                     (widgetId) => widget.meta.id === widgetId,
                   ),
                 })
@@ -187,7 +187,7 @@ export const useWidgetDrop = ({
                   sourceWidgetId: item.widget.id,
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
-                  targetPosition: parent.props.slots[parentSlotPath].findIndex(
+                  targetPosition: parent.file.slots[parentSlotPath].findIndex(
                     (widgetId) => widget.meta.id === widgetId,
                   ),
                 })
@@ -198,7 +198,7 @@ export const useWidgetDrop = ({
                 sourceWidgetId: item.widget.id,
                 targetWidgetId: widget.meta.id,
                 targetSlotPath: slotPath,
-                targetPosition: widget.meta.slots[slotPath].length,
+                targetPosition: widget.slots[slotPath].length,
               })
               break
             default:
@@ -211,7 +211,7 @@ export const useWidgetDrop = ({
                   sourceWidgetMeta: item.widget,
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
-                  targetPosition: parent.props.slots[parentSlotPath].findIndex(
+                  targetPosition: parent.file.slots[parentSlotPath].findIndex(
                     (widgetId) => widget.meta.id === widgetId,
                   ),
                 })
@@ -224,7 +224,7 @@ export const useWidgetDrop = ({
                   targetWidgetId: parent.props.id,
                   targetSlotPath: parentSlotPath,
                   targetPosition:
-                    parent.props.slots[parentSlotPath].findIndex(
+                    parent.file.slots[parentSlotPath].findIndex(
                       (widgetId) => widget.meta.id === widgetId,
                     ) + 1,
                 })
@@ -235,7 +235,7 @@ export const useWidgetDrop = ({
                 sourceWidgetMeta: item.widget,
                 targetWidgetId: widget.meta.id,
                 targetSlotPath: slotPath,
-                targetPosition: widget.meta.slots[slotPath].length,
+                targetPosition: widget.slots[slotPath].length,
               })
               break
             default:

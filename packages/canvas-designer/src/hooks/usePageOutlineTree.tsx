@@ -35,7 +35,6 @@ export const usePageOutlineTree = () => {
   const { appManager } = useAppManager()
   const rootWidget = appManager.widgetMap[canvasDesignerFile.meta.rootWidgetId]
   const appFactory = useContext(AppFactoryContext)
-
   const parentTreeNodes: OutlineTreeNode[] = [
     {
       key: canvasDesignerFile.meta.id,
@@ -63,8 +62,12 @@ export const usePageOutlineTree = () => {
       const parentTreeNode = parentTreeNodes.pop()
       parentTreeNode?.children.unshift(curTreeNode)
       const widgetDef = appFactory.widgetByType[curNode.type]
-      if (!isEmpty(widgetDef.metadata.slots)) {
-        Object.entries(widgetDef.metadata.slots).forEach(([path, slot]) => {
+      const allSlots = {
+        ...widgetDef.metadata.slots,
+        ...(curNode.dynamicSlots as unknown as Record<string, WidgetSlot>),
+      }
+      if (!isEmpty(allSlots)) {
+        Object.entries(allSlots).forEach(([path, slot]) => {
           nodeStack.push({ _type: 'slot', path, widgetId: curNode.id, ...slot })
           parentTreeNodes.push(curTreeNode)
         })
@@ -83,12 +86,12 @@ export const usePageOutlineTree = () => {
       const parentTreeNode = parentTreeNodes.pop()
       parentTreeNode?.children.unshift(curTreeNode)
       const curSlot =
-        appManager.widgetMap[curNode.widgetId]?.meta.slots?.[curNode.path]
+        appManager.widgetMap[curNode.widgetId]?.slots?.[curNode.path]
       if (curSlot && !isEmpty(curSlot)) {
         curSlot.forEach((widgetId: string) => {
           nodeStack.push({
             _type: 'widget',
-            ...appManager.widgetMap[widgetId]?.meta!,
+            ...appManager.widgetMap[widgetId]?.meta,
           })
           parentTreeNodes.push(curTreeNode)
         })

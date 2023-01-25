@@ -29,15 +29,15 @@ export const TableWidget: FC<
         // ellipsis: true,
       }
       if (!c.buildIn) {
+        // @ts-expect-error
+        res.onCell = () => {
+          return {
+            'data-widget-id': instance.widgetId,
+            'data-widget-slot-path': c.dataIndex,
+          }
+        }
         res.render = (val, record, index) => {
-          return (
-            <div
-              data-widget-id={instance.widgetId}
-              data-widget-slot-path={renderSlotPaths.custom_column_1}
-            >
-              {renderSlots.custom_column_1}
-            </div>
-          )
+          return Reflect.get(renderSlots, c.dataIndex)
         }
       }
       if (c.mappedValue && c.buildIn) {
@@ -52,7 +52,7 @@ export const TableWidget: FC<
       }
       return res
     })
-  }, [columns, instance.widgetId, renderSlotPaths.custom_column_1])
+  }, [columns])
 
   // FIXME 修改属性面板fixed需要刷新页面才会生效
   return (

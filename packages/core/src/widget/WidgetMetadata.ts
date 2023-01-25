@@ -11,7 +11,6 @@ import {
   schemeToJsonDefault,
 } from '@modou/refine'
 import {
-  BaseSetterProps,
   MRArraySetterType,
   MRBooleanSetterType,
   MRNumberSetterType,

@@ -19,8 +19,8 @@ import { FC, HTMLAttributes, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { mcss, useTheme } from '@modou/css-in-js'
-import { runInAction, toJS } from '@modou/reactivity'
-import { Observer, observer, useComputed } from '@modou/reactivity-react'
+import { remove, runInAction, set, toJS } from '@modou/reactivity'
+import { Observer, observer } from '@modou/reactivity-react'
 import { BaseWidgetSetterProps } from '@modou/setters/src/types'
 
 import { InterWidgetProps } from '../../../_'
@@ -56,7 +56,7 @@ async function quicktypeJSON(
   })
 }
 
-const _ColumnsSetter: FC<
+const UOColumnsSetter: FC<
   BaseWidgetSetterProps<InterWidgetProps<typeof MRSchemeTableWidgetProps>>
 > = ({ widget }) => {
   const components = {
@@ -89,14 +89,23 @@ const _ColumnsSetter: FC<
 
   const addColumn = useMemoizedFn(() => {
     runInAction(() => {
-      widget.meta.props.columns.push(
-        generateDefaultColumn(toJS(widget.meta.props.columns)),
-      )
+      const newColumn = generateDefaultColumn(toJS(widget.meta.props.columns))
+      const newDynamicSlot: typeof widget.meta.dynamicSlots['1'] = {
+        name: newColumn.title || newColumn.dataIndex,
+        children: [],
+      }
+      widget.meta.props.columns.push(newColumn)
+      set(widget.meta, 'dynamicSlots', {
+        ...widget.meta.dynamicSlots,
+        [newColumn.dataIndex]: newDynamicSlot,
+      })
     })
     setCurrentColumnIndex(widget.meta.props.columns.length)
   })
   const removeColumn = useMemoizedFn((index: number) => {
     runInAction(() => {
+      const toRemovedColumn = widget.meta.props.columns[index]
+      remove(widget.meta.dynamicSlots, toRemovedColumn.dataIndex)
       widget.meta.props.columns.splice(index, 1)
     })
   })
@@ -112,12 +121,10 @@ const _ColumnsSetter: FC<
     })
   })
 
-  const columnsDataSource = useComputed(() =>
-    widget.meta.props.columns.map((v, index) => ({
-      ...v,
-      key: v.dataIndex || index,
-    })),
-  )
+  const columnsDataSource = widget.meta.props.columns.map((v, index) => ({
+    ...v,
+    key: v.dataIndex || index,
+  }))
 
   const columns: ColumnsType<TableWidgetColumn> = [
     {
@@ -273,7 +280,6 @@ const _ColumnsSetter: FC<
       }}
     >
       <Button onClick={testQuickTypeTest}>QuickTypeTest</Button>
-
       {operationWrapper &&
         createPortal(
           <ColumnSetting value={currentColumn} onChange={updateCurrentColumn}>
@@ -301,8 +307,7 @@ const _ColumnsSetter: FC<
   )
 }
 
-export const ColumnsSetter = observer(_ColumnsSetter)
-
+export const ColumnsSetter = observer(UOColumnsSetter)
 const classes = {
   wrapper: mcss`
 		.ant-table tr.drop-over-downward td {
