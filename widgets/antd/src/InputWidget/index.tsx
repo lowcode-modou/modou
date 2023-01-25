@@ -18,6 +18,7 @@ export const InputWidget: FC<
       formItemProps={{
         // @ts-expect-error
         'data-widget-id': instance.widgetId,
+        'data-widget-root': true,
       }}
       fieldProps={{
         defaultValue,

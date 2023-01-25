@@ -24,6 +24,7 @@ export const ButtonWidget: FC<
   })
   return (
     <Button
+      data-widget-root
       data-widget-id={instance.widgetId}
       block={block}
       danger={danger}
