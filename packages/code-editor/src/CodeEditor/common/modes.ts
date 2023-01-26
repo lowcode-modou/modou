@@ -4,7 +4,7 @@ import 'codemirror/addon/mode/multiplex'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/sql/sql'
 
-import { CodeEditorModeEnum } from '@modou/code-editor/CodeEditor/common/editor-config'
+import { CodeEditorModeEnum } from './editor-config'
 
 CodeMirror.defineMode(CodeEditorModeEnum.TextWithJs, (config) =>
   CodeMirror.multiplexingMode(

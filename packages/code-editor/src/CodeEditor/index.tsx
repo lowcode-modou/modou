@@ -1,10 +1,13 @@
 import { useDebounceFn, useMemoizedFn, useMount } from 'ahooks'
-import { Typography } from 'antd'
 import CodeMirror from 'codemirror'
 import React, { type FC, useEffect, useRef, useState } from 'react'
 
-import { CodeMirrorTernServiceInstance } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
-import { updateCustomDef } from '@modou/code-editor/CodeEditor/autocomplete/customDefUtils'
+// import { ExpectedValueExample } from '@modou/code-editor/CodeEditor/utils/validation/common'
+import { injectGlobal, mcss } from '@modou/css-in-js'
+
+import { CodeMirrorTernServiceInstance } from './autocomplete/CodeMirrorTernService'
+import { updateCustomDef } from './autocomplete/customDefUtils'
+import './common/code-mirror-libs'
 import {
   CodeEditorModeEnum,
   DataTree,
@@ -13,19 +16,11 @@ import {
   MarkHelper,
   isCloseKey,
   isModifierKey,
-} from '@modou/code-editor/CodeEditor/common/editor-config'
-import { bindingHint } from '@modou/code-editor/CodeEditor/common/hintHelpers'
-import { bindingMarker } from '@modou/code-editor/CodeEditor/common/mark-helpers'
-import {
-  mock_code_editor_props,
-  mock_dyn_def,
-  mock_entityInfo,
-} from '@modou/code-editor/CodeEditor/mock'
-// import { ExpectedValueExample } from '@modou/code-editor/CodeEditor/utils/validation/common'
-import { injectGlobal, mcss } from '@modou/css-in-js'
-
-import './common/code-mirror-libs'
+} from './common/editor-config'
+import { bindingHint } from './common/hintHelpers'
+import { bindingMarker } from './common/mark-helpers'
 import './common/modes'
+import { mock_code_editor_props, mock_dyn_def, mock_entityInfo } from './mock'
 
 // export type CodeEditorExpected = {
 //   type: string
@@ -257,6 +252,7 @@ export const CodeEditor: FC<
       <div className={classes.wrapper}>
         <div className={classes.cmWrapper} tabIndex={0} ref={cmWrapperRef} />
       </div>
+      {/*
       <div className={evaluatedClasses.wrapper}>
         <div>
           <Typography.Title level={5}>预期结构</Typography.Title>
@@ -273,6 +269,7 @@ export const CodeEditor: FC<
           <Typography.Text type="success">EVALUATED VALUE</Typography.Text>
         </div>
       </div>
+*/}
     </>
   )
 }
@@ -293,8 +290,8 @@ const classes = {
       height: 100%;
       padding: 0;
       border-radius: 4px;
-      background: #EDF2F7;
-      color: #1A202C;
+      background: #EDF2F7!important;
+      color: rgba(0, 0, 0, 0.88)!important;
       transition-property: background-color, color, opacity;
       transition-duration: 0.2s;
       line-height: 20px;
@@ -305,9 +302,10 @@ const classes = {
       }
 
       &-cursor {
-        border-right: none;
-        border-left-width: 2px;
-        border-left-color: #153c15;
+        border-right: none!important;
+        border-left-width: 2px!important;
+        //border-left-color: #153c15;
+        border-left-color: #153c15!important;
       }
 
       .binding-brackets {

@@ -1,5 +1,4 @@
-import { FieldEntityInformation } from '@modou/code-editor/CodeEditor/common/editor-config'
-
+import { FieldEntityInformation } from '../common/editor-config'
 import {
   AutocompleteDataType,
   Completion,
@@ -221,7 +220,7 @@ class PriorityMatchRule implements AutocompleteRule {
     const relevantText = completion.text.split('.').pop()
     const priorities =
       PriorityOrder[
-        currentFieldInfo.expectedType || AutocompleteDataType.UNKNOWN
+        currentFieldInfo.expectedType ?? AutocompleteDataType.UNKNOWN
       ]
     if (relevantText && priorities.includes(relevantText))
       score += PriorityMatchRule.threshold

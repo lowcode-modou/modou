@@ -19,9 +19,6 @@
     "liuleiytu@gmail.com"
   ],
   "license": "MIT",
-  "files": [
-    "dist"
-  ],
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"

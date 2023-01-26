@@ -1,12 +1,9 @@
 import CodeMirror from 'codemirror'
 
-import { CodeMirrorTernServiceInstance } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
-import { checkIfCursorInsideBinding } from '@modou/code-editor/CodeEditor/common/codeEditorUtils'
-import {
-  ENTITY_TYPE,
-  HintHelper,
-} from '@modou/code-editor/CodeEditor/common/editor-config'
-import { KeyboardShortcuts } from '@modou/code-editor/CodeEditor/constants/KeyboardShortcuts'
+import { CodeMirrorTernServiceInstance } from '../autocomplete/CodeMirrorTernService'
+import { KeyboardShortcuts } from '../constants/KeyboardShortcuts'
+import { checkIfCursorInsideBinding } from './codeEditorUtils'
+import { ENTITY_TYPE, HintHelper } from './editor-config'
 
 export const bindingHint: HintHelper = (editor) => {
   editor.setOption('extraKeys', {
@@ -19,7 +16,7 @@ export const bindingHint: HintHelper = (editor) => {
       CodeMirrorTernServiceInstance.showType(cm)
     },
     [KeyboardShortcuts.CodeEditor.OpenDocsLink]: (cm: CodeMirror.Editor) => {
-      CodeMirrorTernServiceInstance.showDocs(cm)
+      void CodeMirrorTernServiceInstance.showDocs(cm)
     },
   })
   return {

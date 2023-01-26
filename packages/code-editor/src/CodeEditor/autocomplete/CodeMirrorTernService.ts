@@ -1,18 +1,15 @@
 import CodeMirror, { Hint, Hints, Pos, cmpPos } from 'codemirror'
 import { Def, Document } from 'tern'
 
-import { AutocompleteSorter } from '@modou/code-editor/CodeEditor/autocomplete/AutocompleteSortRules'
-import { TernWorkerServer } from '@modou/code-editor/CodeEditor/autocomplete/TernWorkerServer'
-import { getCompletionsForKeyword } from '@modou/code-editor/CodeEditor/autocomplete/keywordCompletion'
-import {
-  ENTITY_TYPE,
-  FieldEntityInformation,
-} from '@modou/code-editor/CodeEditor/common/editor-config'
-import { DEFS } from '@modou/code-editor/CodeEditor/tern/defs'
+import { ENTITY_TYPE, FieldEntityInformation } from '../common/editor-config'
+import { DEFS } from '../tern/defs'
 import {
   getDynamicStringSegments,
   isDynamicValue,
-} from '@modou/code-editor/CodeEditor/utils/DynamicBindingUtils'
+} from '../utils/DynamicBindingUtils'
+import { AutocompleteSorter } from './AutocompleteSortRules'
+import { TernWorkerServer } from './TernWorkerServer'
+import { getCompletionsForKeyword } from './keywordCompletion'
 
 export enum AutocompleteDataType {
   OBJECT = 'OBJECT',

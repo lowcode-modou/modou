@@ -1,7 +1,7 @@
 import { Def } from 'tern'
 
-import { generateTypeDef } from '@modou/code-editor/CodeEditor/autocomplete/dataTreeTypeDefCreator'
-import { TruthyPrimitiveTypes } from '@modou/code-editor/CodeEditor/utils/TypeHelpers'
+import { TruthyPrimitiveTypes } from '../utils/TypeHelpers'
+import { generateTypeDef } from './dataTreeTypeDefCreator'
 
 export type AdditionalDynamicDataTree = Record<
   string,

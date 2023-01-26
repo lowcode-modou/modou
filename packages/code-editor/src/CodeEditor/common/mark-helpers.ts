@@ -1,8 +1,8 @@
 import CodeMirror from 'codemirror'
 import { isEmpty } from 'lodash'
 
-import { MarkHelper } from '@modou/code-editor/CodeEditor/common/editor-config'
-import { AUTOCOMPLETE_MATCH_REGEX } from '@modou/code-editor/CodeEditor/constants/bindings'
+import { AUTOCOMPLETE_MATCH_REGEX } from '../constants/bindings'
+import { MarkHelper } from './editor-config'
 
 export const bindingMarker: MarkHelper = (editor: CodeMirror.Editor) => {
   editor.eachLine((line: CodeMirror.LineHandle) => {

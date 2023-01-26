@@ -1,4 +1,4 @@
-import { AutocompleteDataType } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
+import { AutocompleteDataType } from './CodeMirrorTernService'
 
 export const PriorityOrder: Record<AutocompleteDataType, string[]> = {
   STRING: ['selectedRow', 'data', 'text'],

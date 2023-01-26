@@ -1,4 +1,4 @@
-import { DATA_BIND_REGEX } from '@modou/code-editor/CodeEditor/constants/bindings'
+import { DATA_BIND_REGEX } from '../constants/bindings'
 
 export const isDynamicValue = (value: string): boolean =>
   DATA_BIND_REGEX.test(value)

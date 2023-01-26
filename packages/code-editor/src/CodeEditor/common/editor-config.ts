@@ -1,8 +1,8 @@
 import CodeMirror from 'codemirror'
 
-import { AutocompleteDataType } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
-import { DataTreeEntity } from '@modou/code-editor/CodeEditor/common/data-tree'
-import { TruthyPrimitiveTypes } from '@modou/code-editor/CodeEditor/utils/TypeHelpers'
+import { AutocompleteDataType } from '../autocomplete/CodeMirrorTernService'
+import { TruthyPrimitiveTypes } from '../utils/TypeHelpers'
+import { DataTreeEntity } from './data-tree'
 
 export enum CodeEditorModeEnum {
   Text = 'text/plain',

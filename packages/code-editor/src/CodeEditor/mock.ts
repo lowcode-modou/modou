@@ -1,8 +1,5 @@
-import { AutocompleteDataType } from '@modou/code-editor/CodeEditor/autocomplete/CodeMirrorTernService'
-import {
-  ENTITY_TYPE,
-  FieldEntityInformation,
-} from '@modou/code-editor/CodeEditor/common/editor-config'
+import { AutocompleteDataType } from './autocomplete/CodeMirrorTernService'
+import { ENTITY_TYPE, FieldEntityInformation } from './common/editor-config'
 
 export const mock_dyn_def = {
   '!name': 'DATA_TREE',

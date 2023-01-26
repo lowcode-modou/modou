@@ -1,9 +1,6 @@
 import { Def } from 'tern'
 
-import {
-  CallbackFn,
-  TernWorkerAction,
-} from '@modou/code-editor/CodeEditor/autocomplete/types'
+import { CallbackFn, TernWorkerAction } from './types'
 
 const ternWorker = new Worker(
   new URL('../works/tern/tern.worker.ts', import.meta.url),

@@ -1,7 +1,7 @@
 import { isObject, uniqueId } from 'lodash'
 import { Def } from 'tern'
 
-import { Types, getType } from '@modou/code-editor/CodeEditor/utils/TypeHelpers'
+import { Types, getType } from '../utils/TypeHelpers'
 
 export type ExtraDef = Record<string, Def | string>
 

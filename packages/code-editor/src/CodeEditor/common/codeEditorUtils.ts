@@ -1,6 +1,6 @@
 import CodeMirror from 'codemirror'
 
-import { getDynamicStringSegments } from '@modou/code-editor/CodeEditor/utils/DynamicBindingUtils'
+import { getDynamicStringSegments } from '../utils/DynamicBindingUtils'
 
 const computeCursorIndex = (editor: CodeMirror.Editor) => {
   const cursor = editor.getCursor()
