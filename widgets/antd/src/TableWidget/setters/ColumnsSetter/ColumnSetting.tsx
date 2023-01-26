@@ -4,8 +4,7 @@ import {
   VerticalAlignMiddleOutlined,
   VerticalAlignTopOutlined,
 } from '@ant-design/icons'
-import { Button, Card, Form, Input, Radio, Select, Tooltip } from 'antd'
-import produce from 'immer'
+import { Card, Form, Input, Radio, Select, Tooltip } from 'antd'
 import { FC, ReactElement } from 'react'
 
 import { mcss, useTheme } from '@modou/css-in-js'
@@ -52,11 +51,10 @@ export const ColumnSetting: FC<{
                   <Input
                     value={value.title}
                     onChange={(e) =>
-                      onChange(
-                        produce(value, (draft) => {
-                          draft.title = e.target.value
-                        }),
-                      )
+                      onChange({
+                        ...value,
+                        title: e.target.value,
+                      })
                     }
                   />
                 </Form.Item>
@@ -77,11 +75,10 @@ export const ColumnSetting: FC<{
                     )}
                     value={value.valueType}
                     onChange={(v) =>
-                      onChange(
-                        produce(value, (draft) => {
-                          draft.valueType = v
-                        }),
-                      )
+                      onChange({
+                        ...value,
+                        valueType: v,
+                      })
                     }
                   />
                 </Form.Item>
@@ -89,22 +86,20 @@ export const ColumnSetting: FC<{
                   <Input
                     value={value.mappedValue}
                     onChange={(e) =>
-                      onChange(
-                        produce(value, (draft) => {
-                          draft.mappedValue = e.target.value
-                        }),
-                      )
+                      onChange({
+                        ...value,
+                        mappedValue: e.target.value,
+                      })
                     }
                   />
                 </Form.Item>
                 <Form.Item label="对齐方式">
                   <Radio.Group
                     onChange={(e) =>
-                      onChange(
-                        produce(value, (draft) => {
-                          draft.align = e.target.value
-                        }),
-                      )
+                      onChange({
+                        ...value,
+                        align: e.target.value,
+                      })
                     }
                     value={value.align}
                   >
@@ -134,11 +129,10 @@ export const ColumnSetting: FC<{
                 <Form.Item label="固定方式">
                   <Radio.Group
                     onChange={(e) =>
-                      onChange(
-                        produce(value, (draft) => {
-                          draft.fixed = e.target.value
-                        }),
-                      )
+                      onChange({
+                        ...value,
+                        fixed: e.target.value,
+                      })
                     }
                     value={value.fixed}
                   >
@@ -167,11 +161,10 @@ export const ColumnSetting: FC<{
                   <NumberSetter
                     value={value.width}
                     onChange={(v) =>
-                      onChange(
-                        produce(value, (draft) => {
-                          draft.width = v
-                        }),
-                      )
+                      onChange({
+                        ...value,
+                        width: v,
+                      })
                     }
                   />
                 </Form.Item>

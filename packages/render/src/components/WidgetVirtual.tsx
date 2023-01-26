@@ -182,11 +182,11 @@ const _WidgetVirtual: FC<{
     }
   }, [widgetVariables])
 
-  console.log(
-    'widgetState.state',
-    widgetState.state.instance.initialized,
-    widgetState.state,
-  )
+  // console.log(
+  //   'widgetState.state',
+  //   widgetState.state.instance.initialized,
+  //   widgetState.state,
+  // )
   // FIXME 完善组件类型
   return widgetState.state.instance.initialized ? (
     <WidgetComponent

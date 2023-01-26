@@ -1,5 +1,4 @@
 import { Button, Divider, Form, Input } from 'antd'
-import produce from 'immer'
 import { omit } from 'lodash'
 import {
   ComponentProps,
@@ -12,7 +11,6 @@ import {
 
 import { AppFactoryContext } from '@modou/core'
 import { cx, mcss } from '@modou/css-in-js'
-import { PageFileMeta, WidgetFileMeta } from '@modou/meta-vfs'
 import { toJS } from '@modou/reactivity'
 import { observer } from '@modou/reactivity-react'
 import { SETTER_KEY } from '@modou/setters'
@@ -29,7 +27,6 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
   const widgetMetadata = useMemo(() => {
     return widgetFactory.widgetByType[widget.meta.type].metadata
   }, [widgetFactory.widgetByType, widget.meta.type])
-  console.log('widgetMetadata', widgetMetadata)
   const propsDef = (
     widgetMetadata.jsonPropsSchema.properties
       .props as unknown as typeof widgetMetadata.jsonPropsSchema
@@ -55,11 +52,13 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
               options={setterOptions}
               value={toJS(widget.meta.props[key])}
               onChange={(value: any) => {
-                widget.updateMeta(
-                  produce<WidgetFileMeta>((draft) => {
-                    draft.props[key] = value
-                  }),
-                )
+                widget.updateMeta((preValue) => ({
+                  ...preValue,
+                  props: {
+                    ...preValue.props,
+                    [key]: value,
+                  },
+                }))
               }}
             />
           )}
@@ -103,11 +102,10 @@ const _WidgetPropsPanel: FC = () => {
         <BlurInput
           value={widget.meta.name}
           onChange={(value) => {
-            widget.updateMeta(
-              produce<WidgetFileMeta>((draft) => {
-                draft.name = value
-              }),
-            )
+            widget.updateMeta((prevValue) => ({
+              ...prevValue,
+              name: value,
+            }))
           }}
           placeholder="请输入组件名称"
         />
@@ -143,11 +141,10 @@ const _PagePropsPanel: FC = () => {
       <Form.Item label="页面名称">
         <BlurInput
           onChange={(value) => {
-            canvasDesignerFile.updateMeta(
-              produce<PageFileMeta>((draft) => {
-                draft.name = value
-              }),
-            )
+            canvasDesignerFile.updateMeta((preValue) => ({
+              ...preValue,
+              name: value,
+            }))
           }}
           value={canvasDesignerFile.meta.name}
         />

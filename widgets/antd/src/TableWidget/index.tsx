@@ -62,12 +62,10 @@ export const TableWidget: FC<
 
   // FIXME 修改属性面板fixed需要刷新页面才会生效
   return (
-    <div>
+    <div data-widget-root data-widget-id={instance.widgetId}>
       <ProTable
         scroll={{ x: '100%' }}
         size={size ?? undefined}
-        data-widget-root
-        data-widget-id={instance.widgetId}
         columns={_columns}
         dataSource={isArray(dataSource) ? dataSource : []}
         search={false}

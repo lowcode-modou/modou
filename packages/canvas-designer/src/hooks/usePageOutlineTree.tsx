@@ -9,6 +9,7 @@ import {
   useAppManager,
 } from '@modou/core'
 import { PageFile } from '@modou/meta-vfs'
+import { toJS } from '@modou/reactivity'
 
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
 
@@ -48,7 +49,7 @@ export const usePageOutlineTree = () => {
   const nodeStack: Array<
     | ({ _type: 'widget' } & WidgetBaseProps)
     | ({ _type: 'slot'; path: string; widgetId: string } & WidgetSlot)
-  > = [{ _type: 'widget', ...rootWidget.meta }]
+  > = [{ _type: 'widget', ...toJS(rootWidget.meta) }]
   while (nodeStack.length !== 0) {
     const curNode = nodeStack.pop()!
     if (curNode._type === 'widget') {
@@ -91,7 +92,7 @@ export const usePageOutlineTree = () => {
         curSlot.forEach((widgetId: string) => {
           nodeStack.push({
             _type: 'widget',
-            ...appManager.widgetMap[widgetId]?.meta,
+            ...toJS(appManager.widgetMap[widgetId]?.meta),
           })
           parentTreeNodes.push(curTreeNode)
         })

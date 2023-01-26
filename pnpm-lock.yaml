@@ -52,7 +52,6 @@ importers:
       eslint-plugin-react-hooks: ^4.6.0
       flat: ^5.0.2
       handlebars: ^4.7.7
-      immer: ^9.0.15
       json-schema: ^0.4.0
       lodash: ^4.17.21
       mitt: ^3.0.0
@@ -94,7 +93,6 @@ importers:
       axios: 1.1.3
       flat: 5.0.2
       handlebars: 4.7.7
-      immer: 9.0.15
       json-schema: 0.4.0
       lodash: 4.17.21
       mitt: 3.0.0
@@ -105,7 +103,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-json-view: 1.21.3_rj7ozvcq3uehdlnj3cbwzbi5ce
       react-router-dom: 6.4.2_biqbaboplfbrettd7655fr4n2y
-      reactflow: 11.3.0_rekktpi253ghbdqoi5qfkp32ay
+      reactflow: 11.3.0_biqbaboplfbrettd7655fr4n2y
       ts-pattern: 4.0.5
     devDependencies:
       '@emotion/babel-plugin': 11.10.5
@@ -2831,18 +2829,18 @@ packages:
       - immer
     dev: false
 
-  /@reactflow/background/11.0.5_rekktpi253ghbdqoi5qfkp32ay:
+  /@reactflow/background/11.0.5_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-rQKqD3gCjhsy6tuKkRrSuCgZj66tdfdX6t58d73+84+lud1O3f+vj/JfFZC9ee5ZY4R/5kVzOpKOAPaGQZmhig==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
     dependencies:
       '@babel/runtime': 7.20.7
-      '@reactflow/core': 11.3.0_rekktpi253ghbdqoi5qfkp32ay
+      '@reactflow/core': 11.3.0_biqbaboplfbrettd7655fr4n2y
       classcat: 5.0.4
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      zustand: 4.1.1_immer@9.0.15+react@18.2.0
+      zustand: 4.1.1_react@18.2.0
     transitivePeerDependencies:
       - immer
     dev: false
@@ -2860,14 +2858,14 @@ packages:
       - immer
     dev: false
 
-  /@reactflow/controls/11.0.5_rekktpi253ghbdqoi5qfkp32ay:
+  /@reactflow/controls/11.0.5_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-a8rWtFnEZk7HyWbaWWjsaFssr5q++p9iCKVzuvYUuXFveJwTofRdkjq2nKlrszrMJLNeNZwDi9mYIwVqqds9aQ==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
     dependencies:
       '@babel/runtime': 7.20.7
-      '@reactflow/core': 11.3.0_rekktpi253ghbdqoi5qfkp32ay
+      '@reactflow/core': 11.3.0_biqbaboplfbrettd7655fr4n2y
       classcat: 5.0.4
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -2894,7 +2892,7 @@ packages:
       - immer
     dev: false
 
-  /@reactflow/core/11.3.0_rekktpi253ghbdqoi5qfkp32ay:
+  /@reactflow/core/11.3.0_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-RmxP/Vy7aImu4WfFYcvG25zWJirriMupaz25qX+75jbtakTKZHCTurA7jI6NgubUY1OlwcXqG9surCQgSu6+hQ==}
     peerDependencies:
       react: '>=17'
@@ -2910,7 +2908,7 @@ packages:
       d3-zoom: 3.0.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      zustand: 4.1.1_immer@9.0.15+react@18.2.0
+      zustand: 4.1.1_react@18.2.0
     transitivePeerDependencies:
       - immer
     dev: false
@@ -2933,14 +2931,14 @@ packages:
       - immer
     dev: false
 
-  /@reactflow/minimap/11.2.0_rekktpi253ghbdqoi5qfkp32ay:
+  /@reactflow/minimap/11.2.0_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-CORkxIVI+LNOk1fHRPSwiBFBXglt6gfHU+V5hBzF8ZsOhs0gxgHDTw+2ktvMsRkSKnnT58uPXEvdseksVonI2g==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
     dependencies:
       '@babel/runtime': 7.20.7
-      '@reactflow/core': 11.3.0_rekktpi253ghbdqoi5qfkp32ay
+      '@reactflow/core': 11.3.0_biqbaboplfbrettd7655fr4n2y
       '@types/d3-selection': 3.0.3
       '@types/d3-zoom': 3.0.1
       classcat: 5.0.4
@@ -2948,23 +2946,23 @@ packages:
       d3-zoom: 3.0.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      zustand: 4.1.1_immer@9.0.15+react@18.2.0
+      zustand: 4.1.1_react@18.2.0
     transitivePeerDependencies:
       - immer
     dev: false
 
-  /@reactflow/node-toolbar/1.0.0_rekktpi253ghbdqoi5qfkp32ay:
+  /@reactflow/node-toolbar/1.0.0_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-UP/X7Y9rfPVDEipOPP/MXWOK02+Yzuo3PIEPFDebDtUPDLu5EKeTENKAgpihy/YG5X2Bi2eh5XRs0bc3CsmRiw==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
     dependencies:
       '@babel/runtime': 7.20.7
-      '@reactflow/core': 11.3.0_rekktpi253ghbdqoi5qfkp32ay
+      '@reactflow/core': 11.3.0_biqbaboplfbrettd7655fr4n2y
       classcat: 5.0.4
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      zustand: 4.1.1_immer@9.0.15+react@18.2.0
+      zustand: 4.1.1_react@18.2.0
     transitivePeerDependencies:
       - immer
     dev: false
@@ -9678,10 +9676,6 @@ packages:
       queue: 6.0.1
     dev: true
 
-  /immer/9.0.15:
-    resolution: {integrity: sha512-2eB/sswms9AEUSkOm4SbV5Y7Vmt/bKRwByd52jfLkW4OLYeaTP3EEiJ9agqU0O/tq6Dk62Zfj+TJSqfm1rLVGQ==}
-    dev: false
-
   /immutable/4.1.0:
     resolution: {integrity: sha512-oNkuqVTA8jqG1Q6c+UglTOD1xhC1BtjKI7XkCXRkZHrN5m18/XsnUp8Q89GkQO/z+0WjonSvl0FLhDYftp46nQ==}
     dev: true
@@ -14095,17 +14089,17 @@ packages:
       - immer
     dev: false
 
-  /reactflow/11.3.0_rekktpi253ghbdqoi5qfkp32ay:
+  /reactflow/11.3.0_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-KU3Uwww0hjvF0Er5sA0Qy+e3KPJOn5bLpyxVooyef0MLDk/W5ybCmMvKKnML705GtJWChzHPNzHST5hCf5OflA==}
     peerDependencies:
       react: '>=17'
       react-dom: '>=17'
     dependencies:
-      '@reactflow/background': 11.0.5_rekktpi253ghbdqoi5qfkp32ay
-      '@reactflow/controls': 11.0.5_rekktpi253ghbdqoi5qfkp32ay
-      '@reactflow/core': 11.3.0_rekktpi253ghbdqoi5qfkp32ay
-      '@reactflow/minimap': 11.2.0_rekktpi253ghbdqoi5qfkp32ay
-      '@reactflow/node-toolbar': 1.0.0_rekktpi253ghbdqoi5qfkp32ay
+      '@reactflow/background': 11.0.5_biqbaboplfbrettd7655fr4n2y
+      '@reactflow/controls': 11.0.5_biqbaboplfbrettd7655fr4n2y
+      '@reactflow/core': 11.3.0_biqbaboplfbrettd7655fr4n2y
+      '@reactflow/minimap': 11.2.0_biqbaboplfbrettd7655fr4n2y
+      '@reactflow/node-toolbar': 1.0.0_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     transitivePeerDependencies:
@@ -16508,7 +16502,7 @@ packages:
       use-sync-external-store: 1.2.0
     dev: false
 
-  /zustand/4.1.1_immer@9.0.15+react@18.2.0:
+  /zustand/4.1.1_react@18.2.0:
     resolution: {integrity: sha512-h4F3WMqsZgvvaE0n3lThx4MM81Ls9xebjvrABNzf5+jb3/03YjNTSgZXeyrvXDArMeV9untvWXRw1tY+ntPYbA==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
@@ -16520,7 +16514,6 @@ packages:
       react:
         optional: true
     dependencies:
-      immer: 9.0.15
       react: 18.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false

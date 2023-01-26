@@ -29,7 +29,7 @@ const WidgetBlock: FC<{
       const newWidget: WidgetBaseProps = {
         ...widget,
         id: generateId(),
-        name: `${widget.name}-${generateId(4)}`,
+        name: `${widget.name}_${generateId(4)}`,
       }
       return {
         type: WidgetDragType.Add,

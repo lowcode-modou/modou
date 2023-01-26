@@ -172,7 +172,7 @@ const _CanvasDesignerOutlineTree: FC = () => {
         blockNode
         // onDragEnter={onDragEnter}
         onDrop={onDrop}
-        treeData={[toJS(pageOutlineTree)]}
+        treeData={[pageOutlineTree]}
       />
     </div>
   )

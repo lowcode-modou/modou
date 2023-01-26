@@ -94,10 +94,14 @@ const UOColumnsSetter: FC<
         name: newColumn.title || newColumn.dataIndex,
         children: [],
       }
-      set(widget.meta, 'dynamicSlots', {
-        ...widget.meta.dynamicSlots,
-        [newColumn.dataIndex]: newDynamicSlot,
-      })
+      // {{[{id:1}]}}
+      // widget.meta.dynamicSlots = {
+      //   ...widget.meta.dynamicSlots,
+      //   [newColumn.dataIndex]: newDynamicSlot,
+      // }
+      console.log(' widget.meta', widget.meta)
+      set(widget.meta.dynamicSlots, newColumn.dataIndex, newDynamicSlot)
+      console.log(' widget.meta', widget.meta)
       widget.meta.props.columns.push(newColumn)
     })
     setCurrentColumnIndex(widget.meta.props.columns.length)
