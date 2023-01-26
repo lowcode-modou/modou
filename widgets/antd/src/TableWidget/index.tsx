@@ -47,8 +47,9 @@ export const TableWidget: FC<
         }
       }
       if (c.mappedValue && c.buildIn) {
+        // TODO 支持 v_i 和 v_ri
         res.renderText = (text, record, index) => {
-          return c.mappedValue
+          return text
         }
       }
       if (c.width > 0) {

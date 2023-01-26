@@ -58,31 +58,33 @@ export const ColumnSetting: FC<{
                     }
                   />
                 </Form.Item>
-                <Form.Item label="列类型">
-                  <Select<ColumnValueTypeEnum>
-                    popupClassName={classes.selectPopup}
-                    showSearch
-                    filterOption={(input, option) => {
-                      return (`${option?.label}` ?? '')
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }}
-                    options={Object.entries(ColumnValueTypeLabelMap).map(
-                      ([value, label]) => ({
-                        label,
-                        value,
-                      }),
-                    )}
-                    value={value.valueType}
-                    onChange={(v) =>
-                      onChange({
-                        ...value,
-                        valueType: v,
-                      })
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="匹配值">
+                {value.buildIn && (
+                  <Form.Item label="列类型">
+                    <Select<ColumnValueTypeEnum>
+                      popupClassName={classes.selectPopup}
+                      showSearch
+                      filterOption={(input, option) => {
+                        return (`${option?.label}` ?? '')
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }}
+                      options={Object.entries(ColumnValueTypeLabelMap).map(
+                        ([value, label]) => ({
+                          label,
+                          value,
+                        }),
+                      )}
+                      value={value.valueType}
+                      onChange={(v) =>
+                        onChange({
+                          ...value,
+                          valueType: v,
+                        })
+                      }
+                    />
+                  </Form.Item>
+                )}
+                {/* <Form.Item label="匹配值">
                   <Input
                     value={value.mappedValue}
                     onChange={(e) =>
@@ -92,7 +94,7 @@ export const ColumnSetting: FC<{
                       })
                     }
                   />
-                </Form.Item>
+                </Form.Item> */}
                 <Form.Item label="对齐方式">
                   <Radio.Group
                     onChange={(e) =>

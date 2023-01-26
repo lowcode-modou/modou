@@ -99,9 +99,7 @@ const UOColumnsSetter: FC<
       //   ...widget.meta.dynamicSlots,
       //   [newColumn.dataIndex]: newDynamicSlot,
       // }
-      console.log(' widget.meta', widget.meta)
       set(widget.meta.dynamicSlots, newColumn.dataIndex, newDynamicSlot)
-      console.log(' widget.meta', widget.meta)
       widget.meta.props.columns.push(newColumn)
     })
     setCurrentColumnIndex(widget.meta.props.columns.length)
@@ -109,8 +107,10 @@ const UOColumnsSetter: FC<
   const removeColumn = useMemoizedFn((index: number) => {
     runInAction(() => {
       const toRemovedColumn = widget.meta.props.columns[index]
-      remove(widget.meta.dynamicSlots, toRemovedColumn.dataIndex)
       widget.meta.props.columns.splice(index, 1)
+      setTimeout(() => {
+        remove(widget.meta.dynamicSlots, toRemovedColumn.dataIndex)
+      })
     })
   })
 
