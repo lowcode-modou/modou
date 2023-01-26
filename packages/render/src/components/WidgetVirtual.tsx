@@ -35,6 +35,7 @@ import {
 } from '@modou/state-manager'
 
 import { evalExpression } from '../utils/evaluate'
+import { WidgetErrorBoundary } from './WidgetErrorBoundary'
 
 const _WidgetVirtual: FC<{
   widgetId: string
@@ -128,6 +129,7 @@ const _WidgetVirtual: FC<{
     const stop = reaction(
       () => widgetState.file.flattenedMetaValMap,
       (value, prev) => {
+        // TODO 单个监听flattenedMetaValMap并判断是否已经监听和暂停被删除的监听
         stopExps.forEach((stop) => stop())
         // TODO 需要更加准确的判断需要删除的数组路径
         // 处理 数组 类型的 state 在props删除后不会更新的问题
@@ -206,12 +208,14 @@ const _WidgetVirtual: FC<{
 
   // FIXME 完善组件类型
   return widgetState.state.instance.initialized ? (
-    <WidgetComponent
-      {...toJS(widgetState.state)}
-      updateState={widgetState.updateState}
-      renderSlots={toJS(renderSlots)}
-      renderSlotPaths={toJS(renderSlotPaths)}
-    />
+    <WidgetErrorBoundary widgetId={widgetId} widgetName={widget.meta.name}>
+      <WidgetComponent
+        {...toJS(widgetState.state)}
+        updateState={widgetState.updateState}
+        renderSlots={toJS(renderSlots)}
+        renderSlotPaths={toJS(renderSlotPaths)}
+      />
+    </WidgetErrorBoundary>
   ) : null
 }
 export const WidgetVirtual = observer(_WidgetVirtual)

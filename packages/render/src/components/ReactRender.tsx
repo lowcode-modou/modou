@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@ant-design/pro-components'
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import { FC, useContext } from 'react'
@@ -28,7 +29,9 @@ const _ReactRender: FC<MoDouRenderProps> = (props) => {
         <AppManagerProvider value={appManager}>
           <StateManagerProvider value={stateManager}>
             <CanvasFileContextProvider value={file}>
-              <ReactRenderTolerant {...props} />
+              <ErrorBoundary>
+                <ReactRenderTolerant {...props} />
+              </ErrorBoundary>
             </CanvasFileContextProvider>
           </StateManagerProvider>
         </AppManagerProvider>
