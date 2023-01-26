@@ -1,4 +1,4 @@
-import { useMemoizedFn, useMount } from 'ahooks'
+import { useDebounceFn, useMemoizedFn, useMount } from 'ahooks'
 import { Typography } from 'antd'
 import CodeMirror from 'codemirror'
 import React, { type FC, useEffect, useRef, useState } from 'react'
@@ -48,10 +48,16 @@ const startAutocomplete = (
   })
 }
 
+interface CodeEditorProps {
+  onChange: (value: string) => void
+  value: string
+}
+
 export const CodeEditor: FC<
   {
     hinting?: HintHelper[]
-  } & typeof mock_code_editor_props
+  } & typeof mock_code_editor_props &
+    CodeEditorProps
 > = (_props) => {
   const props: typeof _props = {
     ..._props,
@@ -163,7 +169,7 @@ export const CodeEditor: FC<
       cmRef.current = CodeMirror(cmWrapperRef.current, {
         autoRefresh: true,
         viewportMargin: 10,
-        value: `{{const a = 123}}`,
+        value: props.value,
         mode: CodeEditorModeEnum.TextWithJs,
         tabindex: -1,
         tabSize: 2,
@@ -189,12 +195,29 @@ export const CodeEditor: FC<
     }
   })
 
+  const { run: debounceOnChange } = useDebounceFn(props.onChange, {
+    wait: 300,
+  })
+
   const handleChange = useMemoizedFn(() => {
     if (!cmRef.current) {
       return
     }
     updateMarkings(cmRef.current, [bindingMarker])
+    debounceOnChange(cmRef.current?.getValue())
   })
+
+  useEffect(() => {
+    if (!cmRef.current) {
+      return
+    }
+    const editorValue = cmRef.current.getValue()
+    if (editorValue !== props.value) {
+      cmRef.current.setValue(props.value)
+      // when input gets updated on focus out clear undo/redo from codeMirror History
+      cmRef.current.clearHistory()
+    }
+  }, [props.value])
 
   useEffect(() => {
     cmRef.current?.on('change', handleChange)

@@ -12,6 +12,10 @@ const Demo: FC = () => {
       additionalDynamicData={mock_code_editor_props.additionalDynamicData}
       entityInformation={mock_code_editor_props.entityInformation}
       blockCompletions={mock_code_editor_props.blockCompletions}
+      value={'大漠孤烟直-{{Math.random()}}-长河落日圆'}
+      onChange={(value) => {
+        console.log(value)
+      }}
     />
   )
 }

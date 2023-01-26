@@ -19,8 +19,8 @@ const startServer = (defs: Def[], plugins = {}, scripts?: string[]) => {
   })
 }
 
+const HEAD_EXPRESSION_REG = /^{{((\n|.)*)}}$/
 self.onmessage = (e) => {
-  console.warn('self.onmessage=>', e.data)
   const data = e.data
   switch (data.type) {
     case TernWorkerAction.INIT:
@@ -31,9 +31,15 @@ self.onmessage = (e) => {
       return server.delFile(data.name)
     case TernWorkerAction.REQUEST:
       return server.request(data.body, (err, resData: any) => {
-        const searchVal = last(
-          ((head(e.data.body.files) as { text: string }).text ?? '').split('.'),
-        )
+        let searchVal =
+          last(
+            ((head(e.data.body.files) as { text: string }).text ?? '').split(
+              '.',
+            ),
+          ) ?? ''
+        if (HEAD_EXPRESSION_REG.test(searchVal)) {
+          searchVal = searchVal.match(HEAD_EXPRESSION_REG)?.[1] ?? ''
+        }
         if (resData) {
           resData.completions = resData.completions.filter((item: any) =>
             item.name.includes(searchVal),
@@ -60,9 +66,12 @@ const getFile = (file: string, c: CallbackFn) => {
   pending[nextId] = c
 }
 
+const _consoleLog = self.console.log
 self.console = {
   ...self.console,
-  log(v) {
-    postMessage({ type: TernWorkerAction.DEBUG, message: v })
+  log(...args) {
+    _consoleLog(...args)
+    // TODO 传递全部的args
+    postMessage({ type: TernWorkerAction.DEBUG, message: args[0] })
   },
 }
