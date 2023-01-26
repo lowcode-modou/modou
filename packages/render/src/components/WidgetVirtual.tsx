@@ -1,3 +1,4 @@
+import { useMount } from 'ahooks'
 import {
   get,
   head,
@@ -108,6 +109,20 @@ const _WidgetVirtual: FC<{
       {},
     )
   })()
+  useMount(() => {
+    autorun(() => {
+      console.log('canvasState.subState.widget', {
+        ...mapValues(canvasState.subState.widget, (widget) => {
+          if (isArray(widget)) {
+            // TODO 支持v_ri
+            return widget.map((w) => (w as unknown as WidgetState).state)
+          } else {
+            return widget.state
+          }
+        }),
+      })
+    })
+  })
   useEffect(() => {
     const stopExps: IReactionDisposer[] = []
     const stop = reaction(
@@ -149,6 +164,7 @@ const _WidgetVirtual: FC<{
             }
           } else {
             stopExps.push(
+              // TODO Autorun 不靠谱
               autorun(() => {
                 const newVal = evalExpression(val.evalString, {
                   ...mapValues(canvasState.subState.widget, (widget) => {
@@ -187,6 +203,7 @@ const _WidgetVirtual: FC<{
   //   widgetState.state.instance.initialized,
   //   widgetState.state,
   // )
+
   // FIXME 完善组件类型
   return widgetState.state.instance.initialized ? (
     <WidgetComponent

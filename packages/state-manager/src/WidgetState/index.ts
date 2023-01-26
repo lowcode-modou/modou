@@ -1,4 +1,5 @@
-import { isFunction } from 'lodash'
+import { flatten } from 'flat'
+import { get, isFunction, set } from 'lodash'
 
 import { AppFactory } from '@modou/core'
 import { WidgetFile } from '@modou/meta-vfs'
@@ -37,10 +38,20 @@ export class WidgetState {
   updateState = (
     state: BaseWidgetState | ((oldState: BaseWidgetState) => BaseWidgetState),
   ) => {
+    let _state: BaseWidgetState
     if (isFunction(state)) {
-      this.state = state(this.state)
+      _state = state(this.state)
     } else {
-      this.state = state
+      _state = state
     }
+
+    const fNewState = flatten(_state, { safe: true })
+    const fState: BaseWidgetState = flatten(this.state, { safe: true })
+    Object.entries(fState).forEach(([path, value]) => {
+      const newValue = get(fNewState, path)
+      if (value !== newValue) {
+        set(this.state, path, newValue)
+      }
+    })
   }
 }
