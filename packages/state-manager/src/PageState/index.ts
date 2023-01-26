@@ -1,4 +1,6 @@
-import { PageFile } from '@modou/meta-vfs'
+import { isArray } from 'lodash'
+
+import { PageFile, WidgetFile } from '@modou/meta-vfs'
 import { makeAutoObservable } from '@modou/reactivity'
 
 import { WidgetState } from '../WidgetState'
@@ -25,5 +27,19 @@ export class PageState {
     widget: Record<string, WidgetState | WidgetState[][][]>
   } = {
     widget: {},
+  }
+
+  get subWidgetNameState() {
+    return Object.values(this.subState.widget).reduce<
+      Record<string, WidgetState | WidgetState[][][]>
+    >((prev, cur) => {
+      if (isArray(cur)) {
+        // TODO 暂时支持一级嵌套  v_i 代支持v_ri
+        prev[(cur[0] as unknown as WidgetState).file.meta.name] = cur
+      } else {
+        prev[cur.file.meta.name] = cur
+      }
+      return prev
+    }, {})
   }
 }

@@ -13,8 +13,8 @@ interface Page {
   userPermissions?: string[]
 }
 
-interface DataTreeAppsmith {
-  ENTITY_TYPE: ENTITY_TYPE.APPSMITH
+interface DataTreeMoDou {
+  ENTITY_TYPE: ENTITY_TYPE.MDOUDOU
   user: {
     name: string
     age: number
@@ -28,6 +28,6 @@ export interface WidgetEvalTree extends WidgetBaseProps {
 
 interface DataTreeWidget extends WidgetEvalTree {}
 
-export type DataTreeObjectEntity = DataTreeWidget | DataTreeAppsmith
+export type DataTreeObjectEntity = DataTreeWidget | DataTreeMoDou
 
 export type DataTreeEntity = DataTreeObjectEntity | Page[]

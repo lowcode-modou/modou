@@ -5,7 +5,7 @@ export const mock_dyn_def = {
   '!name': 'DATA_TREE',
   按钮1: {
     '!doc': '我是一个按钮',
-    '!url': 'https://docs.appsmith.com/widget-reference/button',
+    '!url': 'https://docs.modou.com/widget-reference/button',
     isVisible: {
       '!type': 'bool',
       '!doc': 'Boolean value indicating if the widget is in visible state',
@@ -24,16 +24,16 @@ export const mock_dyn_def = {
   Input1: {
     '!doc':
       'An input text field is used to capture a users textual input such as their names, numbers, emails etc. Inputs are used in forms and can have custom validations.',
-    '!url': 'https://docs.appsmith.com/widget-reference/input',
+    '!url': 'https://docs.modou.com/widget-reference/input',
     text: {
       '!type': 'string',
       '!doc': 'The text value of the input',
-      '!url': 'https://docs.appsmith.com/widget-reference/input',
+      '!url': 'https://docs.modou.com/widget-reference/input',
     },
     inputText: {
       '!type': 'string',
       '!doc': 'The unformatted text value of the input',
-      '!url': 'https://docs.appsmith.com/widget-reference/input',
+      '!url': 'https://docs.modou.com/widget-reference/input',
     },
     isValid: 'bool',
     isVisible: {
@@ -45,12 +45,12 @@ export const mock_dyn_def = {
   'Input1.text': {
     '!type': 'string',
     '!doc': 'The text value of the input',
-    '!url': 'https://docs.appsmith.com/widget-reference/input',
+    '!url': 'https://docs.modou.com/widget-reference/input',
   },
   'Input1.inputText': {
     '!type': 'string',
     '!doc': 'The unformatted text value of the input',
-    '!url': 'https://docs.appsmith.com/widget-reference/input',
+    '!url': 'https://docs.modou.com/widget-reference/input',
   },
   'Input1.isValid': 'bool',
   'Input1.isVisible': {
@@ -58,7 +58,7 @@ export const mock_dyn_def = {
     '!doc': 'Boolean value indicating if the widget is in visible state',
   },
   'Input1.isDisabled': 'bool',
-  appsmith: {
+  modou: {
     user: {
       email: 'string',
       workspaceIds: '[string]',
@@ -93,8 +93,7 @@ export const mock_dyn_def = {
       currentPosition: {},
       '!doc':
         "The user's geo location information. Only available when requested",
-      '!url':
-        'https://docs.appsmith.com/v/v1.2.1/framework-reference/geolocation',
+      '!url': 'https://docs.modou.com/v/v1.2.1/framework-reference/geolocation',
       getCurrentPosition:
         'fn(onSuccess: fn() -> void, onError: fn() -> void, options: object) -> void',
       watchPosition: 'fn(options: object) -> void',
@@ -130,9 +129,9 @@ mock_entityInfo.set('Button1', {
   type: 'WIDGET',
   subType: 'BUTTON_WIDGET',
 })
-mock_entityInfo.set('appsmith', {
-  type: 'APPSMITH',
-  subType: 'APPSMITH',
+mock_entityInfo.set('modou', {
+  type: 'MODOU',
+  subType: 'MODOU',
 })
 
 export const mock_code_editor_props = {
@@ -1188,7 +1187,7 @@ export const mock_code_editor_props = {
         ],
       },
     },
-    appsmith: {
+    modou: {
       user: {
         email: 'liuleiytu@gmail.com',
         workspaceIds: ['63a210adcb0c41354d0ff121'],
@@ -1209,9 +1208,9 @@ export const mock_code_editor_props = {
       },
       URL: {
         fullPath:
-          'https://dev.appsmith.com/applications/63a210adcb0c41354d0ff122/pages/63a210adcb0c41354d0ff125/edit',
-        host: 'dev.appsmith.com',
-        hostname: 'dev.appsmith.com',
+          'https://dev.modou.com/applications/63a210adcb0c41354d0ff122/pages/63a210adcb0c41354d0ff125/edit',
+        host: 'dev.modou.com',
+        hostname: 'dev.modou.com',
         queryParams: {},
         protocol: 'https:',
         pathname:
@@ -1240,7 +1239,7 @@ export const mock_code_editor_props = {
           appFont: 'System Default',
         },
       },
-      ENTITY_TYPE: 'APPSMITH',
+      ENTITY_TYPE: 'MODOU',
       __evaluation__: {
         errors: {
           'user.name': [],

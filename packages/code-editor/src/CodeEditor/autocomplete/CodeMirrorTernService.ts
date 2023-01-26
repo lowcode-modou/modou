@@ -269,7 +269,7 @@ class CodeMirrorTernService {
       completions,
       this.fieldEntityInformation,
       this.defEntityInformation.get(
-        this.fieldEntityInformation.entityName || '',
+        this.fieldEntityInformation.entityName ?? '',
       ),
       shouldComputeBestMatch,
     )

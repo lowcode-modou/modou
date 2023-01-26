@@ -61,7 +61,7 @@ export type MarkHelper = (editor: CodeMirror.Editor) => void
 export enum ENTITY_TYPE {
   ACTION = 'ACTION',
   WIDGET = 'WIDGET',
-  APPSMITH = 'APPSMITH',
+  MDOUDOU = 'MDOUDOU',
   JSACTION = 'JSACTION',
 }
 

@@ -169,7 +169,7 @@ const _WidgetVirtual: FC<{
               // TODO Autorun 不靠谱
               autorun(() => {
                 const newVal = evalExpression(val.evalString, {
-                  ...mapValues(canvasState.subState.widget, (widget) => {
+                  ...mapValues(canvasState.subWidgetNameState, (widget) => {
                     if (isArray(widget)) {
                       // TODO 支持v_ri
                       return widget.map(

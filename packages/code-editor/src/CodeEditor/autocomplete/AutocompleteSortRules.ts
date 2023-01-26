@@ -163,7 +163,7 @@ class DataTreeFunctionRule implements AutocompleteRule {
   static threshold = 1 << RuleWeight.DataTreeFunction
   computeScore(completion: Completion): number {
     let score = 0
-    if (!(completion.origin === 'DATA_TREE.APPSMITH.FUNCTIONS')) return score
+    if (!(completion.origin === 'DATA_TREE.MDOUDOU.FUNCTIONS')) return score
     score += DataTreeFunctionRule.threshold
     const rankInSortedList =
       DataTreeFunctionSortOrder.indexOf(completion.text) + 1
