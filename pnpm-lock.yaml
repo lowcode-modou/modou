@@ -344,10 +344,7 @@ importers:
       '@lowcode-modou/zod-to-json-schema': 0.0.19_@lowcode-modou+zod@0.0.14
 
   packages/render:
-    specifiers:
-      '@modou/state-manager': workspace:^0.0.1
-    dependencies:
-      '@modou/state-manager': link:../state-manager
+    specifiers: {}
 
   packages/setters:
     specifiers: {}
