@@ -34,5 +34,6 @@ type Props = BaseSetterProps<string, MRStringSetterType>
 // }
 
 export const StringSetter: FC<Props> = ({ value, onChange, options }) => {
+  // @ts-expect-error
   return <CodeEditor value={value} onChange={onChange} />
 }
