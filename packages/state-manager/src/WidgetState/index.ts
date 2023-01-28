@@ -191,12 +191,19 @@ export class WidgetState {
       _state = state
     }
 
-    const fNewState = flatten(_state, { safe: true })
+    const fNewState: Record<string, any> = flatten(_state, { safe: true })
     const fState: BaseWidgetState = flatten(this.state, { safe: true })
+    // TODO 优化性能
+    // 删除不存在的 props
     Object.entries(fState).forEach(([path, value]) => {
-      const newValue = get(fNewState, path)
-      if (value !== newValue) {
-        set(this.state, path, newValue)
+      if (!Reflect.has(fNewState, path)) {
+        Reflect.deleteProperty(fState, path)
+      }
+    })
+    Object.entries(fNewState).forEach(([path, value]) => {
+      const oldValue = get(fState, path)
+      if (value !== oldValue) {
+        set(this.state, path, value)
       }
     })
   }

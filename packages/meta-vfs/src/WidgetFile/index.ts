@@ -5,7 +5,7 @@ import {
   baseParse,
 } from '@vue/compiler-core'
 import { flatten } from 'flat'
-import { head, mapValues, omit } from 'lodash'
+import { head, last, mapValues, omit } from 'lodash'
 
 import { AssetVFS } from '@modou/asset-vfs'
 import { WidgetBaseProps } from '@modou/core'
@@ -72,18 +72,35 @@ export class WidgetFile<
       flatten(toJS(this.meta.props)),
       (value) => {
         if (isExpression(value)) {
+          // TODO 替换 baseParse 因为{{{name:'小明'}}} 解析失败
           const ast = baseParse(value)
           let evalString: string
           if (
-            ast.children.length === 1 &&
-            // @ts-expect-error
-            head(ast.children)?.type === ParseNodeTypes.INTERPOLATION
+            (ast.children.length === 1 &&
+              // @ts-expect-error
+              head(ast.children)?.type === ParseNodeTypes.INTERPOLATION) ||
+            (ast.children.length === 2 &&
+              // @ts-expect-error
+              head(ast.children)?.type === ParseNodeTypes.INTERPOLATION &&
+              // @ts-expect-error
+              last(ast.children)?.type === ParseNodeTypes.TEXT &&
+              (last(ast.children) as unknown as TextNode)?.content.trim() ===
+                '}')
           ) {
             evalString =
               (
                 (head(ast.children) as unknown as InterpolationNode)
                   ?.content as unknown as SimpleExpressionNode
               ).content || ''
+            if (
+              // @ts-expect-error
+              last(ast.children)?.type === ParseNodeTypes.TEXT &&
+              (last(ast.children) as unknown as TextNode)?.content.trim() ===
+                '}'
+            ) {
+              evalString +=
+                (last(ast.children) as unknown as TextNode)?.content ?? ''
+            }
           } else {
             evalString = `\`${ast.children
               .map((item) => {

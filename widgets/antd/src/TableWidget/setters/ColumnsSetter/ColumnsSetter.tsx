@@ -215,7 +215,18 @@ const UOColumnsSetter: FC<
     const res = await quicktypeJSON(
       'JSON Schema',
       'Root',
-      JSON.stringify(MOCK_TABLE_DATA.data),
+      JSON.stringify([
+        {
+          name: '张三',
+          age: 20,
+          sex: '男',
+        },
+        {
+          name: '李四',
+          age: 50,
+          sex: '女',
+        },
+      ]),
     )
     const scheme: JSONSchema7 = JSON.parse(res.lines.join('\n'))
 

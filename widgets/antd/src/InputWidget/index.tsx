@@ -6,13 +6,13 @@ import { MRSchemeInputWidgetState } from './metadata'
 
 export const InputWidget: FC<
   InferWidgetState<typeof MRSchemeInputWidgetState>
-> = ({ defaultValue, label, instance, value, updateState }) => {
+> = ({ defaultValue, label, instance, name, updateState }) => {
   useEffect(() => {
     console.log('我是Input 我重新渲染了')
   })
   return (
     <ProFormText
-      name="name"
+      name={name}
       key={instance.widgetId}
       label={label}
       formItemProps={{
@@ -23,6 +23,7 @@ export const InputWidget: FC<
       fieldProps={{
         defaultValue,
         onChange: (e) => {
+          // TODO 执行流的时候监听表单值的变化替代onChange
           updateState((prev) => ({
             ...prev,
             value: e.target.value,

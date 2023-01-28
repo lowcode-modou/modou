@@ -17,6 +17,9 @@ export const MRSchemeFormWidgetProps = WidgetMetadata.createMRWidgetProps({
         textArea: true,
       },
     },
+    data: {
+      def: mr.object({}).default({}),
+    },
     readonly: {
       def: mr.boolean().default(false),
       setter: {

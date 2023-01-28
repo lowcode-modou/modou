@@ -16,6 +16,14 @@ export const MRSchemeInputWidgetProps = WidgetMetadata.createMRWidgetProps({
         description: '标签的文本',
       },
     },
+    name: {
+      def: mr.string().default(''),
+      setter: {
+        type: SetterTypeEnum.String,
+        label: '字段名称',
+        description: '字段名称',
+      },
+    },
     defaultValue: {
       def: mr.string().default(''),
       setter: {
