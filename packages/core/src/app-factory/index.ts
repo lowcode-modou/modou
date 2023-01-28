@@ -1,6 +1,7 @@
 import { isEqual, unionWith } from 'lodash'
 import { FC } from 'react'
 
+import { mrToJsonSchema, schemeToDefs } from '@modou/refine'
 import { BaseSetterProps } from '@modou/setters/src/types'
 
 import { WidgetGroupEnum } from '../types'
@@ -13,7 +14,11 @@ interface Widget {
   group: WidgetGroupEnum
 }
 
-type WidgetRegistry = Record<string, Widget>
+// TODO 完善 stateTypeDefs 类型
+type WidgetRegistry = Record<
+  string,
+  Widget & { stateTypeDefs: Record<string, any> }
+>
 
 type SetterElement = FC<BaseSetterProps<any>>
 
@@ -33,6 +38,7 @@ export class AppFactory {
     ).reduce<WidgetRegistry>((pre, cur) => {
       pre[cur.metadata.type] = {
         ...cur,
+        stateTypeDefs: schemeToDefs(mrToJsonSchema(cur.metadata.mrStateScheme)),
       }
       return pre
     }, {})

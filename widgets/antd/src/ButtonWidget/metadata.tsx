@@ -118,6 +118,7 @@ export const buttonWidgetMetadata = WidgetMetadata.createMetadata({
   icon: <WidgetIcon type="button" />,
   mrPropsScheme: MRSchemeButtonWidgetProps,
   mrStateScheme: MRSchemeButtonWidgetState,
+  // mrStateTypeDef:
   slots: {},
   setters: {},
 })

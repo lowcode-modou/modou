@@ -20,7 +20,12 @@ import {
 import { bindingHint } from './common/hintHelpers'
 import { bindingMarker } from './common/mark-helpers'
 import './common/modes'
-import { mock_code_editor_props, mock_dyn_def, mock_entityInfo } from './mock'
+import {
+  mock_code_editor_props,
+  mock_dyn_def,
+  mock_dyn_def_1,
+  mock_entityInfo,
+} from './mock'
 
 // export type CodeEditorExpected = {
 //   type: string
@@ -244,6 +249,14 @@ export const CodeEditor: FC<
         mock_entityInfo,
       )
     })
+
+    // setTimeout(() => {
+    //   CodeMirrorTernServiceInstance.updateDef(
+    //     'DATA_TREE',
+    //     mock_dyn_def_1,
+    //     mock_entityInfo,
+    //   )
+    // }, 5000)
   })
   // mock end
 
@@ -385,9 +398,9 @@ injectGlobal`
       }
 
       &::before {
-        position: static;
-        margin-right: 4px;
-        border-radius: 100%;
+        position: static!important;
+        margin-right: 4px!important;
+        border-radius: 100% !important;
       }
 
       &:hover {

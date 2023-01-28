@@ -9,7 +9,7 @@ import { useMemoizedFn, useMount, useUpdate } from 'ahooks'
 import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { JSONSchema7 } from 'json-schema'
-import { isBoolean } from 'lodash'
+import { isBoolean, isEmpty } from 'lodash'
 import {
   InputData,
   jsonInputForTargetLanguage,
@@ -19,7 +19,7 @@ import { FC, HTMLAttributes, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { mcss, useTheme } from '@modou/css-in-js'
-import { remove, runInAction, set, toJS } from '@modou/reactivity'
+import { remove, runInAction, toJS } from '@modou/reactivity'
 import { Observer, observer } from '@modou/reactivity-react'
 import { BaseWidgetSetterProps } from '@modou/setters/src/types'
 
@@ -99,10 +99,11 @@ const UOColumnsSetter: FC<
       //   ...widget.meta.dynamicSlots,
       //   [newColumn.dataIndex]: newDynamicSlot,
       // }
-      set(widget.meta.dynamicSlots, newColumn.dataIndex, newDynamicSlot)
+      // 销毁被删除组件的 state 按钮-{{表格_hcep.size}}
+      widget.meta.dynamicSlots[newColumn.dataIndex] = newDynamicSlot
       widget.meta.props.columns.push(newColumn)
     })
-    setCurrentColumnIndex(widget.meta.props.columns.length)
+    setCurrentColumnIndex(widget.meta.props.columns.length - 1)
   })
   const removeColumn = useMemoizedFn((index: number) => {
     runInAction(() => {
@@ -118,7 +119,9 @@ const UOColumnsSetter: FC<
     setCurrentColumnIndex(index)
   }
 
-  const currentColumn = widget.meta.props.columns[currentColumnIndex]
+  const currentColumn = isEmpty(widget.meta.props.columns)
+    ? ({} as unknown as TableWidgetColumn)
+    : widget.meta.props.columns[currentColumnIndex]
   const updateCurrentColumn = useMemoizedFn((newColumn: TableWidgetColumn) => {
     runInAction(() => {
       widget.meta.props.columns[currentColumnIndex] = newColumn

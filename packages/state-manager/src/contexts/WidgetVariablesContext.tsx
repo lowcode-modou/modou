@@ -1,6 +1,6 @@
 import { FC, ReactNode, createContext, useContext } from 'react'
 
-interface WidgetVariables {
+export interface WidgetVariables {
   i?: number
 }
 

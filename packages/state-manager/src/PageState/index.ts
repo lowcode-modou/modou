@@ -1,7 +1,7 @@
 import { isArray } from 'lodash'
 
-import { PageFile, WidgetFile } from '@modou/meta-vfs'
-import { makeAutoObservable } from '@modou/reactivity'
+import { PageFile } from '@modou/meta-vfs'
+import { computed, makeObservable, observable } from '@modou/reactivity'
 
 import { WidgetState } from '../WidgetState'
 
@@ -12,7 +12,12 @@ export class PageState {
       id: file.meta.id,
       name: file.meta.name,
     }
-    makeAutoObservable(this)
+    makeObservable(this, {
+      file: observable,
+      state: observable,
+      subState: observable,
+      subWidgetNameState: computed.struct,
+    })
   }
 
   file: PageFile
@@ -22,6 +27,7 @@ export class PageState {
     name: string
   }
 
+  // TODO 组件销毁的时候删除subState
   subState: {
     // TODO 动态定义WidgetState[][][]类型
     widget: Record<string, WidgetState | WidgetState[][][]>

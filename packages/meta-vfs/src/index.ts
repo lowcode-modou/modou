@@ -1,7 +1,7 @@
 import { configure } from '@modou/reactivity'
 
 configure({
-  useProxies: 'never',
+  useProxies: 'always',
   enforceActions: 'always',
   // computedRequiresReaction: true,
   // observableRequiresReaction: true,
