@@ -85,7 +85,7 @@ export const CodeEditor: FC<
     if (!cm.state.completionActive) {
       CodeMirrorTernServiceInstance.updateDef(
         'DATA_TREE',
-        props.getDataTreeDefs() as unknown as Def,
+        props.getDataTreeDefs?.() as unknown as Def,
         mock_entityInfo,
       )
       updateCustomDef(props.additionalDynamicData)
@@ -250,7 +250,7 @@ export const CodeEditor: FC<
     setTimeout(() => {
       CodeMirrorTernServiceInstance.updateDef(
         'DATA_TREE',
-        props.getDataTreeDefs() as unknown as Def,
+        props.getDataTreeDefs?.() as unknown as Def,
         mock_entityInfo,
       )
     })

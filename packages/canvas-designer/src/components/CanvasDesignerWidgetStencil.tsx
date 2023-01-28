@@ -76,20 +76,36 @@ const WidgetBlock: FC<{
           backgroundColor: 'rgba(0,0,0,.04)',
         }}
       >
-        <div className={classes.previewWidgetIcon}>{metadata.icon}</div>
-        <div>{metadata.name}</div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div className={classes.previewWidgetIcon}>{metadata.icon}</div>
+          <div>{metadata.name}</div>
+        </div>
       </Card>
       <Card
         ref={drag}
         size="small"
         className={classes.widget}
         bodyStyle={{
-          padding: '8px 0',
           backgroundColor: 'rgba(0,0,0,.04)',
+          padding: '4px 8px',
         }}
       >
-        <div className={classes.widgetIcon}>{metadata.icon}</div>
-        <div>{metadata.name}</div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div>{metadata.name}</div>
+          <div className={classes.widgetIcon}>{metadata.icon}</div>
+        </div>
       </Card>
     </Col>
   )
