@@ -3,7 +3,7 @@ import { FC, useContext, useEffect } from 'react'
 import * as React from 'react'
 
 import { AppFactoryContext, useAppManager } from '@modou/core'
-import { toJS } from '@modou/reactivity'
+import { runInAction, toJS } from '@modou/reactivity'
 import { observer, useLocalObservable } from '@modou/reactivity-react'
 import {
   WidgetState,
@@ -62,10 +62,12 @@ const _WidgetVirtual: FC<{
           {},
         )
       },
-      widgetState: new WidgetState(widget, {
-        appFactory,
-        widgetVariables,
-        canvasState,
+      widgetState: runInAction(() => {
+        return new WidgetState(widget, {
+          appFactory,
+          widgetVariables,
+          canvasState,
+        })
       }),
     }
   })
@@ -76,10 +78,12 @@ const _WidgetVirtual: FC<{
 
   useMount(() => {
     // TODO 判断parent subFile存在不再重新生成
-    localState.widgetState = new WidgetState(widget, {
-      appFactory,
-      widgetVariables,
-      canvasState,
+    runInAction(() => {
+      localState.widgetState = new WidgetState(widget, {
+        appFactory,
+        widgetVariables,
+        canvasState,
+      })
     })
   })
 

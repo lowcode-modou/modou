@@ -24,14 +24,13 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
   const { canvasDesignerFile } = useCanvasDesignerFile()
   const widget = canvasDesignerFile.widgetMap[widgetId]
   const widgetFactory = useContext(AppFactoryContext)
-  const widgetMetadata = useMemo(() => {
-    return widgetFactory.widgetByType[widget.meta.type].metadata
+  const { metadata: widgetMetadata } = useMemo(() => {
+    return widgetFactory.widgetByType[widget.meta.type]
   }, [widgetFactory.widgetByType, widget.meta.type])
   const propsDef = (
     widgetMetadata.jsonPropsSchema.properties
       .props as unknown as typeof widgetMetadata.jsonPropsSchema
   ).properties
-
   const formRender = Object.entries(propsDef)
     .filter(([, value]) => Reflect.has(value, SETTER_KEY))
     .map(([key, value]) => {
@@ -51,6 +50,7 @@ const useRenderFormItem = ({ widgetId }: { widgetId: string }) => {
             <Setter
               options={setterOptions}
               value={toJS(widget.meta.props[key])}
+              getDataTreeDefs={canvasDesignerFile.getWidgetStateDefs}
               onChange={(value: any) => {
                 widget.updateMeta((preValue) => ({
                   ...preValue,

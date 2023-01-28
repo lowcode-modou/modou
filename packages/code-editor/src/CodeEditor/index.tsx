@@ -1,9 +1,11 @@
 import { useDebounceFn, useMemoizedFn, useMount } from 'ahooks'
 import CodeMirror from 'codemirror'
 import React, { type FC, useEffect, useRef, useState } from 'react'
+import { Def } from 'tern'
 
 // import { ExpectedValueExample } from '@modou/code-editor/CodeEditor/utils/validation/common'
 import { injectGlobal, mcss } from '@modou/css-in-js'
+import { MDTernDefs } from '@modou/refine'
 
 import { CodeMirrorTernServiceInstance } from './autocomplete/CodeMirrorTernService'
 import { updateCustomDef } from './autocomplete/customDefUtils'
@@ -20,12 +22,7 @@ import {
 import { bindingHint } from './common/hintHelpers'
 import { bindingMarker } from './common/mark-helpers'
 import './common/modes'
-import {
-  mock_code_editor_props,
-  mock_dyn_def,
-  mock_dyn_def_1,
-  mock_entityInfo,
-} from './mock'
+import { mock_code_editor_props, mock_entityInfo } from './mock'
 
 // export type CodeEditorExpected = {
 //   type: string
@@ -51,6 +48,7 @@ const startAutocomplete = (
 interface CodeEditorProps {
   onChange: (value: string) => void
   value: string
+  getDataTreeDefs?: () => MDTernDefs
 }
 
 export const CodeEditor: FC<
@@ -61,6 +59,7 @@ export const CodeEditor: FC<
 > = (_props) => {
   const props: typeof _props = {
     ..._props,
+    getDataTreeDefs: _props.getDataTreeDefs ?? (() => ({})),
     hinting: _props.hinting ?? [bindingHint],
     ...mock_code_editor_props,
   }
@@ -68,10 +67,10 @@ export const CodeEditor: FC<
   const cmRef = useRef<CodeMirror.Editor | null>(null)
   const hintersRef = useRef<Hinter[] | null>(null)
 
-  const [isFocused, setaIsFocused] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
 
   const handleEditorFocus = useMemoizedFn((cm: CodeMirror.Editor) => {
-    setaIsFocused(true)
+    setIsFocused(true)
     const { ch, line, sticky } = cm.getCursor()
     // Check if it is a user focus
     if (
@@ -84,6 +83,11 @@ export const CodeEditor: FC<
     }
 
     if (!cm.state.completionActive) {
+      CodeMirrorTernServiceInstance.updateDef(
+        'DATA_TREE',
+        props.getDataTreeDefs() as unknown as Def,
+        mock_entityInfo,
+      )
       updateCustomDef(props.additionalDynamicData)
 
       const entityInformation = props.entityInformation
@@ -103,7 +107,7 @@ export const CodeEditor: FC<
     // }
   })
   const handleEditorBlur = useMemoizedFn(() => {
-    setaIsFocused(false)
+    setIsFocused(false)
   })
 
   const handleAutocompleteVisibility = useMemoizedFn(
@@ -165,6 +169,7 @@ export const CodeEditor: FC<
     if (!cmWrapperRef.current) {
       return
     }
+
     if (!cmRef.current) {
       cmRef.current = CodeMirror(cmWrapperRef.current, {
         autoRefresh: true,
@@ -227,8 +232,8 @@ export const CodeEditor: FC<
     return () => {
       cmRef.current?.off('change', handleChange)
       cmRef.current?.off('keyup', handleAutocompleteKeyup)
-      cmRef.current?.on('focus', handleEditorFocus)
-      cmRef.current?.on('blur', handleEditorBlur)
+      cmRef.current?.off('focus', handleEditorFocus)
+      cmRef.current?.off('blur', handleEditorBlur)
     }
   }, [
     handleAutocompleteKeyup,
@@ -245,7 +250,7 @@ export const CodeEditor: FC<
     setTimeout(() => {
       CodeMirrorTernServiceInstance.updateDef(
         'DATA_TREE',
-        mock_dyn_def,
+        props.getDataTreeDefs() as unknown as Def,
         mock_entityInfo,
       )
     })
@@ -340,11 +345,11 @@ const classes = {
   `,
 }
 
-const evaluatedClasses = {
-  wrapper: mcss`
-    border: 1px solid green;
-  `,
-}
+// const evaluatedClasses = {
+//   wrapper: mcss`
+//     border: 1px solid green;
+//   `,
+// }
 
 injectGlobal`
   .CodeMirror{

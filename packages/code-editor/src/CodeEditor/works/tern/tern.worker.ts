@@ -31,20 +31,20 @@ self.onmessage = (e) => {
       return server.delFile(data.name)
     case TernWorkerAction.REQUEST:
       return server.request(data.body, (err, resData: any) => {
-        // let searchVal =
-        //   last(
-        //     ((head(e.data.body.files) as { text: string }).text ?? '').split(
-        //       '.',
-        //     ),
-        //   ) ?? ''
-        // if (HEAD_EXPRESSION_REG.test(searchVal)) {
-        //   searchVal = searchVal.match(HEAD_EXPRESSION_REG)?.[1] ?? ''
-        // }
-        // if (resData) {
-        //   resData.completions = resData.completions.filter((item: any) =>
-        //     item.name.includes(searchVal),
-        //   )
-        // }
+        let searchVal =
+          last(
+            ((head(e.data.body.files) as { text: string }).text ?? '').split(
+              '.',
+            ),
+          ) ?? ''
+        if (HEAD_EXPRESSION_REG.test(searchVal)) {
+          searchVal = searchVal.match(HEAD_EXPRESSION_REG)?.[1] ?? ''
+        }
+        if (resData) {
+          resData.completions = resData.completions.filter((item: any) =>
+            item.name.includes(searchVal),
+          )
+        }
         postMessage({ id: data.id, body: resData, err: err && String(err) })
       })
     case TernWorkerAction.GET_FILE: {

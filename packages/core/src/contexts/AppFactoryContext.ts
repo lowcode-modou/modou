@@ -1,5 +1,6 @@
 import { createContext, memo } from 'react'
 
+import { AssetVFS } from '@modou/asset-vfs'
 import {
   ArraySetter,
   BooleanSetter,
@@ -70,5 +71,5 @@ export const defaultAppFactory = AppFactory.create({
     [SetterTypeEnum.Array]: ArraySetter,
   },
 })
-
-export const AppFactoryContext = createContext<AppFactory>(defaultAppFactory)
+const assetVFS = new AssetVFS({ appFactory: defaultAppFactory })
+export const AppFactoryContext = createContext<AppFactory>(assetVFS.appFactory)

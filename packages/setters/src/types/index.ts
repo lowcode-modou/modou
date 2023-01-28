@@ -1,6 +1,6 @@
 import { WidgetBaseProps } from '@modou/core'
 import { WidgetFile, WidgetFileMeta } from '@modou/meta-vfs'
-import { MRType } from '@modou/refine'
+import { MDTernDefs, MRType } from '@modou/refine'
 
 import { SETTER_KEY, SetterTypeEnum } from '../constants'
 
@@ -18,6 +18,7 @@ export interface BaseSetterProps<T, O = any> {
   value: T
   onChange: (value: T) => void
   options?: O
+  getDataTreeDefs?: () => MDTernDefs
 }
 
 export interface BaseWidgetSetterProps<T extends WidgetBaseProps> {

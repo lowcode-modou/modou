@@ -8,6 +8,7 @@ import {
   observable,
   runInAction,
 } from '@modou/reactivity'
+import { MDTernDefs } from '@modou/refine'
 
 import { AppFile } from '../AppFile'
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
@@ -88,6 +89,27 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       }
       return pre
     }, {})
+  }
+
+  getWidgetStateDefs = () => {
+    const DEFINE_KEY = '!define'
+    // @ts-expect-error
+    const defs: MDTernDefs = {
+      '!name': 'DATA_TREE',
+      [DEFINE_KEY]: {},
+    }
+    this.subFileMap.widgets.forEach((widget) => {
+      Reflect.set(
+        defs,
+        widget.meta.name,
+        omit(widget.stateTypeDefs, DEFINE_KEY),
+      )
+      defs[DEFINE_KEY] = {
+        ...defs[DEFINE_KEY],
+        ...widget.stateTypeDefs[DEFINE_KEY],
+      }
+    })
+    return defs
   }
 
   addWidget({

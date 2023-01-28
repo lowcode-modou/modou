@@ -25,7 +25,7 @@ export type MRDefault<T extends MRTypeAny> = ZodDefault<T>
 export { default as mrToJsonSchema } from '@lowcode-modou/zod-to-json-schema'
 
 export { schemeToJsonDefault } from './scheme-to-json-default'
-export { schemeToDefs } from './scheme-to-defs'
+export { schemeToDefs, type MDTernDefs } from './scheme-to-defs'
 
 export type { JsonSchema7Type } from '@lowcode-modou/zod-to-json-schema/src/parseDef'
 export type { JsonSchema7ObjectType } from '@lowcode-modou/zod-to-json-schema/src/parsers/object'

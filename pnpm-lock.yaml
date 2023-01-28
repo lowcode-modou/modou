@@ -12,6 +12,7 @@ importers:
       '@ant-design/icons': ^5.0.1
       '@ant-design/pro-components': ^2.3.52
       '@emotion/babel-plugin': ^11.10.5
+      '@modou/asset-vfs': workspace:^1.0.0
       '@modou/code-editor': workspace:^1.0.0
       '@modou/compile-core': workspace:^0.0.1
       '@modou/core': workspace:^1.0.0
@@ -73,6 +74,7 @@ importers:
     dependencies:
       '@ant-design/icons': 5.0.1_biqbaboplfbrettd7655fr4n2y
       '@ant-design/pro-components': 2.3.52_6pxft4cxqls2twurebs67c4zfy
+      '@modou/asset-vfs': link:packages/asset-vfs
       '@modou/code-editor': link:packages/code-editor
       '@modou/compile-core': link:packages/compiler-core
       '@modou/core': link:packages/core

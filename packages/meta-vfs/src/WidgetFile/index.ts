@@ -7,6 +7,7 @@ import {
 import { flatten } from 'flat'
 import { head, mapValues, omit } from 'lodash'
 
+import { AssetVFS } from '@modou/asset-vfs'
 import { WidgetBaseProps } from '@modou/core'
 import { isExpression } from '@modou/evaluate'
 import {
@@ -53,6 +54,10 @@ export class WidgetFile<
 > extends BaseFile<{}, WidgetFileMeta<T>, PageFile> {
   protected constructor(meta: WidgetFileMeta<T>, parentFile: PageFile) {
     super({ fileType: FileTypeEnum.Widget, meta, parentFile })
+    const assetVFS = new AssetVFS({} as any)
+
+    this.stateTypeDefs =
+      assetVFS.appFactory.widgetByType[meta.type].stateTypeDefs
     makeObservable(this, {
       subFileMap: observable,
       // depMap: computed.struct,
@@ -61,6 +66,7 @@ export class WidgetFile<
     })
   }
 
+  stateTypeDefs: Record<string, any>
   get flattenedMetaValMap(): Record<MetaPath, MetaVal> {
     return mapValues<typeof this.meta.props, MetaVal>(
       flatten(toJS(this.meta.props)),

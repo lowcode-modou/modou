@@ -91,6 +91,7 @@ export class WidgetState {
         () => this.file.flattenedMetaValMap,
         (value, prev) => {
           // TODO 单个监听flattenedMetaValMap并判断是否已经监听和暂停被删除的监听
+          // TODO 重新执行initState 并 diff
           stopExps.forEach((stop) => stop())
           // TODO 需要更加准确的判断需要删除的数组路径
           // 处理 数组 类型的 state 在props删除后不会更新的问题
@@ -151,7 +152,9 @@ export class WidgetState {
               )
             }
             // TODO 如果是异步的 expression 如何处理
-            this.state.instance.initialized = true
+            runInAction(() => {
+              this.state.instance.initialized = true
+            })
           })
         },
         {
@@ -162,8 +165,10 @@ export class WidgetState {
     this.disposer = () => {
       stop()
       stopAutoRun()
-      // TODO 处理 v_i 和 v_ri
-      remove(canvasState.subState.widget, this.file.meta.id)
+      runInAction(() => {
+        // TODO 处理 v_i 和 v_ri
+        remove(canvasState.subState.widget, this.file.meta.id)
+      })
     }
   }
 
