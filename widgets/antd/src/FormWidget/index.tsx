@@ -19,6 +19,7 @@ export const FormWidget: FC<
   renderSlotPaths,
   updateState,
 }) => {
+  // TODO 删除 表单项的时候 删除更新表单状态
   const [form] = ProForm.useForm<Record<string, any>>()
 
   const updateFormFields = useMemoizedFn((formFields: Record<string, any>) => {
