@@ -40,7 +40,7 @@ export const TableWidget: FC<
         }
         res.render = (val, record, index) => {
           return (
-            <WidgetVariablesProvider value={{ i: index }}>
+            <WidgetVariablesProvider value={{ i: index, currentRow: record }}>
               {Reflect.get(renderSlots, c.dataIndex)}
             </WidgetVariablesProvider>
           )

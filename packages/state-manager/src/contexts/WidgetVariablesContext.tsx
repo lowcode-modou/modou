@@ -2,6 +2,7 @@ import { FC, ReactNode, createContext, useContext } from 'react'
 
 export interface WidgetVariables {
   i?: number
+  currentRow?: Record<string, any>
 }
 
 export const DEFAULT_WIDGET_VARIABLES: WidgetVariables = {}

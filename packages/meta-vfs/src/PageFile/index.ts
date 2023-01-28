@@ -93,10 +93,18 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
 
   getWidgetStateDefs = () => {
     const DEFINE_KEY = '!define'
-    // @ts-expect-error
     const defs: MDTernDefs = {
       '!name': 'DATA_TREE',
       [DEFINE_KEY]: {},
+      // @ts-expect-error
+      i: {
+        '!type': 'number',
+        '!doc': '组件当前所在上下文的层级',
+      },
+      // TODO 只有表格下面的组件才加currentRow
+      currentRow: {
+        '!doc': '当前行数据',
+      },
     }
     this.subFileMap.widgets.forEach((widget) => {
       Reflect.set(
