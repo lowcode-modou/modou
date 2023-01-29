@@ -72,7 +72,7 @@
     "react-dom": "^18.2.0",
     "react-json-view": "^1.21.3",
     "react-router-dom": "^6.3.0",
-    "reactflow": "^11.3.0",
+    "reactflow": "^11.5.1",
     "ts-pattern": "^4.0.5"
   },
   "config": {

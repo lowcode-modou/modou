@@ -5,6 +5,7 @@ import { mock_code_editor_props } from '@modou/code-editor/CodeEditor/mock'
 
 const Demo: FC = () => {
   return (
+    // @ts-expect-error
     <CodeEditor
       // datasources={mock_code_editor_props.datasources}
       // dynamicData={mock_code_editor_props.dynamicData}
