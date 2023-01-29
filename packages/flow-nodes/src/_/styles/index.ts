@@ -9,25 +9,16 @@ export const nodeClasses = {
   //   letter-spacing: -0.2px;
   //   box-shadow: var(--node-box-shadow);
   // `,
-  wrapper: mcss`
-    border: 1px solid red;
-    border-radius: 8px;
-    //height: 40px;
-    width: 300px;
-  `,
-  wrapperHeader: mcss`
-    background-color: #888888;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-  `,
-  wrapperBody: mcss`
-    background-color: #747bff;
-    padding: 16px;
-  `,
   nodeTargetPort: mcss`
     background-color: #535bf2;
+    height: 10px;
+    width: 10px;
+    &.react-flow__handle-left{
+      left: -12px;
+    }
+    &.react-flow__handle-top{
+      top: -12px;
+    }
   `,
   nodeSourcePort: mcss`
     background-color: seagreen;

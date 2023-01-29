@@ -1,45 +1,19 @@
 import { type FC, memo } from 'react'
-import { Handle, NodeProps, Position } from 'reactflow'
+import { NodeProps } from 'reactflow'
 
-import { cx, mcss } from '@modou/css-in-js'
+import { FlowNodeHandles } from '../_/components/FlowNodeHandles'
+import { FlowNodeWrapper } from '../_/components/FlowNodeWrapper'
+import { FlowNodeProps } from '../_/types'
+import { startNodeMetadata } from './metadata'
 
-import { nodeClasses } from '../_/styles'
-
-const _StartNode: FC<NodeProps<any>> = ({ isConnectable }) => {
+const _StartNode: FC<NodeProps<FlowNodeProps>> = (props) => {
   return (
     <>
-      <div className={cx(nodeClasses.wrapper)}>
-        <div className={nodeClasses.wrapperHeader}>Wrapper Header</div>
-        <div className={nodeClasses.wrapperBody}>Wrapper Body</div>
-      </div>
-      <Handle
-        className={nodeClasses.nodeSourcePort}
-        type="source"
-        position={Position.Right}
-        id="output"
-        isConnectable={isConnectable}
-      />
-      <Handle
-        className={nodeClasses.nodeSourcePort}
-        type="source"
-        position={Position.Bottom}
-        id="output1"
-        isConnectable={isConnectable}
-      />
-      <Handle
-        className={nodeClasses.nodeSourcePort}
-        type="source"
-        position={Position.Bottom}
-        id="output2"
-        style={{ left: 10 }}
-        isConnectable={isConnectable}
-      />
+      <FlowNodeWrapper meta={startNodeMetadata} node={props} />
+      <FlowNodeHandles {...props} />
     </>
   )
 }
 export const StartNode = memo(_StartNode)
 
-const classes = {
-  wrapper: mcss`
-  `,
-}
+const classes = {}

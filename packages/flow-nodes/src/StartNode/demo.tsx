@@ -1,10 +1,10 @@
 import { FC } from 'react'
 
-import { StartNode } from '@modou/flow-nodes'
+import { StartNode, startNodeMetadata } from '@modou/flow-nodes'
 
 import { FlowCanvas } from '../_/components/FlowCanvas'
 
 const Demo: FC = () => {
-  return <FlowCanvas flowNode={StartNode} />
+  return <FlowCanvas flowNode={StartNode} meta={startNodeMetadata} />
 }
 export default Demo

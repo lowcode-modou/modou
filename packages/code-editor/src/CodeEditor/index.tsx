@@ -49,6 +49,7 @@ interface CodeEditorProps {
   onChange: (value: string) => void
   value: string
   getDataTreeDefs?: () => MDTernDefs
+  mode: CodeEditorModeEnum
 }
 
 export const CodeEditor: FC<
@@ -59,6 +60,7 @@ export const CodeEditor: FC<
 > = (_props) => {
   const props: typeof _props = {
     ..._props,
+    mode: _props.mode || CodeEditorModeEnum.TextWithJs,
     getDataTreeDefs: _props.getDataTreeDefs ?? (() => ({})),
     hinting: _props.hinting ?? [bindingHint],
     ...mock_code_editor_props,
@@ -175,7 +177,7 @@ export const CodeEditor: FC<
         autoRefresh: true,
         viewportMargin: 10,
         value: props.value,
-        mode: CodeEditorModeEnum.TextWithJs,
+        mode: props.mode,
         tabindex: -1,
         tabSize: 2,
         autoCloseBrackets: true,

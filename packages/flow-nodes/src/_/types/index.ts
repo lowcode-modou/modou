@@ -1,3 +1,7 @@
+import { Node } from 'reactflow'
+
+import { FlowNodeBaseProps } from '@modou/core/src/flow-node/types'
+
 export enum FlowNodeEnum {
   // 开始
   START_NODE = 'START_NODE',
@@ -15,3 +19,15 @@ export enum FlowNodeStatus {
   Expand,
   Collapse,
 }
+
+export enum ScopedFlowNodePortNameEnum {
+  LOOP_BODY = 'LOOP_BODY',
+}
+
+export type FlowNodeProps<T extends FlowNodeBaseProps = FlowNodeBaseProps> =
+  T & {
+    _onChangeNode: OnChangeNode
+  }
+export type OnChangeNode<T extends FlowNodeProps = FlowNodeProps> = (
+  node: Partial<Node<T>> & { id: string },
+) => void

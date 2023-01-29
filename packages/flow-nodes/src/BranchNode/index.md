@@ -1,5 +1,5 @@
-# StartNode
+# BranchNode
 
-开始节点
+执行脚本节点
 <code src="./demo.tsx"></code>
 

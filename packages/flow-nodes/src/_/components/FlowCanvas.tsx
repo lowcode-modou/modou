@@ -1,4 +1,11 @@
-import { ComponentProps, ComponentType, FC, useCallback, useMemo } from 'react'
+import {
+  ComponentProps,
+  ComponentType,
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+} from 'react'
 import ReactFlow, {
   Background,
   Controls,
@@ -12,26 +19,65 @@ import ReactFlow, {
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 
+import { FlowNodeMetadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
-const _FlowCanvas: FC<{ flowNode: ComponentType<any> }> = ({ flowNode }) => {
+import { FlowNodeProps, OnChangeNode } from '../types'
+
+const _FlowCanvas: FC<{
+  flowNode: ComponentType<any>
+  meta: FlowNodeMetadata<any>
+}> = ({ flowNode, meta }) => {
   const reactFlowInstance = useReactFlow()
 
-  const [nodes] = useNodesState<any>([
-    {
-      id: 'demo_id',
-      type: 'DEMO',
-      data: {},
-      position: { x: 100, y: 100 },
-    },
-    {
-      id: 'demo_demo',
-      data: {},
-      position: { x: 500, y: 500 },
-    },
-  ])
+  const [nodes, setNodes] = useNodesState<FlowNodeProps>([])
 
   const [edges, setEdges] = useEdgesState([])
+
+  useEffect(() => {
+    const defaultProps = FlowNodeMetadata.mrSchemeToDefaultJson(
+      meta.jsonPropsSchema,
+    )
+
+    const _onChangeNode: OnChangeNode = (node) => {
+      setNodes((nds) =>
+        nds.map((nd) => {
+          if (nd.id !== node.id) {
+            return nd
+          }
+          return {
+            ...nd,
+            ...node,
+          }
+        }),
+      )
+    }
+
+    setNodes([
+      {
+        id: defaultProps.id,
+        type: defaultProps.type,
+        data: {
+          ...defaultProps,
+          _onChangeNode,
+        },
+        position: defaultProps.position,
+      },
+      {
+        id: 'demo_demo',
+        data: {
+          name: 'demo',
+          id: 'demo_demo',
+          type: 'demo',
+          sources: [],
+          targets: [],
+          position: { x: 500, y: 500 },
+          _onChangeNode,
+        } as any,
+        position: { x: 500, y: 500 },
+      },
+    ])
+  }, [])
 
   const onConnect = useCallback<OnConnect>(
     (params) =>
@@ -41,7 +87,14 @@ const _FlowCanvas: FC<{ flowNode: ComponentType<any> }> = ({ flowNode }) => {
     [setEdges],
   )
 
-  const nodeTypes: NodeTypes = useMemo(() => ({ DEMO: flowNode }), [flowNode])
+  const nodeTypes: NodeTypes = useMemo(
+    () => ({ [meta.type]: flowNode }),
+    [flowNode, meta.type],
+  )
+
+  useEffect(() => {
+    console.log('FlowCanvas 重新渲染了')
+  })
 
   return (
     <div className={classes.wrapper}>
@@ -56,7 +109,7 @@ const _FlowCanvas: FC<{ flowNode: ComponentType<any> }> = ({ flowNode }) => {
       </ReactFlow>
       <button
         onClick={() => {
-          console.log(reactFlowInstance.getNodes())
+          console.log(nodes)
         }}
       >
         GetNodes
