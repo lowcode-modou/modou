@@ -114,7 +114,7 @@ const _BranchNode: FC<
           </Button>
         </Space>
       </FlowNodeWrapper>
-      <FlowNodeHandles {...props} hiddenSources />
+      <FlowNodeHandles {...props} filterSources={() => false} />
     </>
   )
 }

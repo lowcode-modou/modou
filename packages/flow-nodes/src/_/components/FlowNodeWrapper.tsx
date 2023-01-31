@@ -2,7 +2,7 @@ import { Input } from 'antd'
 import { FC, ReactNode, useState } from 'react'
 import { NodeProps } from 'reactflow'
 
-import { FlowNodeMetadata } from '@modou/core'
+import { type FlowNodeMetadata } from '@modou/core'
 import { cx, mcss } from '@modou/css-in-js'
 
 import { useFlowNodeId } from '../hooks'
@@ -21,7 +21,11 @@ export const FlowNodeWrapper: FC<{
   const [nameMode, setNameMode] = useState<NameMode>(NameMode.Readonly)
   return (
     <div className={cx(classes.wrapper)}>
-      <div className={classes.header}>
+      <div
+        className={cx(classes.header, {
+          'all-border-radius': !children,
+        })}
+      >
         <div className={classes.headerLeft}>
           {meta.icon}
           <div className={classes.nameWrapper}>
@@ -82,6 +86,9 @@ const classes = {
     color: white;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+    &.all-border-radius{
+      border-radius: 8px;
+    }
   `,
   headerLeft: mcss`
     display: flex;
