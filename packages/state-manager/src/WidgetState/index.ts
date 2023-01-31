@@ -66,105 +66,113 @@ export class WidgetState {
     makeAutoObservable(this)
 
     let stopReaction: IReactionDisposer
-    const stopAutoRun = autorun(() => {
-      stopReaction?.()
-      runInAction(() => {
-        // TODO 支持 v_ri
-        // ri [1,2,3,4,5]
-        // i 5
-        const vi = widgetVariables.i
-        if (isNumber(vi)) {
-          if (!isArray(canvasState.subState.widget[this.file.meta.id])) {
-            set(canvasState.subState.widget, [this.file.meta.id], [])
-          }
-        }
-
-        if (isNumber(vi)) {
-          // @ts-expect-error
-          canvasState.subState.widget[this.file.meta.id][vi] = this
-        } else {
-          canvasState.subState.widget[this.file.meta.id] = this
-        }
-      })
-      const stopExps: IReactionDisposer[] = []
-      stopReaction = reaction(
-        () => this.file.flattenedMetaValMap,
-        (value, prev) => {
-          // TODO 单个监听flattenedMetaValMap并判断是否已经监听和暂停被删除的监听
-          // TODO 重新执行initState 并 diff
-          stopExps.forEach((stop) => stop())
-          // TODO 需要更加准确的判断需要删除的数组路径
-          // 处理 数组 类型的 state 在props删除后不会更新的问题
-          // 比如 {columns:[{a:1},{a:2}]} => {columns:[{a:1}]} state 的第一项并不会删除
-          const newValPaths = Object.keys(value)
-          const newValHeadPath = newValPaths.map((path) =>
-            head(path.split('.')),
-          )
-          const omitPaths = Object.keys(omit(prev, newValPaths)).filter(
-            (path) => !newValHeadPath.includes(path),
-          )
-          runInAction(() => {
-            if (omitPaths.length > 0) {
-              // 处理 数组 类型的 state 在props删除后不会更新的问题
-              // 比如 {columns:[{a:1},{a:2}]} => {columns:[{a:1}]} state 的第一项并不会删除
-              omitPaths.forEach((path) => {
-                unset(this.state, path)
-                const pathArr = path.split('.')
-                // TODO 需要更加准确的判断需要删除的数组路径
-                if (isNumber(+pathArr[pathArr.length - 2])) {
-                  remove(
-                    get(this.state, take(pathArr, pathArr.length - 2)),
-                    head(takeRight(pathArr, 2)),
-                  )
-                }
-              })
+    let stopExps: IReactionDisposer[] = []
+    // 监听vi变化
+    const stopReactionVI = reaction(
+      () => this.widgetVariables.i,
+      (vi, oldValue) => {
+        stopReaction?.()
+        runInAction(() => {
+          // TODO 支持 v_ri
+          // ri [1,2,3,4,5]
+          // i 5
+          if (isNumber(vi)) {
+            if (!isArray(canvasState.subState.widget[this.file.meta.id])) {
+              set(canvasState.subState.widget, [this.file.meta.id], [])
             }
-          })
-          // TODO 如果state是数组的时候如何删除多余的数组
-          Object.entries(value).forEach(([path, val]) => {
-            if (val.type === 'Normal') {
-              if (prev?.[path]?.raw !== val.raw) {
-                runInAction(() => {
-                  set(this.state, path, val.raw)
+          }
+
+          if (isNumber(vi)) {
+            // @ts-expect-error
+            canvasState.subState.widget[this.file.meta.id][vi] = this
+          } else {
+            canvasState.subState.widget[this.file.meta.id] = this
+          }
+        })
+        // 监听props变化
+        stopReaction = reaction(
+          () => this.file.flattenedMetaValMap,
+          (value, prev) => {
+            // TODO 单个监听flattenedMetaValMap并判断是否已经监听和暂停被删除的监听
+            // TODO 重新执行initState 并 diff
+            stopExps.forEach((stop) => stop())
+            stopExps = []
+            // TODO 需要更加准确的判断需要删除的数组路径
+            // 处理 数组 类型的 state 在props删除后不会更新的问题
+            // 比如 {columns:[{a:1},{a:2}]} => {columns:[{a:1}]} state 的第一项并不会删除
+            const newValPaths = Object.keys(value)
+            const newValHeadPath = newValPaths.map((path) =>
+              head(path.split('.')),
+            )
+            const omitPaths = Object.keys(omit(prev, newValPaths)).filter(
+              (path) => !newValHeadPath.includes(path),
+            )
+            runInAction(() => {
+              if (omitPaths.length > 0) {
+                // 处理 数组 类型的 state 在props删除后不会更新的问题
+                // 比如 {columns:[{a:1},{a:2}]} => {columns:[{a:1}]} state 的第一项并不会删除
+                omitPaths.forEach((path) => {
+                  unset(this.state, path)
+                  const pathArr = path.split('.')
+                  // TODO 需要更加准确的判断需要删除的数组路径
+                  if (isNumber(+pathArr[pathArr.length - 2])) {
+                    remove(
+                      get(this.state, take(pathArr, pathArr.length - 2)),
+                      head(takeRight(pathArr, 2)),
+                    )
+                  }
                 })
               }
-            } else {
-              stopExps.push(
-                // TODO Autorun 不靠谱
-                autorun(() => {
-                  const newVal = evalExpression(val.evalString, {
-                    ...mapValues(canvasState.subWidgetNameState, (widget) => {
-                      if (isArray(widget)) {
-                        // TODO 支持v_ri
-                        return widget.map(
-                          (w) => (w as unknown as WidgetState).state,
-                        )
-                      } else {
-                        return widget.state
-                      }
-                    }),
-                    ...widgetVariables,
-                  })
-                  runInAction(() => {
-                    set(this.state, path, newVal)
-                  })
-                }),
-              )
-            }
-            // TODO 如果是异步的 expression 如何处理
-            runInAction(() => {
-              this.state.instance.initialized = true
             })
-          })
-        },
-        {
-          fireImmediately: true,
-        },
-      )
-    })
+            // TODO 如果state是数组的时候如何删除多余的数组
+            Object.entries(value).forEach(([path, val]) => {
+              if (val.type === 'Normal') {
+                if (prev?.[path]?.raw !== val.raw) {
+                  runInAction(() => {
+                    set(this.state, path, val.raw)
+                  })
+                }
+              } else {
+                stopExps.push(
+                  // TODO Autorun 不靠谱
+                  autorun(() => {
+                    const newVal = evalExpression(val.evalString, {
+                      ...mapValues(canvasState.subWidgetNameState, (widget) => {
+                        if (isArray(widget)) {
+                          // TODO 支持v_ri
+                          return widget.map(
+                            (w) => (w as unknown as WidgetState).state,
+                          )
+                        } else {
+                          return widget.state
+                        }
+                      }),
+                      ...widgetVariables,
+                    })
+                    runInAction(() => {
+                      set(this.state, path, newVal)
+                    })
+                  }),
+                )
+              }
+              // TODO 如果是异步的 expression 如何处理
+              runInAction(() => {
+                this.state.instance.initialized = true
+              })
+            })
+          },
+          {
+            fireImmediately: true,
+          },
+        )
+      },
+      { fireImmediately: true },
+    )
     this.disposer = () => {
-      stop()
-      stopAutoRun()
+      stopReactionVI()
+      stopReaction()
+      stopExps.forEach((stop) => stop())
+      // stopExps = []
       runInAction(() => {
         // TODO 处理 v_i 和 v_ri
         remove(canvasState.subState.widget, this.file.meta.id)

@@ -1,5 +1,5 @@
 import { useMount, useUnmount } from 'ahooks'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useContext, useEffect, useState } from 'react'
 import * as React from 'react'
 
 import { AppFactoryContext, useAppManager } from '@modou/core'
@@ -62,41 +62,34 @@ const _WidgetVirtual: FC<{
           {},
         )
       },
-      widgetState: runInAction(() => {
-        return new WidgetState(widget, {
-          appFactory,
-          widgetVariables,
-          canvasState,
-        })
-      }),
     }
   })
 
+  const [widgetState, setWidgetState] = useState<WidgetState>()
+
   useEffect(() => {
-    localState.widgetState.updateWidgetVariables(widgetVariables)
-  }, [localState.widgetState, widgetVariables])
-
-  useMount(() => {
-    // TODO 判断parent subFile存在不再重新生成
-    runInAction(() => {
-      localState.widgetState = new WidgetState(widget, {
-        appFactory,
-        widgetVariables,
-        canvasState,
-      })
+    const widgetState = new WidgetState(widget, {
+      appFactory,
+      widgetVariables,
+      canvasState,
     })
-  })
+    setWidgetState(widgetState)
+    return () => {
+      widgetState?.disposer()
+    }
+    // 不要添加多余deps，保持为空
+  }, [])
 
-  useUnmount(() => {
-    localState.widgetState.disposer()
-  })
+  useEffect(() => {
+    widgetState?.updateWidgetVariables(widgetVariables)
+  }, [widgetState, widgetVariables])
 
   // FIXME 完善组件类型
-  return localState.widgetState.state.instance.initialized ? (
+  return widgetState?.state.instance.initialized ? (
     <WidgetErrorBoundary widgetId={widgetId} widgetName={widget.meta.name}>
       <WidgetComponent
-        {...toJS(localState.widgetState.state)}
-        updateState={localState.widgetState.updateState}
+        {...toJS(widgetState.state)}
+        updateState={widgetState.updateState}
         renderSlots={toJS(localState.renderSlots)}
         renderSlotPaths={toJS(localState.renderSlotPaths)}
       />
