@@ -17,7 +17,7 @@ export const MRSchemeRunScriptNodeProps =
     },
   })
 
-export const runScriptNodeNodeMetadata = FlowNodeMetadata.createMetadata({
+export const runScriptNodeMetadata = FlowNodeMetadata.createMetadata({
   version: '0.0.1',
   type: FlowNodeEnum.RUN_SCRIPT_NODE,
   name: '执行脚本',

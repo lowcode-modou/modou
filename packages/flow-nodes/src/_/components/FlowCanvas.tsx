@@ -27,7 +27,8 @@ import { FlowNodeProps, OnChangeNode } from '../types'
 const _FlowCanvas: FC<{
   flowNode: ComponentType<any>
   meta: FlowNodeMetadata<any>
-}> = ({ flowNode, meta }) => {
+  runInterpreter: (props: FlowNodeProps<any>) => void
+}> = ({ flowNode, meta, runInterpreter }) => {
   const reactFlowInstance = useReactFlow()
 
   const [nodes, setNodes] = useNodesState<FlowNodeProps>([])
@@ -120,6 +121,13 @@ const _FlowCanvas: FC<{
         }}
       >
         GetEdges
+      </button>
+      <button
+        onClick={() => {
+          runInterpreter(nodes[0].data)
+        }}
+      >
+        RunInterpreter
       </button>
     </div>
   )

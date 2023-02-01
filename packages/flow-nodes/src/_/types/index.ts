@@ -2,6 +2,8 @@ import { Node } from 'reactflow'
 
 import { FlowNodeBaseProps } from '@modou/core/src/flow-node/types'
 
+import { branchNodeInterpreter } from '../../BranchNode/interpreter'
+
 export enum FlowNodeEnum {
   // 开始
   START_NODE = 'START_NODE',
@@ -30,4 +32,8 @@ export type FlowNodeProps<T extends FlowNodeBaseProps = FlowNodeBaseProps> =
   }
 export type OnChangeNode<T extends FlowNodeProps = FlowNodeProps> = (
   node: Partial<Node<T>> & { id: string },
+) => void
+
+export type FlowNodeInterpreter<P extends FlowNodeBaseProps> = (
+  props: P,
 ) => void

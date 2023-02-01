@@ -14,6 +14,7 @@ import {
 } from 'lodash'
 
 import { AppFactory } from '@modou/core'
+import { evalExpression } from '@modou/evaluate'
 import { WidgetFile } from '@modou/meta-vfs'
 import {
   IReactionDisposer,
@@ -24,7 +25,6 @@ import {
   runInAction,
   toJS,
 } from '@modou/reactivity'
-import { evalExpression } from '@modou/render/src/utils/evaluate'
 
 import { PageState } from '../PageState'
 import { WidgetVariables } from '../contexts'

@@ -1,4 +1,5 @@
 import { Button, Space } from 'antd'
+import produce from 'immer'
 import { type FC, memo } from 'react'
 import { NodeProps } from 'reactflow'
 
@@ -51,29 +52,25 @@ const _BranchNode: FC<
                 // TODO 删除 branch 的同时删除相关的边
                 props.data._onChangeNode({
                   id,
-                  data: {
-                    ...props.data,
-                    props: {
-                      ...props.data.props,
-                      branches: props.data.props.branches
-                        .filter((br) => br.port !== branch.port)
-                        .map((br, index) => {
-                          if (
-                            index === 0 &&
-                            br.script === DEFAULT_LASE_ELSE_SCRIPT
-                          ) {
-                            return {
-                              ...br,
-                              script: '',
-                            }
+                  data: produce(props.data, (draft) => {
+                    draft.props.branches = draft.props.branches
+                      .filter((br) => br.port !== branch.port)
+                      .map((br, index) => {
+                        if (
+                          index === 0 &&
+                          br.script === DEFAULT_LASE_ELSE_SCRIPT
+                        ) {
+                          return {
+                            ...br,
+                            script: '',
                           }
-                          return br
-                        }),
-                    },
-                    sources: props.data.sources.filter(
+                        }
+                        return br
+                      })
+                    draft.sources = draft.sources.filter(
                       (s) => s.name !== branch.port,
-                    ),
-                  },
+                    )
+                  }),
                 })
               }}
             />
@@ -85,28 +82,22 @@ const _BranchNode: FC<
               const portId = generateId()
               props.data._onChangeNode({
                 id,
-                data: {
-                  ...props.data,
-                  sources: [
-                    ...props.data.sources,
-                    {
-                      name: portId,
-                    },
-                  ],
-                  props: {
-                    ...props.data.props,
-                    branches: [
-                      ...props.data.props.branches.map((branch) => ({
-                        ...branch,
-                        script: '',
-                      })),
-                      {
-                        port: portId,
-                        script: DEFAULT_LASE_ELSE_SCRIPT,
-                      },
-                    ],
-                  },
-                },
+                data: produce(props.data, (draft) => {
+                  draft.sources.push({
+                    name: portId,
+                  })
+                  draft.props.branches = draft.props.branches.map((branch) => ({
+                    ...branch,
+                    script:
+                      branch.script === DEFAULT_LASE_ELSE_SCRIPT
+                        ? ''
+                        : branch.script,
+                  }))
+                  draft.props.branches.push({
+                    port: portId,
+                    script: DEFAULT_LASE_ELSE_SCRIPT,
+                  })
+                }),
               })
             }}
           >

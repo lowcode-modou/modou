@@ -1,5 +1,6 @@
+import produce from 'immer'
 import { type FC, memo, useMemo } from 'react'
-import { Handle, NodeProps, Position, useReactFlow } from 'reactflow'
+import { Handle, NodeProps, Position } from 'reactflow'
 
 import { CodeEditor, CodeEditorModeEnum } from '@modou/code-editor'
 import { mr } from '@modou/refine'
@@ -30,13 +31,9 @@ const _LoopNode: FC<NodeProps<FlowNodeProps<LoopNodeProps>>> = (props) => {
             onChange={(value) => {
               props.data._onChangeNode({
                 id,
-                data: {
-                  ...props.data,
-                  props: {
-                    ...props.data.props,
-                    iterable: value,
-                  },
-                },
+                data: produce(props.data, (draft) => {
+                  draft.props.iterable = value
+                }),
               })
             }}
           />
