@@ -1,6 +1,20 @@
-import { createContext, memo } from 'react'
+import { createContext, memo, useContext } from 'react'
 
 import { AssetVFS } from '@modou/asset-vfs'
+import {
+  BranchNode,
+  LoopNode,
+  RunScriptNode,
+  StartNode,
+  branchNodeInterpreter,
+  branchNodeNodeMetadata,
+  loopNodeInterpreter,
+  loopNodeMetadata,
+  runScriptNodeInterpreter,
+  runScriptNodeMetadata,
+  startNodeInterpreter,
+  startNodeMetadata,
+} from '@modou/flow-nodes'
 import {
   ArraySetter,
   BooleanSetter,
@@ -63,6 +77,28 @@ export const defaultAppFactory = AppFactory.create({
     ...widget,
     component: memo(widget.component),
   })),
+  flowNodes: [
+    {
+      component: StartNode,
+      metadata: startNodeMetadata,
+      interpreter: startNodeInterpreter,
+    },
+    {
+      component: BranchNode,
+      metadata: branchNodeNodeMetadata,
+      interpreter: branchNodeInterpreter,
+    },
+    {
+      component: LoopNode,
+      metadata: loopNodeMetadata,
+      interpreter: loopNodeInterpreter,
+    },
+    {
+      component: RunScriptNode,
+      metadata: runScriptNodeMetadata,
+      interpreter: runScriptNodeInterpreter,
+    },
+  ],
   setters: {
     [SetterTypeEnum.Select]: SelectSetter,
     [SetterTypeEnum.String]: StringSetter,
@@ -73,3 +109,8 @@ export const defaultAppFactory = AppFactory.create({
 })
 const assetVFS = new AssetVFS({ appFactory: defaultAppFactory })
 export const AppFactoryContext = createContext<AppFactory>(assetVFS.appFactory)
+
+export const useAppFactory = () => {
+  const appFactory = useContext(AppFactoryContext)
+  return { appFactory }
+}

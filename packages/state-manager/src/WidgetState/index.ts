@@ -169,11 +169,11 @@ export class WidgetState {
       { fireImmediately: true },
     )
     this.disposer = () => {
-      stopReactionVI()
-      stopReaction()
-      stopExps.forEach((stop) => stop())
-      // stopExps = []
       runInAction(() => {
+        stopReactionVI()
+        stopReaction()
+        stopExps.forEach((stop) => stop())
+        // stopExps = []
         // TODO 处理 v_i 和 v_ri
         remove(canvasState.subState.widget, this.file.meta.id)
       })

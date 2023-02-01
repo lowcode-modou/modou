@@ -71,7 +71,7 @@ export const TableWidget: FC<
         dataSource={isArray(dataSource) ? dataSource : []}
         search={false}
         options={false}
-        rowKey={(record) => record.id || Math.random()}
+        rowKey={(record, index) => record.id || index}
         cardProps={{
           bodyStyle: {
             padding: 0,

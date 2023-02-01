@@ -3,7 +3,7 @@ import { PageRouterParamsKey } from '@/types'
 import { generateRouterPath } from '@/utils/router'
 import { Col, Row } from 'antd'
 import { head } from 'lodash'
-import { FC, useEffect, useLayoutEffect } from 'react'
+import { FC, useLayoutEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { CanvasDesigner } from '@modou/canvas-designer'
@@ -15,6 +15,8 @@ import {
 import { mcss } from '@modou/css-in-js'
 import { observer } from '@modou/reactivity-react'
 import { SimulatorPC } from '@modou/simulator'
+
+import { FlowCanvas } from '../components'
 
 const _Page: FC = () => {
   const { pageId, appId } = useParams<PageRouterParamsKey>()
@@ -37,17 +39,20 @@ const _Page: FC = () => {
   }, [appId, appManager.app.pages, navigate, page])
 
   return (
-    <Row justify="center" align="middle" className={classes.page}>
-      <Col span={24} className={classes.container}>
-        {page && (
-          <AppFactoryContext.Provider value={defaultAppFactory}>
+    <AppFactoryContext.Provider value={defaultAppFactory}>
+      <Row justify="center" align="middle" className={classes.page}>
+        <Col span={24} className={classes.container}>
+          {page && (
             <CanvasDesigner file={page}>
               <SimulatorPC src="/simulator/pc/index.html" />
             </CanvasDesigner>
-          </AppFactoryContext.Provider>
-        )}
-      </Col>
-    </Row>
+          )}
+        </Col>
+        <Col span={24} className={classes.flowWrapper}>
+          <FlowCanvas />
+        </Col>
+      </Row>
+    </AppFactoryContext.Provider>
   )
 }
 export const Page = observer(_Page)
@@ -57,6 +62,9 @@ const classes = {
     height: 100%;
   `,
   container: mcss`
-    height: 100%;
+    height: 50%;
+  `,
+  flowWrapper: mcss`
+    height: 50%;
   `,
 }

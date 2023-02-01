@@ -9,3 +9,7 @@ export enum FlowNodePortNameEnum {
   SOURCE = 'SOURCE',
   TARGET = 'TARGET',
 }
+
+export type FlowNodeInterpreter<P extends FlowNodeBaseProps> = (
+  props: P,
+) => void

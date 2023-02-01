@@ -4,6 +4,7 @@ import { FC } from 'react'
 import { mrToJsonSchema, schemeToDefs } from '@modou/refine'
 import { BaseSetterProps } from '@modou/setters/src/types'
 
+import { FlowNodeInterpreter, FlowNodeMetadata } from '../flow-node'
 import { WidgetGroupEnum } from '../types'
 import { WidgetMetadata } from '../widget'
 
@@ -22,15 +23,23 @@ type WidgetRegistry = Record<
 
 type SetterElement = FC<BaseSetterProps<any>>
 
+interface FlowNode {
+  component: FC<any>
+  metadata: FlowNodeMetadata<any>
+  interpreter: FlowNodeInterpreter<any>
+}
+
+type FlowNodeRegistry = Record<string, FlowNode>
+
+interface AppFactoryParams {
+  // TODO 增加 package 信息  增加umd引入
+  widgets: Widget[]
+  flowNodes: FlowNode[]
+  setters: Record<string, SetterElement>
+}
+
 export class AppFactory {
-  constructor({
-    widgets,
-    setters,
-  }: {
-    // TODO 增加 package 信息  增加umd引入
-    widgets: Widget[]
-    setters: Record<string, SetterElement>
-  }) {
+  constructor({ widgets, setters, flowNodes }: AppFactoryParams) {
     this._widgetRegistry = unionWith(
       widgets,
       ({ metadata: preMetadata }, { metadata: curMetadata }) =>
@@ -42,10 +51,19 @@ export class AppFactory {
       }
       return pre
     }, {})
+    this._flowNodeRegistry = unionWith(
+      flowNodes,
+      ({ metadata: preMetadata }, { metadata: curMetadata }) =>
+        isEqual(preMetadata.type, curMetadata.type),
+    ).reduce<FlowNodeRegistry>((pre, cur) => {
+      pre[cur.metadata.type] = cur
+      return pre
+    }, {})
     this._setterRegistry = setters
   }
 
   private readonly _widgetRegistry: WidgetRegistry
+  private readonly _flowNodeRegistry: FlowNodeRegistry
   private readonly _setterRegistry: Record<string, FC<BaseSetterProps<any>>>
 
   get widgetByType(): WidgetRegistry {
@@ -55,6 +73,17 @@ export class AppFactory {
           return Reflect.get(target, p)
         }
         return new Error(`组件【${p.toString()}】未注册`)
+      },
+    })
+  }
+
+  get flowNodeByType(): FlowNodeRegistry {
+    return new Proxy(this._flowNodeRegistry, {
+      get(target: FlowNodeRegistry, p: string | symbol, receiver: any): any {
+        if (Reflect.has(target, p)) {
+          return Reflect.get(target, p)
+        }
+        return new Error(`流节点【${p.toString()}】未注册`)
       },
     })
   }
@@ -74,11 +103,7 @@ export class AppFactory {
     })
   }
 
-  static create(params: {
-    // TODO 增加 package 信息  增加umd引入
-    widgets: Widget[]
-    setters: Record<string, SetterElement>
-  }) {
+  static create(params: AppFactoryParams) {
     return new AppFactory(params)
   }
 }

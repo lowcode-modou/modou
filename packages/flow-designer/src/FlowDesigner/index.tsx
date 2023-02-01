@@ -1,5 +1,5 @@
-import { useMemoizedFn } from 'ahooks'
-import { ComponentProps, FC } from 'react'
+import { useClickAway, useMemoizedFn } from 'ahooks'
+import { ComponentProps, FC, useRef, useState } from 'react'
 import ReactFlow, {
   Controls,
   Edge,
@@ -10,6 +10,7 @@ import ReactFlow, {
 } from 'reactflow'
 import 'reactflow/dist/base.css'
 
+import { useAppFactory } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 
 import { FunctionIcon, TurboEdge, TurboNode } from './components'
@@ -95,6 +96,7 @@ const defaultEdgeOptions = {
   markerEnd: 'edge-circle',
 }
 export const FlowDesigner: FC = (props) => {
+  const { appFactory } = useAppFactory()
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
@@ -102,42 +104,78 @@ export const FlowDesigner: FC = (props) => {
     Required<ComponentProps<typeof ReactFlow>>['onConnect']
   >((params) => setEdges((els) => addEdge(params, els)))
 
-  return (
-    <ReactFlow
-      className={classes.reactFlow}
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      fitView
-      nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes}
-      defaultEdgeOptions={defaultEdgeOptions}
-    >
-      <Controls showInteractive={false} />
-      <svg>
-        <defs>
-          <linearGradient id="edge-gradient">
-            <stop offset="0%" stopColor="#ae53ba" />
-            <stop offset="100%" stopColor="#2a8af6" />
-          </linearGradient>
+  const contextMenuRef = useRef<HTMLDivElement>(null)
+  const [contextMenuOpen, setContextMenuOpen] = useState(false)
+  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 })
 
-          <marker
-            id="edge-circle"
-            viewBox="-5 -5 10 10"
-            refX="0"
-            refY="0"
-            markerUnits="strokeWidth"
-            markerWidth="10"
-            markerHeight="10"
-            orient="auto"
-          >
-            <circle stroke="#2a8af6" strokeOpacity="0.75" r="2" cx="0" cy="0" />
-          </marker>
-        </defs>
-      </svg>
-    </ReactFlow>
+  useClickAway(() => {
+    setContextMenuOpen(false)
+  }, contextMenuRef)
+
+  return (
+    <>
+      {contextMenuOpen && (
+        <div
+          className={classes.contextMenuWrapper}
+          style={{
+            left: contextMenuPosition.x,
+            top: contextMenuPosition.y,
+          }}
+        >
+          123
+        </div>
+      )}
+      <ReactFlow
+        className={classes.reactFlow}
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView
+        maxZoom={1}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        defaultEdgeOptions={defaultEdgeOptions}
+        onContextMenu={(e) => {
+          setContextMenuPosition({
+            x: e.clientX,
+            y: e.clientY,
+          })
+          setContextMenuOpen(true)
+          e.preventDefault()
+        }}
+      >
+        <Controls showInteractive={false} />
+        <svg>
+          <defs>
+            <linearGradient id="edge-gradient">
+              <stop offset="0%" stopColor="#ae53ba" />
+              <stop offset="100%" stopColor="#2a8af6" />
+            </linearGradient>
+
+            <marker
+              id="edge-circle"
+              viewBox="-5 -5 10 10"
+              refX="0"
+              refY="0"
+              markerUnits="strokeWidth"
+              markerWidth="10"
+              markerHeight="10"
+              orient="auto"
+            >
+              <circle
+                stroke="#2a8af6"
+                strokeOpacity="0.75"
+                r="2"
+                cx="0"
+                cy="0"
+              />
+            </marker>
+          </defs>
+        </svg>
+      </ReactFlow>
+    </>
   )
 }
 
@@ -316,6 +354,15 @@ export const classes = {
     .react-flow__attribution a {
       color: #95679e;
     }
-
+  `,
+  contextMenuWrapper: mcss`
+    position: fixed;
+    width: 100px;
+    height: 200px;
+    left: 0;
+    top: 0;
+    z-index: 999999;
+    color: white;
+    border: 1px solid red;
   `,
 }

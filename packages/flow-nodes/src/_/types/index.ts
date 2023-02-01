@@ -33,7 +33,3 @@ export type FlowNodeProps<T extends FlowNodeBaseProps = FlowNodeBaseProps> =
 export type OnChangeNode<T extends FlowNodeProps = FlowNodeProps> = (
   node: Partial<Node<T>> & { id: string },
 ) => void
-
-export type FlowNodeInterpreter<P extends FlowNodeBaseProps> = (
-  props: P,
-) => void

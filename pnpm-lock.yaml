@@ -18,6 +18,7 @@ importers:
       '@modou/core': workspace:^1.0.0
       '@modou/css-in-js': workspace:^1.0.0
       '@modou/evaluate': workspace:^1.0.0
+      '@modou/flow-nodes': workspace:^0.0.1
       '@modou/meta-vfs': workspace:^0.0.1
       '@modou/reactivity': workspace:^0.0.1
       '@modou/reactivity-react': workspace:^0.0.1
@@ -81,6 +82,7 @@ importers:
       '@modou/core': link:packages/core
       '@modou/css-in-js': link:packages/css-in-js
       '@modou/evaluate': link:packages/evaluate
+      '@modou/flow-nodes': link:packages/flow-nodes
       '@modou/meta-vfs': link:packages/meta-vfs
       '@modou/reactivity': link:packages/reactivity
       '@modou/reactivity-react': link:packages/reactivity-react
@@ -432,10 +434,12 @@ importers:
     specifiers:
       '@ahooksjs/use-url-state': ^3.5.0
       '@modou/canvas-designer': workspace:^1.0.0
+      '@modou/flow-designer': workspace:^0.0.1
       mitt: ^3.0.0
     dependencies:
       '@ahooksjs/use-url-state': 3.5.0
       '@modou/canvas-designer': link:../../packages/canvas-designer
+      '@modou/flow-designer': link:../../packages/flow-designer
       mitt: 3.0.0
 
   widgets/antd:
