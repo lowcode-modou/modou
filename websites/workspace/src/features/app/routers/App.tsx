@@ -4,7 +4,7 @@ import { generateRouterPath } from '@/utils/router'
 import { CopyOutlined, DatabaseOutlined } from '@ant-design/icons'
 import { useMount } from 'ahooks'
 import { Layout, Menu } from 'antd'
-import { ComponentProps, FC, useCallback, useState } from 'react'
+import { ComponentProps, FC, useCallback, useEffect, useState } from 'react'
 import {
   Outlet,
   matchPath,
@@ -17,6 +17,7 @@ import { AppManagerProvider } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { AppFile, AppManager } from '@modou/meta-vfs'
 import { runInAction } from '@modou/reactivity'
+import { AppState, AppStateProvider } from '@modou/state-manager'
 
 import { ModuleManager } from '../components'
 import { AppHeader } from '../components/AppHeader'
@@ -97,47 +98,58 @@ export const App: FC = () => {
 
   const isAppHome = matchPath(ROUTER_PATH.APP, pathname)
 
-  return (
-    <AppManagerProvider value={appManager}>
-      {isAppHome ? (
-        <AppHome />
-      ) : (
-        <Layout className={classes.layout}>
-          <AppHeader />
-          <Layout>
-            <Layout.Sider
-              className={classes.sider}
-              theme="light"
-              collapsedWidth={60}
-              width={60}
-              collapsible
-              collapsed={!visibleModuleManger}
-            >
-              <Menu
-                className={classes.menu}
-                style={{ width: '60px' }}
-                mode="inline"
-                selectedKeys={[module]}
-                onClick={handleClickMenuItem}
-                items={menuItems}
-              />
-            </Layout.Sider>
-            <Layout.Content className={classes.layoutContent}>
-              <ModuleManager
-                onClose={() => {
-                  setVisibleModuleManger(false)
-                  updateModule()
-                }}
-                module={module}
-                visible={visibleModuleManger}
-              />
-              <Outlet />
-            </Layout.Content>
+  const [appState, setAppState] = useState<AppState>()
+
+  useEffect(() => {
+    if (appState?.file === appManager.app) {
+      return
+    }
+    setAppState(new AppState(appManager.app))
+  }, [appState?.file])
+
+  return appState ? (
+    <AppStateProvider value={appState}>
+      <AppManagerProvider value={appManager}>
+        {isAppHome ? (
+          <AppHome />
+        ) : (
+          <Layout className={classes.layout}>
+            <AppHeader />
+            <Layout>
+              <Layout.Sider
+                className={classes.sider}
+                theme="light"
+                collapsedWidth={60}
+                width={60}
+                collapsible
+                collapsed={!visibleModuleManger}
+              >
+                <Menu
+                  className={classes.menu}
+                  style={{ width: '60px' }}
+                  mode="inline"
+                  selectedKeys={[module]}
+                  onClick={handleClickMenuItem}
+                  items={menuItems}
+                />
+              </Layout.Sider>
+              <Layout.Content className={classes.layoutContent}>
+                <ModuleManager
+                  onClose={() => {
+                    setVisibleModuleManger(false)
+                    updateModule()
+                  }}
+                  module={module}
+                  visible={visibleModuleManger}
+                />
+                <Outlet />
+              </Layout.Content>
+            </Layout>
           </Layout>
-        </Layout>
-      )}
-    </AppManagerProvider>
-  )
+        )}
+      </AppManagerProvider>
+    </AppStateProvider>
+  ) : null
 }
 
 const classes = {

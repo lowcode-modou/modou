@@ -6,20 +6,19 @@ import * as React from 'react'
 
 import { AppFactoryContext, AppManagerProvider } from '@modou/core'
 import { observer } from '@modou/reactivity-react'
-import { StateManagerProvider } from '@modou/state-manager'
+import { AppStateProvider, CanvasStateProvider } from '@modou/state-manager'
 
 import { CanvasFileContextProvider } from '../contexts'
-import { useInitRender, useInitStateManager } from '../hooks'
+import { useInitRender } from '../hooks'
 import { MoDouRenderProps } from '../types'
 import { ReactRenderTolerant } from './ReactRenderTolerant'
 
 // TODO 支持页面的 State 缓存 比如详情页面回退到列表页面
 const _ReactRender: FC<MoDouRenderProps> = (props) => {
   const appFactory = useContext(AppFactoryContext)
-  const { file, appManager } = useInitRender()
-  const { stateManager } = useInitStateManager({ app: appManager?.app, file })
+  const { file, appManager, appState, state } = useInitRender()
 
-  if (!file || !appManager || !stateManager) {
+  if (!file || !appManager || !appState || !state) {
     return null
   }
   return (
@@ -27,13 +26,15 @@ const _ReactRender: FC<MoDouRenderProps> = (props) => {
       {/* TODO 去除点(.)保持跟其他Context统一 */}
       <AppFactoryContext.Provider value={appFactory}>
         <AppManagerProvider value={appManager}>
-          <StateManagerProvider value={stateManager}>
+          <AppStateProvider value={appState}>
             <CanvasFileContextProvider value={file}>
-              <ErrorBoundary>
-                <ReactRenderTolerant {...props} />
-              </ErrorBoundary>
+              <CanvasStateProvider value={state}>
+                <ErrorBoundary>
+                  <ReactRenderTolerant {...props} />
+                </ErrorBoundary>
+              </CanvasStateProvider>
             </CanvasFileContextProvider>
-          </StateManagerProvider>
+          </AppStateProvider>
         </AppManagerProvider>
       </AppFactoryContext.Provider>
     </ConfigProvider>

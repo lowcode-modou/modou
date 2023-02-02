@@ -1,13 +1,12 @@
-import { useMount, useUnmount } from 'ahooks'
 import { FC, useContext, useEffect, useState } from 'react'
 import * as React from 'react'
 
 import { AppFactoryContext, useAppManager } from '@modou/core'
-import { runInAction, toJS } from '@modou/reactivity'
+import { toJS } from '@modou/reactivity'
 import { observer, useLocalObservable } from '@modou/reactivity-react'
 import {
   WidgetState,
-  useStateManager,
+  useCanvasState,
   useWidgetVariables,
 } from '@modou/state-manager'
 
@@ -21,7 +20,7 @@ const _WidgetVirtual: FC<{
   const { widgetVariables } = useWidgetVariables()
 
   const { appManager } = useAppManager()
-  const { canvasState } = useStateManager()
+  const { canvasState } = useCanvasState()
   const widget = appManager.widgetMap[widgetId]
   const appFactory = useContext(AppFactoryContext)
   const widgetDef = appFactory.widgetByType[widget.meta.type]
@@ -68,17 +67,20 @@ const _WidgetVirtual: FC<{
   const [widgetState, setWidgetState] = useState<WidgetState>()
 
   useEffect(() => {
-    const widgetState = new WidgetState(widget, {
+    if (widget === widgetState?.file) {
+      return
+    }
+    const _widgetState = new WidgetState(widget, {
       appFactory,
       widgetVariables,
       canvasState,
     })
-    setWidgetState(widgetState)
+    setWidgetState(_widgetState)
     return () => {
       widgetState?.disposer()
     }
     // 不要添加多余deps，保持为空
-  }, [])
+  }, [appFactory, canvasState, widget, widgetState, widgetVariables])
 
   useEffect(() => {
     widgetState?.updateWidgetVariables(widgetVariables)

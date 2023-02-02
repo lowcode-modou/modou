@@ -13,6 +13,7 @@ import {
 import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { observer } from '@modou/reactivity-react'
+import { useAppState, useCanvasState } from '@modou/state-manager'
 
 import { SimulatorInstanceContext } from '../contexts'
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'
@@ -25,6 +26,8 @@ export const _CanvasDesignerCanvas: FC<{
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [initializedIframe, setInitializedIframe] = useState(false)
   const { appManager } = useAppManager()
+  const { appState } = useAppState()
+  const { canvasState } = useCanvasState()
   const { canvasDesignerFile } = useCanvasDesignerFile()
 
   useEffect(() => {
@@ -37,7 +40,9 @@ export const _CanvasDesignerCanvas: FC<{
     iframeRef.current?.contentWindow?.reactRenderHost.updateFile(
       canvasDesignerFile,
     )
-  }, [initializedIframe, appManager, canvasDesignerFile])
+    iframeRef.current?.contentWindow?.reactRenderHost.updateState(canvasState)
+    iframeRef.current?.contentWindow?.reactRenderHost.updateAppState(appState)
+  }, [initializedIframe, appManager, canvasDesignerFile, appState, canvasState])
   const canvasRef = useRef<HTMLElement>(null)
 
   const [designerIndicatorStyle, setDesignerIndicatorStyle] = useState({
