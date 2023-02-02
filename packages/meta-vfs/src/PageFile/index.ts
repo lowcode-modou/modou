@@ -12,6 +12,7 @@ import { MDTernDefs } from '@modou/refine'
 
 import { AppFile } from '../AppFile'
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
+import { FlowFile } from '../FlowFile'
 import { WidgetFile, WidgetFileMeta } from '../WidgetFile'
 import { FileTypeEnum, UpdateParams } from '../types'
 
@@ -30,6 +31,7 @@ type WidgetRelationById = Record<string, RelationWidget>
 
 interface FileMap extends BaseFileMap {
   readonly widgets: WidgetFile[]
+  readonly flows: FlowFile[]
 }
 
 export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
@@ -44,15 +46,21 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       deleteWidget: action,
       updateWidgets: action,
       moveWidget: action,
+      flows: computed,
     })
   }
 
   subFileMap: FileMap = {
     widgets: [],
+    flows: [],
   }
 
   get widgets() {
     return this.subFileMap.widgets
+  }
+
+  get flows() {
+    return this.subFileMap.flows
   }
 
   get widgetMap() {
@@ -279,6 +287,12 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
       json.widgets.map((widget) =>
         WidgetFile.formJSON(
           widget as unknown as ReturnType<WidgetFile['toJSON']>,
+          pageFile,
+        ),
+      )
+      json.flows.map((flow) =>
+        FlowFile.formJSON(
+          flow as unknown as ReturnType<FlowFile['toJSON']>,
           pageFile,
         ),
       )

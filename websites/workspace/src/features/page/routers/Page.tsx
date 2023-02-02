@@ -17,6 +17,7 @@ import { observer } from '@modou/reactivity-react'
 import { SimulatorPC } from '@modou/simulator'
 
 import { FlowCanvas } from '../components'
+import { FlowList } from '../components/FlowList'
 
 const _Page: FC = () => {
   const { pageId, appId } = useParams<PageRouterParamsKey>()
@@ -49,6 +50,7 @@ const _Page: FC = () => {
           )}
         </Col>
         <Col span={24} className={classes.flowWrapper}>
+          <FlowList />
           <FlowCanvas />
         </Col>
       </Row>
@@ -66,5 +68,6 @@ const classes = {
   `,
   flowWrapper: mcss`
     height: 50%;
+    display: flex;
   `,
 }

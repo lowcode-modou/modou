@@ -6,9 +6,9 @@ export * from './RunScriptNode'
 export * from './RunScriptNode/metadata'
 export * from './RunScriptNode/interpreter'
 
-export * from './LooptNode'
-export * from './LooptNode/metadata'
-export * from './LooptNode/interpreter'
+export * from './LoopNode'
+export * from './LoopNode/metadata'
+export * from './LoopNode/interpreter'
 
 export * from './BranchNode'
 export * from './BranchNode/metadata'

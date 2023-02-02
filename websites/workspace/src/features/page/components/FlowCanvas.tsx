@@ -14,5 +14,6 @@ export const FlowCanvas: FC = () => {
 const classes = {
   wrapper: mcss`
     height: 100%;
+    flex: 1;
   `,
 }
