@@ -16,8 +16,7 @@ import { mcss } from '@modou/css-in-js'
 import { observer } from '@modou/reactivity-react'
 import { SimulatorPC } from '@modou/simulator'
 
-import { FlowCanvas } from '../components'
-import { FlowList } from '../components/FlowList'
+import { CanvasFlow } from '../../../components'
 
 const _Page: FC = () => {
   const { pageId, appId } = useParams<PageRouterParamsKey>()
@@ -39,23 +38,20 @@ const _Page: FC = () => {
     }
   }, [appId, appManager.app.pages, navigate, page])
 
-  return (
+  return page ? (
     <AppFactoryContext.Provider value={defaultAppFactory}>
       <Row justify="center" align="middle" className={classes.page}>
         <Col span={24} className={classes.container}>
-          {page && (
-            <CanvasDesigner file={page}>
-              <SimulatorPC src="/simulator/pc/index.html" />
-            </CanvasDesigner>
-          )}
+          <CanvasDesigner file={page}>
+            <SimulatorPC src="/simulator/pc/index.html" />
+          </CanvasDesigner>
         </Col>
         <Col span={24} className={classes.flowWrapper}>
-          <FlowList />
-          <FlowCanvas />
+          <CanvasFlow parentFile={page} />
         </Col>
       </Row>
     </AppFactoryContext.Provider>
-  )
+  ) : null
 }
 export const Page = observer(_Page)
 

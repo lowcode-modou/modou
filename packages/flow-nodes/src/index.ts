@@ -13,3 +13,5 @@ export * from './LoopNode/interpreter'
 export * from './BranchNode'
 export * from './BranchNode/metadata'
 export * from './BranchNode/interpreter'
+
+export { FlowNodeEnum } from './_/types'

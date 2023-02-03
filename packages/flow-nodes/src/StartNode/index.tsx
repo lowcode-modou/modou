@@ -1,12 +1,14 @@
 import { type FC, memo } from 'react'
 import { NodeProps } from 'reactflow'
 
+import { FlowNodeFile } from '@modou/meta-vfs/src/FlowNodeFile'
+import { observer } from '@modou/reactivity-react'
+
 import { FlowNodeHandles } from '../_/components/FlowNodeHandles'
 import { FlowNodeWrapper } from '../_/components/FlowNodeWrapper'
-import { FlowNodeProps } from '../_/types'
 import { startNodeMetadata } from './metadata'
 
-const _StartNode: FC<NodeProps<FlowNodeProps>> = (props) => {
+const _StartNode: FC<NodeProps<FlowNodeFile>> = (props) => {
   return (
     <>
       <FlowNodeWrapper meta={startNodeMetadata} node={props} />
@@ -14,6 +16,6 @@ const _StartNode: FC<NodeProps<FlowNodeProps>> = (props) => {
     </>
   )
 }
-export const StartNode = memo(_StartNode)
+export const StartNode = memo(observer(_StartNode))
 
 const classes = {}

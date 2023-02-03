@@ -10,9 +10,11 @@ export const nodeClasses = {
   //   box-shadow: var(--node-box-shadow);
   // `,
   nodeTargetPort: mcss`
-    background-color: #535bf2;
-    height: 10px;
-    width: 10px;
+    &.react-flow__handle{
+      background-color: #535bf2;
+      height: 10px;
+      width: 10px;
+    }
     &.react-flow__handle-left{
       left: -12px;
     }
@@ -21,9 +23,11 @@ export const nodeClasses = {
     }
   `,
   nodeSourcePort: mcss`
-    background-color: seagreen;
-    height: 10px;
-    width: 10px;
+    &.react-flow__handle{
+      background-color: seagreen;
+      height: 10px;
+      width: 10px;
+    }
     &.react-flow__handle-right{
       right: -12px;
     }

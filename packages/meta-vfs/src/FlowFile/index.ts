@@ -1,4 +1,13 @@
 import { omit } from 'lodash'
+import {
+  Connection,
+  type Edge,
+  EdgeChange,
+  type NodeChange,
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+} from 'reactflow'
 
 import { FileTypeEnum, PageFile } from '@modou/meta-vfs'
 import {
@@ -28,6 +37,7 @@ export class FlowFile extends BaseFile<FileMap, FlowFileMeta, PageFile> {
       subFileMap: observable,
       flowNodes: computed,
       flowEdges: computed,
+      reactFlowNodes: computed.struct,
     })
   }
 
@@ -44,6 +54,60 @@ export class FlowFile extends BaseFile<FileMap, FlowFileMeta, PageFile> {
     return this.subFileMap.flowEdges
   }
 
+  get reactFlowNodes() {
+    return this.flowNodes.map((n) => n.reactFlowMeta)
+  }
+
+  onReactFlowNodesChange = (changes: NodeChange[]) => {
+    runInAction(() => {
+      const res = applyNodeChanges<FlowNodeFile>(changes, this.reactFlowNodes)
+      this.subFileMap.flowNodes.length = 0
+      res.forEach((node) => {
+        node.data.reactFlowMeta = node
+        this.subFileMap.flowNodes.push(node.data)
+      })
+    })
+  }
+
+  get reactFlowEdges() {
+    console.log('this.flowEdges', this.flowEdges)
+    return this.flowEdges.map((e) => e.reactFlowMeta)
+  }
+
+  private readonly updateReactFlowEdges = (
+    edges: Array<Edge<FlowEdgeFile>>,
+  ) => {
+    runInAction(() => {
+      this.subFileMap.flowEdges.length = 0
+      edges.forEach((edge) => {
+        if (!edge.data) {
+          edge.data = FlowEdgeFile.create(
+            {
+              name: '',
+              id: edge.id,
+              source: edge.source,
+              sourceHandle: edge.sourceHandle!,
+              target: edge.target,
+              targetHandle: edge.targetHandle!,
+            },
+            this,
+          )
+        }
+        this.subFileMap.flowEdges.push(edge.data)
+      })
+    })
+  }
+
+  onReactFlowEdgesChange = (changes: EdgeChange[]) => {
+    const edges = applyEdgeChanges<FlowEdgeFile>(changes, this.reactFlowEdges)
+    this.updateReactFlowEdges(edges)
+  }
+
+  onReactFlowConnect = (connection: Connection) => {
+    const edges = addEdge(connection, this.reactFlowEdges)
+    this.updateReactFlowEdges(edges)
+  }
+
   toJSON() {
     return {
       ...this.meta,
@@ -53,7 +117,7 @@ export class FlowFile extends BaseFile<FileMap, FlowFileMeta, PageFile> {
   }
 
   // TODO 所有 version 提到 create 函数内部
-  static create(meta: FlowFileMeta, parentFile: PageFile) {
+  static create(meta: Omit<FlowFileMeta, 'version'>, parentFile: PageFile) {
     return runInAction(() => {
       const flowFile = new FlowFile(
         {

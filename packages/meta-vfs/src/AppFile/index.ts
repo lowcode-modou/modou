@@ -11,6 +11,7 @@ import {
 import { BaseFile, BaseFileMap, BaseFileMete } from '../BaseFile'
 import { EntityFile } from '../EntityFile'
 import { EntityRelationFile } from '../EntityRelationFile'
+import { FlowFile } from '../FlowFile'
 import { PageFile } from '../PageFile'
 import { emitters } from '../event-bus'
 import { FileTypeEnum } from '../types'
@@ -19,6 +20,7 @@ export type AppFileMeta = BaseFileMete
 interface FileMap extends BaseFileMap {
   readonly pages: PageFile[]
   readonly entities: EntityFile[]
+  readonly flows: FlowFile[]
 }
 export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
   protected constructor(meta: AppFileMeta) {
@@ -52,6 +54,7 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
   subFileMap: FileMap = {
     pages: [],
     entities: [],
+    flows: [],
   }
 
   private readonly persistMeta = () => {
@@ -77,11 +80,30 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
     })
   }
 
-  deletePage(pageId: string) {
+  deletePage = (pageId: string) => {
     const oldPages = [...this.subFileMap.pages]
     this.subFileMap.pages.length = 0
     this.subFileMap.pages.push(
       ...oldPages.filter((page) => page.meta.id !== pageId),
+    )
+  }
+
+  get flows() {
+    return this.subFileMap.flows
+  }
+
+  set flows(flows) {
+    runInAction(() => {
+      this.subFileMap.flows.length = 0
+      this.subFileMap.flows.push(...flows)
+    })
+  }
+
+  deleteFlow = (flowId: string) => {
+    const oldFlows = [...this.subFileMap.flows]
+    this.subFileMap.flows.length = 0
+    this.subFileMap.flows.push(
+      ...oldFlows.filter((flow) => flow.meta.id !== flowId),
     )
   }
 
@@ -100,7 +122,7 @@ export class AppFile extends BaseFile<FileMap, AppFileMeta, null> {
     return keyBy(this.entities, (entity) => entity.meta.id)
   }
 
-  deleteEntity(entityId: string) {
+  deleteEntity = (entityId: string) => {
     const oldEntities = [...this.subFileMap.entities]
     this.subFileMap.entities.length = 0
     this.subFileMap.entities.push(

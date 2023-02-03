@@ -4,20 +4,19 @@ import { NodeProps } from 'reactflow'
 
 import { type FlowNodeMetadata } from '@modou/core'
 import { cx, mcss } from '@modou/css-in-js'
-
-import { useFlowNodeId } from '../hooks'
-import { FlowNodeProps } from '../types'
+import { FlowNodeFile } from '@modou/meta-vfs/src/FlowNodeFile'
+import { runInAction } from '@modou/reactivity'
+import { observer } from '@modou/reactivity-react'
 
 enum NameMode {
   Edit,
   Readonly,
 }
-export const FlowNodeWrapper: FC<{
+const UOFlowNodeWrapper: FC<{
   children?: ReactNode
   meta: FlowNodeMetadata<any>
-  node: NodeProps<FlowNodeProps>
+  node: NodeProps<FlowNodeFile>
 }> = ({ children, meta, node }) => {
-  const id = useFlowNodeId()
   const [nameMode, setNameMode] = useState<NameMode>(NameMode.Readonly)
   return (
     <div className={cx(classes.wrapper)}>
@@ -34,26 +33,19 @@ export const FlowNodeWrapper: FC<{
                 className={classes.readOnlyName}
                 onClick={() => setNameMode(NameMode.Edit)}
               >
-                {node.data.name}
+                {node.data.meta.name}
               </span>
             )}
             {nameMode === NameMode.Edit && (
               <Input
                 autoFocus
                 size={'small'}
-                value={node.data.name}
+                value={node.data.meta.name}
                 onBlur={() => setNameMode(NameMode.Readonly)}
                 // TODO 失去焦点的时候保存
                 onChange={(e) => {
-                  node.data._onChangeNode({
-                    id,
-                    data: {
-                      ...node.data,
-                      name: e.target.value,
-                      props: {
-                        ...node.data.props,
-                      },
-                    },
+                  runInAction(() => {
+                    node.data.meta.name = e.target.value
                   })
                 }}
               />
@@ -66,6 +58,8 @@ export const FlowNodeWrapper: FC<{
     </div>
   )
 }
+
+export const FlowNodeWrapper = observer(UOFlowNodeWrapper)
 
 const classes = {
   wrapper: mcss`

@@ -86,6 +86,8 @@ export abstract class BaseFile<
       },
     )
     this.disposer = () => {
+      // 文件被删除了
+      emitters.emit('updateFileMeta', null)
       disposer()
       disposerSubFiles()
     }

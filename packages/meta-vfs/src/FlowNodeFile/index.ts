@@ -1,8 +1,14 @@
 import { omit } from 'lodash'
+import { type Node } from 'reactflow'
 
 import { FlowNodeBaseProps } from '@modou/core'
 import { FileTypeEnum } from '@modou/meta-vfs'
-import { makeObservable, observable, runInAction } from '@modou/reactivity'
+import {
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from '@modou/reactivity'
 
 import { BaseFile, BaseFileMete } from '../BaseFile'
 import { FlowFile } from '../FlowFile'
@@ -10,8 +16,10 @@ import { FlowFile } from '../FlowFile'
 export type FlowNodeFileMeta<T extends FlowNodeBaseProps = FlowNodeBaseProps> =
   BaseFileMete<T>
 
-export class FlowNodeFile extends BaseFile<{}, FlowNodeFileMeta, FlowFile> {
-  constructor(meta: FlowNodeFileMeta, parentFile: FlowFile) {
+export class FlowNodeFile<
+  T extends FlowNodeFileMeta = FlowNodeFileMeta,
+> extends BaseFile<{}, T, FlowFile> {
+  constructor(meta: T, parentFile: FlowFile) {
     super({
       fileType: FileTypeEnum.FlowNode,
       meta,
@@ -19,6 +27,27 @@ export class FlowNodeFile extends BaseFile<{}, FlowNodeFileMeta, FlowFile> {
     })
     makeObservable(this, {
       subFileMap: observable,
+      tempMeta: observable,
+      reactFlowMeta: computed.struct,
+    })
+  }
+
+  // TODO 添加 private 参考mobx文档  是支持的
+  tempMeta: Partial<Node> = {}
+  get reactFlowMeta(): Node {
+    return {
+      ...this.tempMeta,
+      id: this.meta.id,
+      type: this.meta.type,
+      position: this.meta.position,
+      data: this,
+    }
+  }
+
+  set reactFlowMeta(node: Node) {
+    runInAction(() => {
+      this.meta.position = node.position
+      this.tempMeta = node
     })
   }
 

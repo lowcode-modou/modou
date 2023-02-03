@@ -1,27 +1,23 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 import { Handle, NodeProps, Position } from 'reactflow'
 
-import { nodeClasses } from '../styles'
-import { FlowNodeProps } from '../types'
+import { FlowNodeFile } from '@modou/meta-vfs/src/FlowNodeFile'
+import { observer } from '@modou/reactivity-react'
 
-export const FlowNodeHandles: FC<
-  NodeProps<FlowNodeProps> & {
+import { nodeClasses } from '../styles'
+
+const UOFlowNodeHandles: FC<
+  NodeProps<FlowNodeFile> & {
     filterTargets?: (node: { name: string }) => boolean
     filterSources?: (node: { name: string }) => boolean
   }
 > = ({ data, isConnectable, filterTargets, filterSources }) => {
-  const targets = useMemo(() => {
-    if (!filterTargets) {
-      return data.targets
-    }
-    return data.targets.filter(filterTargets)
-  }, [data.targets, filterTargets])
-  const sources = useMemo(() => {
-    if (!filterSources) {
-      return data.sources
-    }
-    return data.sources.filter(filterSources)
-  }, [data.sources, filterSources])
+  const targets = filterTargets
+    ? data.meta.targets.filter(filterTargets)
+    : data.meta.targets
+  const sources = filterSources
+    ? data.meta.sources.filter(filterSources)
+    : data.meta.sources
   return (
     <>
       {targets.map((target) => (
@@ -47,3 +43,5 @@ export const FlowNodeHandles: FC<
     </>
   )
 }
+
+export const FlowNodeHandles = observer(UOFlowNodeHandles)

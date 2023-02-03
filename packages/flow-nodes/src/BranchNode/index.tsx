@@ -3,7 +3,10 @@ import produce from 'immer'
 import { type FC, memo } from 'react'
 import { NodeProps } from 'reactflow'
 
-import { generateId } from '@modou/core'
+import { FlowNodeMetadata, generateId } from '@modou/core'
+import { FlowFile } from '@modou/meta-vfs/src/FlowFile'
+import { FlowNodeFile } from '@modou/meta-vfs/src/FlowNodeFile'
+import { observer } from '@modou/reactivity-react'
 import { mr } from '@modou/refine'
 
 import { FlowNodeHandles } from '../_/components/FlowNodeHandles'
@@ -15,7 +18,9 @@ import { DEFAULT_LASE_ELSE_SCRIPT } from './constants'
 import { MRSchemeBranchNodeProps, branchNodeNodeMetadata } from './metadata'
 
 const _BranchNode: FC<
-  NodeProps<FlowNodeProps<mr.infer<typeof MRSchemeBranchNodeProps>>>
+  NodeProps<
+    FlowNodeFile<FlowNodeMetadata<mr.infer<typeof MRSchemeBranchNodeProps>>>
+  >
 > = (props) => {
   const id = useFlowNodeId()
   console.log('_BranchNode')
@@ -109,4 +114,4 @@ const _BranchNode: FC<
     </>
   )
 }
-export const BranchNode = memo(_BranchNode)
+export const BranchNode = memo(observer(_BranchNode))

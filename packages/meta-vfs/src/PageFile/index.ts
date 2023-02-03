@@ -63,6 +63,18 @@ export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
     return this.subFileMap.flows
   }
 
+  get flowMap() {
+    return keyBy(this.subFileMap.flows, (flow) => flow.meta.id)
+  }
+
+  deleteFlow = (flowId: string) => {
+    const oldFlows = [...this.subFileMap.flows]
+    this.subFileMap.flows.length = 0
+    this.subFileMap.flows.push(
+      ...oldFlows.filter((flow) => flow.meta.id !== flowId),
+    )
+  }
+
   get widgetMap() {
     return keyBy(this.subFileMap.widgets, (widget) => widget.meta.id)
   }

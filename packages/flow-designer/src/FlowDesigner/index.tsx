@@ -1,89 +1,18 @@
-import { useClickAway, useMemoizedFn } from 'ahooks'
-import { ComponentProps, FC, useRef, useState } from 'react'
-import ReactFlow, {
-  Controls,
-  Edge,
-  Node,
-  addEdge,
-  useEdgesState,
-  useNodesState,
-} from 'reactflow'
-import 'reactflow/dist/base.css'
+import { useClickAway } from 'ahooks'
+import { mapValues } from 'lodash'
+import { FC, useMemo, useRef, useState } from 'react'
+import ReactFlow, { Controls } from 'reactflow'
 
-import { useAppFactory } from '@modou/core'
+import { FlowNodeMetadata, generateId, useAppFactory } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { FlowNodeEnum } from '@modou/flow-nodes'
+import { FlowFile } from '@modou/meta-vfs/src/FlowFile'
+import { FlowNodeFile } from '@modou/meta-vfs/src/FlowNodeFile'
+import { observer } from '@modou/reactivity-react'
 
-import { FunctionIcon, TurboEdge, TurboNode } from './components'
-import { TurboNodeData } from './components/TurboNode'
+import { TurboEdge, TurboNode } from './components'
 
-const initialNodes: Array<Node<TurboNodeData>> = [
-  {
-    id: '1',
-    position: { x: 0, y: 0 },
-    data: { icon: <FunctionIcon />, title: 'readFile', subline: 'api.ts' },
-    type: 'turbo',
-  },
-  {
-    id: '2',
-    position: { x: 250, y: 0 },
-    data: { icon: <FunctionIcon />, title: 'bundle', subline: 'apiContents' },
-    type: 'turbo',
-  },
-  {
-    id: '3',
-    position: { x: 0, y: 250 },
-    data: { icon: <FunctionIcon />, title: 'readFile', subline: 'sdk.ts' },
-    type: 'turbo',
-  },
-  {
-    id: '4',
-    position: { x: 250, y: 250 },
-    data: { icon: <FunctionIcon />, title: 'bundle', subline: 'sdkContents' },
-    type: 'turbo',
-  },
-  {
-    id: '5',
-    position: { x: 500, y: 125 },
-    data: { icon: <FunctionIcon />, title: 'concat', subline: 'api, sdk' },
-    type: 'turbo',
-  },
-  {
-    id: '6',
-    position: { x: 750, y: 125 },
-    data: { icon: <FunctionIcon />, title: 'fullBundle' },
-    type: 'turbo',
-  },
-]
-
-const initialEdges: Edge[] = [
-  {
-    id: 'e1-2',
-    source: '1',
-    target: '2',
-  },
-  {
-    id: 'e3-4',
-    source: '3',
-    target: '4',
-  },
-  {
-    id: 'e2-5',
-    source: '2',
-    target: '5',
-  },
-  {
-    id: 'e4-5',
-    source: '4',
-    target: '5',
-  },
-  {
-    id: 'e5-6',
-    source: '5',
-    target: '6',
-  },
-]
-
-const nodeTypes = {
+const NODE_TYPES = {
   turbo: TurboNode,
 }
 
@@ -95,18 +24,19 @@ const defaultEdgeOptions = {
   type: 'turbo',
   markerEnd: 'edge-circle',
 }
-export const FlowDesigner: FC = (props) => {
+export const UOFlowDesigner: FC<{ file: FlowFile }> = ({ file }) => {
   const { appFactory } = useAppFactory()
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
-
-  const onConnect = useMemoizedFn<
-    Required<ComponentProps<typeof ReactFlow>>['onConnect']
-  >((params) => setEdges((els) => addEdge(params, els)))
 
   const contextMenuRef = useRef<HTMLDivElement>(null)
   const [contextMenuOpen, setContextMenuOpen] = useState(false)
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 })
+
+  const nodeTypes = useMemo(() => {
+    return {
+      ...NODE_TYPES,
+      ...mapValues(appFactory.flowNodeByType, (f) => f.component),
+    }
+  }, [])
 
   useClickAway(() => {
     setContextMenuOpen(false)
@@ -121,17 +51,33 @@ export const FlowDesigner: FC = (props) => {
             left: contextMenuPosition.x,
             top: contextMenuPosition.y,
           }}
+          onClick={() => {
+            FlowNodeFile.create(
+              {
+                ...FlowNodeMetadata.mrSchemeToDefaultJson(
+                  appFactory.flowNodeByType[FlowNodeEnum.BRANCH_NODE].metadata
+                    .jsonPropsSchema,
+                ),
+                id: generateId(),
+                position: {
+                  x: contextMenuPosition.x,
+                  y: contextMenuPosition.y,
+                },
+              },
+              file,
+            )
+          }}
         >
           123
         </div>
       )}
       <ReactFlow
         className={classes.reactFlow}
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
+        nodes={file.reactFlowNodes}
+        edges={file.reactFlowEdges}
+        onNodesChange={file.onReactFlowNodesChange}
+        onEdgesChange={file.onReactFlowEdgesChange}
+        onConnect={file.onReactFlowConnect}
         fitView
         maxZoom={1}
         nodeTypes={nodeTypes}
@@ -179,10 +125,14 @@ export const FlowDesigner: FC = (props) => {
   )
 }
 
+export const FlowDesigner = observer(UOFlowDesigner)
+
 export const classes = {
   reactFlow: mcss`
-    --bg-color: rgb(17, 17, 17);
-    --text-color: rgb(243, 244, 246);
+    //--bg-color: rgb(17, 17, 17);
+    --bg-color: rgb(255,255,255);
+    //--text-color: rgb(243, 244, 246);
+    --text-color: rgb(0, 0, 0);
     --node-border-radius: 10px;
     --node-box-shadow: 10px 0 15px rgba(42, 138, 246, 0.3), -10px 0 15px rgba(233, 42, 103, 0.3);
     background-color: var(--bg-color);
@@ -300,19 +250,7 @@ export const classes = {
       align-items: center;
       position: relative;
     }
-
-    .react-flow__handle {
-      opacity: 0;
-    }
-
-    .react-flow__handle.source {
-      right: -10px;
-    }
-
-    .react-flow__handle.target {
-      left: -10px;
-    }
-
+    
     .react-flow__node:focus {
       outline: none;
     }
