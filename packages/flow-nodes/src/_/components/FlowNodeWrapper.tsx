@@ -15,7 +15,7 @@ enum NameMode {
 const UOFlowNodeWrapper: FC<{
   children?: ReactNode
   meta: FlowNodeMetadata<any>
-  node: NodeProps<FlowNodeFile>
+  node: NodeProps<FlowNodeFile<any>>
 }> = ({ children, meta, node }) => {
   const [nameMode, setNameMode] = useState<NameMode>(NameMode.Readonly)
   return (

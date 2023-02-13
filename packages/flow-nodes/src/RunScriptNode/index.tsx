@@ -1,20 +1,24 @@
-import produce from 'immer'
-import { type FC, memo } from 'react'
+import { type FC } from 'react'
 import { NodeProps } from 'reactflow'
 
 import { CodeEditor, CodeEditorModeEnum } from '@modou/code-editor'
+import {
+  FlowNodeFile,
+  FlowNodeFileMeta,
+} from '@modou/meta-vfs/src/FlowNodeFile'
+import { runInAction } from '@modou/reactivity'
+import { observer } from '@modou/reactivity-react'
 import { mr } from '@modou/refine'
 
 import { FlowNodeHandles } from '../_/components/FlowNodeHandles'
 import { FlowNodeWrapper } from '../_/components/FlowNodeWrapper'
-import { useFlowNodeId } from '../_/hooks'
-import { FlowNodeProps } from '../_/types'
 import { MRSchemeRunScriptNodeProps, runScriptNodeMetadata } from './metadata'
 
 const _RunScriptNode: FC<
-  NodeProps<FlowNodeProps<mr.infer<typeof MRSchemeRunScriptNodeProps>>>
+  NodeProps<
+    FlowNodeFile<FlowNodeFileMeta<mr.infer<typeof MRSchemeRunScriptNodeProps>>>
+  >
 > = (props) => {
-  const id = useFlowNodeId()
   console.log('_RunScriptNode')
 
   return (
@@ -22,19 +26,20 @@ const _RunScriptNode: FC<
       <FlowNodeWrapper meta={runScriptNodeMetadata} node={props}>
         <CodeEditor
           mode={CodeEditorModeEnum.Javascript}
-          value={props.data.props.script}
+          value={props.data.meta.props.script}
           onChange={(value) => {
-            props.data._onChangeNode({
-              id,
-              data: produce(props.data, (draft) => {
-                draft.props.script = value
-              }),
+            runInAction(() => {
+              props.data.meta.props.script = value
             })
           }}
         />
       </FlowNodeWrapper>
-      <FlowNodeHandles {...props} />
+      <FlowNodeHandles
+        targets={props.data.meta.targets}
+        sources={props.data.meta.sources}
+        isConnectable={props.isConnectable}
+      />
     </>
   )
 }
-export const RunScriptNode = memo(_RunScriptNode)
+export const RunScriptNode = observer(_RunScriptNode)

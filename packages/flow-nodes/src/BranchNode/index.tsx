@@ -1,35 +1,34 @@
 import { Button, Space } from 'antd'
-import produce from 'immer'
-import { type FC, memo } from 'react'
+import { type FC } from 'react'
 import { NodeProps } from 'reactflow'
 
-import { FlowNodeMetadata, generateId } from '@modou/core'
-import { FlowFile } from '@modou/meta-vfs/src/FlowFile'
-import { FlowNodeFile } from '@modou/meta-vfs/src/FlowNodeFile'
+import { generateId } from '@modou/core'
+import {
+  FlowNodeFile,
+  FlowNodeFileMeta,
+} from '@modou/meta-vfs/src/FlowNodeFile'
+import { runInAction } from '@modou/reactivity'
 import { observer } from '@modou/reactivity-react'
 import { mr } from '@modou/refine'
 
 import { FlowNodeHandles } from '../_/components/FlowNodeHandles'
 import { FlowNodeWrapper } from '../_/components/FlowNodeWrapper'
-import { useFlowNodeId } from '../_/hooks'
-import { FlowNodeProps } from '../_/types'
 import { CaseBlock } from './CaseBlock'
 import { DEFAULT_LASE_ELSE_SCRIPT } from './constants'
 import { MRSchemeBranchNodeProps, branchNodeNodeMetadata } from './metadata'
 
 const _BranchNode: FC<
   NodeProps<
-    FlowNodeFile<FlowNodeMetadata<mr.infer<typeof MRSchemeBranchNodeProps>>>
+    FlowNodeFile<FlowNodeFileMeta<mr.infer<typeof MRSchemeBranchNodeProps>>>
   >
 > = (props) => {
-  const id = useFlowNodeId()
   console.log('_BranchNode')
 
   return (
     <>
       <FlowNodeWrapper meta={branchNodeNodeMetadata} node={props}>
         <Space direction="vertical" style={{ display: 'flex' }}>
-          {props.data.props.branches.map((branch, index, branches) => (
+          {props.data.meta.props.branches.map((branch, index, branches) => (
             <CaseBlock
               key={branch.port}
               isHead={index === 0}
@@ -37,28 +36,21 @@ const _BranchNode: FC<
               onlyOne={branches.length === 1}
               branch={branch}
               onChangeBranch={(branch) => {
-                props.data._onChangeNode({
-                  id,
-                  data: {
-                    ...props.data,
-                    props: {
-                      ...props.data.props,
-                      branches: props.data.props.branches.map((br) => {
-                        if (br.port !== branch.port) {
-                          return br
-                        }
-                        return branch
-                      }),
-                    },
-                  },
+                runInAction(() => {
+                  props.data.meta.props.branches =
+                    props.data.meta.props.branches.map((br) => {
+                      if (br.port !== branch.port) {
+                        return br
+                      }
+                      return branch
+                    })
                 })
               }}
               onDeleteBranch={(branch) => {
                 // TODO 删除 branch 的同时删除相关的边
-                props.data._onChangeNode({
-                  id,
-                  data: produce(props.data, (draft) => {
-                    draft.props.branches = draft.props.branches
+                runInAction(() => {
+                  props.data.meta.props.branches =
+                    props.data.meta.props.branches
                       .filter((br) => br.port !== branch.port)
                       .map((br, index) => {
                         if (
@@ -72,10 +64,9 @@ const _BranchNode: FC<
                         }
                         return br
                       })
-                    draft.sources = draft.sources.filter(
-                      (s) => s.name !== branch.port,
-                    )
-                  }),
+                  props.data.meta.sources = props.data.meta.sources.filter(
+                    (s) => s.name !== branch.port,
+                  )
                 })
               }}
             />
@@ -85,24 +76,22 @@ const _BranchNode: FC<
             type="primary"
             onClick={() => {
               const portId = generateId()
-              props.data._onChangeNode({
-                id,
-                data: produce(props.data, (draft) => {
-                  draft.sources.push({
-                    name: portId,
-                  })
-                  draft.props.branches = draft.props.branches.map((branch) => ({
+              runInAction(() => {
+                props.data.meta.sources.push({
+                  name: portId,
+                })
+                props.data.meta.props.branches =
+                  props.data.meta.props.branches.map((branch) => ({
                     ...branch,
                     script:
                       branch.script === DEFAULT_LASE_ELSE_SCRIPT
                         ? ''
                         : branch.script,
                   }))
-                  draft.props.branches.push({
-                    port: portId,
-                    script: DEFAULT_LASE_ELSE_SCRIPT,
-                  })
-                }),
+                props.data.meta.props.branches.push({
+                  port: portId,
+                  script: DEFAULT_LASE_ELSE_SCRIPT,
+                })
               })
             }}
           >
@@ -110,8 +99,12 @@ const _BranchNode: FC<
           </Button>
         </Space>
       </FlowNodeWrapper>
-      <FlowNodeHandles {...props} filterSources={() => false} />
+      <FlowNodeHandles
+        sources={[]}
+        targets={props.data.meta.targets}
+        isConnectable={props.isConnectable}
+      />
     </>
   )
 }
-export const BranchNode = memo(observer(_BranchNode))
+export const BranchNode = observer(_BranchNode)

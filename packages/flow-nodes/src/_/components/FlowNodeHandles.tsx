@@ -1,23 +1,18 @@
 import { FC } from 'react'
-import { Handle, NodeProps, Position } from 'reactflow'
+import { Handle, Position } from 'reactflow'
 
 import { FlowNodeFile } from '@modou/meta-vfs/src/FlowNodeFile'
 import { observer } from '@modou/reactivity-react'
 
 import { nodeClasses } from '../styles'
 
-const UOFlowNodeHandles: FC<
-  NodeProps<FlowNodeFile> & {
-    filterTargets?: (node: { name: string }) => boolean
-    filterSources?: (node: { name: string }) => boolean
-  }
-> = ({ data, isConnectable, filterTargets, filterSources }) => {
-  const targets = filterTargets
-    ? data.meta.targets.filter(filterTargets)
-    : data.meta.targets
-  const sources = filterSources
-    ? data.meta.sources.filter(filterSources)
-    : data.meta.sources
+type Targets = FlowNodeFile['meta']['targets']
+type Sources = FlowNodeFile['meta']['sources']
+const UOFlowNodeHandles: FC<{
+  targets: Targets
+  sources: Sources
+  isConnectable: boolean
+}> = ({ targets, sources, isConnectable }) => {
   return (
     <>
       {targets.map((target) => (

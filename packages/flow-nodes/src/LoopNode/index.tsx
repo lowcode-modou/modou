@@ -1,25 +1,29 @@
-import produce from 'immer'
-import { type FC, memo, useMemo } from 'react'
+import { type FC } from 'react'
 import { Handle, NodeProps, Position } from 'reactflow'
 
 import { CodeEditor, CodeEditorModeEnum } from '@modou/code-editor'
+import {
+  FlowNodeFile,
+  FlowNodeFileMeta,
+} from '@modou/meta-vfs/src/FlowNodeFile'
+import { runInAction } from '@modou/reactivity'
+import { observer } from '@modou/reactivity-react'
 import { mr } from '@modou/refine'
 
 import { FlowNodeHandles } from '../_/components/FlowNodeHandles'
 import { FlowNodeWrapper } from '../_/components/FlowNodeWrapper'
-import { useFlowNodeId } from '../_/hooks'
 import { nodeClasses } from '../_/styles'
-import { FlowNodeProps, ScopedFlowNodePortNameEnum } from '../_/types'
+import { ScopedFlowNodePortNameEnum } from '../_/types'
 import { MRSchemeLoopNodeProps, loopNodeMetadata } from './metadata'
 
-type LoopNodeProps = mr.infer<typeof MRSchemeLoopNodeProps>
-const _LoopNode: FC<NodeProps<FlowNodeProps<LoopNodeProps>>> = (props) => {
-  const id = useFlowNodeId()
-  const loopBodyPort = useMemo(() => {
-    return props.data.sources.find(
-      (s) => s.name === ScopedFlowNodePortNameEnum.LOOP_BODY,
-    )!
-  }, [props.data.sources])
+const _LoopNode: FC<
+  NodeProps<
+    FlowNodeFile<FlowNodeFileMeta<mr.infer<typeof MRSchemeLoopNodeProps>>>
+  >
+> = (props) => {
+  const loopBodyPort = props.data.meta.sources.find(
+    (s) => s.name === ScopedFlowNodePortNameEnum.LOOP_BODY,
+  )!
   return (
     <>
       <FlowNodeWrapper meta={loopNodeMetadata} node={props}>
@@ -27,23 +31,21 @@ const _LoopNode: FC<NodeProps<FlowNodeProps<LoopNodeProps>>> = (props) => {
           <div>循环体</div>
           <CodeEditor
             mode={CodeEditorModeEnum.Javascript}
-            value={props.data.props.iterable}
+            value={props.data.meta.props.iterable}
             onChange={(value) => {
-              props.data._onChangeNode({
-                id,
-                data: produce(props.data, (draft) => {
-                  draft.props.iterable = value
-                }),
+              runInAction(() => {
+                props.data.meta.props.iterable = value
               })
             }}
           />
         </div>
       </FlowNodeWrapper>
       <FlowNodeHandles
-        {...props}
-        filterSources={(port) =>
-          port.name !== ScopedFlowNodePortNameEnum.LOOP_BODY
-        }
+        sources={props.data.meta.sources.filter(
+          (port) => port.name !== ScopedFlowNodePortNameEnum.LOOP_BODY,
+        )}
+        targets={props.data.meta.targets}
+        isConnectable={props.isConnectable}
       />
       <Handle
         className={nodeClasses.nodeSourcePort}
@@ -56,4 +58,4 @@ const _LoopNode: FC<NodeProps<FlowNodeProps<LoopNodeProps>>> = (props) => {
     </>
   )
 }
-export const LoopNode = memo(_LoopNode)
+export const LoopNode = observer(_LoopNode)
