@@ -2,9 +2,8 @@ import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { FC } from 'react'
 
-import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
-import { EntityFileMeta } from '@modou/meta-vfs'
+import { EntityFileMeta, useAppManager } from '@modou/meta-vfs'
 import { observer } from '@modou/reactivity-react'
 
 const _EntitiesList: FC<{

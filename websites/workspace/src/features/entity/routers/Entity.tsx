@@ -4,8 +4,8 @@ import { Card } from 'antd'
 import { FC } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { useAppManager } from '@modou/meta-vfs'
 import { observer } from '@modou/reactivity-react'
 
 import {

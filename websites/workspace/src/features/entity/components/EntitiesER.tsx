@@ -14,8 +14,8 @@ import ReactFlow, {
   useNodesState,
 } from 'reactflow'
 
-import { useAppManager } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
+import { useAppManager } from '@modou/meta-vfs'
 import { runInAction } from '@modou/reactivity'
 import { observer } from '@modou/reactivity-react'
 

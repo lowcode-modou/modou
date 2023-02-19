@@ -2,7 +2,6 @@ import { Button, Space } from 'antd'
 import { type FC } from 'react'
 import { NodeProps } from 'reactflow'
 
-import { generateId } from '@modou/core'
 import {
   FlowNodeFile,
   FlowNodeFileMeta,
@@ -10,6 +9,7 @@ import {
 import { runInAction } from '@modou/reactivity'
 import { observer } from '@modou/reactivity-react'
 import { mr } from '@modou/refine'
+import { generateId } from '@modou/shared'
 
 import { FlowNodeHandles } from '../_/components/FlowNodeHandles'
 import { FlowNodeWrapper } from '../_/components/FlowNodeWrapper'
@@ -17,7 +17,7 @@ import { CaseBlock } from './CaseBlock'
 import { DEFAULT_LASE_ELSE_SCRIPT } from './constants'
 import { MRSchemeBranchNodeProps, branchNodeNodeMetadata } from './metadata'
 
-const _BranchNode: FC<
+const UOBranchNode: FC<
   NodeProps<
     FlowNodeFile<FlowNodeFileMeta<mr.infer<typeof MRSchemeBranchNodeProps>>>
   >
@@ -47,7 +47,6 @@ const _BranchNode: FC<
                 })
               }}
               onDeleteBranch={(branch) => {
-                // TODO 删除 branch 的同时删除相关的边
                 runInAction(() => {
                   props.data.meta.props.branches =
                     props.data.meta.props.branches
@@ -107,4 +106,4 @@ const _BranchNode: FC<
     </>
   )
 }
-export const BranchNode = observer(_BranchNode)
+export const BranchNode = observer(UOBranchNode)

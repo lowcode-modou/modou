@@ -1,5 +1,5 @@
 {
-  "name": "@modou/core",
+  "name": "@modou/shared",
   "version": "1.0.0",
   "description": "",
   "main": "src",
@@ -10,5 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "nanoid": "^4.0.1"
   }
 }

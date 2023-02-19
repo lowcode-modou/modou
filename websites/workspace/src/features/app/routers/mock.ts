@@ -1,4 +1,4 @@
-import { WidgetBaseProps, WidgetMetadata, generateId } from '@modou/core'
+import { WidgetBaseProps, WidgetMetadata } from '@modou/core'
 import {
   AppFile,
   EntityFieldEnum,
@@ -11,6 +11,7 @@ import {
   PageFile,
   WidgetFile,
 } from '@modou/meta-vfs'
+import { generateId } from '@modou/shared'
 import {
   buttonWidgetMetadata,
   colWidgetMetadata,

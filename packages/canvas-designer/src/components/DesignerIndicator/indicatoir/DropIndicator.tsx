@@ -14,7 +14,8 @@ import {
   useState,
 } from 'react'
 
-import { AppFactoryContext, useWidgetMetaSlots } from '@modou/core'
+import { AppFactoryContext } from '@modou/asset-vfs'
+import { useWidgetMetaSlots } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
 import { observer } from '@modou/reactivity-react'
 

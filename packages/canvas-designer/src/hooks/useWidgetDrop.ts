@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef } from 'react'
 import { useDrop } from 'react-dnd'
 import { match } from 'ts-pattern'
 
-import { AppFactoryContext } from '@modou/core'
+import { AppFactoryContext } from '@modou/asset-vfs'
 import { WidgetFileMeta } from '@modou/meta-vfs'
 
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'

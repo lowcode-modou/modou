@@ -4,17 +4,15 @@ import { Button, Dropdown, Form, List, Typography } from 'antd'
 import { ComponentProps, Dispatch, FC, SetStateAction, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 
-import {
-  AppFactoryContext,
-  FlowNodeMetadata,
-  generateId,
-  useAppManager,
-} from '@modou/core'
+import { AppFactoryContext } from '@modou/asset-vfs'
+import { FlowNodeMetadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { FlowNodeEnum } from '@modou/flow-nodes'
+import { useAppManager } from '@modou/meta-vfs'
 import { FlowFile, FlowFileMeta } from '@modou/meta-vfs/src/FlowFile'
 import { FlowNodeFile } from '@modou/meta-vfs/src/FlowNodeFile'
 import { Observer, observer } from '@modou/reactivity-react'
+import { generateId } from '@modou/shared'
 
 import { PageRouterParamsKey } from '../../types'
 

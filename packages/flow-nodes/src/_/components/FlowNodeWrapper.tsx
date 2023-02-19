@@ -1,4 +1,5 @@
-import { Input } from 'antd'
+import { DeleteOutlined } from '@ant-design/icons'
+import { Button, Input } from 'antd'
 import { FC, ReactNode, useState } from 'react'
 import { NodeProps } from 'reactflow'
 
@@ -51,8 +52,19 @@ const UOFlowNodeWrapper: FC<{
               />
             )}
           </div>
+          <span>{meta.name}</span>
         </div>
-        <span>{meta.name}</span>
+
+        <div>
+          <Button
+            size={'small'}
+            type="text"
+            danger
+            onClick={() => node.data.parentFile.deleteNode(node.id)}
+          >
+            <DeleteOutlined />
+          </Button>
+        </div>
       </div>
       {children && <div className={classes.body}>{children}</div>}
     </div>
@@ -66,16 +78,17 @@ const classes = {
     border: 1px solid #1677ff;
     border-radius: 8px;
     //height: 40px;
-    width: 360px;
+    width: 220px;
     //overflow: hidden;
-    font-size: 14px;
+    font-size: 12px;
     box-sizing: border-box;
   `,
   header: mcss`
     background-color: #888888;
-    height: 34px;
+    height: 28px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0 8px;
     color: white;
     border-top-left-radius: 8px;
@@ -87,11 +100,12 @@ const classes = {
   headerLeft: mcss`
     display: flex;
     align-items: center;
-    border-right: 1px solid white;
-    margin-right: 4px;
+    
   `,
   nameWrapper: mcss`
     padding: 0 4px;
+    border-right: 1px solid white;
+    margin-right: 4px;
   `,
   readOnlyName: mcss`
     &:hover{

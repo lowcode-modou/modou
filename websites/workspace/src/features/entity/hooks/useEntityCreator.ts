@@ -1,8 +1,8 @@
 import { useBoolean } from 'ahooks'
 import { Form } from 'antd'
 
-import { generateId, useAppManager } from '@modou/core'
-import { EntityFile, EntityFileMeta } from '@modou/meta-vfs'
+import { EntityFile, EntityFileMeta, useAppManager } from '@modou/meta-vfs'
+import { generateId } from '@modou/shared'
 
 export const useEntityCreator = () => {
   const [open, { setFalse, setTrue }] = useBoolean(false)

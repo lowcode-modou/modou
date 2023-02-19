@@ -1,6 +1,6 @@
 import { FC, ReactNode, createContext, useContext } from 'react'
 
-import { AppManager } from '@modou/meta-vfs/src/AppManager'
+import { AppManager } from './AppManager'
 
 const AppManagerContext = createContext<AppManager | null>(null)
 

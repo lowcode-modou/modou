@@ -6,8 +6,8 @@ import { head, isEmpty } from 'lodash'
 import { FC, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { useAppManager } from '@modou/meta-vfs'
 import { observer } from '@modou/reactivity-react'
 
 const _AppHome: FC = () => {

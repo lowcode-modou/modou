@@ -1,7 +1,8 @@
 import { FC, useContext, useEffect, useState } from 'react'
 import * as React from 'react'
 
-import { AppFactoryContext, useAppManager } from '@modou/core'
+import { AppFactoryContext } from '@modou/asset-vfs'
+import { useAppManager } from '@modou/meta-vfs'
 import { toJS } from '@modou/reactivity'
 import { observer, useLocalObservable } from '@modou/reactivity-react'
 import {

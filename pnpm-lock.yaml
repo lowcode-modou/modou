@@ -25,6 +25,7 @@ importers:
       '@modou/refine': workspace:^1.0.0
       '@modou/render': workspace:^1.0.0
       '@modou/setters': workspace:^1.0.0
+      '@modou/shared': workspace:^1.0.0
       '@modou/simulator': workspace:^1.0.0
       '@modou/state-manager': workspace:^0.0.1
       '@modou/widgets-antd': workspace:^1.0.0
@@ -89,6 +90,7 @@ importers:
       '@modou/refine': link:packages/refine
       '@modou/render': link:packages/render
       '@modou/setters': link:packages/setters
+      '@modou/shared': link:packages/shared
       '@modou/simulator': link:packages/simulator
       '@modou/state-manager': link:packages/state-manager
       '@modou/widgets-antd': link:widgets/antd
@@ -420,6 +422,12 @@ importers:
 
   packages/setters:
     specifiers: {}
+
+  packages/shared:
+    specifiers:
+      nanoid: ^4.0.1
+    dependencies:
+      nanoid: 4.0.1
 
   packages/simulator:
     specifiers: {}
@@ -11448,6 +11456,12 @@ packages:
 
   /nanoid/4.0.0:
     resolution: {integrity: sha512-IgBP8piMxe/gf73RTQx7hmnhwz0aaEXYakvqZyE302IXW3HyVNhdNGC+O2MwMAVhLEnvXlvKtGbtJf6wvHihCg==}
+    engines: {node: ^14 || ^16 || >=18}
+    hasBin: true
+    dev: false
+
+  /nanoid/4.0.1:
+    resolution: {integrity: sha512-udKGtCCUafD3nQtJg9wBhRP3KMbPglUsgV5JVsXhvyBs/oefqb4sqMEhKBBgqZncYowu58p1prsZQBYvAj/Gww==}
     engines: {node: ^14 || ^16 || >=18}
     hasBin: true
     dev: false

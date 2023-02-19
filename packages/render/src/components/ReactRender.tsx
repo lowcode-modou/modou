@@ -4,7 +4,8 @@ import zhCN from 'antd/locale/zh_CN'
 import { FC, useContext } from 'react'
 import * as React from 'react'
 
-import { AppFactoryContext, AppManagerProvider } from '@modou/core'
+import { AppFactoryContext } from '@modou/asset-vfs'
+import { AppManagerProvider } from '@modou/meta-vfs'
 import { observer } from '@modou/reactivity-react'
 import { AppStateProvider, CanvasStateProvider } from '@modou/state-manager'
 

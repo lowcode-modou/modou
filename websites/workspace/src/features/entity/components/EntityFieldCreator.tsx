@@ -15,13 +15,14 @@ import {
   useState,
 } from 'react'
 
-import { generateId, useAppManager } from '@modou/core'
 import {
   EntityFieldEnum,
   EntityFieldFile,
   EntityFieldFileMeta,
   EntityFile,
+  useAppManager,
 } from '@modou/meta-vfs'
+import { generateId } from '@modou/shared'
 
 const buildEntityFieldConfig = (
   entityFieldType: EntityFieldEnum,

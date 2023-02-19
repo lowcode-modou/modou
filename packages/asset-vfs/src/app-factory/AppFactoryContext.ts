@@ -1,6 +1,6 @@
 import { createContext, memo, useContext } from 'react'
 
-import { AssetVFS } from '@modou/asset-vfs'
+import { WidgetGroupEnum } from '@modou/core/src/types'
 import {
   BranchNode,
   LoopNode,
@@ -38,8 +38,8 @@ import {
   tableWidgetMetadata,
 } from '@modou/widgets-antd'
 
-import { AppFactory } from '../app-factory'
-import { WidgetGroupEnum } from '../types'
+import { AssetVFS } from '../AssetVFS'
+import { AppFactory } from './index'
 
 export const defaultAppFactory = AppFactory.create({
   widgets: [

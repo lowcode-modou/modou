@@ -17,6 +17,8 @@ export * from './WidgetFile'
 export * from './types'
 //
 export * from './AppManager'
+
+export * from './AppManagerContext'
 // export class AppManager {
 //   constructor(app: AppFile) {
 //     this.app = app

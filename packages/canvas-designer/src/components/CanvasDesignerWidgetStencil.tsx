@@ -3,16 +3,15 @@ import { isEmpty } from 'lodash'
 import { FC, useContext, useEffect, useMemo, useRef } from 'react'
 import { useDrag } from 'react-dnd'
 
+import { AppFactory, AppFactoryContext } from '@modou/asset-vfs'
 import {
-  AppFactory,
-  AppFactoryContext,
   WidgetBaseProps,
   WidgetGroupEnum,
   WidgetMetadata,
-  generateId,
   getWidgetGroupLabel,
 } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { generateId } from '@modou/shared'
 
 import { WidgetDragType } from '../types'
 

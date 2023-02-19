@@ -14,7 +14,7 @@ import { FlowNodeHandles } from '../_/components/FlowNodeHandles'
 import { FlowNodeWrapper } from '../_/components/FlowNodeWrapper'
 import { MRSchemeRunScriptNodeProps, runScriptNodeMetadata } from './metadata'
 
-const _RunScriptNode: FC<
+const UORunScriptNode: FC<
   NodeProps<
     FlowNodeFile<FlowNodeFileMeta<mr.infer<typeof MRSchemeRunScriptNodeProps>>>
   >
@@ -42,4 +42,4 @@ const _RunScriptNode: FC<
     </>
   )
 }
-export const RunScriptNode = observer(_RunScriptNode)
+export const RunScriptNode = observer(UORunScriptNode)

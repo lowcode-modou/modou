@@ -1,16 +1,15 @@
-import { useClickAway } from 'ahooks'
 import { mapValues } from 'lodash'
-import { FC, useMemo, useRef, useState } from 'react'
-import ReactFlow, { Controls } from 'reactflow'
+import { ComponentProps, FC, useMemo, useState } from 'react'
+import ReactFlow, { Controls, ReactFlowProvider } from 'reactflow'
 
-import { FlowNodeMetadata, generateId, useAppFactory } from '@modou/core'
+import { useAppFactory } from '@modou/asset-vfs'
 import { mcss } from '@modou/css-in-js'
-import { FlowNodeEnum } from '@modou/flow-nodes'
 import { FlowFile } from '@modou/meta-vfs/src/FlowFile'
-import { FlowNodeFile } from '@modou/meta-vfs/src/FlowNodeFile'
 import { observer } from '@modou/reactivity-react'
+import { getMonitorWall } from '@modou/shared'
 
 import { TurboEdge, TurboNode } from './components'
+import { ContextMenu } from './components/ContextMenu'
 
 const NODE_TYPES = {
   turbo: TurboNode,
@@ -27,7 +26,6 @@ const defaultEdgeOptions = {
 export const UOFlowDesigner: FC<{ file: FlowFile }> = ({ file }) => {
   const { appFactory } = useAppFactory()
 
-  const contextMenuRef = useRef<HTMLDivElement>(null)
   const [contextMenuOpen, setContextMenuOpen] = useState(false)
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 })
 
@@ -38,96 +36,95 @@ export const UOFlowDesigner: FC<{ file: FlowFile }> = ({ file }) => {
     }
   }, [])
 
-  useClickAway(() => {
-    setContextMenuOpen(false)
-  }, contextMenuRef)
-
   return (
-    <>
-      {contextMenuOpen && (
-        <div
-          className={classes.contextMenuWrapper}
-          style={{
-            left: contextMenuPosition.x,
-            top: contextMenuPosition.y,
-          }}
-          onClick={() => {
-            FlowNodeFile.create(
-              {
-                ...FlowNodeMetadata.mrSchemeToDefaultJson(
-                  appFactory.flowNodeByType[FlowNodeEnum.BRANCH_NODE].metadata
-                    .jsonPropsSchema,
-                ),
-                id: generateId(),
-                position: {
-                  x: contextMenuPosition.x,
-                  y: contextMenuPosition.y,
-                },
-              },
-              file,
-            )
+    <div className={classes.wrapper}>
+      <>
+        <ContextMenu
+          position={contextMenuPosition}
+          open={contextMenuOpen}
+          file={file}
+          setOpen={setContextMenuOpen}
+        />
+        <ReactFlow
+          className={classes.reactFlow}
+          nodes={file.reactFlowNodes}
+          edges={file.reactFlowEdges}
+          onNodesChange={file.onReactFlowNodesChange}
+          onEdgesChange={file.onReactFlowEdgesChange}
+          onConnect={file.onReactFlowConnect}
+          fitView
+          maxZoom={1}
+          minZoom={1}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          defaultEdgeOptions={defaultEdgeOptions}
+          onContextMenu={(e) => {
+            const target = e.target as unknown as HTMLDivElement
+            if (!target.classList.contains('react-flow__pane')) {
+              return
+            }
+
+            const { left, top } = getMonitorWall(target)
+
+            setContextMenuPosition({
+              x: e.clientX - left,
+              y: e.clientY - top,
+            })
+            setContextMenuOpen(true)
+            e.preventDefault()
           }}
         >
-          123
-        </div>
-      )}
-      <ReactFlow
-        className={classes.reactFlow}
-        nodes={file.reactFlowNodes}
-        edges={file.reactFlowEdges}
-        onNodesChange={file.onReactFlowNodesChange}
-        onEdgesChange={file.onReactFlowEdgesChange}
-        onConnect={file.onReactFlowConnect}
-        fitView
-        maxZoom={1}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        defaultEdgeOptions={defaultEdgeOptions}
-        onContextMenu={(e) => {
-          setContextMenuPosition({
-            x: e.clientX,
-            y: e.clientY,
-          })
-          setContextMenuOpen(true)
-          e.preventDefault()
-        }}
-      >
-        <Controls showInteractive={false} />
-        <svg>
-          <defs>
-            <linearGradient id="edge-gradient">
-              <stop offset="0%" stopColor="#ae53ba" />
-              <stop offset="100%" stopColor="#2a8af6" />
-            </linearGradient>
+          <Controls showInteractive={false} />
+          <svg>
+            <defs>
+              <linearGradient id="edge-gradient">
+                <stop offset="0%" stopColor="#ae53ba" />
+                <stop offset="100%" stopColor="#2a8af6" />
+              </linearGradient>
 
-            <marker
-              id="edge-circle"
-              viewBox="-5 -5 10 10"
-              refX="0"
-              refY="0"
-              markerUnits="strokeWidth"
-              markerWidth="10"
-              markerHeight="10"
-              orient="auto"
-            >
-              <circle
-                stroke="#2a8af6"
-                strokeOpacity="0.75"
-                r="2"
-                cx="0"
-                cy="0"
-              />
-            </marker>
-          </defs>
-        </svg>
-      </ReactFlow>
-    </>
+              <marker
+                id="edge-circle"
+                viewBox="-5 -5 10 10"
+                refX="0"
+                refY="0"
+                markerUnits="strokeWidth"
+                markerWidth="10"
+                markerHeight="10"
+                orient="auto"
+              >
+                <circle
+                  stroke="#2a8af6"
+                  strokeOpacity="0.75"
+                  r="2"
+                  cx="0"
+                  cy="0"
+                />
+              </marker>
+            </defs>
+          </svg>
+        </ReactFlow>
+      </>
+    </div>
   )
 }
 
-export const FlowDesigner = observer(UOFlowDesigner)
+const _FlowDesigner = observer(UOFlowDesigner)
+
+export const FlowDesigner: FC<ComponentProps<typeof _FlowDesigner>> = (
+  props,
+) => {
+  return (
+    <ReactFlowProvider>
+      <_FlowDesigner {...props} />
+    </ReactFlowProvider>
+  )
+}
 
 export const classes = {
+  wrapper: mcss`
+    position: relative;
+    height: 100%;
+  `,
   reactFlow: mcss`
     //--bg-color: rgb(17, 17, 17);
     --bg-color: rgb(255,255,255);
@@ -292,15 +289,5 @@ export const classes = {
     .react-flow__attribution a {
       color: #95679e;
     }
-  `,
-  contextMenuWrapper: mcss`
-    position: fixed;
-    width: 100px;
-    height: 200px;
-    left: 0;
-    top: 0;
-    z-index: 999999;
-    color: white;
-    border: 1px solid red;
   `,
 }

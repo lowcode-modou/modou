@@ -1,12 +1,14 @@
 import { isEqual, unionWith } from 'lodash'
 import { FC } from 'react'
 
+import {
+  FlowNodeInterpreter,
+  FlowNodeMetadata,
+} from '@modou/core/src/flow-node'
+import { WidgetGroupEnum } from '@modou/core/src/types'
+import { WidgetMetadata } from '@modou/core/src/widget'
 import { mrToJsonSchema, schemeToDefs } from '@modou/refine'
 import { BaseSetterProps } from '@modou/setters/src/types'
-
-import { FlowNodeInterpreter, FlowNodeMetadata } from '../flow-node'
-import { WidgetGroupEnum } from '../types'
-import { WidgetMetadata } from '../widget'
 
 interface Widget {
   // FIXME 完善WidgetBaseState定义

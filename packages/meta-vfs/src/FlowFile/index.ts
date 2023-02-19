@@ -11,6 +11,7 @@ import {
 
 import { FileTypeEnum, PageFile } from '@modou/meta-vfs'
 import {
+  action,
   computed,
   makeObservable,
   observable,
@@ -38,6 +39,8 @@ export class FlowFile extends BaseFile<FileMap, FlowFileMeta, PageFile> {
       flowNodes: computed,
       flowEdges: computed,
       reactFlowNodes: computed.struct,
+      deleteNode: action,
+      deleteEdge: action,
     })
   }
 
@@ -70,7 +73,6 @@ export class FlowFile extends BaseFile<FileMap, FlowFileMeta, PageFile> {
   }
 
   get reactFlowEdges() {
-    console.log('this.flowEdges', this.flowEdges)
     return this.flowEdges.map((e) => e.reactFlowMeta)
   }
 
@@ -96,6 +98,27 @@ export class FlowFile extends BaseFile<FileMap, FlowFileMeta, PageFile> {
         this.subFileMap.flowEdges.push(edge.data)
       })
     })
+  }
+
+  deleteNode(nodeId: string) {
+    const edges = this.subFileMap.flowEdges.filter(
+      (edge) => edge.meta.target !== nodeId && edge.meta.source !== nodeId,
+    )
+    this.subFileMap.flowEdges.length = 0
+    this.subFileMap.flowEdges.push(...edges)
+    const nodes = this.subFileMap.flowNodes.filter(
+      (node) => node.meta.id !== nodeId,
+    )
+    this.subFileMap.flowNodes.length = 0
+    this.subFileMap.flowNodes.push(...nodes)
+  }
+
+  deleteEdge(edgeId: string) {
+    const edges = this.subFileMap.flowEdges.filter(
+      (edge) => edge.meta.id !== edgeId,
+    )
+    this.subFileMap.flowEdges.length = 0
+    this.subFileMap.flowEdges.push(...edges)
   }
 
   onReactFlowEdgesChange = (changes: EdgeChange[]) => {

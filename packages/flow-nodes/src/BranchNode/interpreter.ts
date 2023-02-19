@@ -1,4 +1,4 @@
-import { FlowNodeInterpreter } from '@modou/core'
+import { type FlowNodeInterpreter } from '@modou/core'
 import { evalScript } from '@modou/evaluate'
 import { MRSchemeBranchNodeProps } from '@modou/flow-nodes'
 import { mr } from '@modou/refine'

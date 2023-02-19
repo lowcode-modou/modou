@@ -8,10 +8,16 @@ import { ComponentProps, FC } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { WidgetMetadata, generateId, useAppManager } from '@modou/core'
+import { WidgetMetadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
-import { PageFile, PageFileMeta, WidgetFile } from '@modou/meta-vfs'
+import {
+  PageFile,
+  PageFileMeta,
+  WidgetFile,
+  useAppManager,
+} from '@modou/meta-vfs'
 import { Observer, observer } from '@modou/reactivity-react'
+import { generateId } from '@modou/shared'
 import { rowWidgetMetadata } from '@modou/widgets-antd'
 
 enum PageActionEnum {

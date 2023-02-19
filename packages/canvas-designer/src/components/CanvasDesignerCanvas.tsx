@@ -10,8 +10,8 @@ import {
   useState,
 } from 'react'
 
-import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { useAppManager } from '@modou/meta-vfs'
 import { observer } from '@modou/reactivity-react'
 import { useAppState, useCanvasState } from '@modou/state-manager'
 

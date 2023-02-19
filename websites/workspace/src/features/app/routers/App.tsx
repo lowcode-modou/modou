@@ -13,9 +13,8 @@ import {
   useParams,
 } from 'react-router-dom'
 
-import { AppManagerProvider } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
-import { AppFile, AppManager } from '@modou/meta-vfs'
+import { AppFile, AppManager, AppManagerProvider } from '@modou/meta-vfs'
 import { runInAction } from '@modou/reactivity'
 import { AppState, AppStateProvider } from '@modou/state-manager'
 

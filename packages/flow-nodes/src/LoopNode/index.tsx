@@ -16,7 +16,7 @@ import { nodeClasses } from '../_/styles'
 import { ScopedFlowNodePortNameEnum } from '../_/types'
 import { MRSchemeLoopNodeProps, loopNodeMetadata } from './metadata'
 
-const _LoopNode: FC<
+const UOLoopNode: FC<
   NodeProps<
     FlowNodeFile<FlowNodeFileMeta<mr.infer<typeof MRSchemeLoopNodeProps>>>
   >
@@ -58,4 +58,4 @@ const _LoopNode: FC<
     </>
   )
 }
-export const LoopNode = observer(_LoopNode)
+export const LoopNode = observer(UOLoopNode)

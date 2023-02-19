@@ -9,8 +9,8 @@ import {
 } from 'react'
 import { useDrag } from 'react-dnd'
 
-import { useAppManager } from '@modou/core'
 import { mcss, useTheme } from '@modou/css-in-js'
+import { useAppManager } from '@modou/meta-vfs'
 import { observer } from '@modou/reactivity-react'
 
 import { SimulatorInstanceContext } from '../../../contexts'

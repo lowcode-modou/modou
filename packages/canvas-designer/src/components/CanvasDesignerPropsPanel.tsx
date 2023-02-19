@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react'
 
-import { AppFactoryContext } from '@modou/core'
+import { AppFactoryContext } from '@modou/asset-vfs'
 import { cx, mcss } from '@modou/css-in-js'
 import { toJS } from '@modou/reactivity'
 import { observer } from '@modou/reactivity-react'

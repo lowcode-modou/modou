@@ -17,9 +17,9 @@ import {
   MRStringSetterType,
   SETTER_KEY,
 } from '@modou/setters'
+import { generateId } from '@modou/shared'
 
 import { MDVersion } from '../types'
-import { generateId } from '../utils'
 import { FlowNodeBaseProps, FlowNodePortNameEnum } from './types'
 
 // TODO 合并 Widget 类型定义

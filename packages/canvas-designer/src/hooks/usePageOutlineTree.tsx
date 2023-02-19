@@ -2,13 +2,9 @@ import { head, isEmpty } from 'lodash'
 import { DataNode } from 'rc-tree/es/interface'
 import { useContext } from 'react'
 
-import {
-  AppFactoryContext,
-  WidgetBaseProps,
-  WidgetSlot,
-  useAppManager,
-} from '@modou/core'
-import { PageFile } from '@modou/meta-vfs'
+import { AppFactoryContext } from '@modou/asset-vfs'
+import { WidgetBaseProps, WidgetSlot } from '@modou/core'
+import { PageFile, useAppManager } from '@modou/meta-vfs'
 import { toJS } from '@modou/reactivity'
 
 import { useCanvasDesignerFile } from '../contexts/CanvasDesignerFileContext'

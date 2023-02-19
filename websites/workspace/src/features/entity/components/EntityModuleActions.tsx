@@ -2,7 +2,7 @@ import { useMount } from 'ahooks'
 import { FC, ReactNode, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-import { generateId } from '@modou/core'
+import { generateId } from '@modou/shared'
 
 const ENTITY_MODULE_ACTION_PORTAL_ID = generateId()
 export const EntityModuleActionWrapper: FC<{ children: ReactNode }> = ({

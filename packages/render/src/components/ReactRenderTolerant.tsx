@@ -2,8 +2,8 @@ import { Spin } from 'antd'
 import { FC } from 'react'
 import * as React from 'react'
 
-import { useAppManager } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { useAppManager } from '@modou/meta-vfs'
 import { observer } from '@modou/reactivity-react'
 import {
   DEFAULT_WIDGET_VARIABLES,

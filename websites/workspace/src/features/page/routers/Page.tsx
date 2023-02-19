@@ -6,13 +6,10 @@ import { head } from 'lodash'
 import { FC, useLayoutEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { AppFactoryContext, defaultAppFactory } from '@modou/asset-vfs'
 import { CanvasDesigner } from '@modou/canvas-designer'
-import {
-  AppFactoryContext,
-  defaultAppFactory,
-  useAppManager,
-} from '@modou/core'
 import { mcss } from '@modou/css-in-js'
+import { useAppManager } from '@modou/meta-vfs'
 import { observer } from '@modou/reactivity-react'
 import { SimulatorPC } from '@modou/simulator'
 

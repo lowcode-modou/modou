@@ -2,8 +2,7 @@ import { Button, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { ComponentProps, FC, useRef } from 'react'
 
-import { useAppManager } from '@modou/core'
-import { EntityFieldFileMeta } from '@modou/meta-vfs'
+import { EntityFieldFileMeta, useAppManager } from '@modou/meta-vfs'
 import { observer } from '@modou/reactivity-react'
 
 import { EntityFieldCreator } from './EntityFieldCreator'

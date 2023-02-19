@@ -8,7 +8,7 @@ import { FlowNodeHandles } from '../_/components/FlowNodeHandles'
 import { FlowNodeWrapper } from '../_/components/FlowNodeWrapper'
 import { startNodeMetadata } from './metadata'
 
-const _StartNode: FC<NodeProps<FlowNodeFile>> = (props) => {
+const UOStartNode: FC<NodeProps<FlowNodeFile>> = (props) => {
   return (
     <>
       <FlowNodeWrapper meta={startNodeMetadata} node={props} />
@@ -20,6 +20,6 @@ const _StartNode: FC<NodeProps<FlowNodeFile>> = (props) => {
     </>
   )
 }
-export const StartNode = observer(_StartNode)
+export const StartNode = observer(UOStartNode)
 
 // const classes = {}
