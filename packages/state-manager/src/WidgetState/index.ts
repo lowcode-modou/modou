@@ -13,7 +13,7 @@ import {
   unset,
 } from 'lodash'
 
-import { AppFactory } from '@modou/core'
+import { AppFactory } from '@modou/asset-vfs'
 import { evalExpression } from '@modou/evaluate'
 import { WidgetFile } from '@modou/meta-vfs'
 import {

@@ -1,6 +1,6 @@
 import { createContext, memo, useContext } from 'react'
 
-import { WidgetGroupEnum } from '@modou/core/src/types'
+import { WidgetGroupEnum } from '@modou/core'
 import {
   BranchNode,
   LoopNode,

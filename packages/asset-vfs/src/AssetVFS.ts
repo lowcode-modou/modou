@@ -1,5 +1,6 @@
-import { AppFactory } from '@modou/core'
 import { makeAutoObservable } from '@modou/reactivity'
+
+import { AppFactory } from './app-factory'
 
 export class AssetVFS {
   constructor({ appFactory }: { appFactory: AppFactory }) {

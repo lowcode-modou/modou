@@ -1,12 +1,11 @@
 import { isEqual, unionWith } from 'lodash'
 import { FC } from 'react'
 
+import { WidgetGroupEnum, WidgetMetadata } from '@modou/core'
 import {
   FlowNodeInterpreter,
   FlowNodeMetadata,
 } from '@modou/core/src/flow-node'
-import { WidgetGroupEnum } from '@modou/core/src/types'
-import { WidgetMetadata } from '@modou/core/src/widget'
 import { mrToJsonSchema, schemeToDefs } from '@modou/refine'
 import { BaseSetterProps } from '@modou/setters/src/types'
 

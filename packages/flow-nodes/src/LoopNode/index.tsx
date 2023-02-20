@@ -29,6 +29,7 @@ const UOLoopNode: FC<
       <FlowNodeWrapper meta={loopNodeMetadata} node={props}>
         <div>
           <div>循环体</div>
+          {/* @ts-expect-error */}
           <CodeEditor
             mode={CodeEditorModeEnum.Javascript}
             value={props.data.meta.props.iterable}

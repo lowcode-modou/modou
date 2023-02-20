@@ -24,6 +24,7 @@ const UORunScriptNode: FC<
   return (
     <>
       <FlowNodeWrapper meta={runScriptNodeMetadata} node={props}>
+        {/* @ts-expect-error */}
         <CodeEditor
           mode={CodeEditorModeEnum.Javascript}
           value={props.data.meta.props.script}

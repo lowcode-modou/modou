@@ -75,6 +75,7 @@ export const CaseBlock: FC<{
       </div>
       {!hiddenCodeEditor && (
         <div>
+          {/* @ts-expect-error */}
           <CodeEditor
             mode={CodeEditorModeEnum.Javascript}
             value={branch.script}
