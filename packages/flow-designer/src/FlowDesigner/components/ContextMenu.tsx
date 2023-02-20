@@ -1,12 +1,13 @@
 import { useClickAway } from 'ahooks'
 import { Card } from 'antd'
-import { FC, useRef } from 'react'
-import { useReactFlow } from 'reactflow'
+import { FC, MutableRefObject, useRef } from 'react'
+import { OnConnectStartParams, useReactFlow } from 'reactflow'
 
 import { useAppFactory } from '@modou/asset-vfs'
 import { FlowNodeMetadata } from '@modou/core'
 import { mcss } from '@modou/css-in-js'
 import { FlowNodeEnum } from '@modou/flow-nodes'
+import { FlowEdgeFile } from '@modou/meta-vfs/src/FlowEdgeFile'
 import { FlowFile } from '@modou/meta-vfs/src/FlowFile'
 import { FlowNodeFile } from '@modou/meta-vfs/src/FlowNodeFile'
 import { generateId } from '@modou/shared'
@@ -16,7 +17,8 @@ export const ContextMenu: FC<{
   open: boolean
   setOpen: (open: boolean) => void
   file: FlowFile
-}> = ({ position, open, file, setOpen }) => {
+  connectionSourceRef: MutableRefObject<OnConnectStartParams | null>
+}> = ({ position, open, file, setOpen, connectionSourceRef }) => {
   const { appFactory } = useAppFactory()
 
   const { project } = useReactFlow()
@@ -30,7 +32,7 @@ export const ContextMenu: FC<{
 
   const wrapperRef = useRef<HTMLDivElement>(null)
 
-  useClickAway(() => {
+  useClickAway((e) => {
     setOpen(false)
   }, wrapperRef)
 
@@ -49,8 +51,7 @@ export const ContextMenu: FC<{
           key={node.metadata.type}
           className={classes.node}
           onClick={() => {
-            console.log('position', position)
-            FlowNodeFile.create(
+            const newNode = FlowNodeFile.create(
               {
                 ...FlowNodeMetadata.mrSchemeToDefaultJson(
                   appFactory.flowNodeByType[node.metadata.type].metadata
@@ -64,6 +65,26 @@ export const ContextMenu: FC<{
               },
               file,
             )
+            if (
+              connectionSourceRef &&
+              connectionSourceRef.current?.handleType === 'source'
+            ) {
+              FlowEdgeFile.create(
+                {
+                  name: '',
+                  id: generateId(),
+                  source: connectionSourceRef.current
+                    ?.nodeId as unknown as string,
+                  target: newNode.meta.id,
+                  sourceHandle: connectionSourceRef.current
+                    ?.handleId as unknown as string,
+                  targetHandle: newNode.meta.targets[0]
+                    ?.name as unknown as string,
+                },
+                file,
+              )
+            }
+            connectionSourceRef.current = null
             setOpen(false)
           }}
         >

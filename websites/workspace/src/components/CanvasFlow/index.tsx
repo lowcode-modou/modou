@@ -1,5 +1,7 @@
+import useUrlState from '@ahooksjs/use-url-state'
+import { useMemoizedFn } from 'ahooks'
 import { Empty } from 'antd'
-import { FC, useState } from 'react'
+import { FC } from 'react'
 
 import { mcss } from '@modou/css-in-js'
 import { PageFile } from '@modou/meta-vfs'
@@ -11,11 +13,21 @@ import { FlowList } from './FlowList'
 export const UOCanvasFlow: FC<{
   parentFile: PageFile
 }> = ({ parentFile }) => {
-  const [activeFlowId, setActiveFlowId] = useState<string>('agdhgoasmiht')
-  const flowFile = parentFile.flowMap[activeFlowId]
+  const [urlState, setUrlState] = useUrlState<{ flowId: string }>({
+    flowId: '',
+  })
+  const flowFile = parentFile.flowMap[urlState.flowId]
+  const setActiveFlowId = useMemoizedFn((flowId) => {
+    setUrlState({
+      flowId,
+    })
+  })
   return (
     <div className={classes.wrapper}>
-      <FlowList activeFlowId={activeFlowId} setActiveFlowId={setActiveFlowId} />
+      <FlowList
+        activeFlowId={urlState.flowId}
+        setActiveFlowId={setActiveFlowId}
+      />
       {flowFile ? (
         <FlowCanvas file={flowFile} />
       ) : (

@@ -34,6 +34,8 @@ export class FlowEdgeFile extends BaseFile<{}, FlowEdgeFileMeta, FlowFile> {
       ...this.tempMeta,
       ...this.meta,
       data: this,
+      // type: 'turbo',
+      // markerEnd: 'edge-circle',
     }
   }
 

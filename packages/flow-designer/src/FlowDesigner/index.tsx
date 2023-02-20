@@ -1,6 +1,11 @@
+import { useMemoizedFn } from 'ahooks'
 import { mapValues } from 'lodash'
-import { ComponentProps, FC, useMemo, useState } from 'react'
-import ReactFlow, { Controls, ReactFlowProvider } from 'reactflow'
+import { ComponentProps, FC, useMemo, useRef, useState } from 'react'
+import ReactFlow, {
+  Controls,
+  OnConnectStartParams,
+  ReactFlowProvider,
+} from 'reactflow'
 
 import { useAppFactory } from '@modou/asset-vfs'
 import { mcss } from '@modou/css-in-js'
@@ -10,6 +15,8 @@ import { getMonitorWall } from '@modou/shared'
 
 import { TurboEdge, TurboNode } from './components'
 import { ContextMenu } from './components/ContextMenu'
+
+type ReactFlowProps = Required<ComponentProps<typeof ReactFlow>>
 
 const NODE_TYPES = {
   turbo: TurboNode,
@@ -21,7 +28,7 @@ const edgeTypes = {
 
 const defaultEdgeOptions = {
   type: 'turbo',
-  markerEnd: 'edge-circle',
+  // markerEnd: 'edge-circle',
 }
 export const UOFlowDesigner: FC<{ file: FlowFile }> = ({ file }) => {
   const { appFactory } = useAppFactory()
@@ -34,12 +41,59 @@ export const UOFlowDesigner: FC<{ file: FlowFile }> = ({ file }) => {
       ...NODE_TYPES,
       ...mapValues(appFactory.flowNodeByType, (f) => f.component),
     }
+    // 不要添加依赖
   }, [])
+
+  const onContextMenu = useMemoizedFn<
+    Required<ComponentProps<typeof ReactFlow>>['onContextMenu']
+  >((e) => {
+    const target = e.target as unknown as HTMLDivElement
+    if (!target.classList.contains('react-flow__pane')) {
+      return
+    }
+
+    const { left, top } = getMonitorWall(target)
+
+    setContextMenuPosition({
+      x: e.clientX - left,
+      y: e.clientY - top,
+    })
+    setTimeout(() => {
+      setContextMenuOpen(true)
+    })
+    e.preventDefault()
+  })
+
+  const connectionRef = useRef(false)
+  const connectionSourceRef = useRef<OnConnectStartParams | null>(null)
+  const onConnect = useMemoizedFn<ReactFlowProps['onConnect']>((connection) => {
+    connectionRef.current = true
+    connectionSourceRef.current = null
+    file.onReactFlowConnect(connection)
+  })
+  const onConnectStart = useMemoizedFn<ReactFlowProps['onConnectStart']>(
+    (e, params) => {
+      connectionSourceRef.current = params
+    },
+  )
+  const onConnectEnd = useMemoizedFn<ReactFlowProps['onConnectEnd']>((e) => {
+    if (connectionRef.current) {
+      return
+    }
+    connectionRef.current = false
+    onContextMenu(e as unknown as any)
+  })
+
+  // const reactFlow = useReactFlow()
+  // useKeyPress('Backspace', () => {
+  //   console.log('12312', reactFlow.getEdges())
+  // })
 
   return (
     <div className={classes.wrapper}>
       <>
         <ContextMenu
+          connectionSourceRef={connectionSourceRef}
           position={contextMenuPosition}
           open={contextMenuOpen}
           file={file}
@@ -51,28 +105,16 @@ export const UOFlowDesigner: FC<{ file: FlowFile }> = ({ file }) => {
           edges={file.reactFlowEdges}
           onNodesChange={file.onReactFlowNodesChange}
           onEdgesChange={file.onReactFlowEdgesChange}
-          onConnect={file.onReactFlowConnect}
+          onConnect={onConnect}
+          onConnectEnd={onConnectEnd}
+          onConnectStart={onConnectStart}
           fitView
           maxZoom={1}
           minZoom={1}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           defaultEdgeOptions={defaultEdgeOptions}
-          onContextMenu={(e) => {
-            const target = e.target as unknown as HTMLDivElement
-            if (!target.classList.contains('react-flow__pane')) {
-              return
-            }
-
-            const { left, top } = getMonitorWall(target)
-
-            setContextMenuPosition({
-              x: e.clientX - left,
-              y: e.clientY - top,
-            })
-            setContextMenuOpen(true)
-            e.preventDefault()
-          }}
+          onContextMenu={onContextMenu}
         >
           <Controls showInteractive={false} />
           <svg>

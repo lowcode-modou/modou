@@ -41,6 +41,9 @@ export class FlowFile extends BaseFile<FileMap, FlowFileMeta, PageFile> {
       reactFlowNodes: computed.struct,
       deleteNode: action,
       deleteEdge: action,
+      onReactFlowEdgesChange: action,
+      onReactFlowNodesChange: action,
+      onReactFlowConnect: action,
     })
   }
 
@@ -73,7 +76,7 @@ export class FlowFile extends BaseFile<FileMap, FlowFileMeta, PageFile> {
   }
 
   get reactFlowEdges() {
-    return this.flowEdges.map((e) => e.reactFlowMeta)
+    return this.flowEdges.map((edge) => edge.reactFlowMeta)
   }
 
   private readonly updateReactFlowEdges = (
@@ -82,7 +85,13 @@ export class FlowFile extends BaseFile<FileMap, FlowFileMeta, PageFile> {
     runInAction(() => {
       this.subFileMap.flowEdges.length = 0
       edges.forEach((edge) => {
-        if (!edge.data) {
+        if (edge.data) {
+          edge.data.reactFlowMeta = {
+            ...edge.data.meta,
+            ...edge,
+          }
+          this.subFileMap.flowEdges.push(edge.data)
+        } else {
           edge.data = FlowEdgeFile.create(
             {
               name: '',
@@ -95,7 +104,6 @@ export class FlowFile extends BaseFile<FileMap, FlowFileMeta, PageFile> {
             this,
           )
         }
-        this.subFileMap.flowEdges.push(edge.data)
       })
     })
   }
