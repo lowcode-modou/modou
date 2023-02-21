@@ -31,14 +31,14 @@ self.onmessage = (e) => {
       return server.delFile(data.name)
     case TernWorkerAction.REQUEST:
       return server.request(data.body, (err, resData: any) => {
-        let searchVal =
-          last(
-            ((head(e.data.body.files) as { text: string }).text ?? '').split(
-              '.',
-            ),
-          ) ?? ''
+        let searchVal = (head(e.data.body.files) as { text: string }).text ?? ''
         if (HEAD_EXPRESSION_REG.test(searchVal)) {
-          searchVal = searchVal.match(HEAD_EXPRESSION_REG)?.[1] ?? ''
+          searchVal =
+            last(
+              (searchVal.match(HEAD_EXPRESSION_REG)?.[1] ?? '').split('.'),
+            ) ?? ''
+        } else {
+          searchVal = last(searchVal.split('.')) ?? ''
         }
         if (resData) {
           resData.completions = resData.completions.filter((item: any) =>
