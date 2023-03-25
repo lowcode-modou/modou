@@ -10,7 +10,14 @@
       "@@/*": [".dumi/tmp/*"],
       "@modou/flow-nodes": ["src"],
       "@modou/flow-nodes/*": ["src/*", "*"]
-    }
+    },
+    "lib": [
+      "decorators",
+      "dom",
+      "es5",
+      "scripthost",
+      "es2015.promise"
+    ]
   },
   "include": [".dumi/**/*", ".dumirc.ts", "src/**/*"]
 }
