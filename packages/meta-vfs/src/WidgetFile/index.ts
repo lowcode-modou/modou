@@ -73,7 +73,11 @@ export class WidgetFile<
       (value) => {
         if (isExpression(value)) {
           // TODO 替换 baseParse 因为{{{name:'小明'}}} 解析失败
-          const ast = baseParse(value)
+          const ast = baseParse(value,{
+            decodeEntities(rawText){
+              return rawText
+            }
+          })
           let evalString: string
           if (
             (ast.children.length === 1 &&

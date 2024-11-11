@@ -12,7 +12,9 @@ export const App: FC = () => {
     <Suspense fallback={<AppSpin />}>
       <ConfigProvider locale={zhCN}>
         <ThemeProvider>
-          <Router>
+          <Router
+            future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+          >
             <AppRouters />
           </Router>
         </ThemeProvider>

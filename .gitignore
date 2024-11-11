@@ -11,3 +11,4 @@ cypress/videos
 .eslintcache
 .pnpm-debug.log
 yarn-error.log
+.idea

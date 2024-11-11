@@ -5,10 +5,15 @@ import { resolve } from 'path'
 import * as path from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
+import mkcert from "vite-plugin-mkcert";
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    mkcert(),
+    nodePolyfills(),
     react({
       babel: {
         plugins: [
@@ -58,10 +63,7 @@ export default defineConfig({
     devSourcemap: true,
   },
   server: {
-    https: {
-      cert: fs.readFileSync(path.join(__dirname, '../../keys/cert.crt')),
-      key: fs.readFileSync(path.join(__dirname, '../../keys/cert.key')),
-    },
+    https:{},
     host: '0.0.0.0',
   },
   build: {
