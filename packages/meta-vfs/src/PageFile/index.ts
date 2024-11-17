@@ -29,42 +29,31 @@ export interface RelationWidget {
 
 type WidgetRelationById = Record<string, RelationWidget>
 
-interface FileMap extends BaseFileMap {
-  readonly widgets: WidgetFile[]
-  readonly flows: FlowFile[]
+type SubFileMap = {
+  [FileTypeEnum.Widget]: WidgetFile
+  [FileTypeEnum.Flow]: FlowFile
 }
 
-export class PageFile extends BaseFile<FileMap, PageFileMeta, AppFile> {
+export class PageFile extends BaseFile<SubFileMap, PageFileMeta, AppFile> {
   protected constructor(meta: PageFileMeta, parentFile: AppFile) {
-    super({ fileType: FileTypeEnum.App, meta, parentFile })
-    makeObservable(this, {
-      subFileMap: observable,
-      widgets: computed,
-      widgetMap: computed.struct,
-      widgetRelationById: computed.struct,
-      addWidget: action,
-      deleteWidget: action,
-      updateWidgets: action,
-      moveWidget: action,
-      flows: computed,
+    super({
+      fileType: FileTypeEnum.App,
+      meta,
+      parentFile,
+      subFileTypes: [FileTypeEnum.Widget, FileTypeEnum.Flow],
     })
   }
 
-  subFileMap: FileMap = {
-    widgets: [],
-    flows: [],
-  }
-
   get widgets() {
-    return this.subFileMap.widgets
+    return BaseFile.DEFAULT_FILE_STORE.get(this.subFilesAtomMap.Widget)
   }
 
   get flows() {
-    return this.subFileMap.flows
+    return BaseFile.DEFAULT_FILE_STORE.get(this.subFilesAtomMap.Flow)
   }
 
   get flowMap() {
-    return keyBy(this.subFileMap.flows, (flow) => flow.meta.id)
+    return keyBy(this.flows, (flow) => flow.meta.id)
   }
 
   deleteFlow = (flowId: string) => {

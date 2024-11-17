@@ -1,16 +1,12 @@
-import { get, isFunction, mapValues } from 'lodash'
+import { difference, mapValues } from 'lodash'
 
 import { MDVersion } from '@modou/core'
 import { FileTypeEnum, UpdateParams } from '@modou/meta-vfs'
-import {
-  action,
-  makeObservable,
-  observable,
-  reaction,
-  toJS,
-} from '@modou/reactivity'
 
 import { emitters } from '../event-bus'
+import { atom, getDefaultStore, WritableAtom } from '@modou/state'
+
+export const DEFAULT_FILE_STORE = getDefaultStore()
 
 export type BaseFileMete<T extends object = {}> = {
   readonly id: string
@@ -18,99 +14,105 @@ export type BaseFileMete<T extends object = {}> = {
   readonly version: MDVersion
 } & T
 
-export interface BaseFileMap {
-  readonly [prop: string]: Array<BaseFile<any, any, any>>
+type FileAtom<T> = WritableAtom<T, [T | ((prev: T) => T)], T>
+
+const createFileAtom = <Value>(
+  value: Value,
+  {
+    sub,
+  }: {
+    sub: (newValue: Value, oldValue: Value) => void
+  },
+) => {
+  const _atom = atom<Value>(value)
+  return atom<Value, [Value | ((prev: Value) => Value)], Value>(
+    (get) => get(_atom),
+    (get, set, update) => {
+      const oldValue = get(_atom)
+      set(_atom, update)
+      const newValue =
+        typeof update === 'function'
+          ? (update as (prev: Value) => Value)(oldValue)
+          : update
+      Promise.resolve().then(() => sub(newValue, oldValue))
+      return newValue
+    },
+  )
 }
 
 export abstract class BaseFile<
-  F extends BaseFileMap,
-  T extends BaseFileMete,
-  P extends BaseFile<any, any, any> | null,
+  SubFilesMap extends Partial<Record<FileTypeEnum, BaseFile>> = {},
+  Metadata extends BaseFileMete = BaseFileMete,
+  ParentFile extends BaseFile | null = null,
 > {
+  static DEFAULT_FILE_STORE = DEFAULT_FILE_STORE
   protected constructor({
     fileType,
     meta,
     parentFile,
+    subFileTypes,
   }: {
     fileType: FileTypeEnum
-    meta: T
-    parentFile: P
+    meta: Metadata
+    parentFile: ParentFile
+    subFileTypes: Array<keyof SubFilesMap>
   }) {
     this.fileType = fileType
-    this.meta = meta
     this.parentFile = parentFile
-    makeObservable(this, {
-      meta: observable,
-      fileType: observable,
-      parentFile: observable,
-      updateMeta: action,
-    })
-    // 监听meta变化 包括subFile移动
-    const disposer = reaction(
-      () => toJS(this.meta),
-      (newValue) => {
+
+    this.atom = createFileAtom(meta, {
+      sub: (newValue, oldValue) => {
         emitters.emit('updateFileMeta', newValue)
       },
-      {
-        fireImmediately: true,
-        delay: 300,
-        // equals: comparer.structural,
+    })
+
+    this.subFilesAtomMap = new Set(subFileTypes).values().reduce(
+      (pre, fileType) => {
+        pre[fileType as keyof SubFilesMap] = createFileAtom<Array<BaseFile>>(
+          [],
+          {
+            sub: (newValue, oldValue) => {
+              const newIds = newValue.map(
+                (file) => DEFAULT_FILE_STORE.get(file.atom).id,
+              )
+              const oldIds = oldValue.map(
+                (file) => DEFAULT_FILE_STORE.get(file.atom).id,
+              )
+
+              difference(newIds, oldIds).forEach((fileId) => {
+                console.log(`${fileId}被删除了`)
+              })
+            },
+          },
+        ) as unknown as FileAtom<SubFilesMap[keyof SubFilesMap][]>
+        return pre
+      },
+      {} as {
+        [K in keyof SubFilesMap]: FileAtom<SubFilesMap[K][]>
       },
     )
-    // 监听删除和添加
-    const disposerSubFiles = reaction(
-      () =>
-        mapValues(this.subFileMap, (files) =>
-          files.reduce<Record<string, BaseFile<any, any, any>>>((pre, cur) => {
-            pre[cur.meta.id] = cur
-            return pre
-          }, {}),
-        ),
-      (newValue, prevValue) => {
-        // 如果是删除 调用子文件的disposer方法
-        // 找出删除的文件
-        if (!prevValue) {
-          return
-        }
-        Object.entries(prevValue).forEach(([fileType, filesMap]) =>
-          Object.entries(filesMap).forEach(([fileId, file]) => {
-            if (!get(newValue, [fileType, fileId])) {
-              file.disposer()
-            }
-          }),
-        )
-      },
-      {
-        fireImmediately: true,
-        delay: 300,
-      },
-    )
-    this.disposer = () => {
-      // 文件被删除了
-      emitters.emit('updateFileMeta', null)
-      disposer()
-      disposerSubFiles()
-    }
   }
 
-  updateMeta(meta: UpdateParams<T>) {
-    if (isFunction(meta)) {
-      this.meta = meta(this.meta)
-    } else {
-      this.meta = meta
-    }
+  updateMeta(meta: UpdateParams<Metadata>) {
+    DEFAULT_FILE_STORE.set(this.atom, meta)
   }
 
-  parentFile: P
+  parentFile: ParentFile
   fileType: FileTypeEnum
-  meta: T
+  get meta() {
+    return DEFAULT_FILE_STORE.get(this.atom)
+  }
+  atom: FileAtom<Metadata>
 
-  protected disposer: () => void
+  readonly subFilesAtomMap: {
+    [K in keyof SubFilesMap]: FileAtom<SubFilesMap[K][]>
+  }
 
   protected subFileMapToJson() {
-    return mapValues(this.subFileMap, (dir) =>
-      // TODO 是否有些特殊的file需求sort
-      dir.map((file) => file.toJSON()),
+    return Object.values(this.subFilesAtomMap).map(
+      (filesAtom: FileAtom<BaseFile[]>) =>
+        // TODO 是否有些特殊的file需求sort
+        DEFAULT_FILE_STORE.get(filesAtom).map((file) => file.toJSON()),
     )
   }
 
@@ -119,15 +121,14 @@ export abstract class BaseFile<
     fileType: FileTypeEnum
     [prop: string]: any
   }
-  abstract subFileMap: F
   static fromJSON() {
     throw new Error(`【${this.name}】未实现formJson方法`)
   }
 
   static create(
     meta: Omit<BaseFileMete, 'version'>,
-    parentFile?: BaseFile<any, any, any>,
-  ): BaseFile<any, any, any> {
+    parentFile?: BaseFile,
+  ): BaseFile {
     throw new Error(`【${this.name}】未实现create方法`)
   }
   // TODO fromFile toFile

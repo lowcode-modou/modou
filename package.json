@@ -11,7 +11,7 @@
   "license": "ISC",
   "devDependencies": {
     "@emotion/babel-plugin": "^11.12.0",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@types/flat": "^5.0.5",
     "@types/json-schema": "^7.0.15",
     "@types/lodash": "^4.17.13",
@@ -56,6 +56,7 @@
     "@modou/setters": "workspace:^",
     "@modou/shared": "workspace:^",
     "@modou/simulator": "workspace:^",
+    "@modou/state": "workspace:^",
     "@modou/state-manager": "workspace:^",
     "@modou/widgets-antd": "workspace:^",
     "@recoiljs/refine": "^0.1.1",
@@ -87,7 +88,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "react-dnd-html5-backend@16.0.1": "patches/react-dnd-html5-backend@16.0.1.patch"
+      "react-dnd-html5-backend@16.0.1": "patches/react-dnd-html5-backend@16.0.1.patch",
+      "jotai": "patches/jotai.patch"
     }
   }
 }

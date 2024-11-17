@@ -1,0 +1,23 @@
+diff --git a/vanilla/store.d.ts b/vanilla/store.d.ts
+index 496b455b5f4fbe667c4803d926241ef30fe59695..e2c572adf360afbdafed861523a12f707a0b402a 100644
+--- a/vanilla/store.d.ts
++++ b/vanilla/store.d.ts
+@@ -64,7 +64,7 @@ type PrdStore = {
+     sub: (atom: AnyAtom, listener: () => void) => () => void;
+     unstable_derive: (fn: (...args: StoreArgs) => StoreArgs) => Store;
+ };
+-type Store = PrdStore | (PrdStore & DevStoreRev4);
++export type Store = PrdStore | (PrdStore & DevStoreRev4);
+ export type INTERNAL_DevStoreRev4 = DevStoreRev4;
+ export type INTERNAL_PrdStore = PrdStore;
+ export declare const createStore: () => Store;
+diff --git a/vanilla.d.ts b/vanilla.d.ts
+index 71b7097edec78d9f808bdffa9c9ad8b3c24910d0..1aa9573150f4b3454f19dfda43eb8c8cfdbcb362 100644
+--- a/vanilla.d.ts
++++ b/vanilla.d.ts
+@@ -1,4 +1,5 @@
+ export { atom } from './vanilla/atom';
+ export type { Atom, WritableAtom, PrimitiveAtom } from './vanilla/atom';
+ export { createStore, getDefaultStore } from './vanilla/store';
++export type { Store } from './vanilla/store';
+ export type { Getter, Setter, ExtractAtomValue, ExtractAtomArgs, ExtractAtomResult, SetStateAction, } from './vanilla/typeUtils';

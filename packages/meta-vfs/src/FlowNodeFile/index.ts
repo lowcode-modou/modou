@@ -18,40 +18,15 @@ export type FlowNodeFileMeta<T extends FlowNodeBaseProps = FlowNodeBaseProps> =
 
 export class FlowNodeFile<
   T extends FlowNodeFileMeta = FlowNodeFileMeta,
-> extends BaseFile<{}, T, FlowFile> {
-  constructor(meta: T, parentFile: FlowFile) {
+> extends BaseFile<{}, T, null> {
+  constructor(meta: T, parentFile: null) {
     super({
       fileType: FileTypeEnum.FlowNode,
       meta,
       parentFile,
-    })
-    makeObservable(this, {
-      subFileMap: observable,
-      tempMeta: observable,
-      reactFlowMeta: computed.struct,
+      subFileTypes: [],
     })
   }
-
-  // TODO 添加 private 参考mobx文档  是支持的
-  tempMeta: Partial<Node> = {}
-  get reactFlowMeta(): Node {
-    return {
-      ...this.tempMeta,
-      id: this.meta.id,
-      type: this.meta.type,
-      position: this.meta.position,
-      data: this,
-    }
-  }
-
-  set reactFlowMeta(node: Node) {
-    runInAction(() => {
-      this.meta.position = node.position
-      this.tempMeta = node
-    })
-  }
-
-  subFileMap = {}
   toJSON() {
     return {
       ...this.meta,
@@ -62,20 +37,18 @@ export class FlowNodeFile<
 
   static create(
     meta: Omit<FlowNodeBaseProps, 'version'>,
-    parentFile: FlowFile,
+    // parentFile: null,
   ) {
-    return runInAction(() => {
-      const entityFieldFile = new FlowNodeFile(
-        {
-          ...meta,
-          version: '0.0.1',
-          // FIXME ts type
-        } as unknown as FlowNodeFileMeta,
-        parentFile,
-      )
-      parentFile.flowNodes.push(entityFieldFile)
-      return entityFieldFile
-    })
+    const entityFieldFile = new FlowNodeFile(
+      {
+        ...meta,
+        version: '0.0.1',
+        // FIXME ts type
+      } as unknown as FlowNodeFileMeta,
+      null,
+    )
+    // parentFile.flowNodes.push(entityFieldFile)
+    return entityFieldFile
   }
 
   static formJSON(
@@ -84,7 +57,7 @@ export class FlowNodeFile<
   ): FlowNodeFile {
     return FlowNodeFile.create(
       omit(json, 'fileType') as FlowNodeFileMeta,
-      parentFile,
+      // parentFile,
     )
   }
 }

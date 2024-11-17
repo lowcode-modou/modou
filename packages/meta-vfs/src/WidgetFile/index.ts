@@ -53,9 +53,13 @@ export class WidgetFile<
   T extends WidgetBaseProps = WidgetBaseProps,
 > extends BaseFile<{}, WidgetFileMeta<T>, PageFile> {
   protected constructor(meta: WidgetFileMeta<T>, parentFile: PageFile) {
-    super({ fileType: FileTypeEnum.Widget, meta, parentFile })
+    super({
+      fileType: FileTypeEnum.Widget,
+      meta,
+      parentFile,
+      subFileTypes: [],
+    })
     const assetVFS = new AssetVFS({} as any)
-
     this.stateTypeDefs =
       assetVFS.appFactory.widgetByType[meta.type].stateTypeDefs
     makeObservable(this, {
@@ -73,10 +77,10 @@ export class WidgetFile<
       (value) => {
         if (isExpression(value)) {
           // TODO 替换 baseParse 因为{{{name:'小明'}}} 解析失败
-          const ast = baseParse(value,{
-            decodeEntities(rawText){
+          const ast = baseParse(value, {
+            decodeEntities(rawText) {
               return rawText
-            }
+            },
           })
           let evalString: string
           if (
